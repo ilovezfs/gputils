@@ -1,3 +1,9 @@
+2015-12-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p18l?f47k40.inc, libgputils/gpcfg-table.c:
+    Fixed the Microchip bug: Renamed the nDEBUG to DEBUG, nXINST
+    to XINST, nCLKOUTEN to CLKOUTEN, nPWRTE to PWRTE, nLPBOREN
+    to LPBOREN, nCP to CP and nCPD to CPD.
+
 2015-12-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c:
     bugfix: The 18f47k40 and 18lf47k40 have XINST config bit.

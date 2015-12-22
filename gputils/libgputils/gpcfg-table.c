@@ -1,5 +1,5 @@
 
-/* This file is generated automatically by the cfg-import.pl 2015-11-15 15:16:05 UTC. */
+/* This file is generated automatically by the cfg-import.pl 2015-12-22 08:02:03 UTC. */
 
 /*  Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
 
@@ -253,8 +253,7 @@ static const gp_cfg_option_t PIC18F47K40_FEXTOSC_EC_100k_8M_06         = { "EC_1
 static const gp_cfg_option_t PIC18F47K40_FEXTOSC_EC_above_8M_07        = { "EC_above_8M"   , 0x07 };
 static const gp_cfg_option_t PIC18F47K40_FEXTOSC_EC_below_100k_05      = { "EC_below_100k" , 0x05 };
 static const gp_cfg_option_t PIC16F18313_FEXTOSC_OFF_0004              = { "OFF"           , 0x0004 };
-static const gp_cfg_option_t PIC18F24K40_FEXTOSC_RESERVED_03           = { "RESERVED"      , 0x03 };
-static const gp_cfg_option_t PIC16F18854_FEXTOSC_Reserved_0003         = { "Reserved"      , 0x0003 };
+static const gp_cfg_option_t PIC16F18854_FEXTOSC_RESERVED_0003         = { "RESERVED"      , 0x0003 };
 static const gp_cfg_option_t PIC18F1230_FLTAMX_RA5_01                  = { "RA5"           , 0x01 };
 static const gp_cfg_option_t PIC18F1230_FLTAMX_RA7_00                  = { "RA7"           , 0x00 };
 static const gp_cfg_option_t PIC18F4331_FLTAMX_RD4_00                  = { "RD4"           , 0x00 };
@@ -521,9 +520,8 @@ static const gp_cfg_option_t PIC16F18854_RSTOSC_HFINTPLL_0010          = { "HFIN
 static const gp_cfg_option_t PIC16F18313_RSTOSC_LFINT_0040             = { "LFINT"         , 0x0040 };
 static const gp_cfg_option_t PIC16F18854_RSTOSC_LFINT_0050             = { "LFINT"         , 0x0050 };
 static const gp_cfg_option_t PIC18F24K40_RSTOSC_LFINTOSC_50            = { "LFINTOSC"      , 0x50 };
-static const gp_cfg_option_t PIC18F24K40_RSTOSC_RESERVED_30            = { "RESERVED"      , 0x30 };
-static const gp_cfg_option_t PIC18F47K40_RSTOSC_Reserved_10            = { "Reserved"      , 0x10 };
-static const gp_cfg_option_t PIC16F18854_RSTOSC_Reserved_0030          = { "Reserved"      , 0x0030 };
+static const gp_cfg_option_t PIC18F47K40_RSTOSC_RESERVED_10            = { "RESERVED"      , 0x10 };
+static const gp_cfg_option_t PIC16F18854_RSTOSC_RESERVED_0030          = { "RESERVED"      , 0x0030 };
 static const gp_cfg_option_t PIC16F18313_RSTOSC_SOSC_0030              = { "SOSC"          , 0x0030 };
 static const gp_cfg_option_t PIC16F18854_RSTOSC_SOSC_0040              = { "SOSC"          , 0x0040 };
 static const gp_cfg_option_t PIC18F26K40_RSTOSC_UNIMPLEMENTED_10       = { "UNIMPLEMENTED" , 0x10 };
@@ -2340,7 +2338,7 @@ static const gp_cfg_option_t *PIC16F18854_FEXTOSC[] = {
   &MCP25020_OSC_LP_0000,
   &MCP25020_OSC_XT_0001,
   &MCV14A_FOSC_HS_002,
-  &PIC16F18854_FEXTOSC_Reserved_0003,
+  &PIC16F18854_FEXTOSC_RESERVED_0003,
   &PIC16F18313_FEXTOSC_OFF_0004,
   &PIC12F1822_FOSC_ECL_0005,
   &PIC12F1822_FOSC_ECM_0006,
@@ -2386,7 +2384,7 @@ static const gp_cfg_option_t *PIC16F18854_RSTOSC[] = {
   &PIC16F18313_RSTOSC_HFINT32_0000,
   &PIC16F18854_RSTOSC_HFINTPLL_0010,
   &PIC16F18854_RSTOSC_EXT4X_0020,
-  &PIC16F18854_RSTOSC_Reserved_0030,
+  &PIC16F18854_RSTOSC_RESERVED_0030,
   &PIC16F18854_RSTOSC_SOSC_0040,
   &PIC16F18854_RSTOSC_LFINT_0050,
   &PIC16F18313_RSTOSC_HFINT1_0060,
@@ -2843,17 +2841,6 @@ static const gp_cfg_option_t *PIC18F24K40_WRTD[] = {
   &PIC16F18313_FEXTOSC_OFF_0004
 };
 
-static const gp_cfg_option_t *PIC18F24K40_FEXTOSC[] = {
-  &MCP25020_OSC_LP_0000,
-  &MCP25020_OSC_XT_0001,
-  &MCV14A_FOSC_HS_002,
-  &PIC18F24K40_FEXTOSC_RESERVED_03,
-  &PIC16F18313_FEXTOSC_OFF_0004,
-  &PIC12F1822_FOSC_ECL_0005,
-  &PIC12F1822_FOSC_ECM_0006,
-  &PIC12F1822_FOSC_ECH_0007
-};
-
 static const gp_cfg_option_t *PIC18F24K40_WDTCWS[] = {
   &PIC16F18854_WDTCWS_WDTCWS_0_0000,
   &PIC18F24K40_WDTCWS_WDTCWS_1_01,
@@ -2910,7 +2897,7 @@ static const gp_cfg_option_t *PIC18F24K40_RSTOSC[] = {
   &PIC18F24K40_RSTOSC_HFINTOSC_64MHZ_00,
   &PIC18F24K40_RSTOSC_HFINTOSC_16MHZ_4PLL_10,
   &PIC18F24K40_RSTOSC_EXTOSC_4PLL_20,
-  &PIC18F24K40_RSTOSC_RESERVED_30,
+  &PIC16F18854_RSTOSC_RESERVED_0030,
   &PIC16F18854_RSTOSC_SOSC_0040,
   &PIC18F24K40_RSTOSC_LFINTOSC_50,
   &PIC18F24K40_RSTOSC_HFINTOSC_1MHZ_60,
@@ -2932,11 +2919,6 @@ static const gp_cfg_option_t *PIC18F24K40_BOREN[] = {
 static const gp_cfg_option_t *PIC18F24K50_PLLSEL[] = {
   &PIC18F24K50_PLLSEL_PLL4X_00,
   &PIC18F24K50_PLLSEL_PLL3X_01
-};
-
-static const gp_cfg_option_t *PIC18F24K50_nPWRTEN[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_PWRTEN_OFF_01
 };
 
 static const gp_cfg_option_t *PIC18F24K50_CFGPLLEN[] = {
@@ -2982,7 +2964,7 @@ static const gp_cfg_option_t *PIC18F24K50_ICPRT[] = {
   &MCP19110_WDTE_OFF_0000
 };
 
-static const gp_cfg_option_t *PIC18F24K50_nLPBOR[] = {
+static const gp_cfg_option_t *PIC18F24K50_LPBOR[] = {
   &MCP19110_PWRTE_ON_0000,
   &MCP19110_CP_OFF_0040
 };
@@ -3221,7 +3203,7 @@ static const gp_cfg_option_t *PIC18F26K40_RSTOSC[] = {
   &PIC18F24K40_RSTOSC_HFINTOSC_64MHZ_00,
   &PIC18F26K40_RSTOSC_UNIMPLEMENTED_10,
   &PIC18F24K40_RSTOSC_EXTOSC_4PLL_20,
-  &PIC18F24K40_RSTOSC_RESERVED_30,
+  &PIC16F18854_RSTOSC_RESERVED_0030,
   &PIC16F18854_RSTOSC_SOSC_0040,
   &PIC18F24K40_RSTOSC_LFINTOSC_50,
   &PIC18F24K40_RSTOSC_HFINTOSC_1MHZ_60,
@@ -3369,26 +3351,6 @@ static const gp_cfg_option_t *PIC18F43K22_P2BMX[] = {
   &PIC18F43K22_P2BMX_PORTD2_20
 };
 
-static const gp_cfg_option_t *PIC18F47K40_nCLKOUTEN[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_PWRTEN_OFF_01
-};
-
-static const gp_cfg_option_t *PIC18F47K40_nCP[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_PWRTEN_OFF_01
-};
-
-static const gp_cfg_option_t *PIC18F47K40_nPWRTE[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_CP1_OFF_02
-};
-
-static const gp_cfg_option_t *PIC18F47K40_nCPD[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_CP1_OFF_02
-};
-
 static const gp_cfg_option_t *PIC18F47K40_BORV[] = {
   &PIC18F24K40_BORV_VBOR_285_00,
   &PIC18F24K40_BORV_VBOR_270_01,
@@ -3405,21 +3367,11 @@ static const gp_cfg_option_t *PIC18F47K40_FEXTOSC[] = {
   &MCP25020_OSC_LP_0000,
   &MCP25020_OSC_XT_0001,
   &MCV14A_FOSC_HS_002,
-  &PIC16F18854_FEXTOSC_Reserved_0003,
+  &PIC16F18854_FEXTOSC_RESERVED_0003,
   &PIC16F18313_FEXTOSC_OFF_0004,
   &PIC18F47K40_FEXTOSC_EC_below_100k_05,
   &PIC18F47K40_FEXTOSC_EC_100k_8M_06,
   &PIC18F47K40_FEXTOSC_EC_above_8M_07
-};
-
-static const gp_cfg_option_t *PIC18F47K40_nLPBOREN[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_WRTC_OFF_20
-};
-
-static const gp_cfg_option_t *PIC18F47K40_nDEBUG[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_WRTC_OFF_20
 };
 
 static const gp_cfg_option_t *PIC18F47K40_WDTCCS[] = {
@@ -3440,18 +3392,13 @@ static const gp_cfg_option_t *PIC18F47K40_EBTR6[] = {
 
 static const gp_cfg_option_t *PIC18F47K40_RSTOSC[] = {
   &PIC18F47K40_RSTOSC_HFINTOSC_64MHz_00,
-  &PIC18F47K40_RSTOSC_Reserved_10,
+  &PIC18F47K40_RSTOSC_RESERVED_10,
   &PIC18F24K40_RSTOSC_EXTOSC_4PLL_20,
-  &PIC16F18854_RSTOSC_Reserved_0030,
+  &PIC16F18854_RSTOSC_RESERVED_0030,
   &PIC16F18854_RSTOSC_SOSC_0040,
   &PIC18F24K40_RSTOSC_LFINTOSC_50,
   &PIC18F47K40_RSTOSC_HFINTOSC_1MHz_60,
   &PIC18F24K40_RSTOSC_EXTOSC_70
-};
-
-static const gp_cfg_option_t *PIC18F47K40_nXINST[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV14A_CPDF_OFF_080
 };
 
 static const gp_cfg_option_t *PIC18F47K40_WRT7[] = {
@@ -5805,7 +5752,7 @@ static const gp_cfg_directive_t PIC18F24J50_3FF9[] = {
 };
 
 static const gp_cfg_directive_t PIC18F24K40_300000[] = {
-  { "FEXTOSC", 0x0007,  8, PIC18F24K40_FEXTOSC },
+  { "FEXTOSC", 0x0007,  8, PIC16F18854_FEXTOSC },
   { "RSTOSC" , 0x0070,  8, PIC18F24K40_RSTOSC  }
 };
 
@@ -5883,10 +5830,10 @@ static const gp_cfg_directive_t PIC18F24K50_300001[] = {
 };
 
 static const gp_cfg_directive_t PIC18F24K50_300002[] = {
-  { "nPWRTEN", 0x0001,  2, PIC18F24K50_nPWRTEN },
-  { "BOREN"  , 0x0006,  4, MCV20USB_BOREN      },
-  { "BORV"   , 0x0018,  4, PIC18F23K22_BORV    },
-  { "nLPBOR" , 0x0040,  2, PIC18F24K50_nLPBOR  }
+  { "PWRTEN", 0x0001,  2, MCV20USB_PWRTEN   },
+  { "BOREN" , 0x0006,  4, MCV20USB_BOREN    },
+  { "BORV"  , 0x0018,  4, PIC18F23K22_BORV  },
+  { "LPBOR" , 0x0040,  2, PIC18F24K50_LPBOR }
 };
 
 static const gp_cfg_directive_t PIC18F24K50_300005[] = {
@@ -6131,7 +6078,7 @@ static const gp_cfg_directive_t PIC18F26J53_FFFF[] = {
 };
 
 static const gp_cfg_directive_t PIC18F26K40_300000[] = {
-  { "FEXTOSC", 0x0007,  8, PIC18F24K40_FEXTOSC },
+  { "FEXTOSC", 0x0007,  8, PIC16F18854_FEXTOSC },
   { "RSTOSC" , 0x0070,  8, PIC18F26K40_RSTOSC  }
 };
 
@@ -6216,26 +6163,13 @@ static const gp_cfg_directive_t PIC18F47K40_300000[] = {
   { "RSTOSC" , 0x0070,  8, PIC18F47K40_RSTOSC  }
 };
 
-static const gp_cfg_directive_t PIC18F47K40_300001[] = {
-  { "nCLKOUTEN", 0x0001,  2, PIC18F47K40_nCLKOUTEN },
-  { "CSWEN"    , 0x0008,  2, PIC18F24K40_CSWEN     },
-  { "FCMEN"    , 0x0020,  2, PIC18F24K40_FCMEN     }
-};
-
-static const gp_cfg_directive_t PIC18F47K40_300002[] = {
-  { "MCLRE"   , 0x0001,  2, PIC18F24K40_MCLRE    },
-  { "nPWRTE"  , 0x0002,  2, PIC18F47K40_nPWRTE   },
-  { "nLPBOREN", 0x0020,  2, PIC18F47K40_nLPBOREN },
-  { "BOREN"   , 0x00C0,  4, PIC18F24K40_BOREN    }
-};
-
 static const gp_cfg_directive_t PIC18F47K40_300003[] = {
   { "BORV"   , 0x0003,  4, PIC18F47K40_BORV    },
   { "ZCDDIS" , 0x0004,  2, PIC18F47K40_ZCDDIS  },
   { "PPS1WAY", 0x0008,  2, PIC18F24K40_PPS1WAY },
   { "STVREN" , 0x0010,  2, PIC18F24K40_STVREN  },
-  { "nDEBUG" , 0x0020,  2, PIC18F47K40_nDEBUG  },
-  { "nXINST" , 0x0080,  2, PIC18F47K40_nXINST  }
+  { "DEBUG"  , 0x0020,  2, PIC18F24K40_DEBUG   },
+  { "XINST"  , 0x0080,  2, PIC18F24K40_XINST   }
 };
 
 static const gp_cfg_directive_t PIC18F47K40_300005[] = {
@@ -6252,11 +6186,6 @@ static const gp_cfg_directive_t PIC18F47K40_300006[] = {
   { "WRT5", 0x0020,  2, PIC18F2685_WRT5  },
   { "WRT6", 0x0040,  2, PIC18F47K40_WRT6 },
   { "WRT7", 0x0080,  2, PIC18F47K40_WRT7 }
-};
-
-static const gp_cfg_directive_t PIC18F47K40_300008[] = {
-  { "nCP" , 0x0001,  2, PIC18F47K40_nCP  },
-  { "nCPD", 0x0002,  2, PIC18F47K40_nCPD }
 };
 
 static const gp_cfg_directive_t PIC18F47K40_30000A[] = {
@@ -7748,8 +7677,8 @@ static const gp_cfg_directive_t PIC18LF47K40_300003[] = {
   { "ZCDDIS" , 0x0004,  2, PIC18F47K40_ZCDDIS  },
   { "PPS1WAY", 0x0008,  2, PIC18F24K40_PPS1WAY },
   { "STVREN" , 0x0010,  2, PIC18F24K40_STVREN  },
-  { "nDEBUG" , 0x0020,  2, PIC18F47K40_nDEBUG  },
-  { "nXINST" , 0x0080,  2, PIC18F47K40_nXINST  }
+  { "DEBUG"  , 0x0020,  2, PIC18F24K40_DEBUG   },
+  { "XINST"  , 0x0080,  2, PIC18F24K40_XINST   }
 };
 
 static const gp_cfg_directive_t PS500_300003[] = {
@@ -9129,14 +9058,14 @@ static const gp_cfg_addr_t PIC18F45K50_addrs[] = {
 
 static const gp_cfg_addr_t PIC18F47K40_addrs[] = {
   { 0x300000, 0xFF,  2, PIC18F47K40_300000  },
-  { 0x300001, 0xFF,  3, PIC18F47K40_300001  },
-  { 0x300002, 0xFF,  4, PIC18F47K40_300002  },
+  { 0x300001, 0xFF,  3, PIC18F24K40_300001  },
+  { 0x300002, 0xFF,  4, PIC18F24K40_300002  },
   { 0x300003, 0xFF,  6, PIC18F47K40_300003  },
   { 0x300004, 0xFF,  2, PIC18F24K40_300004  },
   { 0x300005, 0xFF,  2, PIC18F47K40_300005  },
   { 0x300006, 0xFF,  8, PIC18F47K40_300006  },
   { 0x300007, 0xFF,  5, PIC18F24K40_300007  },
-  { 0x300008, 0xFF,  2, PIC18F47K40_300008  },
+  { 0x300008, 0xFF,  2, PIC18F24K40_300008  },
   { 0x30000A, 0xFF,  8, PIC18F47K40_30000A  },
   { 0x30000B, 0xFF,  1, PIC18F24K40_30000B  }
 };
@@ -10194,14 +10123,14 @@ static const gp_cfg_addr_t PIC18LF26K40_addrs[] = {
 
 static const gp_cfg_addr_t PIC18LF47K40_addrs[] = {
   { 0x300000, 0xFF,  2, PIC18F47K40_300000  },
-  { 0x300001, 0xFF,  3, PIC18F47K40_300001  },
-  { 0x300002, 0xFF,  4, PIC18F47K40_300002  },
+  { 0x300001, 0xFF,  3, PIC18F24K40_300001  },
+  { 0x300002, 0xFF,  4, PIC18F24K40_300002  },
   { 0x300003, 0xFF,  6, PIC18LF47K40_300003 },
   { 0x300004, 0xFF,  2, PIC18F24K40_300004  },
   { 0x300005, 0xFF,  2, PIC18F47K40_300005  },
   { 0x300006, 0xFF,  8, PIC18F47K40_300006  },
   { 0x300007, 0xFF,  5, PIC18F24K40_300007  },
-  { 0x300008, 0xFF,  2, PIC18F47K40_300008  },
+  { 0x300008, 0xFF,  2, PIC18F24K40_300008  },
   { 0x30000A, 0xFF,  8, PIC18F47K40_30000A  },
   { 0x30000B, 0xFF,  1, PIC18F24K40_30000B  }
 };

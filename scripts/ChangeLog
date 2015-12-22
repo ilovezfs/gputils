@@ -1,3 +1,8 @@
+2015-12-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/build-register-db.pl, tools/cfg-import.pl:
+	  Fix the Microchip bug of the 18f47k40 and 18lf47k40 devices:
+	  nDEBUG, nXINST
+
 2015-12-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-help.pl, tools/device-manager.pl:
 	  Fix the Microchip bug of the 18f47k40 and 18lf47k40 devices:
