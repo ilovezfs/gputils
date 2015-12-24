@@ -1,4 +1,8 @@
 2015-12-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Added the __IDLOCS_START and the __IDLOCS_END constants.
+
+2015-12-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gphash.c:
     Removed an unnecessary pointer check.
 
