@@ -41,8 +41,7 @@ enum {
   CSYM_END   = (1 << 1),                /* The symbol an area. */
   CSYM_DATA  = (1 << 2),                /* The symbol a data in the code area. */
 
-  CSYM_ORG   = (1 << 3),                /* Internal use only unto the ORG directive. (Does not belong to the input parser.) */
-
+  CSYM_ORG   = (1 << 15),               /* Internal use only unto the ORG directive. (Does not belong to the input parser.) */
   CSYM_USED  = (1 << 16)                /* The symbol used in the disassembled source. */
 };
 

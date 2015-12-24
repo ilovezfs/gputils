@@ -128,7 +128,7 @@ lset_symbol_find_addr(const lset_section_t *Section, long Start_addr, long End_a
   long sym_end, tmp;
   lset_symbol_t *sym;
 
-  if (Section == NULL || Section->symbol_number == 0) {
+  if ((Section == NULL) || (Section->symbol_number == 0)) {
     return NULL;
   }
 
@@ -174,10 +174,10 @@ lset_symbol_find_addr(const lset_section_t *Section, long Start_addr, long End_a
     do {
       sym_end = (sym->attr & CSYM_END) ? sym->end : sym->start;
 
-      if ((sym->start <= Start_addr && Start_addr <= sym->end) ||
-          (sym->start <= End_addr   && End_addr   <= sym->end) ||
-          (Start_addr <= sym->start && sym->start <= End_addr) ||
-          (Start_addr <= sym->end   && sym->end   <= End_addr)) {
+      if (((sym->start <= Start_addr) && (Start_addr <= sym->end)) ||
+          ((sym->start <= End_addr)   && (End_addr   <= sym->end)) ||
+          ((Start_addr <= sym->start) && (sym->start <= End_addr)) ||
+          ((Start_addr <= sym->end)   && (sym->end   <= End_addr))) {
         /* Partial or complete overlap. */
         return sym;
       }
@@ -331,7 +331,7 @@ check_bounds(const lset_section_t *Section, const lset_symbol_t *Symbol) {
 
         case 1: {
           /* The Symbol is a range. */
-          if (Symbol->start <= sym->start && sym->start <= Symbol->end) {
+          if ((Symbol->start <= sym->start) && (sym->start <= Symbol->end)) {
             yyerror("There is a symbol the area of an other symbol: ([line %i]: \"%s\"{%li:%li}) == ([line %i]: \"%s\"{%li})",
                     Symbol->line_number, Symbol->name, Symbol->start, Symbol->end,
                     sym->line_number, sym->name, sym->start);
@@ -342,7 +342,7 @@ check_bounds(const lset_section_t *Section, const lset_symbol_t *Symbol) {
 
         case 2: {
           /* The sym is a range. */
-          if (sym->start <= Symbol->start && Symbol->start <= sym->end) {
+          if ((sym->start <= Symbol->start) && (Symbol->start <= sym->end)) {
             yyerror("There is a symbol the area of an other symbol: ([line %i]: \"%s\"{%li:%li}) == ([line %i]: \"%s\"{%li})",
                     sym->line_number, sym->name, sym->start, sym->end,
                     Symbol->line_number, Symbol->name, Symbol->start);
@@ -353,10 +353,10 @@ check_bounds(const lset_section_t *Section, const lset_symbol_t *Symbol) {
 
         case 3: {
           /* The sym and the Symbol is a range. */
-          if ((sym->start <= Symbol->start && Symbol->start <= sym->end) ||
-              (sym->start <= Symbol->end   && Symbol->end   <= sym->end) ||
-              (Symbol->start <= sym->start && sym->start <= Symbol->end) ||
-              (Symbol->start <= sym->end   && sym->end   <= Symbol->end)) {
+          if (((sym->start <= Symbol->start) && (Symbol->start <= sym->end)) ||
+              ((sym->start <= Symbol->end)   && (Symbol->end   <= sym->end)) ||
+              ((Symbol->start <= sym->start) && (sym->start <= Symbol->end)) ||
+              ((Symbol->start <= sym->end)   && (sym->end   <= Symbol->end))) {
             yyerror("Overlap there is areas of this symbols: ([line %i]: \"%s\"{%li:%li}) -- ([line %i]: \"%s\"{%li:%li})",
                     sym->line_number, sym->name, sym->start, sym->end,
                     Symbol->line_number, Symbol->name, Symbol->start, Symbol->end);

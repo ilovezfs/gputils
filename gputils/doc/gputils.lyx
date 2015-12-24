@@ -4672,6 +4672,27 @@ __IDLOCS_END       -- End address of the IDLOCS area.
 \end_layout
 
 \begin_layout Standard
+The bounds of the CONFIG area (These constants generally are not necessary,
+ nevertheless exists if should be somebody.):
+\end_layout
+
+\begin_layout LyX-Code
+__CONFIG_START     -- Start address of the CONFIG area.
+ (e.g.
+ 0x0FFF, 0x2007, 0x8007, 0x300000)
+\end_layout
+
+\begin_layout LyX-Code
+__CONFIG_END       -- End address of the CONFIG area.
+   (e.g.
+ 0x0FFF, 0x2007, 0x800A, 0x30000D)
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
 The bounds of the EEPROM area, 
 \emph on
 if
