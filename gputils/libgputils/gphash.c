@@ -153,10 +153,6 @@ gp_make_hash_table(gp_object_type *Object) {
 
   table = (gp_hash_type *)GP_Calloc(num_symbols, sizeof(gp_hash_type));
 
-  if (table == NULL) {
-    return NULL;
-  }
-
   Object->symbol_hashtable      = table;
   Object->symbol_hashtable_size = num_symbols;
 
