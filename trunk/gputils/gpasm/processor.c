@@ -125,6 +125,11 @@ void select_processor(const char *name)
             set_global("__CODE_END",   addr - 1, PERMANENT, GVT_CONSTANT);
           }
 
+          if ((pair = gp_processor_idlocs_exist(found)) != NULL) {
+            set_global("__IDLOCS_START", pair[0], PERMANENT, GVT_CONSTANT);
+            set_global("__IDLOCS_END",   pair[1], PERMANENT, GVT_CONSTANT);
+          }
+
           if ((pair = gp_processor_eeprom_exist(found)) != NULL) {
             set_global("__EEPROM_START", pair[0], PERMANENT, GVT_CONSTANT);
             set_global("__EEPROM_END",   pair[1], PERMANENT, GVT_CONSTANT);

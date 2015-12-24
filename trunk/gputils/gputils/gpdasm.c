@@ -476,6 +476,15 @@ recognize_labels_and_spec_words(MemBlock *memory)
         }
         else {
           if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
+            sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_CODE], org, -1, true);
+
+            if ((sym != NULL) && !(sym->attr & CSYM_ORG)) {
+              if (sym->start == (long)org) {
+                b_memory_set_addr_name(m, i, sym->name);
+                sym->attr |= CSYM_USED;
+              }
+            }
+
             idlocs_pack.words[index] = data;
             ++idlocs_pack.number;
           }
@@ -940,7 +949,6 @@ add_constant(lset_section_t *Section, const char *Name, long Start, unsigned int
   lset_symbol_new(Section, Name, Start, -1, CSYM_START | Attr, 1);
 }
 
-
 /*------------------------------------------------------------------------------------------------*/
 
 static void
@@ -966,8 +974,13 @@ load_processor_constants(void)
     addr = processor->prog_mem_size;
 
     if (addr > 0) {
-      add_constant(sect, "__CODE_START", 0, CSYM_ORG);
+      add_constant(sect, "__CODE_START",        0, CSYM_ORG);
       add_constant(sect, "__CODE_END",   addr - 1, CSYM_ORG);
+    }
+
+    if ((pair = gp_processor_idlocs_exist(processor)) != NULL) {
+      lset_symbol_new(sect, "__IDLOCS_START", pair[0], -1, CSYM_ORG, 1);
+      lset_symbol_new(sect, "__IDLOCS_END",   pair[1], -1, CSYM_ORG, 1);
     }
 
     if ((processor->class->vector_table != NULL) || (processor->class->vector_number > 0)) {
@@ -1156,7 +1169,13 @@ dasm(MemBlock *memory)
           if (!state.show_config) {
             if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
-                write_org(org, addr_digits, "idlocs", NULL, 0);
+                sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_CODE], org, -1, true);
+
+                if ((sym != NULL) && (sym->attr & CSYM_ORG)) {
+                  write_org(org, addr_digits, "idlocs", sym->name, 0);
+                } else {
+                  write_org(org, addr_digits, "idlocs", NULL, 0);
+                }
               }
 
               last_loc = i;
