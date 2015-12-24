@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Dec 12, 2015
+Dec 24, 2015
 \end_layout
 
 \begin_layout Standard
@@ -4636,6 +4636,35 @@ __LINEAR_RAM_START -- Start address of the Linear RAM area.
 __LINEAR_RAM_END   -- End address of the Linear RAM area.
    (e.g.
  0x202F, 0x23EF)
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
+The bounds of the IDLOCS area, 
+\emph on
+if
+\emph default
+ this memory
+\emph on
+ exists
+\emph default
+ (These constants generally are not necessary, nevertheless exists if should
+ be somebody.):
+\end_layout
+
+\begin_layout LyX-Code
+__IDLOCS_START     -- Start address of the IDLOCS area.
+ (e.g.
+ 0x0440, 0x2000, 0x8000, 0x200000)
+\end_layout
+
+\begin_layout LyX-Code
+__IDLOCS_END       -- End address of the IDLOCS area.
+   (e.g.
+ 0x0443, 0x2003, 0x8003, 0x200007)
 \end_layout
 
 \begin_layout LyX-Code
