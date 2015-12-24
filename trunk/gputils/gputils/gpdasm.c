@@ -946,7 +946,7 @@ add_constant(lset_section_t *Section, const char *Name, long Start, unsigned int
     return;
   }
 
-  lset_symbol_new(Section, Name, Start, -1, CSYM_START | Attr, 1);
+  lset_symbol_new(Section, Name, Start, -1, CSYM_START | Attr, 0);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -967,7 +967,7 @@ load_processor_constants(void)
   /* The code section. */
 
   if ((sect = state.lset_root.sections[SECT_SPEC_CODE]) == NULL) {
-    sect = lset_section_new(&state.lset_root, "CODE", 1);
+    sect = lset_section_new(&state.lset_root, "CODE", 0);
   }
 
   if (sect != NULL) {
@@ -979,8 +979,13 @@ load_processor_constants(void)
     }
 
     if ((pair = gp_processor_idlocs_exist(processor)) != NULL) {
-      lset_symbol_new(sect, "__IDLOCS_START", pair[0], -1, CSYM_ORG, 1);
-      lset_symbol_new(sect, "__IDLOCS_END",   pair[1], -1, CSYM_ORG, 1);
+      lset_symbol_new(sect, "__IDLOCS_START", pair[0], -1, CSYM_START, 0);
+      lset_symbol_new(sect, "__IDLOCS_END",   pair[1], -1, CSYM_END,   0);
+    }
+
+    if ((pair = gp_processor_config_exist(processor)) != NULL) {
+      lset_symbol_new(sect, "__CONFIG_START", pair[0], -1, CSYM_START, 0);
+      lset_symbol_new(sect, "__CONFIG_END",   pair[1], -1, CSYM_END,   0);
     }
 
     if ((processor->class->vector_table != NULL) || (processor->class->vector_number > 0)) {
@@ -1012,19 +1017,19 @@ load_processor_constants(void)
   /* The data section. */
 
   if ((sect = state.lset_root.sections[SECT_SPEC_DATA]) == NULL) {
-    sect = lset_section_new(&state.lset_root, "DATA", 1);
+    sect = lset_section_new(&state.lset_root, "DATA", 0);
   }
 
   if (sect != NULL) {
     if ((pair = gp_processor_common_ram_exist(processor)) != NULL) {
       if (lset_symbol_find_addr(sect, pair[0], pair[1], false) == NULL) {
-        lset_symbol_new(sect, "Common_RAM", pair[0], pair[1], CSYM_START | CSYM_END, 1);
+        lset_symbol_new(sect, "Common_RAM", pair[0], pair[1], CSYM_START | CSYM_END, 0);
       }
     }
 
     if ((pair = gp_processor_linear_ram_exist(processor)) != NULL) {
       if (lset_symbol_find_addr(sect, pair[0], pair[1], false) == NULL) {
-        lset_symbol_new(sect, "Linear_RAM", pair[0], pair[1], CSYM_START | CSYM_END, 1);
+        lset_symbol_new(sect, "Linear_RAM", pair[0], pair[1], CSYM_START | CSYM_END, 0);
       }
     }
   }
@@ -1032,7 +1037,7 @@ load_processor_constants(void)
   /* The eedata section. */
 
   if ((sect = state.lset_root.sections[SECT_SPEC_EEDATA]) == NULL) {
-    sect = lset_section_new(&state.lset_root, "EEDATA", 1);
+    sect = lset_section_new(&state.lset_root, "EEDATA", 0);
   }
 
   if (sect != NULL) {

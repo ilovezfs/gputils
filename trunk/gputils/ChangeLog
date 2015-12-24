@@ -1,4 +1,11 @@
 2015-12-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/processor.c, gputils/gpdasm.c:
+    Added the __CONFIG_START and the __CONFIG_END constants.
+
+  * gputils/labelset.c, gputils/labelset.h:
+    Code cosmetic.
+
+2015-12-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Added the __IDLOCS_START and the __IDLOCS_END constants.
 
