@@ -430,6 +430,8 @@ static gpasmVal
 do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
+  int maxram;
+  int start, end;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -437,12 +439,15 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
     gpverror(GPE_MISSING_ARGU, NULL);
   }
   else {
+    maxram = state.maxram;
+    if (maxram >= MAX_RAM) {
+      maxram = MAX_RAM - 1;
+    }
+
     for (; parms != NULL; parms = TAIL(parms)) {
       p = HEAD(parms);
 
       if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '-')) {
-        int start, end;
-
         if (can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1)) {
           start = evaluate(p->value.binop.p0);
           end = evaluate(p->value.binop.p1);
@@ -453,8 +458,8 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
           else if (start < 0) {
             gpvwarning(GPW_INVALID_RAM, "Start{%i} < 0", start);
           }
-          else if (MAX_RAM <= end) {
-            gpvwarning(GPW_INVALID_RAM, "End{%#x} >= MAXRAM{%#x}", end, MAX_RAM);
+          else if (end > maxram) {
+            gpvwarning(GPW_INVALID_RAM, "End{%#x} > MAXRAM{%#x}", end, maxram);
           }
           else {
             for (; start <= end; start++) {
@@ -469,8 +474,8 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
           loc = evaluate(p);
 
-          if ((loc < 0) || (MAX_RAM <= loc)) {
-            gpvwarning(GPW_INVALID_RAM, "Address{%#x} >= MAXRAM{%#x}", loc, MAX_RAM);
+          if ((loc < 0) || (loc > maxram)) {
+            gpvwarning(GPW_INVALID_RAM, "Address{%#x} > MAXRAM{%#x}", loc, maxram);
           }
           else {
             state.badram[loc] = 1;

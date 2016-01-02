@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# test_all_processors -- basic test of gpasm
+#
+# Copyright (C) 2016 Molnar Karoly
+#
+# This file is part of gputils.
+#
+# gputils is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# gputils is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gputils; see the file COPYING.  If not, write to
+# the Free Software Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+
+HERE=$(pwd)
+GPPATH="${HERE}/../.."
+HEADER="${GPPATH}/header"
+GPASMBIN="${GPPATH}/gpasm/gpasm"
+
+TEST_SRC="test.asm"
+TEST_OBJ="test.o"
+TEST_LST="test.lst"
+TEST_LOG="`basename $0`.log"
+
+function make_asm()
+{
+  echo -e "\tinclude \"$1\"" > "$TEST_SRC"
+  echo -e "\tcode" >> "$TEST_SRC"
+  echo -e "\tnop" >> "$TEST_SRC"
+  echo -e "\tend" >> "$TEST_SRC"
+}
+
+function compile()
+{
+  local inc="${1}.inc"
+  local retval
+
+  make_asm "$inc"
+  $GPASMBIN -p "$1" -I"$HEADER" -c "$TEST_SRC" -o "$TEST_OBJ" >> "$TEST_LOG" 2>&1
+  retval=$?
+  if (($retval != 0)); then
+    echo "Compile failure with MCU: $1"
+    exit 1
+  fi
+}
+
+rm -rf "$TEST_LOG"
+
+for mcu in $("$GPASMBIN" -l); do
+  case "$mcu" in
+    p16c5x|p16c52|p16c54b|p16cr54b|p16cxx|p17*|p18cxx|p18f64j15|p18f84j15|p18f2681|p18f4681)
+	# These not valid processors.
+	;;
+
+    p10f*|p10lf*)
+	compile "$mcu"
+	;;
+
+    p12c*|p12f*|p12hv*|p12lf*)
+	compile "$mcu"
+	;;
+
+    p16c*|p16f*|p16hv*|p16lf*)
+	compile "$mcu"
+	;;
+
+    p18c*|p18f*|p18lf*)
+	compile "$mcu"
+	;;
+
+    rf5*|rf6*)
+	compile "$mcu"
+	;;
+  esac
+done
+
+rm -rf "$TEST_SRC" "$TEST_OBJ" "$TEST_LST"
+echo "Test successful." >&2
+exit 0
