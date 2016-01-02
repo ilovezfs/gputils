@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPMEMORY_H__
 #define __GPMEMORY_H__
 
-#define MAX_RAM                 0x1000              /* Maximum RAM. */
+#define MAX_RAM                 0x2000              /* Maximum RAM. */
 /* Choose bases such that each base has different hex 04 record. */
 #define I_MEM_BITS              16                  /* MemBlock base bit alignment. */
 #define MAX_I_MEM               (1 << I_MEM_BITS)   /* MemBlock base alignment. */
