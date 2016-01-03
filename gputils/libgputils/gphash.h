@@ -1,5 +1,5 @@
 
-/* Fowler–Noll–Vo hash making header file.
+/* Fowler-Noll-Vo hash making header file.
 
    Copyright (C) 2014 Molnar Karoly
 

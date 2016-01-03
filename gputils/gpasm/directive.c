@@ -575,6 +575,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
     state.lst.line.linetype = LTY_NONE;
     gpvmessage(GPM_EXTPAGE, NULL);
     /* do nothing */
+    state.last_bank = 0;
     return r;
   }
 
@@ -593,12 +594,14 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
                                                bank,
                                                state.i_memory,
                                                state.byte_addr);
+      state.last_bank = bank;
     }
     else {
+      /* state.mode == MODE_RELOCATABLE */
       num_reloc = count_reloc(p);
 
       if (num_reloc == 0) {
-        /* it is an absolute address, generate the banksel but no relocation */
+        /* It is an absolute address, generate the banksel but no relocation. */
         address = maybe_evaluate(p);
         bank = gp_processor_check_bank(state.device.class, address);
         state.byte_addr += gp_processor_set_bank(state.device.class,
@@ -3830,9 +3833,11 @@ asm_enabled(void)
 void
 file_ok(unsigned int file)
 {
-  unsigned int bank_bits;
+  const int *pair;
+  int bank;
+  int reg;
 
-  /* don't check address, the linker takes care of it */
+  /* Don't check address, the linker takes care of it. */
   if (state.mode == MODE_RELOCATABLE) {
     return;
   }
@@ -3844,12 +3849,25 @@ file_ok(unsigned int file)
     gpvwarning(GPW_INVALID_RAM, "Address{%#x} in BADRAM.", file);
   }
 
-  bank_bits = file & state.processor->bank_bits;
+  reg = gp_processor_reg_addr(state.processor, file);
 
-  /* Issue bank message if necessary. */
-  if (bank_bits != 0) {
-    gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank_bits,
-               file & (~state.device.class->bank_mask));
+  if (gp_processor_find_sfr(state.device.class, reg) != NULL) {
+    /* This is a core SFR. */
+    return;
+  }
+
+  if (((pair = gp_processor_common_ram_exist(state.processor)) != NULL) &&
+      (reg >= pair[0]) && (reg <= pair[1])) {
+    /* This is a common GPR. */
+    return;
+  }
+
+  bank = gp_processor_bank_num(state.processor, file);
+
+  if ((state.last_bank < 0) || (state.last_bank != bank)) {
+    /* Previous bank not equal the current bank. */
+    gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank,
+               gp_processor_bank_addr(state.processor, file), reg);
   }
 }
 
@@ -4934,7 +4952,7 @@ do_insn(const char *name, struct pnode *parms)
                 }
               }
               else {
-                gpvmessage(GPM_BANK, NULL);
+                gpvmessage(GPM_BANK, NULL, 0);
               }
             }
             break;
@@ -5024,7 +5042,7 @@ do_insn(const char *name, struct pnode *parms)
                 }
               }
               else {
-                gpvmessage(GPM_BANK, NULL);
+                gpvmessage(GPM_BANK, NULL, 0);
               }
             }
           }
@@ -5178,7 +5196,7 @@ do_insn(const char *name, struct pnode *parms)
                 }
               }
               else {
-                gpvmessage(GPM_BANK, NULL);
+                gpvmessage(GPM_BANK, NULL, 0);
               }
             }
           }

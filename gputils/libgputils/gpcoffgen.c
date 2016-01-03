@@ -99,7 +99,7 @@ gp_coffgen_addsection(gp_object_type *object, const char *name, MemBlock *data)
   }
 
   object->sections_tail = new;
-  object->num_sections++;
+  (object->num_sections)++;
 
   return new;
 }
@@ -166,7 +166,7 @@ gp_coffgen_delsection(gp_object_type *object, gp_section_type *section)
     list = list->next;
   }
 
-  object->num_sections--;
+  (object->num_sections)--;
 
   /* FIXME: gp_coffgen_free_section(second); */
 
@@ -190,7 +190,7 @@ gp_coffgen_addreloc(gp_section_type *section)
   }
 
   section->relocations_tail = new;
-  section->num_reloc++;
+  (section->num_reloc)++;
 
   return new;
 }
@@ -212,7 +212,7 @@ gp_coffgen_addlinenum(gp_section_type *section)
   }
 
   section->line_numbers_tail = new;
-  section->num_lineno++;
+  (section->num_lineno)++;
 
   return new;
 }
@@ -317,8 +317,8 @@ gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol)
     list->next = new;
   }
 
-  symbol->num_auxsym++;
-  object->num_symbols++;
+  (symbol->num_auxsym)++;
+  (object->num_symbols)++;
 
   return new;
 }
@@ -341,7 +341,7 @@ gp_coffgen_addsymbol(gp_object_type *object)
   }
 
   object->symbols_tail = new;
-  object->num_symbols += 1;
+  (object->num_symbols)++;
 
   return new;
 }
@@ -378,8 +378,7 @@ gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol)
         previous->next = list->next;
 
         if (list->next == NULL) {
-          /* The last symbol in the list is being removed, so update
-             the tail. */
+          /* The last symbol in the list is being removed, so update the tail. */
           object->symbols_tail = previous;
         }
       }
@@ -389,7 +388,7 @@ gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol)
     list = list->next;
   }
 
-  object->num_symbols -= (symbol->num_auxsym + 1);
+  object->num_symbols -= symbol->num_auxsym + 1;
 
   /* FIXME: gp_coffgen_free_symbol(symbol); */
 

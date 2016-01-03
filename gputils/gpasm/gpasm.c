@@ -128,6 +128,7 @@ init(void)
   state.cmd_line.lst_force      = false;
 
   state.pass                    = 0;
+  state.last_bank               = -1;
   state.byte_addr               = 0;
   state.device.id_location      = 0;
   state.dos_newlines            = false;
@@ -971,15 +972,16 @@ assemble(void)
   yylex_destroy();
 
   state.pass++;
-  state.byte_addr = 0;
+  state.byte_addr          = 0;
+  state.last_bank          = -1;
   state.device.id_location = 0;
-  state.cblock = 0;
-  state.cblock_defined  = false;
-  state.preproc.do_emit = true;
+  state.cblock             = 0;
+  state.cblock_defined     = false;
+  state.preproc.do_emit    = true;
   /* clean out defines for second pass */
-  state.stMacros      = push_symbol_table(NULL, state.case_insensitive);
-  state.stDefines     = push_symbol_table(cmd_defines, state.case_insensitive);
-  state.stMacroParams = push_symbol_table(NULL, state.case_insensitive);
+  state.stMacros           = push_symbol_table(NULL, state.case_insensitive);
+  state.stDefines          = push_symbol_table(cmd_defines, state.case_insensitive);
+  state.stMacroParams      = push_symbol_table(NULL, state.case_insensitive);
   purge_temp_symbols(state.stTop);
 
   if (!state.cmd_line.radix) {
@@ -1010,8 +1012,8 @@ assemble(void)
   preproc_init();
 
   /* reset the processor for 2nd pass */
-  state.processor = NULL;
-  state.processor_chosen = false;
+  state.processor          = NULL;
+  state.processor_chosen   = false;
   state.cmd_line.processor = false;
 
   if (cmd_processor) {

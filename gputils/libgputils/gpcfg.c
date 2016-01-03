@@ -95,11 +95,11 @@ gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Dname,
     for (j = addr->directive_count, dir = addr->directives; j; ++dir, --j) {
       if (strcasecmp(Dname, dir->name) == 0) {
         if (Out_config_addr != NULL) {
-          *(Out_config_addr) = addr->address;
+          *Out_config_addr = addr->address;
         }
 
         if (Out_def_value != NULL) {
-          *(Out_def_value) = addr->def_value;
+          *Out_def_value = addr->def_value;
         }
 
         return dir;

@@ -397,8 +397,7 @@ gp_archive_remove_index(gp_archive_type *archive)
    need compatibility with other tools.  */
 
 int
-gp_archive_make_index(gp_archive_type *archive,
-                      struct symbol_table *definition)
+gp_archive_make_index(gp_archive_type *archive, struct symbol_table *definition)
 {
   gp_object_type *object = NULL;
   char name[256];
@@ -427,8 +426,7 @@ gp_archive_make_index(gp_archive_type *archive,
 
 /* add the symbol index to the archive */
 gp_archive_type *
-gp_archive_add_index(struct symbol_table *table,
-                     gp_archive_type *archive)
+gp_archive_add_index(struct symbol_table *table, gp_archive_type *archive)
 {
   gp_archive_type *newmember = NULL;
   gp_archive_type *member = NULL;
@@ -447,7 +445,7 @@ gp_archive_add_index(struct symbol_table *table,
   /* sort the index */
   ps = lst = GP_Malloc(table->count * sizeof(lst[0]));
   for (i = 0; i < HASH_SIZE; i++) {
-    for (s = table->hash_table[i]; s; s = s->next) {
+    for (s = table->hash_table[i]; s != NULL; s = s->next) {
       *ps++ = s;
     }
   }
@@ -510,8 +508,7 @@ gp_archive_add_index(struct symbol_table *table,
 /* place the symbol from the archive symbol index in the archive symbol table */
 
 gp_boolean
-gp_archive_add_symbol(struct symbol_table *table, const char *name,
-                      gp_archive_type *member)
+gp_archive_add_symbol(struct symbol_table *table, const char *name, gp_archive_type *member)
 {
   struct symbol *sym;
 
@@ -551,7 +548,7 @@ gp_archive_read_index(struct symbol_table *table, gp_archive_type *archive)
 
   /* set the pointers to the offsets and symbol names */
   offset = &file[AR_INDEX_NUMBER_SIZ];
-  name = (const char *)offset + (AR_INDEX_OFFSET_SIZ * number);
+  name = (const char *)(offset + (AR_INDEX_OFFSET_SIZ * number));
 
   for (i = 0; i < number; i++) {
     /* get the symbol offset from the symbol index */
@@ -594,7 +591,7 @@ gp_archive_print_table(struct symbol_table *table)
   /* sort the index */
   ps = lst = GP_Malloc(table->count * sizeof(lst[0]));
   for (i = 0; i < HASH_SIZE; i++) {
-    for (s = table->hash_table[i]; s; s = s->next) {
+    for (s = table->hash_table[i]; s != NULL; s = s->next) {
       *ps++ = s;
     }
   }
