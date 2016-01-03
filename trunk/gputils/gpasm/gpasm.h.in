@@ -123,6 +123,7 @@ extern struct gpasm_state {
   } cmd_line;
 
   int pass;                         /* 1 or 2 */
+  int last_bank;                    /* The last time selected bank. Invalid if bank < 0. */
   unsigned int byte_addr;           /* Current code-generation point. */
   gp_boolean dos_newlines;          /* Use DOS newlines in hex file. */
   gp_boolean memory_dump;           /* Dump instruction memory to standard output. */
@@ -276,8 +277,8 @@ extern struct gpasm_state {
   gpasmVal cblock;                  /* cblock constant */
   gp_boolean cblock_defined;
   struct macro_head *mac_head;      /* Starting a macro... */
-  struct macro_body **mac_prev;     /* Stitching ptr */
-  struct macro_body *mac_body;      /* While we're building a macro */
+  struct macro_body **mac_prev;     /* Stitching ptr. */
+  struct macro_body *mac_body;      /* While we're building a macro. */
   struct macro_head *while_head;    /* WHILEs work a lot like macros... */
   unsigned int while_depth;         /* WHILE nesting depth, used in WHILE definition. */
   enum state_types next_state;

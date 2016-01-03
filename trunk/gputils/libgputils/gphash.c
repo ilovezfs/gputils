@@ -1,5 +1,5 @@
 
-/* Supports Fowler–Noll–Vo hash making.
+/* Supports Fowler-Noll-Vo hash making.
 
    Copyright (C) 2014 Molnar Karoly
 

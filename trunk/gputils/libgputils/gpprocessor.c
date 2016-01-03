@@ -1455,6 +1455,36 @@ gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address)
 }
 
 int
+gp_processor_reg_addr(pic_processor_t processor, int address)
+{
+  if (processor == NULL) {
+    return -1;
+  }
+
+  return (address & (~processor->class->bank_mask));
+}
+
+int
+gp_processor_bank_addr(pic_processor_t processor, int address)
+{
+  if (processor == NULL) {
+    return -1;
+  }
+
+  return (address & processor->bank_bits);
+}
+
+int
+gp_processor_bank_num(pic_processor_t processor, int address)
+{
+  if (processor == NULL) {
+    return -1;
+  }
+
+  return ((address & processor->bank_bits) >> processor->class->bank_bits_shift);
+}
+
+int
 gp_processor_rom_width(proc_class_t class)
 {
   assert(class->rom_width > 0);
@@ -1778,7 +1808,7 @@ id_location_pic12(pic_processor_t processor)
 static int
 gp_processor_check_bank_pic12(unsigned int address)
 {
-  return ((address >> 5) & 0x3);
+  return ((address >> PIC12_BANK_SHIFT) & PIC12_BMSK_BANK);
 }
 
 static int
@@ -1859,7 +1889,7 @@ reloc_tris_pic12(unsigned int address)
 static int
 gp_processor_check_bank_pic12e(unsigned int address)
 {
-  return ((address >> 5) & PIC12E_BMSK_BANK);
+  return ((address >> PIC12_BANK_SHIFT) & PIC12E_BMSK_BANK);
 }
 
 static int
@@ -1951,7 +1981,7 @@ id_location_pic14(pic_processor_t processor)
 static int
 gp_processor_check_bank_pic14(unsigned int address)
 {
-  return ((address >> 7) & PIC14_BMSK_BANK);
+  return ((address >> PIC14_BANK_SHIFT) & PIC14_BMSK_BANK);
 }
 
 static int
@@ -2055,7 +2085,7 @@ patch_strict_pic14(void)
 static int
 gp_processor_check_bank_pic14e(unsigned int address)
 {
-  return ((address >> 7) & PIC14E_BMSK_BANK);
+  return ((address >> PIC14_BANK_SHIFT) & PIC14E_BMSK_BANK);
 }
 
 
@@ -2384,7 +2414,7 @@ gp_processor_find_sfr(proc_class_t class, int address)
 
   sfr.address = address;
   return (core_sfr_t *)bsearch(&sfr, class->core_sfr_table, class->core_sfr_number,
-                                sizeof(core_sfr_t), core_sfr_cmp);
+                               sizeof(core_sfr_t), core_sfr_cmp);
 }
 
 const char *

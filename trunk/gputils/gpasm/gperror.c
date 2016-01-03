@@ -492,7 +492,7 @@ gp_getmessage(unsigned int code)
   case GPM_USER:
     return "MESSAGE: \"%s\"";
   case GPM_BANK:
-    return "Register in operand not in bank 0. Ensure that bank bits are correct.";
+    return "Register in operand not in bank %d. Ensure that bank bits are correct.";
   case GPM_RANGE:
     return "Program word too large. Truncated to core size: 0x%04X";
   case GPM_IDLOC:
