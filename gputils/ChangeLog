@@ -1,3 +1,17 @@
+2016-01-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpasm.c,
+    gpasm/gpasm.h.in, gpasm/processor.c,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    Extended version of "Smarter message 302".
+    New constants: __BANK_BITS, __BANK_MASK, __BANK_SIZE
+    New built-in variable: __ACTIVE_BANK_ADDR
+
+  * gpasm/evaluate.c, gpasm/lst.c, gpasm/parse.y, gpasm/util.c:
+    Renamed some constant and variable.
+
+  * gpasm/directive.h:
+    Code cosmetic.
+
 2016-01-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, gpasm/gpasm.c, gpasm/gpasm.h.in,
     gpasm/gperror.c, libgputils/gpprocessor.c, libgputils/gpprocessor.h:

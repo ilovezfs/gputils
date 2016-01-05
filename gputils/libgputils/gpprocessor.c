@@ -1215,12 +1215,61 @@ gp_byte_to_org(unsigned int shift, int byte)
   return (byte >> shift);
 }
 
+int
+gp_processor_reg_offs(pic_processor_t processor, int address)
+{
+  if (processor == NULL) {
+    return -1;
+  }
+
+  return (address & (~processor->class->bank_mask));
+}
+
+int
+gp_processor_bank_addr(pic_processor_t processor, int address)
+{
+  if (processor == NULL) {
+    return -1;
+  }
+
+  return (address & processor->bank_bits);
+}
+
+int
+gp_processor_bank_num(pic_processor_t processor, int address)
+{
+  if (processor == NULL) {
+    return -1;
+  }
+
+  return ((address & processor->bank_bits) >> processor->class->bank_bits_shift);
+}
+
+int
+gp_processor_bank_num_to_addr(pic_processor_t processor, int number)
+{
+  if (processor == NULL) {
+    return -1;
+  }
+
+  return ((number << processor->class->bank_bits_shift) & processor->bank_bits);
+}
+
 const int *
 gp_processor_common_ram_exist(pic_processor_t processor)
 {
+  static int cram_addrs[2];
+
   if (processor == NULL) {
     return NULL;
   }
+
+ if ((processor->class == PROC_CLASS_PIC16E) && (processor->num_banks > 0)) {
+   cram_addrs[0] = 0;
+   /* In this case the Access/SFR split address. */
+   cram_addrs[1] = processor->num_banks - 1;
+   return (const int *)cram_addrs;
+ }
 
   if ((processor->common_ram_addrs[0] > 0) &&
       (processor->common_ram_addrs[1] >= processor->common_ram_addrs[0])) {
@@ -1237,6 +1286,11 @@ gp_processor_is_common_ram_addr(pic_processor_t processor, int address)
 
   if (processor == NULL) {
     return -1;
+  }
+
+  if ((processor->class == PROC_CLASS_PIC16E) && (processor->num_banks > 0) &&
+      (address < processor->num_banks)) {
+    return address;
   }
 
   if ((processor->class != PROC_CLASS_GENERIC) &&
@@ -1452,36 +1506,6 @@ gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address)
   }
 
   return -1;
-}
-
-int
-gp_processor_reg_addr(pic_processor_t processor, int address)
-{
-  if (processor == NULL) {
-    return -1;
-  }
-
-  return (address & (~processor->class->bank_mask));
-}
-
-int
-gp_processor_bank_addr(pic_processor_t processor, int address)
-{
-  if (processor == NULL) {
-    return -1;
-  }
-
-  return (address & processor->bank_bits);
-}
-
-int
-gp_processor_bank_num(pic_processor_t processor, int address)
-{
-  if (processor == NULL) {
-    return -1;
-  }
-
-  return ((address & processor->bank_bits) >> processor->class->bank_bits_shift);
 }
 
 int

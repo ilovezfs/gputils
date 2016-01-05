@@ -128,7 +128,6 @@ init(void)
   state.cmd_line.lst_force      = false;
 
   state.pass                    = 0;
-  state.last_bank               = -1;
   state.byte_addr               = 0;
   state.device.id_location      = 0;
   state.dos_newlines            = false;
@@ -441,7 +440,7 @@ show_usage(void)
          "                                 various aspects. ('f' mean 'x')\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
-  printf("      --mpasm-compatible         MPASM compatibility mode.\n");
+  printf("      --mpasm-compatible         MPASM(X) compatibility mode.\n");
   printf("  -M, --deps                     Output dependency file.\n");
 #ifndef HAVE_DOS_BASED_FILE_SYSTEM
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
@@ -973,7 +972,6 @@ assemble(void)
 
   state.pass++;
   state.byte_addr          = 0;
-  state.last_bank          = -1;
   state.device.id_location = 0;
   state.cblock             = 0;
   state.cblock_defined     = false;
@@ -998,7 +996,7 @@ assemble(void)
   state.astack = NULL;
 
   /* Initial section. */
-  state.obj.new_sec_flags = (state.mode == MODE_ABSOLUTE) ? STYP_TEXT : 0;
+  state.obj.new_sect_flags = (state.mode == MODE_ABSOLUTE) ? STYP_TEXT : 0;
 
   state.found_config = false;
   state.found_devid  = false;

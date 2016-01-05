@@ -45,11 +45,14 @@ function compile()
   local retval
 
   make_asm "$inc"
-  $GPASMBIN -p "$1" -I"$HEADER" -c "$TEST_SRC" -o "$TEST_OBJ" >> "$TEST_LOG" 2>&1
+  echo -n "Testing $1 ..."
+  $GPASMBIN -p "$1" -I "$HEADER" -c "$TEST_SRC" -o "$TEST_OBJ" >> "$TEST_LOG" 2>&1
   retval=$?
   if (($retval != 0)); then
-    echo "Compile failure with MCU: $1"
+    echo " compile failure."
     exit 1
+  else
+    echo " OK"
   fi
 }
 
@@ -57,26 +60,16 @@ rm -rf "$TEST_LOG"
 
 for mcu in $("$GPASMBIN" -l); do
   case "$mcu" in
-    p16c5x|p16c52|p16c54b|p16cr54b|p16cxx|p17*|p18cxx|p18f64j15|p18f84j15|p18f2681|p18f4681)
+    p16c5x|p16c52|p16c54b|p16cr54b|p16cxx|\
+    p17*|\
+    p18cxx|p18f64j15|p18f84j15|p18f2681|p18f4681)
 	# These not valid processors.
 	;;
 
-    p10f*|p10lf*)
-	compile "$mcu"
-	;;
-
-    p12c*|p12f*|p12hv*|p12lf*)
-	compile "$mcu"
-	;;
-
-    p16c*|p16f*|p16hv*|p16lf*)
-	compile "$mcu"
-	;;
-
-    p18c*|p18f*|p18lf*)
-	compile "$mcu"
-	;;
-
+    p10f*|p10lf*|\
+    p12c*|p12f*|p12hv*|p12lf*|\
+    p16c*|p16f*|p16hv*|p16lf*|\
+    p18c*|p18f*|p18lf*|\
     rf5*|rf6*)
 	compile "$mcu"
 	;;

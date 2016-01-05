@@ -405,17 +405,17 @@ do_access_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      gp_strncpy(state.obj.new_sec_name, ".access_ovr", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = 0;
-      state.obj.new_sec_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY;
+      gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY;
       break;
 
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      gp_strncpy(state.obj.new_sec_name, ".access_ovr", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = maybe_evaluate(p);
-      state.obj.new_sec_flags = STYP_ACCESS | STYP_ABS | STYP_BSS | STYP_OVERLAY;
+      gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_flags = STYP_ACCESS | STYP_ABS | STYP_BSS | STYP_OVERLAY;
       break;
 
     default:
@@ -575,7 +575,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
     state.lst.line.linetype = LTY_NONE;
     gpvmessage(GPM_EXTPAGE, NULL);
     /* do nothing */
-    state.last_bank = 0;
+    set_global(GLOBAL_ACT_BANK_ADDR, 0, LFT_TEMPORARY, GVT_GLOBAL);
     return r;
   }
 
@@ -594,7 +594,9 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
                                                bank,
                                                state.i_memory,
                                                state.byte_addr);
-      state.last_bank = bank;
+      set_global(GLOBAL_ACT_BANK_ADDR,
+                 gp_processor_bank_num_to_addr(state.processor, bank),
+                 LFT_TEMPORARY, GVT_GLOBAL);
     }
     else {
       /* state.mode == MODE_RELOCATABLE */
@@ -664,17 +666,17 @@ do_code(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      gp_strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = 0;
-      state.obj.new_sec_flags = STYP_TEXT;
+      gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_flags = STYP_TEXT;
       break;
 
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      gp_strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
-      state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
+      gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
+      state.obj.new_sect_flags = STYP_TEXT | STYP_ABS;
       break;
 
     default:
@@ -704,17 +706,17 @@ do_code_pack(gpasmVal r, const char *name, int arity, struct pnode *parms)
       switch (arity) {
       case 0:
         /* new relocatable section */
-        gp_strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
-        state.obj.new_sec_addr = 0;
-        state.obj.new_sec_flags = STYP_TEXT | STYP_BPACK;
+        gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr = 0;
+        state.obj.new_sect_flags = STYP_TEXT | STYP_BPACK;
         break;
 
       case 1:
         /* new absolute section */
         p = HEAD(parms);
-        gp_strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
-        state.obj.new_sec_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
-        state.obj.new_sec_flags = STYP_TEXT | STYP_ABS | STYP_BPACK;
+        gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
+        state.obj.new_sect_flags = STYP_TEXT | STYP_ABS | STYP_BPACK;
         break;
 
       default:
@@ -748,7 +750,7 @@ do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
         val = maybe_evaluate(p->value.binop.p1);
         /* put the symbol and value in the table*/
-        set_global(lhs, val, PERMANENT, GVT_CONSTANT);
+        set_global(lhs, val, LFT_PERMANENT, GVT_CONSTANT);
 
         if (first) {
           r = val;
@@ -1709,7 +1711,7 @@ do_def(gpasmVal r, const char *name, int arity, struct pnode *parms)
     }
   }
 
-  set_global(symbol_name, value, PERMANENT, type);
+  set_global(symbol_name, value, LFT_PERMANENT, type);
 
   /* update the symbol with the values */
   if ((state.pass == 2) && (new_class || new_type)) {
@@ -2244,7 +2246,7 @@ do_extern(gpasmVal r, const char *name, int arity, struct pnode *parms)
       p = HEAD(parms)->value.symbol;
 
       if (p != NULL) {
-        set_global(p, 0, PERMANENT, GVT_EXTERN);
+        set_global(p, 0, LFT_PERMANENT, GVT_EXTERN);
       }
     }
   }
@@ -2376,17 +2378,17 @@ do_idata(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      gp_strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = 0;
-      state.obj.new_sec_flags = STYP_DATA;
+      gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_flags = STYP_DATA;
       break;
 
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      gp_strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = maybe_evaluate(p);
-      state.obj.new_sec_flags = STYP_DATA | STYP_ABS;
+      gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_flags = STYP_DATA | STYP_ABS;
       break;
 
     default:
@@ -2415,17 +2417,17 @@ do_idata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      gp_strncpy(state.obj.new_sec_name, ".idata_acs", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = 0;
-      state.obj.new_sec_flags = STYP_DATA | STYP_ACCESS;
+      gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_flags = STYP_DATA | STYP_ACCESS;
       break;
 
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      gp_strncpy(state.obj.new_sec_name, ".idata_acs", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = maybe_evaluate(p);
-      state.obj.new_sec_flags = STYP_DATA | STYP_ABS | STYP_ACCESS;
+      gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_flags = STYP_DATA | STYP_ABS | STYP_ACCESS;
       break;
 
     default:
@@ -3055,7 +3057,7 @@ do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
           val = maybe_evaluate(p->value.binop.p1);
           /* put the symbol and value in the TOP table*/
           add_symbol(state.stTop, lhs);
-          set_global(lhs, val, TEMPORARY, GVT_CONSTANT);
+          set_global(lhs, val, LFT_TEMPORARY, GVT_CONSTANT);
 
           if (first) {
             r = val;
@@ -3221,9 +3223,9 @@ do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
       }
       else {
         /* Default section name, this will be overwritten if a label is present. */
-        snprintf(state.obj.new_sec_name, sizeof(state.obj.new_sec_name), ".org_%x", r);
-        state.obj.new_sec_addr = new_byte_addr;
-        state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
+        snprintf(state.obj.new_sect_name, sizeof(state.obj.new_sect_name), ".org_%x", r);
+        state.obj.new_sect_addr = new_byte_addr;
+        state.obj.new_sect_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype = LTY_SEC;
         state.next_state = STATE_SECTION;
       }
@@ -3267,8 +3269,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
     use_wreg = true;
   }
 
-  if (IS_EEPROM8 || IS_EEPROM16 || IS_PIC16E_CORE ||
-      (state.processor->num_pages == 1)) {
+  if (IS_EEPROM8 || IS_EEPROM16 || IS_PIC16E_CORE || (state.processor->num_pages == 1)) {
     state.lst.line.linetype = LTY_NONE;
     gpvmessage(GPM_EXTPAGE, NULL);
     return r;
@@ -3597,17 +3598,17 @@ do_udata(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      gp_strncpy(state.obj.new_sec_name, ".udata", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = 0;
-      state.obj.new_sec_flags = STYP_BSS;
+      gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_flags = STYP_BSS;
       break;
 
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      gp_strncpy(state.obj.new_sec_name, ".udata", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = maybe_evaluate(p);
-      state.obj.new_sec_flags = STYP_BSS | STYP_ABS;
+      gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_flags = STYP_BSS | STYP_ABS;
       break;
 
     default:
@@ -3633,17 +3634,17 @@ do_udata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      gp_strncpy(state.obj.new_sec_name, ".udata_acs", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = 0;
-      state.obj.new_sec_flags = STYP_BSS | STYP_ACCESS;
+      gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_flags = STYP_BSS | STYP_ACCESS;
       break;
 
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      gp_strncpy(state.obj.new_sec_name, ".udata_acs", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = maybe_evaluate(p);
-      state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_ACCESS;
+      gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_flags = STYP_BSS | STYP_ABS | STYP_ACCESS;
       break;
 
     default:
@@ -3669,17 +3670,17 @@ do_udata_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      gp_strncpy(state.obj.new_sec_name, ".udata_ovr", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = 0;
-      state.obj.new_sec_flags = STYP_BSS | STYP_OVERLAY;
+      gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_flags = STYP_BSS | STYP_OVERLAY;
       break;
 
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      gp_strncpy(state.obj.new_sec_name, ".udata_ovr", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = maybe_evaluate(p);
-      state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_OVERLAY;
+      gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_flags = STYP_BSS | STYP_ABS | STYP_OVERLAY;
       break;
 
     default:
@@ -3705,17 +3706,17 @@ do_udata_shr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      gp_strncpy(state.obj.new_sec_name, ".udata_shr", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = 0;
-      state.obj.new_sec_flags = STYP_BSS | STYP_SHARED;
+      gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_flags = STYP_BSS | STYP_SHARED;
       break;
 
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      gp_strncpy(state.obj.new_sec_name, ".udata_shr", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = maybe_evaluate(p);
-      state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_SHARED;
+      gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_flags = STYP_BSS | STYP_ABS | STYP_SHARED;
       break;
 
     default:
@@ -3769,7 +3770,7 @@ do_variable(gpasmVal r, const char *name, int arity, struct pnode *parms)
         lhs = p->value.binop.p0->value.symbol;
         val = maybe_evaluate(p->value.binop.p1);
         /* put the symbol and value in the table */
-        set_global(lhs, val, TEMPORARY, GVT_CONSTANT);
+        set_global(lhs, val, LFT_TEMPORARY, GVT_CONSTANT);
 
         if (first) {
           r = val;
@@ -3779,7 +3780,7 @@ do_variable(gpasmVal r, const char *name, int arity, struct pnode *parms)
     }
     else if (p->tag == PTAG_SYMBOL) {
       /* put the symbol with a 0 value in the table */
-      set_global(p->value.symbol, 0, TEMPORARY, GVT_CONSTANT);
+      set_global(p->value.symbol, 0, LFT_TEMPORARY, GVT_CONSTANT);
 
       if (first) {
         r = 0;
@@ -3829,13 +3830,32 @@ asm_enabled(void)
           (state.astack->enabled && state.astack->prev_enabled));
 }
 
+static gp_boolean
+core_sfr_or_common_ram(int file)
+{
+  if (gp_processor_find_sfr(state.device.class, file) != NULL) {
+    /* This is a core SFR. */
+    return true;
+  }
+
+  if (gp_processor_is_common_ram_addr(state.processor, file) >= 0) {
+    /* This is a common GPR. */
+    return true;
+  }
+
+  return false;
+}
+
 /* Check that a register file address is ok. */
 void
 file_ok(unsigned int file)
 {
-  const int *pair;
-  int bank;
-  int reg;
+  int bank_addr;
+  int bank_num;
+  int reg_offs;
+  int bank_assume;
+  const struct symbol *sym_bank;
+  const struct variable *var;
 
   /* Don't check address, the linker takes care of it. */
   if (state.mode == MODE_RELOCATABLE) {
@@ -3849,25 +3869,45 @@ file_ok(unsigned int file)
     gpvwarning(GPW_INVALID_RAM, "Address{%#x} in BADRAM.", file);
   }
 
-  reg = gp_processor_reg_addr(state.processor, file);
+  bank_addr = gp_processor_bank_addr(state.processor, file);
+  bank_num  = gp_processor_bank_num(state.processor, file);
+  reg_offs  = gp_processor_reg_offs(state.processor, file);
 
-  if (gp_processor_find_sfr(state.device.class, reg) != NULL) {
-    /* This is a core SFR. */
+  if (state.mpasm_compatible) {
+    /* Only so much can be done compatibility reasons. */
+    if (bank_addr > 0) {
+      gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank_num, bank_addr, reg_offs);
+    }
+
     return;
   }
 
-  if (((pair = gp_processor_common_ram_exist(state.processor)) != NULL) &&
-      (reg >= pair[0]) && (reg <= pair[1])) {
-    /* This is a common GPR. */
+  /* Don't check bank if common ram or core SFR is addressed. */
+  if (core_sfr_or_common_ram(file)) {
     return;
   }
 
-  bank = gp_processor_bank_num(state.processor, file);
+  /* The __ACTIVE_BANK_ADDR variable shows the register which used for BANKSEL directive last time. */
+  if (((sym_bank = get_symbol(state.stGlobal, GLOBAL_ACT_BANK_ADDR)) == NULL) ||
+      ((var = get_symbol_annotation(sym_bank)) == NULL)) {
+    gpverror(GPE_INTERNAL, NULL, "The \"" GLOBAL_ACT_BANK_ADDR "\" variable not exists.");
+    return;
+  }
 
-  if ((state.last_bank < 0) || (state.last_bank != bank)) {
-    /* Previous bank not equal the current bank. */
-    gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank,
-               gp_processor_bank_addr(state.processor, file), reg);
+  bank_assume = var->value;
+
+  if (bank_assume >= 0) {
+    /* Necessary only the selected bank address. */
+    bank_assume = gp_processor_bank_addr(state.processor, bank_assume);
+    bank_num    = gp_processor_bank_num(state.processor, bank_assume);
+  }
+  else {
+    bank_num    = -1;
+  }
+
+  /* Check if we are in correct bank. Negative __ACTIVE_BANK_ADDR value means bank is not set yet. */
+  if ((bank_assume < 0) || (bank_assume != bank_addr)) {
+    gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank_num, bank_addr, reg_offs);
   }
 }
 
@@ -4134,7 +4174,7 @@ do_insn(const char *name, struct pnode *parms)
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
-          if ((state.obj.new_sec_flags & STYP_ABS) && can_evaluate_value(p)) {
+          if ((state.obj.new_sect_flags & STYP_ABS) && can_evaluate_value(p)) {
             int value = evaluate(p);
 
             /* PC is 11 bits.  mpasm checks the maximum device address. */
@@ -4177,7 +4217,7 @@ do_insn(const char *name, struct pnode *parms)
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
-          if ((state.obj.new_sec_flags & STYP_ABS) && can_evaluate_value(p)) {
+          if ((state.obj.new_sect_flags & STYP_ABS) && can_evaluate_value(p)) {
             int value = evaluate(p);
 
             /* PC is 11 bits.  mpasm checks the maximum device address. */
@@ -4199,7 +4239,7 @@ do_insn(const char *name, struct pnode *parms)
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
-          if ((state.obj.new_sec_flags & STYP_ABS) && can_evaluate_value(p)) {
+          if ((state.obj.new_sect_flags & STYP_ABS) && can_evaluate_value(p)) {
             int value = evaluate(p);
 
             if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
@@ -4236,7 +4276,7 @@ do_insn(const char *name, struct pnode *parms)
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
-          if ((state.obj.new_sec_flags & STYP_ABS) && can_evaluate_value(p)) {
+          if ((state.obj.new_sect_flags & STYP_ABS) && can_evaluate_value(p)) {
             int value = evaluate(p);
 
             /* PC is 16 bits.  mpasm checks the maximum device address. */
@@ -5715,7 +5755,7 @@ void
 cblock_expr(const struct pnode *s)
 {
   if (asm_enabled()) {
-    set_global(s->value.symbol, state.cblock, PERMANENT, GVT_CBLOCK);
+    set_global(s->value.symbol, state.cblock, LFT_PERMANENT, GVT_CBLOCK);
     state.cblock++;
   }
 }
@@ -5724,7 +5764,7 @@ void
 cblock_expr_incr(const struct pnode *s, const struct pnode *incr)
 {
   if (asm_enabled()) {
-    set_global(s->value.symbol, state.cblock, PERMANENT, GVT_CBLOCK);
+    set_global(s->value.symbol, state.cblock, LFT_PERMANENT, GVT_CBLOCK);
     state.cblock += maybe_evaluate(incr);
   }
 }

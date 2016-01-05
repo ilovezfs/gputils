@@ -258,17 +258,13 @@ coerce_str1(struct pnode *exp)
 }
 
 void
-set_global(const char *name,
-                gpasmVal value,
-                enum globalLife lifetime,
-                enum gpasmValTypes type)
+set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type)
 {
   struct symbol *sym;
   struct variable *var;
 
-  /* Search the entire stack (i.e. include macro's local symbol
-     tables) for the symbol.  If not found, then add it to the global
-     symbol table.  */
+  /* Search the entire stack (i.e. include macro's local symbol tables) for the symbol.
+     If not found, then add it to the global symbol table.  */
   sym = get_symbol(state.stTop, name);
 
   if (sym == NULL) {
@@ -281,12 +277,12 @@ set_global(const char *name,
     /* new symbol */
     var = GP_Malloc(sizeof(*var));
     annotate_symbol(sym, var);
-    var->value = value;
-    var->coff_num = state.obj.symbol_num;
+    var->value            = value;
+    var->coff_num         = state.obj.symbol_num;
     var->coff_section_num = state.obj.section_num;
-    var->type = type;
-    var->previous_type = type;  /* coff symbols can be changed to global */
-    var->lifetime = lifetime;
+    var->type             = type;
+    var->previous_type    = type;  /* coff symbols can be changed to global */
+    var->lifetime         = lifetime;
 
     /* increment the index into the coff symbol table for the relocations */
     switch(type) {
@@ -302,7 +298,7 @@ set_global(const char *name,
     default:
       break;
     }
-  } else if (lifetime == TEMPORARY) {
+  } else if (lifetime == LFT_TEMPORARY) {
     /*
      * TSD - the following embarrassing piece of code is a hack
      *       to fix a problem when global variables are changed
@@ -347,7 +343,7 @@ purge_temp_symbols(struct symbol_table *table) {
           struct variable *var = (struct variable *)get_symbol_annotation(cur_symbol);
 
           if (var != NULL) {
-            if (var->lifetime == TEMPORARY) {
+            if (var->lifetime == LFT_TEMPORARY) {
               struct symbol *next_symbol = cur_symbol->next;
 
               free(cur_symbol);
