@@ -200,7 +200,7 @@ gpasmVal set_label(char *label, struct pnode *parms)
 
     value = do_or_append_insn("set", parms);
     if (!IN_MACRO_WHILE_DEFINITION) {
-      set_global(label, value, TEMPORARY, GVT_CONSTANT);
+      set_global(label, value, LFT_TEMPORARY, GVT_CONSTANT);
     }
   }
 
@@ -286,9 +286,9 @@ void next_line(int value)
     case STATE_SECTION:
       state.src->line_number++;
       /* create a new coff section */
-      coff_new_section(state.obj.new_sec_name,
-                       state.obj.new_sec_addr,
-                       state.obj.new_sec_flags);
+      coff_new_section(state.obj.new_sect_name,
+                       state.obj.new_sect_addr,
+                       state.obj.new_sect_flags);
       break;
 
     case STATE_WHILE:
@@ -528,16 +528,16 @@ line:
               /* Outside a macro definition, just define the label. */
               switch (state.lst.line.linetype) {
               case LTY_SEC:
-                gp_strncpy(state.obj.new_sec_name, $1, sizeof(state.obj.new_sec_name));
+                gp_strncpy(state.obj.new_sect_name, $1, sizeof(state.obj.new_sect_name));
                 break;
 
               case LTY_SET:
-                set_global($1, $2, TEMPORARY, GVT_CONSTANT);
+                set_global($1, $2, LFT_TEMPORARY, GVT_CONSTANT);
                 break;
 
               case LTY_ORG:
               case LTY_EQU:
-                set_global($1, $2, PERMANENT, GVT_CONSTANT);
+                set_global($1, $2, LFT_PERMANENT, GVT_CONSTANT);
                 break;
 
               case LTY_INSN:
@@ -549,10 +549,10 @@ line:
                 }
 
                 if (IS_RAM_ORG) {
-                  set_global($1, $2, PERMANENT, GVT_STATIC);
+                  set_global($1, $2, LFT_PERMANENT, GVT_STATIC);
                 }
                 else {
-                  set_global($1, $2, PERMANENT, GVT_ADDRESS);
+                  set_global($1, $2, LFT_PERMANENT, GVT_ADDRESS);
                 }
                 break;
 

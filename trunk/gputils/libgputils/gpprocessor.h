@@ -346,6 +346,11 @@ unsigned int gp_processor_id_location(pic_processor_t processor);
 int gp_org_to_byte(unsigned int shift, int org);
 int gp_byte_to_org(unsigned int shift, int byte);
 
+int gp_processor_reg_offs(pic_processor_t processor, int address);
+int gp_processor_bank_addr(pic_processor_t processor, int address);
+int gp_processor_bank_num(pic_processor_t processor, int address);
+int gp_processor_bank_num_to_addr(pic_processor_t processor, int number);
+
 const int *gp_processor_common_ram_exist(pic_processor_t processor);
 int gp_processor_is_common_ram_addr(pic_processor_t processor, int address);
 
@@ -363,10 +368,6 @@ int gp_processor_is_config_byte_addr(pic_processor_t processor, int byte_address
 const int *gp_processor_eeprom_exist(pic_processor_t processor);
 int gp_processor_is_eeprom_org(pic_processor_t processor, int org);
 int gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address);
-
-int gp_processor_reg_addr(pic_processor_t processor, int address);
-int gp_processor_bank_addr(pic_processor_t processor, int address);
-int gp_processor_bank_num(pic_processor_t processor, int address);
 
 int gp_processor_rom_width(proc_class_t class);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);

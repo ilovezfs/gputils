@@ -586,7 +586,7 @@ lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr,
   gp_boolean is_eeprom_area = (gp_processor_is_eeprom_byte_addr(state.processor, byte_addr) >= 0) ? true : false;
 
   /* When in a idata or byte packed section or eeprom area, print byte by byte. */
-  if (IS_EEPROM8 || is_eeprom_area || (state.obj.new_sec_flags & (STYP_DATA | STYP_BPACK))) {
+  if (IS_EEPROM8 || is_eeprom_area || (state.obj.new_sect_flags & (STYP_DATA | STYP_BPACK))) {
     while ((bytes_emitted > lst_bytes) && ((pos + 3) <= LST_LINENUM_POS)) {
       b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
       pos += lst_printf("%02X ", emit_byte);
@@ -651,7 +651,7 @@ lst_format_line(const char *src_line, int value)
   assert(src_line != NULL);
 
   if ((state.mode == MODE_RELOCATABLE) && (state.obj.section != NULL) &&
-      (state.obj.new_sec_flags & STYP_TEXT) && (state.obj.section->relocations_tail != NULL)) {
+      (state.obj.new_sect_flags & STYP_TEXT) && (state.obj.section->relocations_tail != NULL)) {
       if ((state.obj.section->address + state.obj.section->relocations_tail->address) > state.lst.line.was_byte_addr) {
         /* already passed it, go back to the history */
         gp_reloc_type *p = find_reloc_by_address(state.lst.line.was_byte_addr);

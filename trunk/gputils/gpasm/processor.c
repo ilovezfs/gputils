@@ -76,21 +76,27 @@ void select_processor(const char *name)
           }
         }
 
-        set_global(found->defined_as, 1, PERMANENT, GVT_CONSTANT);
+        set_global(found->defined_as, 1, LFT_PERMANENT, GVT_CONSTANT);
 
         if (!state.mpasm_compatible) {
+          set_global(GLOBAL_ACT_BANK_ADDR, -1, LFT_TEMPORARY, GVT_GLOBAL);
+
+          set_global("__BANK_BITS", found->bank_bits,            LFT_PERMANENT, GVT_GLOBAL);
+          set_global("__BANK_MASK", found->class->bank_size - 1, LFT_PERMANENT, GVT_GLOBAL);
+          set_global("__BANK_SIZE", found->class->bank_size,     LFT_PERMANENT, GVT_GLOBAL);
+
           if ((pair = gp_processor_common_ram_exist(found)) != NULL) {
-            set_global("__COMMON_RAM_START", pair[0], PERMANENT, GVT_CONSTANT);
-            set_global("__COMMON_RAM_END",   pair[1], PERMANENT, GVT_CONSTANT);
+            set_global("__COMMON_RAM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__COMMON_RAM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
           }
 
           if (found->common_ram_max > 0) {
-            set_global("__COMMON_RAM_MAX", found->common_ram_max, PERMANENT, GVT_CONSTANT);
+            set_global("__COMMON_RAM_MAX", found->common_ram_max, LFT_PERMANENT, GVT_CONSTANT);
           }
 
           if ((pair = gp_processor_linear_ram_exist(found)) != NULL) {
-            set_global("__LINEAR_RAM_START", pair[0], PERMANENT, GVT_CONSTANT);
-            set_global("__LINEAR_RAM_END",   pair[1], PERMANENT, GVT_CONSTANT);
+            set_global("__LINEAR_RAM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__LINEAR_RAM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
           }
 
           if ((found->class->vector_table != NULL) || (found->class->vector_number > 0)) {
@@ -114,37 +120,37 @@ void select_processor(const char *name)
                 addr = vec->address;
               }
 
-              set_global(buf, addr, PERMANENT, GVT_CONSTANT);
+              set_global(buf, addr, LFT_PERMANENT, GVT_CONSTANT);
             }
           }
 
           addr = found->prog_mem_size;
 
           if (addr > 0) {
-            set_global("__CODE_START",        0, PERMANENT, GVT_CONSTANT);
-            set_global("__CODE_END",   addr - 1, PERMANENT, GVT_CONSTANT);
+            set_global("__CODE_START",        0, LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__CODE_END",   addr - 1, LFT_PERMANENT, GVT_CONSTANT);
           }
 
           if ((pair = gp_processor_idlocs_exist(found)) != NULL) {
-            set_global("__IDLOCS_START", pair[0], PERMANENT, GVT_CONSTANT);
-            set_global("__IDLOCS_END",   pair[1], PERMANENT, GVT_CONSTANT);
+            set_global("__IDLOCS_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__IDLOCS_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
           }
 
           if ((pair = gp_processor_config_exist(found)) != NULL) {
-            set_global("__CONFIG_START", pair[0], PERMANENT, GVT_CONSTANT);
-            set_global("__CONFIG_END",   pair[1], PERMANENT, GVT_CONSTANT);
+            set_global("__CONFIG_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__CONFIG_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
           }
 
           if ((pair = gp_processor_eeprom_exist(found)) != NULL) {
-            set_global("__EEPROM_START", pair[0], PERMANENT, GVT_CONSTANT);
-            set_global("__EEPROM_END",   pair[1], PERMANENT, GVT_CONSTANT);
+            set_global("__EEPROM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__EEPROM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
           }
 
           addr = gp_processor_bsr_boundary(found);
 
           if (addr > 0) {
-            set_global("__ACC_RAM_LOW_START",      0, PERMANENT, GVT_CONSTANT);
-            set_global("__ACC_RAM_LOW_END", addr - 1, PERMANENT, GVT_CONSTANT);
+            set_global("__ACC_RAM_LOW_START",      0, LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__ACC_RAM_LOW_END", addr - 1, LFT_PERMANENT, GVT_CONSTANT);
           }
         } /* if (!state.mpasm_compatible) */
       } /* if (state.processor == NULL) */

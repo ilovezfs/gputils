@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Dec 24, 2015
+Jan 05, 2016
 \end_layout
 
 \begin_layout Standard
@@ -4555,6 +4555,42 @@ __ACC_RAM_LOW_END   -- e.g.
 \end_layout
 
 \begin_layout Standard
+The properties of RAM Banks:
+\end_layout
+
+\begin_layout LyX-Code
+__BANK_BITS         -- These bits select the active RAM Bank.
+\end_layout
+
+\begin_layout LyX-Code
+                       (e.g.
+ 0x20, 0x180, 0xF00, etc)
+\end_layout
+
+\begin_layout LyX-Code
+__BANK_MASK         -- These bits give the address of a register within
+ a RAM Bank.
+\end_layout
+
+\begin_layout LyX-Code
+                       (e.g.
+ 0x1F, 0x7F, 0xFF)
+\end_layout
+
+\begin_layout LyX-Code
+__BANK_SIZE         -- This is a RAM Bank size.
+\end_layout
+
+\begin_layout LyX-Code
+                       (e.g.
+ 32, 128, 256)
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
 The bounds of the Common RAM area, 
 \emph on
 if
@@ -4798,6 +4834,47 @@ __VECTOR_INT_LOW   -- Address of the Low Priority Interrupt Vector.
 
 \begin_layout LyX-Code
                       pic18xxx)
+\end_layout
+
+\begin_layout Subsection
+Built-in variables
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+The following variables exist 
+\emph on
+only
+\emph default
+ in the 
+\begin_inset Quotes eld
+\end_inset
+
+gpasm
+\begin_inset Quotes erd
+\end_inset
+
+ mode (if the command line is 
+\emph on
+not
+\emph default
+ included the "--mpasm-compatible" option).
+\series default
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The last time selected (with BANKSEL directive) RAM Bank:
+\end_layout
+
+\begin_layout LyX-Code
+__ACTIVE_BANK_ADDR -- e.g.
+ 0x20, 0x080, 0xE00, etc
 \end_layout
 
 \begin_layout Section

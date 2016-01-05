@@ -28,6 +28,8 @@ Boston, MA 02111-1307, USA.  */
  * and thus allow compile-time selection of the proper macro set */
 #define __16bit_core_   "__16bit_core_"
 
+#define GLOBAL_ACT_BANK_ADDR      "__ACTIVE_BANK_ADDR"
+
 #define STRCMP(s1, s2)  ((state.case_insensitive) ? \
                          strcasecmp((s1), (s2)) : \
                          strcmp((s1), (s2)))
@@ -123,7 +125,6 @@ extern struct gpasm_state {
   } cmd_line;
 
   int pass;                         /* 1 or 2 */
-  int last_bank;                    /* The last time selected bank. Invalid if bank < 0. */
   unsigned int byte_addr;           /* Current code-generation point. */
   gp_boolean dos_newlines;          /* Use DOS newlines in hex file. */
   gp_boolean memory_dump;           /* Dump instruction memory to standard output. */
@@ -261,9 +262,9 @@ extern struct gpasm_state {
     gp_section_type *section;       /*   Current section. */
     int section_num;                /*   Current section number. */
     gp_boolean enabled;             /*   True if object file is enabled. */
-    char new_sec_name[80];          /*   new section name */
-    int new_sec_addr;               /*   new section name */
-    int new_sec_flags;              /*   new section name */
+    char new_sect_name[80];         /*   new section name */
+    int new_sect_addr;              /*   new section name */
+    int new_sect_flags;             /*   new section name */
     int symbol_num;                 /*   Current symbol number. */
     int flags;                      /*   Current section flags. */
     gp_symbol_type *debug_file;     /*   Debug information for high level langs. */
@@ -290,8 +291,8 @@ extern struct gpasm_state {
 } state;
 
 enum globalLife {
-  TEMPORARY,
-  PERMANENT
+  LFT_TEMPORARY,
+  LFT_PERMANENT
 };
 
 struct variable {

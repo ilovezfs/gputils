@@ -157,7 +157,7 @@ int can_evaluate_value(const struct pnode *p)
   case PTAG_SYMBOL:
     /* '$' means current org, which we can evaluate if section at absolute address */
     if (strcmp(p->value.symbol, "$") == 0) {
-      return (((state.obj.new_sec_flags & STYP_ABS) != 0) ? true : false);
+      return (((state.obj.new_sect_flags & STYP_ABS) != 0) ? true : false);
     }
     else {
       /* Otherwise look it up */
@@ -488,11 +488,11 @@ add_reloc(const struct pnode *p, short offs, unsigned short type)
       org = IS_RAM_ORG ? state.byte_addr :
                          gp_processor_byte_to_real(state.processor, state.byte_addr);
 
-      snprintf(buffer, sizeof(buffer), "_%s_%04X", state.obj.new_sec_name, org);
+      snprintf(buffer, sizeof(buffer), "_%s_%04X", state.obj.new_sect_name, org);
       /* RELOCT_ACCESS has always also RELOCT_F, which has already
          created this symbol.*/
       if (type != RELOCT_ACCESS) {
-        set_global(buffer, org, PERMANENT, IS_RAM_ORG ? GVT_STATIC : GVT_ADDRESS);
+        set_global(buffer, org, LFT_PERMANENT, IS_RAM_ORG ? GVT_STATIC : GVT_ADDRESS);
       }
 
       s = get_symbol(state.stTop, buffer);
