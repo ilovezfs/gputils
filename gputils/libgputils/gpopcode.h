@@ -89,7 +89,7 @@ enum insn_class {
 #define PIC12_PC_MASK           ((1u << 11) - 1)
 
     /* General file bitmask. */
-#define PIC12_BMSK_FILE         0x1F
+#define PIC12_BMSK_FILE         0x01F
 
     /* addwf : 0001 11df ffff
                1111 1100 0000 */
@@ -266,10 +266,6 @@ enum insn_class {
 #define PIC12_INSN_XORWF        0x180
 #define PIC12_MASK_XORWF        0xFC0
 
-    /*   PC mask: 111 1111 1111 
-       goto mask:   1 1111 1111 */
-#define PIC12_PAGE_BITS         (PIC12_PC_MASK & (~PIC12_BMSK_GOTO))
-
 /******************************************
         PIC12E definitions
 ******************************************/
@@ -288,7 +284,6 @@ enum insn_class {
                1111 1111 1111 */
 #define PIC12E_INSN_RETURN      0x01E
 #define PIC12E_MASK_RETURN      0xFFF
-
 
 /******************************************
         SX definitions
@@ -351,10 +346,6 @@ enum insn_class {
 #define SX_INSN_RETURN          0x00C
 #define SX_MASK_RETURN          0xFFF
 
-    /*   PC mask: 1111 1111 1111 
-       goto mask:    1 1111 1111 */
-#define SX_PAGE_BITS            (SX_PC_MASK & (~PIC12_BMSK_GOTO))
-
 /******************************************
         PIC14 definitions
 ******************************************/
@@ -363,7 +354,7 @@ enum insn_class {
 #define PIC14_PC_MASK           ((1u << 13) - 1)
 
     /* General file bitmask. */
-#define PIC14_BMSK_FILE         0x7F
+#define PIC14_BMSK_FILE         0x07F
 #define PIC14_BMSK_TRIS         0x07
 
 #define PIC14_INSN_BxF_BITSHIFT     7
@@ -563,10 +554,6 @@ enum insn_class {
     /* Same the mask of call and goto. */
 #define PIC14_BMSK_BRANCH       PIC14_BMSK_CALL
 
-    /*     PC mask:  1 1111 1111 1111 
-       branch mask:     111 1111 1111 */
-#define PIC14_PAGE_BITS         (PIC14_PC_MASK & (~PIC14_BMSK_BRANCH))
-
 /******************************************
         PIC14E definitions
 ******************************************/
@@ -680,10 +667,6 @@ enum insn_class {
 #define PIC14E_INSN_SUBWFB      0x3B00
 #define PIC14E_MASK_SUBWFB      0x3F00
 
-    /*     PC mask:  111 1111 1111 1111 
-       branch mask:       111 1111 1111 */
-#define PIC14E_PAGE_BITS        (PIC14E_PC_MASK & (~PIC14_BMSK_BRANCH))
-
 /******************************************
         PIC16 definitions
 ******************************************/
@@ -692,7 +675,7 @@ enum insn_class {
 #define PIC16_PC_MASK           ((1u << 16) - 1)
 
     /* General file bitmask. */
-#define PIC16_BMSK_FILE         0xFF
+#define PIC16_BMSK_FILE         0x0FF
 
     /* addlw : 1011 0001 kkkk kkkk
                1111 1111 0000 0000 */
@@ -990,10 +973,6 @@ enum insn_class {
 
     /* Same the mask of call and goto. */
 #define PIC16_BMSK_BRANCH       PIC16_BMSK_CALL
-
-    /*     PC mask:  1111 1111 1111 1111 
-       branch mask:     1 1111 1111 1111 */
-#define PIC16_PAGE_BITS         (PIC16_PC_MASK & (~PIC16_BMSK_BRANCH))
 
 /******************************************
         PIC16E definitions
@@ -1470,7 +1449,6 @@ enum insn_class {
     /* This is identical to PIC16EX_BMSK_SUBULNK. */
 #define PIC16EX_BMSK_xxxULNK    PIC16EX_BMSK_ADDULNK
 
-
 enum common_insn {
   ICODE_ADDFSR,
   ICODE_ADDLW,
@@ -1584,6 +1562,12 @@ enum common_insn {
   ICODE_XORWF
 };
 
+enum invalidate_mask {
+  INV_MASK_NULL = 0,
+  INV_MASK_BANK = (1 << 0),     /* An instruction invalidates the selection of RAM Banks. (Only in "gpasm" and "absolute" mode.) */
+  INV_MASK_PAGE = (1 << 1)      /* An instruction invalidates the selection of ROM Pages. (Only in "gpasm" and "absolute" mode.) */
+};
+
 typedef int gpasmVal;   /* The type that internal arithmetic uses. */
 
 struct pnode;           /* forward declaration; defined in
@@ -1596,6 +1580,7 @@ struct insn {
   unsigned int opcode;
   enum common_insn icode;
   enum insn_class class;
+  enum invalidate_mask inv_mask;
   unsigned int attribs;
   gpasmVal (*doer)(gpasmVal r, const char *name, int arity, struct pnode *parms);
 };

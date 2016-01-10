@@ -414,36 +414,38 @@ static gpasmVal do_mode(gpasmVal r,
 
 /* PIC 12-bit and 14-bit "Special" instruction set. */
 const struct insn special[] = {
-  { "addcf",  0, 0, 0, INSN_CLASS_FUNC, 0, do_addcf  },
-  { "adddcf", 0, 0, 0, INSN_CLASS_FUNC, 0, do_adddcf },
-  { "b",      0, 0, 0, INSN_CLASS_FUNC, 0, do_b      },
-  { "bc",     0, 0, 0, INSN_CLASS_FUNC, 0, do_bc     },
-  { "bdc",    0, 0, 0, INSN_CLASS_FUNC, 0, do_bdc    },
-  { "bz",     0, 0, 0, INSN_CLASS_FUNC, 0, do_bz     },
-  { "bnc",    0, 0, 0, INSN_CLASS_FUNC, 0, do_bnc    },
-  { "bndc",   0, 0, 0, INSN_CLASS_FUNC, 0, do_bndc   },
-  { "bnz",    0, 0, 0, INSN_CLASS_FUNC, 0, do_bnz    },
-  { "clrc",   0, 0, 0, INSN_CLASS_FUNC, 0, do_clrc   },
-  { "clrdc",  0, 0, 0, INSN_CLASS_FUNC, 0, do_clrdc  },
-  { "clrz",   0, 0, 0, INSN_CLASS_FUNC, 0, do_clrz   },
-  { "lcall",  0, 0, 0, INSN_CLASS_FUNC, 0, do_lcall  },
-  { "lgoto",  0, 0, 0, INSN_CLASS_FUNC, 0, do_lgoto  },
-  { "movfw",  0, 0, 0, INSN_CLASS_FUNC, 0, do_movfw  },
-  { "negf",   0, 0, 0, INSN_CLASS_FUNC, 0, do_negf   },
-  { "setc",   0, 0, 0, INSN_CLASS_FUNC, 0, do_setc   },
-  { "setdc",  0, 0, 0, INSN_CLASS_FUNC, 0, do_setdc  },
-  { "setz",   0, 0, 0, INSN_CLASS_FUNC, 0, do_setz   },
-  { "skpc",   0, 0, 0, INSN_CLASS_FUNC, 0, do_skpc   },
-  { "skpdc",  0, 0, 0, INSN_CLASS_FUNC, 0, do_skpdc  },
-  { "skpz",   0, 0, 0, INSN_CLASS_FUNC, 0, do_skpz   },
-  { "skpnc",  0, 0, 0, INSN_CLASS_FUNC, 0, do_skpnc  },
-  { "skpndc", 0, 0, 0, INSN_CLASS_FUNC, 0, do_skpndc },
-  { "skpnz",  0, 0, 0, INSN_CLASS_FUNC, 0, do_skpnz  },
-  { "subcf",  0, 0, 0, INSN_CLASS_FUNC, 0, do_subcf  },
-  { "subdcf", 0, 0, 0, INSN_CLASS_FUNC, 0, do_subdcf },
-  { "tstf",   0, 0, 0, INSN_CLASS_FUNC, 0, do_tstf   }
+  { "addcf",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_addcf  },
+  { "adddcf", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_adddcf },
+  { "b",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_b      },
+  { "bc",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bc     },
+  { "bdc",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bdc    },
+  { "bz",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bz     },
+  { "bnc",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bnc    },
+  { "bndc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bndc   },
+  { "bnz",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bnz    },
+  { "clrc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_clrc   },
+  { "clrdc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_clrdc  },
+  { "clrz",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_clrz   },
+  { "lcall",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_lcall  },
+  { "lgoto",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_lgoto  },
+  { "movfw",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_movfw  },
+  { "negf",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_negf   },
+  { "setc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_setc   },
+  { "setdc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_setdc  },
+  { "setz",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_setz   },
+  { "skpc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpc   },
+  { "skpdc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpdc  },
+  { "skpz",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpz   },
+  { "skpnc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpnc  },
+  { "skpndc", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpndc },
+  { "skpnz",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpnz  },
+  { "subcf",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_subcf  },
+  { "subdcf", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_subdcf },
+  { "tstf",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_tstf   }
 };
 
 const int num_op_special = TABLE_SIZE(special);
 
-const struct insn op_sx_mode = { "mode", 0, 0, 0, INSN_CLASS_FUNC, 0, do_mode };
+const struct insn op_sx_mode = { 
+  "mode", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_mode
+};

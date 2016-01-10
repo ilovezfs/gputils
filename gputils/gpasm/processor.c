@@ -31,6 +31,7 @@ Boston, MA 02111-1307, USA.  */
 void select_processor(const char *name)
 {
   pic_processor_t found = NULL;
+  proc_class_t class;
   const int *pair;
   const vector_t *vec;
   unsigned int num;
@@ -79,11 +80,41 @@ void select_processor(const char *name)
         set_global(found->defined_as, 1, LFT_PERMANENT, GVT_CONSTANT);
 
         if (!state.mpasm_compatible) {
-          set_global(GLOBAL_ACT_BANK_ADDR, -1, LFT_TEMPORARY, GVT_GLOBAL);
+          class = found->class;
 
-          set_global("__BANK_BITS", found->bank_bits,            LFT_PERMANENT, GVT_GLOBAL);
-          set_global("__BANK_MASK", found->class->bank_size - 1, LFT_PERMANENT, GVT_GLOBAL);
-          set_global("__BANK_SIZE", found->class->bank_size,     LFT_PERMANENT, GVT_GLOBAL);
+          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_CONSTANT);
+          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_CONSTANT);
+
+          if ((class == PROC_CLASS_GENERIC) || (class == PROC_CLASS_PIC12) ||
+              (class == PROC_CLASS_PIC12E)) {
+            set_global("__PAGE_BITS", PIC12_PAGE_BITS,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_MASK", PIC12_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_SIZE", PIC12_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT);
+          }
+          else if (class == PROC_CLASS_SX) {
+            set_global("__PAGE_BITS", SX_PAGE_BITS,        LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_MASK", PIC12_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_SIZE", PIC12_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT);
+          }
+          else if (class == PROC_CLASS_PIC14) {
+            set_global("__PAGE_BITS", PIC14_PAGE_BITS,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_MASK", PIC14_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_SIZE", PIC14_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT);
+          }
+          else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+            set_global("__PAGE_BITS", PIC14E_PAGE_BITS,    LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_MASK", PIC14_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_SIZE", PIC14_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT);
+          }
+
+          set_global("__BANK_BITS", found->bank_bits,     LFT_PERMANENT, GVT_CONSTANT);
+          set_global("__BANK_MASK", class->bank_size - 1, LFT_PERMANENT, GVT_CONSTANT);
+          set_global("__BANK_SIZE", class->bank_size,     LFT_PERMANENT, GVT_CONSTANT);
+          set_global("__BANK_INV",  GLOBAL_ACT_BANK_INV,  LFT_PERMANENT, GVT_CONSTANT);
 
           if ((pair = gp_processor_common_ram_exist(found)) != NULL) {
             set_global("__COMMON_RAM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);

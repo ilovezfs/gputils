@@ -2,6 +2,8 @@
    Copyright (C) 2005
    Craig Franklin
 
+   Copyright (C) 2015-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -34,8 +36,7 @@ gp_coffopt_remove_weak(gp_object_type *object)
   /* Search the symbol table for extern symbols. */
   symbol = object->symbols;
   while (symbol != NULL) {
-    if ((symbol->class == C_EXT) && 
-        (symbol->section_number == N_UNDEF) &&
+    if ((symbol->class == C_EXT) &&  (symbol->section_number == N_UNDEF) &&
         (!gp_coffgen_has_reloc(object, symbol))) {
       gp_debug("  removed weak symbol \"%s\"", symbol->name);
       gp_coffgen_delsymbol(object, symbol);
@@ -45,8 +46,7 @@ gp_coffopt_remove_weak(gp_object_type *object)
   }
 }
 
-/* Remove any relocatable section that doesn't have a symbol pointed to by
-   a relocation. */
+/* Remove any relocatable section that doesn't have a symbol pointed to by a relocation. */
 
 void
 gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
@@ -88,7 +88,7 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
   section = object->sections;
   while (section != NULL) {
     /* FIXME: Maybe don't remove if it is in protected memory. */
-    if ((!section->is_used) && !(section->flags & STYP_ABS)) {
+    if ((!section->is_used) && ((section->flags & (STYP_ABS | STYP_DATA)) == 0)) {
       gp_debug("Removing section \"%s\".", section->name);
       gp_coffgen_delsectionsyms(object, section);
       gp_coffgen_delsection(object, section);
@@ -100,6 +100,6 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
 
   if (section_removed) {
     /* take another pass */
-    gp_coffopt_remove_dead_sections(object, pass++);
+    gp_coffopt_remove_dead_sections(object, ++pass);
   }
 }

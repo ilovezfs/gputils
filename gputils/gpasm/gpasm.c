@@ -136,7 +136,7 @@ init(void)
   state.found_devid             = false;
   state.found_idlocs            = false;
   state.found_end               = false;
-  state.maxram                  = (MAX_RAM - 1);
+  state.maxram                  = MAX_RAM - 1;
 
   state.codfile                 = OUT_NORMAL;
   state.depfile                 = OUT_SUPPRESS;

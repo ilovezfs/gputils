@@ -266,6 +266,8 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 {
   int i, len, type;
   const gp_coffsymbol_type *var;
+  const gp_symbol_type *symbol;
+  const gp_section_type *section;
   const char *name;
   BlockList *sb = NULL;
 
@@ -274,9 +276,9 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
   }
 
   for (i = 0; i < num_symbols; i++) {
-    var = get_symbol_annotation(symbol_list[i]);
+    var  = get_symbol_annotation(symbol_list[i]);
     name = get_symbol_name(symbol_list[i]);
-    len = strlen(name);
+    len  = strlen(name);
 
     /* If this symbol extends past the end of the cod block
      * then write this block out */
@@ -287,14 +289,16 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 
     gp_cod_strncpy(&sb->block[main_dir->sym.offset + 1], name, MAX_SYM_LEN);
 
-    assert(var->symbol != NULL);
-    assert(var->symbol->section != NULL);
+    symbol = var->symbol;
+    assert(symbol != NULL);
+    section = symbol->section;
+    assert(section != NULL);
 
-    if (var->symbol->section->flags & STYP_TEXT) {
+    if (section->flags & STYP_TEXT) {
       type = COD_ST_ADDRESS;
-    } else if (var->symbol->section->flags & STYP_DATA) {
+    } else if (section->flags & STYP_DATA) {
       type = COD_ST_C_SHORT;
-    } else if (var->symbol->section->flags & STYP_BSS) {
+    } else if (section->flags & STYP_BSS) {
       type = COD_ST_C_SHORT;
     } else {
       type = COD_ST_CONSTANT;
@@ -303,7 +307,7 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
     gp_putl16(&sb->block[main_dir->sym.offset + len + COD_SYM_TYPE], type);
 
     /* write 32 bits, big endian */
-    gp_putb32(&sb->block[main_dir->sym.offset + len + COD_SYM_VALUE], var->symbol->value);
+    gp_putb32(&sb->block[main_dir->sym.offset + len + COD_SYM_VALUE], symbol->value);
 
     main_dir->sym.offset += len + COD_SYM_EXTRA;
   }

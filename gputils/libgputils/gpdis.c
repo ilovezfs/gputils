@@ -265,15 +265,14 @@ GPUTILS_GCC_DIAG_OFF(switch)
       /* PIC12x call, SX call */
       value   = opcode & PIC12_BMSK_CALL;
       dst_org = value;
-      tmp     = (class == PROC_CLASS_PIC12) ? PIC12_PAGE_BITS : SX_PAGE_BITS;
 
       if ((prog_max_org > 0) && (prog_max_org <= PIC12_BMSK_CALL)) {
         /* The PCLATH is not required. */
         goto _class_lit8c12;
       }
-      else if ((pclath_valid & (tmp >> 8)) == (tmp >> 8)) {
+      else if ((pclath_valid & (PIC12_PAGE_BITS >> 8)) == (PIC12_PAGE_BITS >> 8)) {
         /* The value of the PCLATH is known. */
-        dst_org |= (pclath << 8) & tmp;
+        dst_org |= (pclath << 8) & PIC12_PAGE_BITS;
 
 _class_lit8c12:
 
@@ -354,15 +353,14 @@ _class_lit8c12:
       /* PIC12 goto, SX goto */
       value   = opcode & PIC12_BMSK_GOTO;
       dst_org = value;
-      tmp     = (class == PROC_CLASS_PIC12) ? PIC12_PAGE_BITS : SX_PAGE_BITS;
 
       if ((prog_max_org > 0) && (prog_max_org <= PIC12_BMSK_GOTO)) {
         /* The PCLATH is not required. */
         goto _class_lit9;
       }
-      else if ((pclath_valid & (tmp >> 8)) == (tmp >> 8)) {
+      else if ((pclath_valid & (PIC12_PAGE_BITS >> 8)) == (PIC12_PAGE_BITS >> 8)) {
         /* The value of the PCLATH is known. */
-        dst_org |= (pclath << 8) & tmp;
+        dst_org |= (pclath << 8) & PIC12_PAGE_BITS;
 
 _class_lit9:
 

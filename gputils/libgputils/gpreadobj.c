@@ -65,8 +65,7 @@ gp_identify_coff_file(const char *filename)
     return GP_COFF_SYS_ERR;
   }
 
-  /* Read the magic number. Archive magic numbers are longest, so read
-     their size */
+  /* Read the magic number. Archive magic numbers are longest, so read their size. */
   n = fread(&magic[0], 1, SARMAG, file);
   fclose(file);
 
@@ -219,8 +218,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
     }
     else {
       gp_warning("Unknown processor type (%#04lx) in \"%s\" defaulted to %s.",
-                 proc_code, object->filename,
-                 gp_processor_name(object->processor, 0));
+                 proc_code, object->filename, gp_processor_name(object->processor, 0));
     }
   }
 
@@ -271,8 +269,7 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
   section->virtual_address = check_getl32(&file[12], data);
 
   if (section->address != section->virtual_address) {
-    gp_error("Virtual address does not equal physical address in \"%s\".",
-             object->filename);
+    gp_error("Virtual address does not equal physical address in \"%s\".", object->filename);
   }
 
   section->size       = check_getl32(&file[16], data);
@@ -293,6 +290,7 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
   if (section->flags & (STYP_TEXT | STYP_DATA_ROM)) {
     section->address = gp_processor_org_to_byte(object->class, section->address);
   }
+
 
   if (((section->flags & (STYP_TEXT | STYP_ABS)) == (STYP_TEXT | STYP_ABS)) && (section->address & 1)) {
     gp_error("Absolute code section \"%s\" must start at a word-aligned address.\n", section->name);

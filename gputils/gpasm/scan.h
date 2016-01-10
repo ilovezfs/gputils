@@ -28,7 +28,7 @@ void open_src(const char *name, gp_boolean is_include_file);
 void close_file(void);
 void execute_exitm(void);
 void execute_macro(struct macro_head *h, gp_boolean is_while);
-int found_end(void);
+gp_boolean found_end(void);
 
 extern gp_boolean force_ident;
 extern gp_boolean force_decimal;

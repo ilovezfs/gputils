@@ -29,6 +29,10 @@ Boston, MA 02111-1307, USA.  */
 #define __16bit_core_   "__16bit_core_"
 
 #define GLOBAL_ACT_BANK_ADDR      "__ACTIVE_BANK_ADDR"
+#define GLOBAL_ACT_BANK_INV       -1
+
+#define GLOBAL_ACT_PAGE_ADDR      "__ACTIVE_PAGE_ADDR"
+#define GLOBAL_ACT_PAGE_INV       -1
 
 #define STRCMP(s1, s2)  ((state.case_insensitive) ? \
                          strcasecmp((s1), (s2)) : \

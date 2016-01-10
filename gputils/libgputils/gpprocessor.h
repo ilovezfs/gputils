@@ -31,6 +31,9 @@ Boston, MA 02111-1307, USA.  */
 #define PIC12_RAM_ADDR_BITS         PIC12_BANK_SHIFT
 #define PIC12_BMSK_BANK             0x003
 #define PIC12_PAGE_SIZE             512
+#define PIC12_PAGE_MASK             (PIC12_PAGE_SIZE - 1)
+#define PIC12_PAGE_BITS             (PIC12_PC_MASK ^ PIC12_PAGE_MASK)
+#define PIC12_SHIFT_PAGE_ADDR       9
 
 #define PIC12_REG_STATUS            0x03
 #define PIC12_REG_FSR               0x04
@@ -48,6 +51,7 @@ Boston, MA 02111-1307, USA.  */
 ******************************************/
 
 #define MASK_SX_PAGE                0x007
+#define SX_PAGE_BITS                (SX_PC_MASK ^ PIC12_PAGE_MASK)
 
 /******************************************
         PIC14 definitions
@@ -57,6 +61,9 @@ Boston, MA 02111-1307, USA.  */
 #define PIC14_BANK_SHIFT            7
 #define PIC14_RAM_ADDR_BITS         PIC14_BANK_SHIFT
 #define PIC14_PAGE_SIZE             2048
+#define PIC14_PAGE_MASK             (PIC14_PAGE_SIZE - 1)
+#define PIC14_PAGE_BITS             (PIC14_PC_MASK ^ PIC14_PAGE_MASK)
+#define PIC14_SHIFT_PAGE_ADDR       11
 
 #define PIC14_BMSK_BANK             0x0003
 #define PIC14_BMSK_PAGE             0x0003
@@ -77,6 +84,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define PIC14E_BMSK_BANK            0x001F
 #define PIC14E_BMSK_PAGE512         0x007F
+#define PIC14E_PAGE_BITS            (PIC14E_PC_MASK ^ PIC14_PAGE_MASK)
 
 #define PIC14E_REG_INDF0            0x00
 #define PIC14E_REG_FSR0             0x04
@@ -97,6 +105,10 @@ Boston, MA 02111-1307, USA.  */
 #define PIC16_BANK_SIZE             256
 #define PIC16_BANK_SHIFT            8
 #define PIC16_RAM_ADDR_BITS         PIC16_BANK_SHIFT
+#define PIC16_PAGE_SIZE             8192
+#define PIC16_PAGE_MASK             (PIC16_PAGE_SIZE - 1)
+#define PIC16_PAGE_BITS             (PIC16_PC_MASK ^ PIC16_PAGE_MASK)
+#define PIC16_SHIFT_PAGE_ADDR       13
 
 #define PIC16_BMSK_BANK             0x00FF
 #define PIC16_BMSK_PAGE             0x00FF
@@ -204,6 +216,10 @@ struct proc_class {
   /* Set the page bits, return the number of instructions required. */
   int (*set_page)(int num_pages, int page, MemBlock *m,
                   unsigned int address, gp_boolean use_wreg);
+
+  int (*page_addr)(unsigned int org);
+
+  int (*page_bits_to_addr)(unsigned int bits);
 
   /* These return the bits to set in instruction for given address. */
   int (*reloc_call)(unsigned int address);
@@ -372,28 +388,22 @@ int gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address
 int gp_processor_rom_width(proc_class_t class);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);
 
-int gp_processor_set_bank(proc_class_t class,
-                          int num_banks,
-                          int bank,
-                          MemBlock *m,
+int gp_processor_set_bank(proc_class_t class, int num_banks, int bank, MemBlock *m,
                           unsigned int address);
 
 int gp_processor_check_ibank(proc_class_t class, unsigned int address);
 
-int gp_processor_set_ibank(proc_class_t class,
-                           int num_banks,
-                           int bank,
-                           MemBlock *m,
+int gp_processor_set_ibank(proc_class_t class, int num_banks, int bank, MemBlock *m,
                            unsigned int address);
 
 int gp_processor_check_page(proc_class_t class, unsigned int address);
 
-int gp_processor_set_page(proc_class_t class,
-                          int num_pages,
-                          int page,
-                          MemBlock *m,
-                          unsigned int address,
-                          gp_boolean use_wreg);
+int gp_processor_set_page(proc_class_t class, int num_pages, int page, MemBlock *m,
+                          unsigned int address, gp_boolean use_wreg);
+
+int gp_processor_page_addr(proc_class_t class, unsigned int address);
+
+int gp_processor_page_bits_to_addr(proc_class_t class, unsigned int bits);
 
 int gp_processor_retlw(proc_class_t class);
 
