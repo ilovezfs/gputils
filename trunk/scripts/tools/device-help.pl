@@ -1870,6 +1870,7 @@ sub read_device_informations()
   my $directive_count = 0;
   my $switch_count    = 0;
   my $option_count    = 0;
+  my $bank_num;
   my $state           = ST_WAIT;
   my ($dir_addr_min, $dir_addr_max, $directive_mask);
   my $debug_present;
@@ -1911,10 +1912,18 @@ sub read_device_informations()
         $dir_addr_max   = 0;
         $directive_mask = 0;
         $debug_present  = FALSE;
+        $bank_num       = hex($fields[7]);
 
         my $tr = $class_features_by_mpasmx{$class_name};
 
         die "Unknown class of $mcu_name MCU!" if (! defined($tr));
+
+        if ($bank_num > $tr->{BANK_MAX})
+          {
+          # This is a Microchip bug in the database.
+          print STDERR "Too much the Bank number of $mcu_name device: $bank_num, May at most $tr->{BANK_MAX}.\n";
+          $bank_num = $tr->{BANK_MAX};
+          }
 
         $mcu_features =
           {
@@ -1943,7 +1952,7 @@ sub read_device_informations()
           DIRECTIVES => [],
           CONF_MASK  => 0,                # Mask of the config words.
           BANK_MAX   => $tr->{BANK_MAX},
-          BANK_NUM   => hex($fields[7]),  # Number of the RAM Banks.
+          BANK_NUM   => $bank_num,        # Number of the RAM Banks.
           BANK_SIZE  => $tr->{BANK_SIZE},
           BANK_MASK  => $tr->{BANK_MASK},
           BANK_SHIFT => $tr->{BANK_SHIFT},

@@ -1,4 +1,8 @@
 2016-01-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/device-help.pl:
+	  Fix a Microchip bug.
+
+2016-01-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-help.pl, tools/device-manager.pl:
 	  Added BANK_MAX value (for pic16(l)f18855, pic16(l)f18875).
 
