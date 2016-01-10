@@ -346,10 +346,10 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14E   , "__16F18854"    , { "pic16f18854"    , "p16f18854"      , "16f18854"        }, 0x8854,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x000FFF, 0x001000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18854.inc"    , "16f18854_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16F18855"    , { "pic16f18855"    , "p16f18855"      , "16f18855"        }, 0x8855,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18855.inc"    , "16f18855_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16F18856"    , { "pic16f18856"    , "p16f18856"      , "16f18856"        }, 0x8856,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18856.inc"    , "16f18856_g.lkr"    , 0 },
-  { PROC_CLASS_PIC14EX  , "__16F18857"    , { "pic16f18857"    , "p16f18857"      , "16f18857"        }, 0x8857, 16,   64, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x30BF }, 0x1FFF, 0x007FFF, 0x008000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18857.inc"    , "16f18857_g.lkr"    , 0 },
+  { PROC_CLASS_PIC14EX  , "__16F18857"    , { "pic16f18857"    , "p16f18857"      , "16f18857"        }, 0x8857, 16,   32, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x30BF }, 0x1FFF, 0x007FFF, 0x008000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18857.inc"    , "16f18857_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16F18875"    , { "pic16f18875"    , "p16f18875"      , "16f18875"        }, 0x8875,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18875.inc"    , "16f18875_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16F18876"    , { "pic16f18876"    , "p16f18876"      , "16f18876"        }, 0x8876,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18876.inc"    , "16f18876_g.lkr"    , 0 },
-  { PROC_CLASS_PIC14EX  , "__16F18877"    , { "pic16f18877"    , "p16f18877"      , "16f18877"        }, 0x8877,  4,   64, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31EF }, 0x1FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18877.inc"    , "16f18877_g.lkr"    , 0 },
+  { PROC_CLASS_PIC14EX  , "__16F18877"    , { "pic16f18877"    , "p16f18877"      , "16f18877"        }, 0x8877,  4,   32, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31EF }, 0x1FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18877.inc"    , "16f18877_g.lkr"    , 0 },
   { PROC_CLASS_PIC12    , "__16HV540"     , { "pic16hv540"     , "p16hv540"       , "16hv540"         }, 0x6540,  1,    1, 0x0000, {   -1,   -1 },    -1, {     -1,     -1 }, 0x001F, 0x0001FF, 0x000200, {       -1,       -1 }, { 0x000200, 0x000203 }, { 0x000FFF, 0x000FFF }, {       -1,       -1 }, 0x0FF0, "p16hv540.inc"     , "16hv540_g.lkr"     , 0 },
   { PROC_CLASS_PIC14    , "__16HV610"     , { "pic16hv610"     , "p16hv610"       , "16hv610"         }, 0x6610,  1,    2, 0x0080, { 0x70, 0x7F },    -1, {     -1,     -1 }, 0x00FF, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, {       -1,       -1 }, 0x3F80, "p16hv610.inc"     , "16hv610_g.lkr"     , 0 },
   { PROC_CLASS_PIC14    , "__16HV616"     , { "pic16hv616"     , "p16hv616"       , "16hv616"         }, 0x6616,  1,    2, 0x0080, { 0x70, 0x7F },    -1, {     -1,     -1 }, 0x00FF, 0x0007FF, 0x000800, {       -1,       -1 }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, {       -1,       -1 }, 0x3F80, "p16hv616.inc"     , "16hv616_g.lkr"     , 0 },
@@ -481,10 +481,10 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14E   , "__16LF18854"   , { "pic16lf18854"   , "p16lf18854"     , "16lf18854"       }, 0xA854,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x000FFF, 0x001000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18854.inc"   , "16lf18854_g.lkr"   , 0 },
   { PROC_CLASS_PIC14E   , "__16LF18855"   , { "pic16lf18855"   , "p16lf18855"     , "16lf18855"       }, 0xA855,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18855.inc"   , "16lf18855_g.lkr"   , 0 },
   { PROC_CLASS_PIC14E   , "__16LF18856"   , { "pic16lf18856"   , "p16lf18856"     , "16lf18856"       }, 0xA856,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18856.inc"   , "16lf18856_g.lkr"   , 0 },
-  { PROC_CLASS_PIC14EX  , "__16LF18857"   , { "pic16lf18857"   , "p16lf18857"     , "16lf18857"       }, 0xA857,  4,   64, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31CF }, 0x1FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18857.inc"   , "16lf18857_g.lkr"   , 0 },
+  { PROC_CLASS_PIC14EX  , "__16LF18857"   , { "pic16lf18857"   , "p16lf18857"     , "16lf18857"       }, 0xA857,  4,   32, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31CF }, 0x1FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18857.inc"   , "16lf18857_g.lkr"   , 0 },
   { PROC_CLASS_PIC14E   , "__16LF18875"   , { "pic16lf18875"   , "p16lf18875"     , "16lf18875"       }, 0xA875,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18875.inc"   , "16lf18875_g.lkr"   , 0 },
   { PROC_CLASS_PIC14E   , "__16LF18876"   , { "pic16lf18876"   , "p16lf18876"     , "16lf18876"       }, 0xA876,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27CF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18876.inc"   , "16lf18876_g.lkr"   , 0 },
-  { PROC_CLASS_PIC14EX  , "__16LF18877"   , { "pic16lf18877"   , "p16lf18877"     , "16lf18877"       }, 0xA877,  4,   64, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x25EF }, 0x1FEF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18877.inc"   , "16lf18877_g.lkr"   , 0 },
+  { PROC_CLASS_PIC14EX  , "__16LF18877"   , { "pic16lf18877"   , "p16lf18877"     , "16lf18877"       }, 0xA877,  4,   32, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x25EF }, 0x1FEF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18877.inc"   , "16lf18877_g.lkr"   , 0 },
   { PROC_CLASS_PIC16    , "__17C42"       , { "pic17c42"       , "p17c42"         , "17c42"           }, 0x7C42,  0,    0, 0x0300, {   -1,   -1 },    -1, {     -1,     -1 }, 0x03FF, 0x0007FF, 0x000800, {       -1,       -1 }, {       -1,       -1 }, { 0x00FE00, 0x00FE0F }, {       -1,       -1 }, 0x0000, "p17c42.inc"       , "17c42_g.lkr"       , 0 },
   { PROC_CLASS_PIC16    , "__17C42A"      , { "pic17c42a"      , "p17c42a"        , "17c42a"          }, 0x742A,  0,    0, 0x0300, {   -1,   -1 },    -1, {     -1,     -1 }, 0x031F, 0x0007FF, 0x000800, {       -1,       -1 }, {       -1,       -1 }, { 0x00FE00, 0x00FE0F }, {       -1,       -1 }, 0x0000, "p17c42a.inc"      , "17c42a_g.lkr"      , 0 },
   { PROC_CLASS_PIC16    , "__17C43"       , { "pic17c43"       , "p17c43"         , "17c43"           }, 0x7C43,  0,    0, 0x0300, {   -1,   -1 },    -1, {     -1,     -1 }, 0x031F, 0x000FFF, 0x001000, {       -1,       -1 }, {       -1,       -1 }, { 0x00FE00, 0x00FE0F }, {       -1,       -1 }, 0x0000, "p17c43.inc"       , "17c43_g.lkr"       , 0 },
@@ -1518,33 +1518,37 @@ gp_processor_rom_width(proc_class_t class)
 /* Set the page bits, return the number of instructions required. */
 
 int
-gp_processor_set_page(proc_class_t class,
-                      int num_pages,
-                      int page,
-                      MemBlock *m,
-                      unsigned int address,
-                      gp_boolean use_wreg)
+gp_processor_set_page(proc_class_t class, int num_pages, int page, MemBlock *m,
+                      unsigned int address, gp_boolean use_wreg)
 {
   return class->set_page(num_pages, page, m, address, use_wreg);
+}
+
+/* Mask the page bits, if exists. */
+
+int
+gp_processor_page_addr(proc_class_t class, unsigned int address)
+{
+  return class->page_addr(address);
+}
+
+int
+gp_processor_page_bits_to_addr(proc_class_t class, unsigned int bits)
+{
+  return class->page_bits_to_addr(bits);
 }
 
 /* Set the bank bits, return the number of instructions required. */
 
 int
-gp_processor_set_bank(proc_class_t class,
-                      int num_banks,
-                      int bank,
-                      MemBlock *m,
+gp_processor_set_bank(proc_class_t class, int num_banks, int bank, MemBlock *m,
                       unsigned int address)
 {
   return class->set_bank(num_banks, bank, m, address);
 }
 
 int
-gp_processor_set_ibank(proc_class_t class,
-                      int num_banks,
-                      int bank,
-                      MemBlock *m,
+gp_processor_set_ibank(proc_class_t class, int num_banks, int bank, MemBlock *m,
                       unsigned int address)
 {
   return class->set_ibank(num_banks, bank, m, address);
@@ -1663,10 +1667,7 @@ gp_processor_check_xbank_unsupported(unsigned int address)
 }
 
 static int
-gp_processor_set_xbank_unsupported(int num_banks,
-                                  int bank,
-                                  MemBlock *m,
-                                  unsigned int address)
+gp_processor_set_xbank_unsupported(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   assert(0);
   return 0;
@@ -1680,11 +1681,22 @@ gp_processor_check_page_unsupported(unsigned int org)
 }
 
 static int
-gp_processor_set_page_unsupported(int num_pages,
-                                  int page,
-                                  MemBlock *m,
-                                  unsigned int address,
+gp_processor_set_page_unsupported(int num_pages, int page, MemBlock *m, unsigned int address,
                                   gp_boolean use_wreg)
+{
+    assert(0);
+    return 0;
+}
+
+static int
+gp_processor_page_addr_unsupported(unsigned int address)
+{
+    assert(0);
+    return 0;
+}
+
+static int
+gp_processor_page_bits_to_addr_unsupported(unsigned int bits)
 {
     assert(0);
     return 0;
@@ -1736,18 +1748,9 @@ reloc_high_generic(gp_boolean is_code, int value)
 /* Common to PIC12 and PIC14 */
 
 static int
-gp_processor_set_page_pic12_14(int num_pages,
-                               int page,
-                               MemBlock *m,
-                               unsigned int address,
-                               gp_boolean use_wreg,
-                               int bcf_insn,
-                               int bsf_insn,
-                               int movlw_insn,
-                               int movwf_insn,
-                               int location,
-                               int page0,
-                               int page1)
+gp_processor_set_page_pic12_14(int num_pages, int page, MemBlock *m, unsigned int address,
+                               gp_boolean use_wreg, int bcf_insn, int bsf_insn, int movlw_insn,
+                               int movwf_insn, int location, int page0, int page1)
 {
   unsigned int data;
   char buf[BUFSIZ];
@@ -1784,15 +1787,8 @@ gp_processor_set_page_pic12_14(int num_pages,
 }
 
 static int
-gp_processor_set_bank_pic12_14(int num_banks,
-                               int bank,
-                               MemBlock *m,
-                               unsigned int address,
-                               int bcf_insn,
-                               int bsf_insn,
-                               int location,
-                               int bank0,
-                               int bank1)
+gp_processor_set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned int address,
+                               int bcf_insn, int bsf_insn, int location, int bank0, int bank1)
 {
   unsigned int data;
   char buf[BUFSIZ];
@@ -1836,45 +1832,40 @@ gp_processor_check_bank_pic12(unsigned int address)
 }
 
 static int
-gp_processor_set_bank_pic12(int num_banks,
-                            int bank,
-                            MemBlock *m,
-                            unsigned int address)
+gp_processor_set_bank_pic12(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
-                                        PIC12_INSN_BCF,
-                                        PIC12_INSN_BSF,
-                                        PIC12_REG_FSR,
-                                        5 << 5,
-                                        6 << 5);
+                                        PIC12_INSN_BCF, PIC12_INSN_BSF, PIC12_REG_FSR,
+                                        5 << 5, 6 << 5);
 }
 
 static int
 gp_processor_check_page_pic12(unsigned int org)
 {
-  return ((org & PIC12_PAGE_BITS) >> 9);
+  return ((org & PIC12_PAGE_BITS) >> PIC12_SHIFT_PAGE_ADDR);
 }
 
 static int
-gp_processor_set_page_pic12(int num_pages,
-                            int page,
-                            MemBlock *m,
-                            unsigned int address,
+gp_processor_page_addr_pic12(unsigned int org)
+{
+  return (org & PIC12_PAGE_BITS);
+}
+
+static int
+gp_processor_page_bits_to_addr_pic12(unsigned int bits)
+{
+  return gp_processor_page_addr_pic12(bits << PIC12_SHIFT_PAGE_ADDR);
+}
+
+static int
+gp_processor_set_page_pic12(int num_pages, int page, MemBlock *m, unsigned int address,
                             gp_boolean use_wreg)
 
 {
-  return gp_processor_set_page_pic12_14(num_pages,
-                                        page,
-                                        m,
-                                        address,
-                                        use_wreg,
-                                        PIC12_INSN_BCF,
-                                        PIC12_INSN_BSF,
-                                        PIC12_INSN_MOVLW,
-                                        PIC12_INSN_MOVWF,
-                                        PIC12_REG_STATUS,
-                                        5 << 5,
-                                        6 << 5);
+  return gp_processor_set_page_pic12_14(num_pages, page, m, address, use_wreg,
+                                        PIC12_INSN_BCF, PIC12_INSN_BSF,
+                                        PIC12_INSN_MOVLW, PIC12_INSN_MOVWF, PIC12_REG_STATUS,
+                                        5 << 5, 6 << 5);
 }
 
 
@@ -1917,10 +1908,7 @@ gp_processor_check_bank_pic12e(unsigned int address)
 }
 
 static int
-gp_processor_set_bank_pic12e(int num_banks,
-                             int bank,
-                             MemBlock *m,
-                             unsigned int address)
+gp_processor_set_bank_pic12e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   unsigned int data;
   char buf[BUFSIZ];
@@ -1965,14 +1953,23 @@ find_insn_pic12e(proc_class_t cls, unsigned int opcode)
 static int
 gp_processor_check_page_sx(unsigned int org)
 {
-  return ((org & SX_PAGE_BITS) >> 9);
+  return ((org & PIC12_PAGE_BITS) >> PIC12_SHIFT_PAGE_ADDR);
 }
 
 static int
-gp_processor_set_page_sx(int num_pages,
-                         int page,
-                         MemBlock *m,
-                         unsigned int address,
+gp_processor_page_addr_sx(unsigned int org)
+{
+  return (org & PIC12_PAGE_BITS);
+}
+
+static int
+gp_processor_page_bits_to_addr_sx(unsigned int bits)
+{
+  return gp_processor_page_addr_sx(bits << PIC12_SHIFT_PAGE_ADDR);
+}
+
+static int
+gp_processor_set_page_sx(int num_pages, int page, MemBlock *m, unsigned int address,
                          gp_boolean use_wreg)
 {
   unsigned int data;
@@ -2009,10 +2006,7 @@ gp_processor_check_bank_pic14(unsigned int address)
 }
 
 static int
-gp_processor_set_bank_pic14(int num_banks,
-                            int bank,
-                            MemBlock *m,
-                            unsigned int address)
+gp_processor_set_bank_pic14(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
                                         PIC14_INSN_BCF,
@@ -2029,10 +2023,7 @@ gp_processor_check_ibank_pic14(unsigned int address)
 }
 
 static int
-gp_processor_set_ibank_pic14(int num_banks,
-                            int bank,
-                            MemBlock *m,
-                            unsigned int address)
+gp_processor_set_ibank_pic14(int num_banks, int bank, MemBlock *m,unsigned int address)
 {
   /* bcf 3,7 or bsf 3,7 */
   i_memory_put_le(m, address, (bank == 0) ? 0x1383 : 0x1783, (bank == 0) ? "ibank0" : "ibank1", NULL);
@@ -2042,14 +2033,23 @@ gp_processor_set_ibank_pic14(int num_banks,
 static int
 gp_processor_check_page_pic14(unsigned int org)
 {
-  return ((org & PIC14_PAGE_BITS) >> 11);
+  return ((org & PIC14_PAGE_BITS) >> PIC14_SHIFT_PAGE_ADDR);
 }
 
 static int
-gp_processor_set_page_pic14(int num_pages,
-                            int page,
-                            MemBlock *m,
-                            unsigned int address,
+gp_processor_page_addr_pic14(unsigned int org)
+{
+  return (org & PIC14_PAGE_BITS);
+}
+
+static int
+gp_processor_page_bits_to_addr_pic14(unsigned int bits)
+{
+  return gp_processor_page_addr_pic14(bits << PIC14_SHIFT_PAGE_ADDR);
+}
+
+static int
+gp_processor_set_page_pic14(int num_pages, int page, MemBlock *m, unsigned int address,
                             gp_boolean use_wreg)
 {
   return gp_processor_set_page_pic12_14(num_pages,
@@ -2114,10 +2114,7 @@ gp_processor_check_bank_pic14e(unsigned int address)
 
 
 static int
-gp_processor_set_bank_pic14e(int num_banks,
-                             int bank,
-                             MemBlock *m,
-                             unsigned int address)
+gp_processor_set_bank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   unsigned int data;
   char buf[BUFSIZ];
@@ -2137,10 +2134,7 @@ gp_processor_check_ibank_pic14e(unsigned int address)
 }
 
 static int
-gp_processor_set_ibank_pic14e(int num_banks,
-                              int bank,
-                              MemBlock *m,
-                              unsigned int address)
+gp_processor_set_ibank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   /* bcf: 01 00bb bfff ffff
    * bsf: 01 01bb bfff ffff
@@ -2170,10 +2164,19 @@ gp_processor_check_page_pic14e(unsigned int org)
 }
 
 static int
-gp_processor_set_page_pic14e(int num_pages,
-                             int page,
-                             MemBlock *m,
-                             unsigned int address,
+gp_processor_page_addr_pic14e(unsigned int org)
+{
+  return (org & PIC14E_PAGE_BITS);
+}
+
+static int
+gp_processor_page_bits_to_addr_pic14e(unsigned int bits)
+{
+  return gp_processor_page_addr_pic14e(bits << 8);
+}
+
+static int
+gp_processor_set_page_pic14e(int num_pages, int page, MemBlock *m, unsigned int address,
                              gp_boolean use_wreg)
 {
   unsigned int data;
@@ -2260,10 +2263,7 @@ gp_processor_check_bank_pic16(unsigned int address)
 
 
 static int
-gp_processor_set_bank_pic16(int num_banks,
-                            int bank,
-                            MemBlock *m,
-                            unsigned int address)
+gp_processor_set_bank_pic16(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   char buf[BUFSIZ];
 
@@ -2281,10 +2281,19 @@ gp_processor_check_page_pic16(unsigned int org)
 }
 
 static int
-gp_processor_set_page_pic16(int num_pages,
-                            int page,
-                            MemBlock *m,
-                            unsigned int address,
+gp_processor_page_addr_pic16(unsigned int org)
+{
+  return (org & (PIC16_BMSK_PAGE << 8));
+}
+
+static int
+gp_processor_page_bits_to_addr_pic16(unsigned int bits)
+{
+  return gp_processor_page_addr_pic16(bits << 8);
+}
+
+static int
+gp_processor_set_page_pic16(int num_pages, int page, MemBlock *m, unsigned int address,
                             gp_boolean use_wreg)
 {
   unsigned int data;
@@ -2331,10 +2340,7 @@ id_location_pic16e(pic_processor_t processor)
 
 
 static int
-gp_processor_set_bank_pic16e(int num_banks,
-                             int bank,
-                             MemBlock *m,
-                             unsigned int address)
+gp_processor_set_bank_pic16e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   char buf[BUFSIZ];
 
@@ -2431,8 +2437,7 @@ gp_processor_find_sfr(proc_class_t class, int address)
 {
   core_sfr_t sfr;
 
-  if ((class == NULL) || (class->core_sfr_table == NULL) ||
-      (class->core_sfr_number == 0)) {
+  if ((class == NULL) || (class->core_sfr_table == NULL) || (class->core_sfr_number == 0)) {
     return NULL;
   }
 
@@ -2474,8 +2479,7 @@ gp_processor_find_vector(proc_class_t class, int address)
 {
   vector_t vec;
 
-  if ((class == NULL) || (class->vector_table == NULL) ||
-      (class->vector_number == 0)) {
+  if ((class == NULL) || (class->vector_table == NULL) || (class->vector_number == 0)) {
     return NULL;
   }
 
@@ -2668,6 +2672,8 @@ const struct proc_class proc_class_eeprom8 = {
   gp_processor_set_xbank_unsupported,   /* set_ibank */
   gp_processor_check_page_unsupported,  /* check_page */
   gp_processor_set_page_unsupported,    /* set_page */
+  gp_processor_page_addr_unsupported,   /* page_addr */
+  gp_processor_page_bits_to_addr_unsupported, /* page_bits_to_addr */
   reloc_unsupported,                    /* reloc_call */
   reloc_unsupported,                    /* reloc_goto */
   reloc_unsupported,                    /* reloc_f */
@@ -2710,6 +2716,8 @@ const struct proc_class proc_class_eeprom16 = {
   gp_processor_set_xbank_unsupported,   /* set_ibank */
   gp_processor_check_page_unsupported,  /* check_page */
   gp_processor_set_page_unsupported,    /* set_page */
+  gp_processor_page_addr_unsupported,   /* page_addr */
+  gp_processor_page_bits_to_addr_unsupported, /* page_bits_to_addr */
   reloc_unsupported,                    /* reloc_call */
   reloc_unsupported,                    /* reloc_goto */
   reloc_unsupported,                    /* reloc_f */
@@ -2752,6 +2760,8 @@ const struct proc_class proc_class_generic = {
   gp_processor_set_xbank_unsupported,   /* set_ibank */
   gp_processor_check_page_pic12,        /* check_page */
   gp_processor_set_page_pic12,          /* set_page */
+  gp_processor_page_addr_pic12,         /* page_addr */
+  gp_processor_page_bits_to_addr_pic12, /* page_bits_to_addr */
   reloc_unsupported,                    /* reloc_call */
   reloc_unsupported,                    /* reloc_goto */
   reloc_unsupported,                    /* reloc_f */
@@ -2794,6 +2804,8 @@ const struct proc_class proc_class_pic12 = {
   gp_processor_set_xbank_unsupported,   /* set_ibank */
   gp_processor_check_page_pic12,        /* check_page */
   gp_processor_set_page_pic12,          /* set_page */
+  gp_processor_page_addr_pic12,         /* page_addr */
+  gp_processor_page_bits_to_addr_pic12, /* page_bits_to_addr */
   reloc_call_pic12,                     /* reloc_call */
   reloc_goto_pic12,                     /* reloc_goto */
   reloc_f_pic12,                        /* reloc_f */
@@ -2836,6 +2848,8 @@ const struct proc_class proc_class_pic12e = {
   gp_processor_set_xbank_unsupported,   /* set_ibank */
   gp_processor_check_page_pic12,        /* check_page */
   gp_processor_set_page_pic12,          /* set_page */
+  gp_processor_page_addr_pic12,         /* page_addr */
+  gp_processor_page_bits_to_addr_pic12, /* page_bits_to_addr */
   reloc_call_pic12,                     /* reloc_call */
   reloc_goto_pic12,                     /* reloc_goto */
   reloc_f_pic12,                        /* reloc_f */
@@ -2878,6 +2892,8 @@ const struct proc_class proc_class_sx = {
   gp_processor_set_xbank_unsupported,   /* set_ibank */
   gp_processor_check_page_sx,           /* check_page */
   gp_processor_set_page_sx,             /* set_page */
+  gp_processor_page_addr_sx,            /* page_addr */
+  gp_processor_page_bits_to_addr_sx,    /* page_bits_to_addr */
   reloc_call_pic12,                     /* reloc_call */
   reloc_goto_pic12,                     /* reloc_goto */
   reloc_f_pic12,                        /* reloc_f */
@@ -2920,6 +2936,8 @@ const struct proc_class proc_class_pic14 = {
   gp_processor_set_ibank_pic14,         /* set_ibank */
   gp_processor_check_page_pic14,        /* check_page */
   gp_processor_set_page_pic14,          /* set_page */
+  gp_processor_page_addr_pic14,         /* page_addr */
+  gp_processor_page_bits_to_addr_pic14, /* page_bits_to_addr */
   reloc_call_pic14,                     /* reloc_call */
   reloc_goto_pic14,                     /* reloc_goto */
   reloc_f_pic14,                        /* reloc_f */
@@ -2962,6 +2980,8 @@ const struct proc_class proc_class_pic14e = {
   gp_processor_set_ibank_pic14e,        /* set_ibank */
   gp_processor_check_page_pic14e,       /* check_page */
   gp_processor_set_page_pic14e,         /* set_page */
+  gp_processor_page_addr_pic14e,        /* page_addr */
+  gp_processor_page_bits_to_addr_pic14e, /* page_bits_to_addr */
   reloc_call_pic14,                     /* reloc_call */
   reloc_goto_pic14,                     /* reloc_goto */
   reloc_f_pic14,                        /* reloc_f */
@@ -3004,6 +3024,8 @@ const struct proc_class proc_class_pic14ex = {
   gp_processor_set_ibank_pic14e,        /* set_ibank */
   gp_processor_check_page_pic14e,       /* check_page */
   gp_processor_set_page_pic14e,         /* set_page */
+  gp_processor_page_addr_pic14e,        /* page_addr */
+  gp_processor_page_bits_to_addr_pic14e, /* page_bits_to_addr */
   reloc_call_pic14,                     /* reloc_call */
   reloc_goto_pic14,                     /* reloc_goto */
   reloc_f_pic14,                        /* reloc_f */
@@ -3046,6 +3068,8 @@ const struct proc_class proc_class_pic16 = {
   gp_processor_set_bank_pic16,          /* set_ibank: same as set_bank */
   gp_processor_check_page_pic16,        /* check_page */
   gp_processor_set_page_pic16,          /* set_page */
+  gp_processor_page_addr_pic16,         /* page_addr */
+  gp_processor_page_bits_to_addr_pic16, /* page_bits_to_addr */
   reloc_call_pic16,                     /* reloc_call */
   reloc_goto_pic16,                     /* reloc_goto */
   reloc_f_pic16,                        /* reloc_f */
@@ -3088,6 +3112,8 @@ const struct proc_class proc_class_pic16e = {
   gp_processor_set_xbank_unsupported,   /* set_ibank */
   gp_processor_check_page_unsupported,  /* check_page */
   gp_processor_set_page_unsupported,    /* set_page */
+  gp_processor_page_addr_unsupported,   /* page_addr */
+  gp_processor_page_bits_to_addr_unsupported, /* page_bits_to_addr */
   reloc_call_pic16e,                    /* reloc_call */
   reloc_goto_pic16e,                    /* reloc_goto */
   reloc_f_pic16,                        /* reloc_f: same as for pic16 */

@@ -2,7 +2,7 @@
 
 =back
 
-   Copyright (C) 2012-2015 Molnar Karoly <molnarkaroly@users.sf.net>
+   Copyright (C) 2012-2016 Molnar Karoly <molnarkaroly@users.sf.net>
 
     This file is part of gputils.
 
@@ -108,7 +108,7 @@ my $verbose = 0;
 my $border0 = ('-' x 70);
 my $border1 = ('=' x 60);
 
-use constant PIC_BANK_NUMBER_MAX => 64;
+use constant PIC_BANK_NUMBER_MAX => 32;
 
 use constant PROC_CLASS_EEPROM8  =>  0;
 use constant PROC_CLASS_EEPROM16 =>  1;
@@ -138,6 +138,7 @@ my %class_features_eeprom8 =
   CONF_SIZE   => -1,
   CONF_MASK   => -1,
   EE_START    => -1,
+  BANK_MAX    => -1,
   BANK_SIZE   => -1,
   BANK_MASK   => -1,
   BANK_SHIFT  => -1,
@@ -153,6 +154,7 @@ my %class_features_eeprom16 =
   CONF_SIZE   => -1,
   CONF_MASK   => -1,
   EE_START    => -1,
+  BANK_MAX    => -1,
   BANK_SIZE   => -1,
   BANK_MASK   => -1,
   BANK_SHIFT  => -1,
@@ -168,6 +170,7 @@ my %class_features_generic =
   CONF_SIZE   => 12,
   CONF_MASK   => 0x0FFF,
   EE_START    => -1,
+  BANK_MAX    => 4,
   BANK_SIZE   => PIC12_BANK_SIZE,
   BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
   BANK_SHIFT  => PIC12_BANK_SHIFT,
@@ -183,6 +186,7 @@ my %class_features_p12 =
   CONF_SIZE   => 12,
   CONF_MASK   => 0x0FFF,
   EE_START    => -1,
+  BANK_MAX    => 4,
   BANK_SIZE   => PIC12_BANK_SIZE,
   BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
   BANK_SHIFT  => PIC12_BANK_SHIFT,
@@ -198,6 +202,7 @@ my %class_features_p12e =
   CONF_SIZE   => 12,
   CONF_MASK   => 0x0FFF,
   EE_START    => -1,
+  BANK_MAX    => 8,
   BANK_SIZE   => PIC12_BANK_SIZE,
   BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
   BANK_SHIFT  => PIC12_BANK_SHIFT,
@@ -213,6 +218,7 @@ my %class_features_p14 =
   CONF_SIZE   => 14,
   CONF_MASK   => 0x3FFF,
   EE_START    => 0x2100,
+  BANK_MAX    => 4,
   BANK_SIZE   => PIC14_BANK_SIZE,
   BANK_MASK   => ~(PIC14_BANK_SIZE - 1),
   BANK_SHIFT  => PIC14_BANK_SHIFT,
@@ -228,6 +234,7 @@ my %class_features_p14e =
   CONF_SIZE   => 16,
   CONF_MASK   => 0xFFFF,
   EE_START    => 0xF000,
+  BANK_MAX    => 32,
   BANK_SIZE   => PIC14_BANK_SIZE,
   BANK_MASK   => ~(PIC14_BANK_SIZE - 1),
   BANK_SHIFT  => PIC14_BANK_SHIFT,
@@ -243,6 +250,7 @@ my %class_features_p14ex =
   CONF_SIZE   => 16,
   CONF_MASK   => 0xFFFF,
   EE_START    => 0xF000,
+  BANK_MAX    => 32,
   BANK_SIZE   => PIC14_BANK_SIZE,
   BANK_MASK   => ~(PIC14_BANK_SIZE - 1),
   BANK_SHIFT  => PIC14_BANK_SHIFT,
@@ -258,6 +266,7 @@ my %class_features_p16 =
   CONF_SIZE   => 8,
   CONF_MASK   => 0x00FF,
   EE_START    => -1,
+  BANK_MAX    => 9,
   BANK_SIZE   => PIC16_BANK_SIZE,
   BANK_MASK   => ~(PIC16_BANK_SIZE - 1),
   BANK_SHIFT  => PIC16_BANK_SHIFT,
@@ -273,6 +282,7 @@ my %class_features_p16e =
   CONF_SIZE   => 8,
   CONF_MASK   => 0x00FF,
   EE_START    => 0xF00000,
+  BANK_MAX    => 16,
   BANK_SIZE   => PIC16_BANK_SIZE,
   BANK_MASK   => ~(PIC16_BANK_SIZE - 1),
   BANK_SHIFT  => PIC16_BANK_SHIFT,
@@ -288,6 +298,7 @@ my %class_features_sx =
   CONF_SIZE   => 12,
   CONF_MASK   => 0x0FFF,
   EE_START    => -1,
+  BANK_MAX    => -1,
   BANK_SIZE   => PIC12_BANK_SIZE,
   BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
   BANK_SHIFT  => PIC12_BANK_SHIFT,
@@ -1780,6 +1791,7 @@ sub read_all_mcu_info_from_mplabx()
   my $path = "$mplabx_inc/$mplabx_dev_info";
   my $prev;
   my $name_error = '';
+  my $tmp;
 
   Log("Reads the $path file.", 4);
 
@@ -1831,7 +1843,15 @@ sub read_all_mcu_info_from_mplabx()
                $name eq 'ap7675' || $name =~ /^eeprom/o ||
                $name =~ /^mcp25/o);
 
+      $tmp = $class_features_by_mpasm{$class}->{BANK_MAX};
       Log("Read info of the $name MCU.", 9);
+
+      if ($banks > $tmp)
+        {
+        # This is a Microchip bug in the database.
+        print STDERR "Too much the Bank number of $name device: $banks, May at most $tmp.\n";
+        $banks = $tmp;
+        }
 
       $info = {
               NAME       => $name,

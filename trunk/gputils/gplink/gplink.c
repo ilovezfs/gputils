@@ -768,12 +768,9 @@ linker(void)
   MemBlock *data, *program;
 
   /* setup output filenames */
-  snprintf(state.hexfilename, sizeof(state.hexfilename),
-           "%s.hex", state.basefilename);
-  snprintf(state.mapfilename, sizeof(state.mapfilename),
-           "%s.map", state.basefilename);
-  snprintf(state.objfilename, sizeof(state.objfilename),
-           "%s.cof", state.basefilename);
+  snprintf(state.hexfilename, sizeof(state.hexfilename), "%s.hex", state.basefilename);
+  snprintf(state.mapfilename, sizeof(state.mapfilename), "%s.map", state.basefilename);
+  snprintf(state.objfilename, sizeof(state.objfilename), "%s.cof", state.basefilename);
 
   /* Read the script. */
   if (state.srcfilenames != NULL) {
@@ -800,8 +797,7 @@ linker(void)
       return EXIT_FAILURE;
     }
 
-    snprintf(file_name, sizeof(file_name),
-             "%s" COPY_CHAR "%s", gp_lkr_path, script_name);
+    snprintf(file_name, sizeof(file_name), "%s" COPY_CHAR "%s", gp_lkr_path, script_name);
     gp_message("Using default linker script \"%s\".", file_name);
     open_src(file_name, false);
     yyparse();
@@ -865,29 +861,21 @@ linker(void)
 
   /* allocate memory for absolute sections */
   gp_debug("Verifying absolute sections.");
-  gp_cofflink_reloc_abs(state.object,
-                        program,
-                        state.class->org_to_byte_shift,
+  gp_cofflink_reloc_abs(state.object,program, state.class->org_to_byte_shift,
                         STYP_TEXT | STYP_DATA_ROM);
-  gp_cofflink_reloc_abs(state.object,
-                        data,
-                        0,
-                        STYP_DATA | STYP_BSS | STYP_SHARED |
-                        STYP_OVERLAY | STYP_ACCESS);
+
+  gp_cofflink_reloc_abs(state.object, data, 0,
+                        STYP_DATA | STYP_BSS | STYP_SHARED | STYP_OVERLAY | STYP_ACCESS);
 
   if (state.mplink_compatible) {
     /* allocate cinit section to the lowest possible address */
     gp_section_type *cinit_section;
 
-    cinit_section = gp_coffgen_findsection(state.object,
-                       state.object->sections,
-                       ".cinit");
+    cinit_section = gp_coffgen_findsection(state.object, state.object->sections, ".cinit");
+
     if (cinit_section != NULL) {
-      gp_cofflink_reloc_cinit(state.object,
-                              program,
-                              state.class->org_to_byte_shift,
-                              cinit_section,
-                              state.section.definition);
+      gp_cofflink_reloc_cinit(state.object, program, state.class->org_to_byte_shift,
+                              cinit_section, state.section.definition);
     }
   }
 
@@ -895,34 +883,23 @@ linker(void)
 
   /* allocate memory for relocatable assigned sections */
   gp_debug("Relocating assigned sections.");
-  gp_cofflink_reloc_assigned(state.object,
-                             program,
-                             state.class->org_to_byte_shift,
+  gp_cofflink_reloc_assigned(state.object, program, state.class->org_to_byte_shift,
                              STYP_TEXT | STYP_DATA_ROM,
-                             state.section.definition,
-                             state.section.logical);
-  gp_cofflink_reloc_assigned(state.object,
-                             data,
-                             0,
-                             STYP_DATA | STYP_BSS | STYP_SHARED |
-                             STYP_OVERLAY | STYP_ACCESS,
-                             state.section.definition,
-                             state.section.logical);
+                             state.section.definition, state.section.logical);
+
+  gp_cofflink_reloc_assigned(state.object, data, 0,
+                             STYP_DATA | STYP_BSS | STYP_SHARED | STYP_OVERLAY | STYP_ACCESS,
+                             state.section.definition, state.section.logical);
 
   /* FIXME: allocate unassigned stacks */
 
   /* allocate memory for relocatable unassigned sections */
   gp_debug("Relocating unassigned sections.");
-  gp_cofflink_reloc_unassigned(state.object,
-                               program,
-                               state.class->org_to_byte_shift,
-                               STYP_TEXT | STYP_DATA_ROM,
-                               state.section.definition);
-  gp_cofflink_reloc_unassigned(state.object,
-                               data,
-                               0,
-                               STYP_DATA | STYP_BSS | STYP_SHARED |
-                               STYP_OVERLAY | STYP_ACCESS,
+  gp_cofflink_reloc_unassigned(state.object, program, state.class->org_to_byte_shift,
+                               STYP_TEXT | STYP_DATA_ROM, state.section.definition);
+
+  gp_cofflink_reloc_unassigned(state.object, data, 0,
+                               STYP_DATA | STYP_BSS | STYP_SHARED | STYP_OVERLAY | STYP_ACCESS,
                                state.section.definition);
 
   /* load the table with the relocated addresses */
@@ -953,12 +930,8 @@ linker(void)
   state.i_memory = gp_cofflink_make_memory(state.object);
 
   /* write hex file */
-  writehex(state.basefilename,
-           state.i_memory,
-           state.hex_format,
-           gp_num_errors,
-           0,
-           state.class->core_mask);
+  writehex(state.basefilename, state.i_memory, state.hex_format, gp_num_errors,
+           0, state.class->core_mask);
 
   /* convert the executable object into a cod file and list file */
   cod_init();

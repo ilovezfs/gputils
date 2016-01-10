@@ -70,7 +70,7 @@ gp_boolean force_decimal; /* Used to force radix to decimal for some directives.
 gp_boolean force_ident;   /* Used to force numbers to identifiers for processor names. */
 
 static enum identtype identify(const char *);
-static int found_eof(void);
+static gp_boolean found_eof(void);
 
 static inline size_t
 gp_input(char *buf, size_t max_size)
@@ -713,7 +713,7 @@ open_src(const char *name, gp_boolean isinclude)
       force_ident   = false;
     }
     state.src->last_char_is_nl = true;
-    state.found_end = 0;
+    state.found_end = false;
   }
 }
 
@@ -824,7 +824,7 @@ execute_exitm(void)
 }
 
 /* found end directive, close all files and stop the parser */
-int
+gp_boolean
 found_end(void)
 {
   /* close all open files */
@@ -837,13 +837,13 @@ found_end(void)
     yy_flush_buffer(YY_CURRENT_BUFFER);
   }
 
-  return 1;
+  return true;
 }
 
-static int
+static gp_boolean
 found_eof(void)
 {
-  int terminate = 0;
+  int terminate = false;
   enum src_types prev_type;
 
   if (IN_WHILE_EXPANSION) {
@@ -854,7 +854,7 @@ found_eof(void)
       else {
         /* repeat the while loop */
         repeat_while();
-        return 0;
+        return false;
       }
     }
   }

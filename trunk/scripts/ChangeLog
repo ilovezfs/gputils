@@ -1,3 +1,7 @@
+2016-01-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/device-help.pl, tools/device-manager.pl:
+	  Added BANK_MAX value (for pic16(l)f18855, pic16(l)f18875).
+
 2015-12-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/build-register-db.pl, tools/cfg-import.pl:
 	  Fix the Microchip bug of the 18f47k40 and 18lf47k40 devices:

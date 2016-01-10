@@ -448,9 +448,7 @@ line:
           int exp_result;
 
           exp_result = do_insn("set", mk_list($3, NULL));
-          parms = mk_list(mk_2op(return_op($2),
-                                 mk_symbol($1),
-                                 mk_constant(exp_result)), NULL);
+          parms = mk_list(mk_2op(return_op($2), mk_symbol($1), mk_constant(exp_result)), NULL);
           next_line(set_label($1, parms));
         }
         |
@@ -483,19 +481,19 @@ line:
         |
         LABEL statement
         {
-          if (asm_enabled() && (state.lst.line.linetype == LTY_NONE)) {
-            if (IS_RAM_ORG) {
-              /* alias to next definition */
-              state.lst.line.linetype = LTY_RES;
-            }
-            else {
-              state.lst.line.linetype = LTY_INSN;
-            }
-          }
-
           if (asm_enabled()) {
+            if (state.lst.line.linetype == LTY_NONE) {
+              if (IS_RAM_ORG) {
+                /* alias to next definition */
+                state.lst.line.linetype = LTY_RES;
+              }
+              else {
+                state.lst.line.linetype = LTY_INSN;
+              }
+            }
+
             if (state.mac_head != NULL) {
-              /* This is a macro definition. Set it up */
+              /* This is a macro definition. Set it up. */
               struct symbol *mac;
               struct macro_head *h = NULL;
 

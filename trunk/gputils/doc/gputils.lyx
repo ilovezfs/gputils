@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jan 05, 2016
+Jan 10, 2016
 \end_layout
 
 \begin_layout Standard
@@ -259,7 +259,7 @@ name "sec:Supported-processors"
 \end_layout
 
 \begin_layout Standard
-The gputils currently supports most processors supported by MPLABX v3.10.
+The gputils currently supports most processors supported by MPLABX v3.15.
  This includes the following processors:
 \begin_inset Newline newline
 \end_inset
@@ -1063,8 +1063,7 @@ rf509af        rf509ag        rf675f         rf675h         rf675k
 \begin_inset Newline newline
 \end_inset
 
-sx18           sx20           sx28           sx48           sx52       
-                   
+sx18           sx20           sx28           sx48           sx52
 \end_layout
 
 \begin_layout Chapter
@@ -4498,7 +4497,7 @@ The device ID:
 \end_layout
 
 \begin_layout LyX-Code
-__18F4520 -- If the type of the processor is p18f4520.
+__18F4520 -- If the type of the processor is P18F4520.
 \end_layout
 
 \begin_layout LyX-Code
@@ -4538,7 +4537,7 @@ The bounds of the Lower Access RAM area (
 \emph on
 only
 \emph default
- in the Extended 16 bit core: pic18xxx):
+ in the Extended 16 bit core: PIC18XXX):
 \end_layout
 
 \begin_layout LyX-Code
@@ -4564,7 +4563,7 @@ __BANK_BITS         -- These bits select the active RAM Bank.
 
 \begin_layout LyX-Code
                        (e.g.
- 0x20, 0x180, 0xF00, etc)
+ 0x20, 0x180, 0xF00)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4583,7 +4582,52 @@ __BANK_SIZE         -- This is a RAM Bank size.
 
 \begin_layout LyX-Code
                        (e.g.
- 32, 128, 256)
+ 32 {0x20}, 128 {0x80}, 256 {0x100})
+\end_layout
+
+\begin_layout LyX-Code
+__BANK_INV          -- This the invalid RAM Bank value (-1).
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
+The properties of ROM Pages (only in the 12 and 14 bit core: PIC12XXX, PIC16XXX)
+:
+\end_layout
+
+\begin_layout LyX-Code
+__PAGE_BITS         -- These bits select the active ROM Page.
+\end_layout
+
+\begin_layout LyX-Code
+                       (e.g.
+ 0x600, 0x1800, 0x7800, etc)
+\end_layout
+
+\begin_layout LyX-Code
+__PAGE_MASK         -- These bits give the address of an instruction within
+ a ROM Page.
+\end_layout
+
+\begin_layout LyX-Code
+                       (e.g.
+ 0x1FF, 0x7FF)
+\end_layout
+
+\begin_layout LyX-Code
+__PAGE_SIZE         -- This is a ROM Page size.
+\end_layout
+
+\begin_layout LyX-Code
+                       (e.g.
+ 512 {0x200}, 2048 {0x800})
+\end_layout
+
+\begin_layout LyX-Code
+__PAGE_INV          -- This the invalid ROM Page value (-1).
 \end_layout
 
 \begin_layout LyX-Code
@@ -4599,7 +4643,7 @@ if
 \emph on
  exists
 \emph default
- (in the 12 and 14 bit core: pic12xxx, pic16xxx):
+ (in the 12, 14 and 16 bit core: PIC12XXX, PIC16XXX, PIC18XXX):
 \end_layout
 
 \begin_layout Standard
@@ -4609,7 +4653,7 @@ if
 \begin_layout LyX-Code
 __COMMON_RAM_START -- Start address of the Common RAM area.
    (e.g.
- 0x07, 0x0C, 0x70)
+ 0x07, 0x0C, 0x70, 0x000)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4618,7 +4662,7 @@ __COMMON_RAM_START -- Start address of the Common RAM area.
 \end_layout
 
 \begin_layout LyX-Code
-                       pic16f72, pic16f73, ...)
+                       PIC16F72, PIC16F73, ...)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4633,13 +4677,17 @@ __COMMON_RAM_END   -- End address of the Common RAM area.
 \end_layout
 
 \begin_layout LyX-Code
-                       pic16f72, pic16f73, ...)
+                       PIC16F72, PIC16F73, ...)
 \end_layout
 
 \begin_layout LyX-Code
 __COMMON_RAM_MAX   -- Maximum address of the Common RAM area.
  (e.g.
  0x6F) (This rarely exists.)
+\end_layout
+
+\begin_layout LyX-Code
+                      (Only in in the 12 and 14 bit core: PIC12XXX, PIC16XXX)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4659,7 +4707,7 @@ if
 \emph on
 only
 \emph default
- in the Enhanced 14 bit core: pic16xxx):
+ in the Enhanced 14 bit core: PIC16XXX):
 \end_layout
 
 \begin_layout LyX-Code
@@ -4787,7 +4835,7 @@ __VECTOR_RESET     -- Address of the Reset Vector.
 
 \begin_layout LyX-Code
 __VECTOR_INT       -- Address of the Interrupt Vector.
- (14 bit core: pic12xxx, pic16xxx)
+ (14 bit core: PIC12XXX, PIC16XXX)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4796,22 +4844,22 @@ __VECTOR_INT       -- Address of the Interrupt Vector.
 
 \begin_layout LyX-Code
 __VECTOR_INT_EXT   -- Address of the External Interrupt Vector.
- (pic17xxx)
+ (PIC17XXX)
 \end_layout
 
 \begin_layout LyX-Code
 __VECTOR_INT_TMR0  -- Address of the Timer0 Interrupt Vector.
- (16 bit core: pic17xxx)
+ (16 bit core: PIC17XXX)
 \end_layout
 
 \begin_layout LyX-Code
 __VECTOR_INT_T0CKI -- Address of the T0CKI Pin Interrupt Vector.
- (16 bit core: pic17xxx)
+ (16 bit core: PIC17XXX)
 \end_layout
 
 \begin_layout LyX-Code
 __VECTOR_INT_PERI  -- Address of the Peripheral Interrupt Vector.
- (16 bit core: pic17xxx)
+ (16 bit core: PIC17XXX)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4824,7 +4872,7 @@ __VECTOR_INT_HIGH  -- Address of the High Priority Interrupt Vector.
 \end_layout
 
 \begin_layout LyX-Code
-                      pic18xxx)
+                      PIC18XXX)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4833,7 +4881,7 @@ __VECTOR_INT_LOW   -- Address of the Low Priority Interrupt Vector.
 \end_layout
 
 \begin_layout LyX-Code
-                      pic18xxx)
+                      PIC18XXX)
 \end_layout
 
 \begin_layout Subsection
@@ -4869,12 +4917,64 @@ not
 \begin_inset Newline newline
 \end_inset
 
-The last time selected (with BANKSEL directive) RAM Bank:
+The last time selected (with BANKSEL directive, or MOVLB instruction) RAM
+ Bank.
+\begin_inset Newline newline
+\end_inset
+
+-- This value becomes invalid after the following instructions, in the (Enhanced
+ and Regular) 12 bit and 14 bit core -- PIC12XXX, PIC16XXX:
+\end_layout
+
+\begin_layout Standard
+BRA, BRW, CALL, CALLW, GOTO, RESET, RETFIE, RETLW, RETURN, (SX: RETI, RETIW,
+ RETP)
+\begin_inset Newline newline
+\end_inset
+
+-- This value becomes invalid after the following instructions, in the Regular
+ 16 bit core -- PIC17XXX:
+\end_layout
+
+\begin_layout Standard
+CALL, GOTO, LCALL, RETFIE, RETLW, RETURN
+\begin_inset Newline newline
+\end_inset
+
+-- This value becomes invalid after the following instructions, in the Extended
+ 16 bit core -- PIC18XXX:
+\end_layout
+
+\begin_layout Standard
+BRA, CALL, CALLW, GOTO, RCALL, RESET, RETFIE, RETLW, RETURN, TRET
 \end_layout
 
 \begin_layout LyX-Code
 __ACTIVE_BANK_ADDR -- e.g.
  0x20, 0x080, 0xE00, etc
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
+The last time selected (with PAGESEL or PAGESELW directive, or MOVLP instruction
+) ROM Page in the (Enhanced and Regular) 12 and 14 bit core -- PIC12XXX,
+ PIC16XXX.
+\begin_inset Newline newline
+\end_inset
+
+-- This value becomes invalid after the following instructions:
+\end_layout
+
+\begin_layout Standard
+CALL, CALLW, RESET
+\end_layout
+
+\begin_layout LyX-Code
+__ACTIVE_PAGE_ADDR -- e.g.
+ 0x400, 0x800, 0x2800, etc
 \end_layout
 
 \begin_layout Section

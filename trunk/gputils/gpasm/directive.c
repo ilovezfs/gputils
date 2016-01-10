@@ -2,7 +2,7 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
 
-    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
 
 This file is part of gputils.
 
@@ -575,7 +575,9 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
     state.lst.line.linetype = LTY_NONE;
     gpvmessage(GPM_EXTPAGE, NULL);
     /* do nothing */
-    set_global(GLOBAL_ACT_BANK_ADDR, 0, LFT_TEMPORARY, GVT_GLOBAL);
+    if (!state.mpasm_compatible) {
+      set_global(GLOBAL_ACT_BANK_ADDR, 0, LFT_TEMPORARY, GVT_GLOBAL);
+    }
     return r;
   }
 
@@ -594,9 +596,11 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
                                                bank,
                                                state.i_memory,
                                                state.byte_addr);
-      set_global(GLOBAL_ACT_BANK_ADDR,
-                 gp_processor_bank_num_to_addr(state.processor, bank),
-                 LFT_TEMPORARY, GVT_GLOBAL);
+      if (!state.mpasm_compatible) {
+        set_global(GLOBAL_ACT_BANK_ADDR,
+                   gp_processor_bank_num_to_addr(state.processor, bank),
+                   LFT_TEMPORARY, GVT_GLOBAL);
+      }
     }
     else {
       /* state.mode == MODE_RELOCATABLE */
@@ -3290,6 +3294,11 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
                                                state.i_memory,
                                                state.byte_addr,
                                                use_wreg);
+      if (!state.mpasm_compatible) {
+        set_global(GLOBAL_ACT_PAGE_ADDR,
+                   gp_processor_page_bits_to_addr(state.device.class, page),
+                   LFT_TEMPORARY, GVT_GLOBAL);
+      }
     }
     else {
       num_reloc = count_reloc(p);
@@ -4027,6 +4036,7 @@ do_insn(const char *name, struct pnode *parms)
   int arity;
   struct pnode *p;
   int file;             /* register file address, if applicable */
+  unsigned int bank_num;
   gpasmVal r;           /* Return value. */
   gp_boolean is_btfsx = false;
 
@@ -4065,7 +4075,7 @@ do_insn(const char *name, struct pnode *parms)
         /* SX page */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> 9), SX_BMSK_PAGE, s->name);
+          emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> PIC12_SHIFT_PAGE_ADDR), SX_BMSK_PAGE, s->name);
         }
         break;
 
@@ -4093,7 +4103,16 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC12E movlb */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), PIC12E_BMSK_BANK, s->name);
+          r = reloc_evaluate(p, RELOCT_MOVLB);
+          emit_check(i->opcode, r, PIC12E_BMSK_BANK, s->name);
+
+          if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+            /* Set the selection of RAM Banks. */
+            bank_num = r & (PIC12E_MASK_MOVLB ^ PIC12_CORE_MASK);
+            set_global(GLOBAL_ACT_BANK_ADDR,
+                       gp_processor_bank_num_to_addr(state.processor, bank_num),
+                       LFT_TEMPORARY, GVT_GLOBAL);
+          }
         }
         break;
 
@@ -4111,7 +4130,16 @@ do_insn(const char *name, struct pnode *parms)
           check_16e_arg_types(parms, arity, 0);
           p = HEAD(parms);
           coerce_str1(p); /* literal instructions can coerce string literals */
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), PIC16E_BMSK_MOVLB, s->name);
+          r = reloc_evaluate(p, RELOCT_MOVLB);
+          emit_check(i->opcode, r, PIC16E_BMSK_MOVLB, s->name);
+
+          if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+            /* Set the selection of RAM Banks. */
+            bank_num = r & (PIC16E_MASK_MOVLB ^ PIC16_CORE_MASK);
+            set_global(GLOBAL_ACT_BANK_ADDR,
+                       gp_processor_bank_num_to_addr(state.processor, bank_num),
+                       LFT_TEMPORARY, GVT_GLOBAL);
+          }
         }
         break;
 
@@ -4127,7 +4155,16 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC14E movlb */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), PIC14E_BMSK_MOVLB, s->name);
+          r = reloc_evaluate(p, RELOCT_MOVLB);
+          emit_check(i->opcode, r, PIC14E_BMSK_MOVLB, s->name);
+
+          if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+            /* Set the selection of RAM Banks. */
+            bank_num = r & (PIC14E_MASK_MOVLB ^ PIC14_CORE_MASK);
+            set_global(GLOBAL_ACT_BANK_ADDR,
+                       gp_processor_bank_num_to_addr(state.processor, bank_num),
+                       LFT_TEMPORARY, GVT_GLOBAL);
+          }
         }
         break;
 
@@ -4265,8 +4302,8 @@ do_insn(const char *name, struct pnode *parms)
           }
 
           emit(i->opcode |
-	           (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
-	               PIC14_BMSK_BRANCH),
+	                   (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
+	                       PIC14_BMSK_BRANCH),
 	       s->name);
         }
         break;
@@ -4290,8 +4327,8 @@ do_insn(const char *name, struct pnode *parms)
           }
 
           emit(i->opcode |
-	           (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
-		       PIC16_BMSK_BRANCH),
+	                   (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
+		               PIC16_BMSK_BRANCH),
 	       s->name);
         }
         break;
@@ -5313,7 +5350,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_TBL3:
-      /* PIC16 (tablrd, tablwt) */
+        /* PIC16 (tablrd, tablwt) */
         if (enforce_arity(arity, 3)) {
           int inc = 0, t = 0;
           struct pnode *p2; /* second parameter */
@@ -5470,6 +5507,18 @@ do_insn(const char *name, struct pnode *parms)
         assert(0);
         break;
       } /* switch (i->class) */
+
+      if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+        if (i->inv_mask & INV_MASK_BANK) {
+          /* Invalidates the selection of RAM Banks. */
+          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_GLOBAL);
+        }
+
+        if (i->inv_mask & INV_MASK_PAGE) {
+          /* Invalidates the selection of ROM Pages. */
+          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_GLOBAL);
+        }
+      }
     } /* if (asm_enabled() || (i->attribs & ATTRIB_COND)) */
   } /* if (s != NULL) */
   else {
@@ -5520,92 +5569,92 @@ leave:
 /* Note that instructions within each group are sorted alphabetically. */
 
 const struct insn op_0[] = {
-  { "access_ovr", 0, 0, 0, INSN_CLASS_FUNC, 0,           do_access_ovr },
-  { "bcdirect",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_direct     },
-  { "code",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_code       },
-  { "code_pack",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_code_pack  },
-  { "constant",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_constant   },
-  { "else",       0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_else       },
-  { "end",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_end        },
-  { "endif",      0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_endif      },
-  { "endm",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_endm       },
-  { "endw",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_endw       },
-  { "equ",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_equ        },
-  { "error",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_error      },
-  { "exitm",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_exitm      },
-  { "expand",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_expand     },
-  { "extern",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_extern     },
-  { "errorlevel", 0, 0, 0, INSN_CLASS_FUNC, 0,           do_errlvl     },
-  { "global",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_global     },
-  { "idata",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_idata      },
-  { "idata_acs",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_idata_acs  },
-  { "if",         0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_if         },
-  { "ifdef",      0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifdef      },
-  { "ifndef",     0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifndef     },
-  { "include",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_include    },
-  { "list",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_list       },
-  { "local",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_local      },
-  { "macro",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_macro      },
-  { "messg",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_messg      },
-  { "noexpand",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_noexpand   },
-  { "nolist",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_nolist     },
-  { "page",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_page       },
-  { "processor",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_processor  },
-  { "radix",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_radix      },
-  { "set",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_set        },
-  { "space",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_space      },
-  { "subtitle",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_subtitle   },
-  { "title",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_title      },
-  { "udata",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_udata      },
-  { "udata_acs",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_udata_acs  },
-  { "udata_ovr",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_udata_ovr  },
-  { "udata_shr",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_udata_shr  },
-  { "variable",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_variable   },
-  { "while",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_while      },
-  { ".def",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_def        },
-  { ".dim",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_dim        },
-  { ".direct",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_direct     },
-  { ".eof",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_eof        },
-  { ".file",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_file       },
-  { ".ident",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_ident      },
-  { ".line",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_line       },
-  { ".set",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_set        },
-  { ".type",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_type       },
-  { "#if",        0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_if         },
-  { "#else",      0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_else       },
-  { "#endif",     0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_endif      },
-  { "#ifdef",     0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifdef      },
-  { "#ifndef",    0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifndef     },
-  { "#define",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_define     },
-  { "#undefine",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_undefine   }
+  { "access_ovr", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_access_ovr },
+  { "bcdirect",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_direct     },
+  { "code",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_code       },
+  { "code_pack",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_code_pack  },
+  { "constant",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_constant   },
+  { "else",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_else       },
+  { "end",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_end        },
+  { "endif",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_endif      },
+  { "endm",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_endm       },
+  { "endw",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_endw       },
+  { "equ",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_equ        },
+  { "error",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_error      },
+  { "exitm",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_exitm      },
+  { "expand",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_expand     },
+  { "extern",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_extern     },
+  { "errorlevel", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_errlvl     },
+  { "global",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_global     },
+  { "idata",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_idata      },
+  { "idata_acs",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_idata_acs  },
+  { "if",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_if         },
+  { "ifdef",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifdef      },
+  { "ifndef",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifndef     },
+  { "include",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_include    },
+  { "list",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_list       },
+  { "local",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_local      },
+  { "macro",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_macro      },
+  { "messg",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_messg      },
+  { "noexpand",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_noexpand   },
+  { "nolist",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_nolist     },
+  { "page",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_page       },
+  { "processor",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_processor  },
+  { "radix",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_radix      },
+  { "set",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_set        },
+  { "space",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_space      },
+  { "subtitle",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_subtitle   },
+  { "title",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_title      },
+  { "udata",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_udata      },
+  { "udata_acs",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_udata_acs  },
+  { "udata_ovr",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_udata_ovr  },
+  { "udata_shr",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_udata_shr  },
+  { "variable",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_variable   },
+  { "while",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_while      },
+  { ".def",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_def        },
+  { ".dim",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_dim        },
+  { ".direct",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_direct     },
+  { ".eof",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_eof        },
+  { ".file",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_file       },
+  { ".ident",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_ident      },
+  { ".line",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_line       },
+  { ".set",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_set        },
+  { ".type",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_type       },
+  { "#if",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_if         },
+  { "#else",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_else       },
+  { "#endif",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_endif      },
+  { "#ifdef",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifdef      },
+  { "#ifndef",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifndef     },
+  { "#define",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_define     },
+  { "#undefine",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_undefine   }
 };
 
 const int num_op_0 = TABLE_SIZE(op_0);
 
 const struct insn op_1[] = {
-  { "__badram",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_badram       },
-  { "__badrom",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_badrom       },
-  { "__config",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_config       },
-  { "__fuses",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_config       },
-  { "__idlocs",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_idlocs       },
-  { "__maxram",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_maxram       },
-  { "__maxrom",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_maxrom       },
-  { "bankisel",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_bankisel     },
-  { "banksel",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_banksel      },
-  { "config",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_gpasm_config },
-  { "data",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_data         },
-  { "da",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_da           },
-  { "db",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_db           },
-  { "de",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_de           },
-  { "dt",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_dt           },
-  { "dtm",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_dtm          },
-  { "dw",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_dw           },
-  { "fill",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_fill         },
-  { "idlocs",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_16_idlocs    },
-  { "org",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_org          },
-  { "pagesel",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_pagesel      },
-  { "pageselw",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_pageselw     },
-  { "res",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_res          }
+  { "__badram",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_badram       },
+  { "__badrom",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_badrom       },
+  { "__config",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_config       },
+  { "__fuses",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_config       },
+  { "__idlocs",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_idlocs       },
+  { "__maxram",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_maxram       },
+  { "__maxrom",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_maxrom       },
+  { "bankisel",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_bankisel     },
+  { "banksel",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_banksel      },
+  { "config",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_gpasm_config },
+  { "data",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_data         },
+  { "da",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_da           },
+  { "db",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_db           },
+  { "de",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_de           },
+  { "dt",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_dt           },
+  { "dtm",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_dtm          },
+  { "dw",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_dw           },
+  { "fill",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_fill         },
+  { "idlocs",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_16_idlocs    },
+  { "org",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_org          },
+  { "pagesel",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_pagesel      },
+  { "pageselw",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_pageselw     },
+  { "res",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_res          }
 };
 
 const int num_op_1 = TABLE_SIZE(op_1);

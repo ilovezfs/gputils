@@ -2,7 +2,7 @@
 
 =back
 
-    Copyright (C) 2012-2015 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2012-2016 Molnar Karoly <molnarkaroly@users.sf.net>
 
     This file is part of gputils.
 
@@ -199,7 +199,7 @@ my %class_features_p14ex =
   WORD_SIZE  => 14,
   CONF_SIZE  => 16,
   EE_START   => 0xF000,
-  BANK_MAX   => 64,
+  BANK_MAX   => 32,
   BANK_SIZE  => PIC14_BANK_SIZE,
   BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
   BANK_SHIFT => PIC14_BANK_SHIFT,
