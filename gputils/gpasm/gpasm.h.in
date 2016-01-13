@@ -388,6 +388,7 @@ void yyerror(const char *s);
 
 /* util.c */
 int stringtolong(const char *string, int radix);
+gp_boolean find_hv_macro(const char *String, const char **Start, const char **End);
 int gpasm_magic(const char *);
 const char *convert_escape_chars(const char *ps, int *value);
 char *convert_escaped_char(char *str, char c);

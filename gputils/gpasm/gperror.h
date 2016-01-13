@@ -113,7 +113,8 @@ enum GPE_codes {
 
   GPE_IDLOCS_P16E      = 1501,  /* IDLOCS directive use solely to the PIC16E family. */
   GPE_NOF              = 1502,  /* The destination of the storage is not selected. */
-  GPE_NOA              = 1503   /* The access of RAM is not selected. */
+  GPE_NOA              = 1503,  /* The access of RAM is not selected. */
+  GPE_TOO_LONG         = 1504   /* A string too long. */
 };
 
 /* Warning codes

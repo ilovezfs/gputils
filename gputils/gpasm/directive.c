@@ -28,6 +28,7 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "evaluate.h"
 #include "parse.h"
+#include "preprocess.h"
 #include "processor.h"
 #include "lst.h"
 #include "macro.h"
@@ -781,7 +782,7 @@ do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
  * do_config() - Called by the parser when a __CONFIG assembler directive
  *               is encountered.
  *
- * do_gpasm_config() - Called by the parser to process MPASM style CONFIG xx=yy
+ * do_gpasm_config() - Called by the parser to process MPASM(X) style CONFIG xx=yy
  *                     directives for all devices.
  */
 
@@ -1018,7 +1019,7 @@ config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
   }
 }
 
-/* Support MPASM style CONFIG xxx = yyy syntax for PIC16(E) devices. */
+/* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC16(E) devices. */
 static gpasmVal
 do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
@@ -1045,14 +1046,14 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   p_dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
   if (p_dev == NULL) {
     gpverror(GPE_UNKNOWN,
-            "The %s processor has no entries in the config db. CONFIG cannot be used.",
-            state.processor->names[2]);
+             "The %s processor has no entries in the config db. CONFIG cannot be used.",
+             state.processor->names[2]);
     return r;
   }
 
   /* validate argument format */
   if ((parms == NULL) || (parms->tag != PTAG_BINOP) || (parms->value.binop.op != '=')) {
-    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
+    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use `CONFIG KEY = VALUE'");
     return r;
   }
 
@@ -1062,7 +1063,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   if ((k->tag != PTAG_SYMBOL) ||
       ((v->tag != PTAG_SYMBOL) && (v->tag != PTAG_CONSTANT))) {
-    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
+    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use `CONFIG KEY = VALUE'");
     return r;
   }
 
@@ -1183,7 +1184,7 @@ config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
   }
 }
 
-/* Support MPASM style CONFIG xxx = yyy syntax for PIC14(E) and PIC12(E) devices. */
+/* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC14(E) and PIC12(E) devices. */
 static gpasmVal
 do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
@@ -1211,8 +1212,8 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   p_dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
   if (p_dev == NULL) {
     gpverror(GPE_UNKNOWN,
-            "The %s processor has no entries in the config db. CONFIG cannot be used.",
-            state.processor->names[2]);
+             "The %s processor has no entries in the config db. CONFIG cannot be used.",
+             state.processor->names[2]);
     return r;
   }
 
@@ -1317,7 +1318,7 @@ do_gpasm_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
     /* The MPASM(X) compatible mode valid only for 16 bit devices. */
     if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE)) {
       snprintf(buf, sizeof(buf),
-               "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive in MPASM mode.",
+               "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive in MPASM(X) mode.",
                state.processor->names[2]);
       gperror(GPE_UNKNOWN, buf);
       return r;
@@ -1597,7 +1598,7 @@ do_de(gpasmVal r, const char *name, int arity, struct pnode *parms)
   return r;
 }
 
-/* Extension to MPASM, used at least by LLVM to emit debugging information. */
+/* Extension to MPASM(X), used at least by LLVM to emit debugging information. */
 static gpasmVal
 do_def(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
@@ -1770,7 +1771,7 @@ do_define(gpasmVal r, const char *name, int arity, struct pnode *parms)
   return r;
 }
 
-/* Extension to MPASM, used at least by LLVM to emit debugging information. */
+/* Extension to MPASM(X), used at least by LLVM to emit debugging information. */
 static gpasmVal
 do_dim(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
@@ -2130,10 +2131,174 @@ do_equ(gpasmVal r, const char *name, int arity, struct pnode *parms)
   return r;
 }
 
+/* Recognize it and decodes the characters which are protects a special (meta) character. */
+static int
+resolve_meta_chars(char *Dst, int Max_size, const char *Src, int Size)
+{
+  char *d;
+  char ch;
+  gp_boolean meta;
+
+  if (Max_size <= 0) {
+    return 0;
+  }
+
+  /* Leaves room for the termination '\0' character. */
+  --Max_size;
+  meta = false;
+  d = Dst;
+  while ((Max_size > 0) && (Size > 0)) {
+    ch = *Src++;
+    --Size;
+    if (ch == '\0') {
+      break;
+    }
+
+    if (meta) {
+      switch (ch) {
+        case '"':
+        case '\'':
+        case '\\':
+          *d++ = ch;
+          --Max_size;
+          break;
+
+        default: {
+          *d++ = ch;
+          --Max_size;
+        }
+      }
+
+      meta = false;
+    }
+    else if (ch == '\\') {
+      meta = true;
+    }
+    else {
+      *d++ = ch;
+      --Max_size;
+    }
+  }
+
+  *d = '\0';
+  return (d - Dst);
+}
+
+static const char *
+hv_macro_resolver(const char *String)
+{
+  static char out[BUFSIZ];
+
+  char buf[BUFSIZ];
+  const char *st_start;
+  const char *st_end;
+  const char *hv_start;
+  const char *hv_end;
+  int out_idx;
+  int raw_size;
+  int mt_size;
+  gp_boolean is_meta;
+
+  st_start = String;
+  st_end   = st_start + strlen(String);
+  out_idx  = 0;
+  while (st_start < st_end) {
+    if (find_hv_macro(st_start, &hv_start, &hv_end)) {
+      /* Found a #v() macro. */
+      is_meta = false;
+
+      if (hv_start > st_start) {
+        /* Before the macro there is a general text. */
+        raw_size = hv_start - st_start;
+        if (raw_size > (int)(sizeof(buf) - 1)) {
+          gpverror(GPE_TOO_LONG, NULL, st_start, (size_t)raw_size, sizeof(buf) - 1);
+          return NULL;
+        }
+
+        /* Decodes the protected characters. */
+        mt_size = resolve_meta_chars(buf, sizeof(buf), st_start, raw_size);
+        st_start += raw_size;
+
+        if (mt_size > 0) {
+          if (mt_size > (int)(sizeof(out) - out_idx - 1)) {
+            gpverror(GPE_TOO_LONG, NULL, buf, (size_t)mt_size, sizeof(out) - out_idx - 1);
+            return NULL;
+          }
+
+          /* It adds to existing text. */
+          memcpy(&out[out_idx], buf, mt_size);
+          out_idx += mt_size;
+          out[out_idx] = '\0';
+        }
+
+        if (*(hv_start - 1) == '\\') {
+          /* Before the macro there is a meta '\' character: \#v(...) */
+          is_meta = true;
+        }
+      }
+
+      raw_size = hv_end - hv_start;
+      st_start = hv_end;
+
+      if (is_meta) {
+        /* This is not macro, only simple text. */
+        if (raw_size > (int)(sizeof(out) - out_idx - 1)) {
+          gpverror(GPE_TOO_LONG, NULL, hv_start, (size_t)raw_size, sizeof(out) - out_idx - 1);
+          return NULL;
+        }
+
+        /* It adds to existing text. */
+        memcpy(&out[out_idx], hv_start, raw_size);
+        out_idx += raw_size;
+        out[out_idx] = '\0';
+      }
+      else {
+        /* This is really macro. */
+        if (raw_size > (int)(sizeof(buf) - 1)) {
+          gpverror(GPE_TOO_LONG, NULL, hv_start, (size_t)raw_size, sizeof(buf) - 1);
+          return NULL;
+        }
+
+        /* Copies it a temporary buffer. */
+        memcpy(buf, hv_start, raw_size);
+        buf[raw_size] = '\0';
+        /* It executes the macro and get the result. */
+        preprocess_line(buf, &raw_size, sizeof(buf));
+
+        if (raw_size > (int)(sizeof(out) - out_idx - 1)) {
+          gpverror(GPE_TOO_LONG, NULL, buf, (size_t)raw_size, sizeof(out) - out_idx - 1);
+          return NULL;
+        }
+
+        /* It adds to existing text. */
+        memcpy(&out[out_idx], buf, raw_size);
+        out_idx += raw_size;
+        out[out_idx] = '\0';
+      }
+    } // if (find_hv_macro(st_start, &hv_start, &hv_end))
+    else {
+      raw_size = st_end - st_start;
+      if (raw_size > (int)(sizeof(out) - out_idx - 1)) {
+        gpverror(GPE_TOO_LONG, NULL, st_start, (size_t)raw_size, sizeof(out) - out_idx - 1);
+        return NULL;
+      }
+
+      /* It adds to existing text. */
+      memcpy(&out[out_idx], st_start, raw_size);
+      out_idx += raw_size;
+      out[out_idx] = '\0';
+      st_start += raw_size;
+    }
+  }
+
+  return out;
+}
+
 static gpasmVal
 do_error(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
+  const char *str;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -2141,7 +2306,9 @@ do_error(gpasmVal r, const char *name, int arity, struct pnode *parms)
     p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
-      gpverror(GPE_USER, NULL, p->value.string);
+      if ((str = hv_macro_resolver(p->value.string)) != NULL) {
+        gpverror(GPE_USER, NULL, str);
+      }
     }
     else {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -2383,7 +2550,7 @@ do_idata(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_addr  = 0;
       state.obj.new_sect_flags = STYP_DATA;
       break;
 
@@ -2391,7 +2558,7 @@ do_idata(gpasmVal r, const char *name, int arity, struct pnode *parms)
       /* new absolute section */
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_addr  = maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_DATA | STYP_ABS;
       break;
 
@@ -2422,7 +2589,7 @@ do_idata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_addr  = 0;
       state.obj.new_sect_flags = STYP_DATA | STYP_ACCESS;
       break;
 
@@ -2430,7 +2597,7 @@ do_idata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
       /* new absolute section */
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_addr  = maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_DATA | STYP_ABS | STYP_ACCESS;
       break;
 
@@ -2491,7 +2658,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
       value = maybe_evaluate(HEAD(TAIL(parms)));
     }
     else {
-      gperror(GPW_EXPECTED,"18cxxx devices should specify __IDLOC address.");
+      gperror(GPW_EXPECTED, "18cxxx devices should specify __IDLOC address.");
       return r;
     }
   }
@@ -2605,7 +2772,7 @@ do_16_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
   char buf[BUFSIZ];
 
   if (state.mpasm_compatible) {
-    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM mode.", name);
+    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
     gperror(GPE_UNKNOWN, buf);
     return r;
   }
@@ -3038,7 +3205,7 @@ static gpasmVal
 do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  int first = 1;
+  gp_boolean first = true;
 
   state.lst.line.linetype = LTY_SET4;
 
@@ -3065,7 +3232,7 @@ do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
           if (first) {
             r = val;
-            first = 0;
+            first = false;
           }
         }
       }
@@ -3075,7 +3242,7 @@ do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
         if (first) {
           r = 0;
-          first = 0;
+          first = false;
         }
       }
       else {
@@ -3183,6 +3350,7 @@ static gpasmVal
 do_messg(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
+  const char *str;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -3190,7 +3358,9 @@ do_messg(gpasmVal r, const char *name, int arity, struct pnode *parms)
     p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
-      gpvmessage(GPM_USER, NULL, p->value.string);
+      if ((str = hv_macro_resolver(p->value.string)) != NULL) {
+        gpvmessage(GPM_USER, NULL, str);
+      }
     }
     else {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -3306,12 +3476,8 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
       if (num_reloc == 0) {
         /* it is an absolute address, generate the pagesel but no relocation */
         page = gp_processor_check_page(state.device.class, maybe_evaluate(p));
-        state.byte_addr += gp_processor_set_page(state.device.class,
-                                                 state.processor->num_pages,
-                                                 page,
-                                                 state.i_memory,
-                                                 state.byte_addr,
-                                                 use_wreg);
+        state.byte_addr += gp_processor_set_page(state.device.class, state.processor->num_pages,
+                                                 page, state.i_memory, state.byte_addr, use_wreg);
       }
       else if (num_reloc != 1) {
         gperror(GPE_ILLEGAL_LABEL, "Illegal label.");
@@ -3608,7 +3774,7 @@ do_udata(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_addr  = 0;
       state.obj.new_sect_flags = STYP_BSS;
       break;
 
@@ -3616,7 +3782,7 @@ do_udata(gpasmVal r, const char *name, int arity, struct pnode *parms)
       /* new absolute section */
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_addr  = maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_BSS | STYP_ABS;
       break;
 
@@ -3644,7 +3810,7 @@ do_udata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_addr  = 0;
       state.obj.new_sect_flags = STYP_BSS | STYP_ACCESS;
       break;
 
@@ -3652,7 +3818,7 @@ do_udata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
       /* new absolute section */
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_addr  = maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_BSS | STYP_ABS | STYP_ACCESS;
       break;
 
@@ -3680,7 +3846,7 @@ do_udata_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_addr  = 0;
       state.obj.new_sect_flags = STYP_BSS | STYP_OVERLAY;
       break;
 
@@ -3688,7 +3854,7 @@ do_udata_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
       /* new absolute section */
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_addr  = maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_BSS | STYP_ABS | STYP_OVERLAY;
       break;
 
@@ -3716,7 +3882,7 @@ do_udata_shr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_addr  = 0;
       state.obj.new_sect_flags = STYP_BSS | STYP_SHARED;
       break;
 
@@ -3724,7 +3890,7 @@ do_udata_shr(gpasmVal r, const char *name, int arity, struct pnode *parms)
       /* new absolute section */
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_addr  = maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_BSS | STYP_ABS | STYP_SHARED;
       break;
 
@@ -3949,12 +4115,9 @@ emit_check_relative(int insn, int argument, int mask, int range, const char *nam
 
   /* If the branch is too far then issue an error */
   if ((argument > range) || (argument < -(range+1))) {
-    snprintf(full_message,
-             sizeof(full_message),
+    snprintf(full_message, sizeof(full_message),
              "Argument out of range (%d not between %d and %d).",
-             argument,
-             -(range+1),
-             range);
+             argument, -(range+1), range);
     gperror(GPE_RANGE, full_message);
   }
 
@@ -5745,16 +5908,16 @@ opcode_init(int stage)
         remove_symbol(state.stBuiltin, "mullw");
       }
       /* Special case, some instructions not available on 16f5x devices. */
-      else if (strcmp(name, "pic16f54") == 0 ||
-               strcmp(name, "pic16f57") == 0 ||
-               strcmp(name, "pic16f59") == 0) {
+      else if ((strcmp(name, "pic16f54") == 0) ||
+               (strcmp(name, "pic16f57") == 0) ||
+               (strcmp(name, "pic16f59") == 0)) {
         remove_symbol(state.stBuiltin, "addlw");
         remove_symbol(state.stBuiltin, "sublw");
         remove_symbol(state.stBuiltin, "return");
         remove_symbol(state.stBuiltin, "retfie");
       }
-      else if (strcmp(name, "sx48bd") == 0 ||
-               strcmp(name, "sx52bd") == 0) {
+      else if ((strcmp(name, "sx48bd") == 0) ||
+               (strcmp(name, "sx52bd") == 0)) {
         struct symbol *mode_sym = get_symbol(state.stBuiltin, "mode");
 
         if (mode_sym != NULL) {
@@ -5768,8 +5931,8 @@ opcode_init(int stage)
                           (void *)&op_16c5xx_enh[i]);
         }
 
-        if (strcmp(name, "pic12f529t39a") == 0 ||
-            strcmp(name, "pic12f529t48a") == 0) {
+        if ((strcmp(name, "pic12f529t39a") == 0) ||
+            (strcmp(name, "pic12f529t48a") == 0)) {
           remove_symbol(state.stBuiltin, "retfie");
           remove_symbol(state.stBuiltin, "return");
         }
