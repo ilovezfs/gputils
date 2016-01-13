@@ -49,7 +49,7 @@ gp_strtoi(const char *string, char **endptr, int radix)
     ++string;
   }
 
-  while (1) {
+  while (true) {
     ch = *string;
 
     if (isdigit(ch)) {
@@ -84,20 +84,98 @@ stringtolong(const char *string, int radix)
 {
   char *endptr;
   int value;
+  char ch;
 
   value = gp_strtoi(string, &endptr, radix);
-  if ((endptr == NULL) || (*endptr != '\0')) {
+  if ((endptr == NULL) || ((ch = *endptr) != '\0')) {
     char complaint[80];
 
     snprintf(complaint, sizeof(complaint),
-             isprint(*endptr) ?
+             isprint(ch) ?
              "Illegal character '%c' in numeric constant." :
              "Illegal character %#x in numeric constant.",
-             *endptr);
+             ch);
     gperror(GPE_UNKNOWN, complaint);
   }
 
   return value;
+}
+
+gp_boolean
+find_hv_macro(const char *String, const char **Start, const char **End)
+{
+  const char *ptr;
+  int bracket_count;
+  char ch;
+
+  if ((String == NULL) || (*String == '\0')) {
+    return false;
+  }
+
+  if ((ptr = strchr(String, '#')) == NULL) {
+    return false;
+  }
+
+  *Start = ptr;
+  while (true) {
+    ++ptr;
+    ch = *ptr;
+
+    if (ch == '#') {
+      /* Repetitive '#' characters. */
+      *Start = ptr;
+      continue;
+    }
+
+    if ((ch == 'v') || (ch == 'V')) {
+      break;
+    }
+
+    if ((ch == '\0') || (ch != ' ')) {
+      return false;
+    }
+  }
+
+  while (true) {
+    ++ptr;
+    ch = *ptr;
+
+    if (ch == '(') {
+      /* This the starting bracket. */
+      break;
+    }
+
+    if ((ch == '\0') || (ch != ' ')) {
+      return false;
+    }
+  }
+
+  bracket_count = 1;
+
+  while (true) {
+    ++ptr;
+    ch = *ptr;
+
+    if (ch == '\0') {
+      break;
+    }
+
+    if (ch == '(') {
+      ++bracket_count;
+    }
+    else if (ch == ')') {
+      --bracket_count;
+    }
+
+    if (bracket_count == 0) {
+      /* Found the ending bracket, finish. */
+      ++ptr;
+      *End = ptr;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 int
@@ -105,22 +183,14 @@ gpasm_magic(const char *c)
 {
   if (c[0] == '\\') {
     switch (c[1]) {
-    case 'a':
-      return '\a';
-    case 'b':
-      return '\b';
-    case 'f':
-      return '\f';
-    case 'n':
-      return '\n';
-    case 'r':
-      return '\r';
-    case 't':
-      return '\t';
-    case 'v':
-      return '\v';
-    default:
-      return c[1];
+    case 'a': return '\a';
+    case 'b': return '\b';
+    case 'f': return '\f';
+    case 'n': return '\n';
+    case 'r': return '\r';
+    case 't': return '\t';
+    case 'v': return '\v';
+    default:  return c[1];
     }
   }
 
@@ -234,7 +304,6 @@ convert_escape_chars(const char *ps, int *value)
   }
 
   return ps;
-
 }
 
 /* In some contexts, such as in the operand to a literal instruction, a
@@ -505,7 +574,7 @@ select_radix(const char *radix_name)
 
 /************************************************************************/
 
-/* Function to append a line to an ongoing macro definition */
+/* Function to append a line to an ongoing macro definition. */
 void
 macro_append(void)
 {
@@ -607,8 +676,7 @@ void print_macro_body(struct macro_body *mac)
 
 /************************************************************************/
 
-/* add_file: add a file of type 'type' to the file_context stack.
- */
+/* add_file: Add a file of type 'type' to the file_context stack. */
 
 struct file_context *
 add_file(unsigned int type, const char *name)

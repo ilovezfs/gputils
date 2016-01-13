@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jan 10, 2016
+Jan 13, 2016
 \end_layout
 
 \begin_layout Standard
@@ -6496,6 +6496,8 @@ ERROR <string>
 
 \begin_layout Standard
 Issues an error message.
+ The directive - inside of the parameter string - recognize and execute
+ the #v() macro.
 \end_layout
 
 \begin_layout Standard
@@ -7382,6 +7384,8 @@ MESSG <string>
 
 \begin_layout Standard
 Writes <string> to the list file, and to the standard error output.
+ The directive - inside of the parameter string - recognize and execute
+ the #v() macro.
 \end_layout
 
 \begin_layout Standard

@@ -1,3 +1,12 @@
+2016-01-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpasm.h.in,
+    gpasm/gperror.c, gpasm/gperror.h, gpasm/util.c:
+    Extension of ERROR and MESSG: These directives - inside of
+    the parameter string - recognize and execute the #v() macro.
+
+  * gpasm/ppscan.l, gpasm/preprocess.c:
+    Code cosmetic.
+
 2016-01-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcoffopt.c:
     Fixed bug: "#286 Linker optimization level 2 crashes gplink"

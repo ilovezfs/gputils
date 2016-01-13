@@ -326,6 +326,8 @@ gp_geterror(unsigned int code)
     return "The destination of the storage is not selected (W or F).";
   case GPE_NOA:
     return "The access of RAM is not selected (A or B).";
+  case GPE_TOO_LONG:
+    return "The string (\"%s\") too length (%zu bytes). It cannot be more than %zu bytes.";
 
   default:
     return "UNKNOWN";
@@ -357,7 +359,7 @@ gpverror(unsigned int code, const char *message, ...)
     va_list(ap);
     const char *msg = gp_geterror(code);
 
-    if (message != NULL && *message != '\0') {
+    if ((message != NULL) && (*message != '\0')) {
       char buf[BUFSIZ];
 
       snprintf(buf, sizeof(buf), "%s %s", msg, message);
@@ -462,7 +464,7 @@ gpvwarning(unsigned int code, const char *message, ...)
       va_list(ap);
       const char *msg = gp_getwarning(code);
 
-      if (message != NULL && *message != '\0') {
+      if ((message != NULL) && (*message != '\0')) {
         char buf[BUFSIZ];
 
         snprintf(buf, sizeof(buf), "%s %s", msg, message);
@@ -555,7 +557,7 @@ gpvmessage(unsigned int code, const char *message, ...)
       va_list(ap);
       const char *msg = gp_getmessage(code);
 
-      if (message != NULL && *message != '\0') {
+      if ((message != NULL) && (*message != '\0')) {
         char buf[BUFSIZ];
 
         snprintf(buf, sizeof(buf), "%s %s", msg, message);

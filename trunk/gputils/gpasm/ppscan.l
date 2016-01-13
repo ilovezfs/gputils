@@ -26,12 +26,12 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #if !defined(YY_FLEX_MAJOR_VERSION) || \
-  !defined(YY_FLEX_MINOR_VERSION) || \
-  !defined(YY_FLEX_SUBMINOR_VERSION) || \
-  YY_FLEX_MAJOR_VERSION < 2 || \
-  (YY_FLEX_MAJOR_VERSION == 2 && YY_FLEX_MINOR_VERSION < 5) || \
-  (YY_FLEX_MAJOR_VERSION == 2 && YY_FLEX_MINOR_VERSION == 5 && YY_FLEX_SUBMINOR_VERSION < 35)
-# error "flex 2.5.35 or newer required!"
+    !defined(YY_FLEX_MINOR_VERSION) || \
+    !defined(YY_FLEX_SUBMINOR_VERSION) || \
+    YY_FLEX_MAJOR_VERSION < 2 || \
+    (YY_FLEX_MAJOR_VERSION == 2 && YY_FLEX_MINOR_VERSION < 5) || \
+    (YY_FLEX_MAJOR_VERSION == 2 && YY_FLEX_MINOR_VERSION == 5 && YY_FLEX_SUBMINOR_VERSION < 35)
+  #error "flex 2.5.35 or newer required!"
 #endif
 
 #include "stdhdr.h"
@@ -160,14 +160,16 @@ NUMCHAR [0-9a-z]
 <hv>\"{STR_QCHAR}*\"?|<hv>'{STR_QCHAR}*'? {
                            const char *pc;
 
-                           if ((yyleng > 1) && (yytext[yyleng - 1] == '"'))
+                           if ((yyleng > 1) && (yytext[yyleng - 1] == '"')) {
                              --yyleng;
-                           else
+                           } else {
                              gpvwarning(GPW_MISSING_QUOTE, NULL);
+                           }
 
                            pc = convert_escape_chars(yytext + 1, &pplval.i);
-                           if (pc != &yytext[yyleng])
+                           if (pc != &yytext[yyleng]) {
                              gpverror(GPE_ILLEGAL_ARGU, NULL, yytext);
+                           }
 
                            return NUMBER;
                          }
@@ -214,7 +216,7 @@ NUMCHAR [0-9a-z]
 
 #if 0
 static void
-yyprint (FILE *file, int type, YYSTYPE value)
+yyprint(FILE *file, int type, YYSTYPE value)
 {
   printf("@%d:", ppcol_end);
 
@@ -266,7 +268,7 @@ lex_line(char *line)
 
   yy_scan_string(line);
 
-  while (0 != (type = pplex())) {
+  while ((type = pplex()) != 0) {
     yyprint(stdout, type, pplval);
   }
 
