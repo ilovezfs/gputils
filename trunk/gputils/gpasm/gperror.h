@@ -176,7 +176,8 @@ enum GPM_codes {
   GPM_UNKNOWN          = 319,
 
   /* gputils special errors */
-  GPM_NOA              = 1301
+  GPM_NOA              = 1301,
+  GPM_NOB              = 1302
 };
 
 #endif

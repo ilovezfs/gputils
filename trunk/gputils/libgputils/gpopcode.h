@@ -1564,8 +1564,12 @@ enum common_insn {
 
 enum invalidate_mask {
   INV_MASK_NULL = 0,
-  INV_MASK_BANK = (1 << 0),     /* An instruction invalidates the selection of RAM Banks. (Only in "gpasm" and "absolute" mode.) */
-  INV_MASK_PAGE = (1 << 1)      /* An instruction invalidates the selection of ROM Pages. (Only in "gpasm" and "absolute" mode.) */
+  INV_MASK_BANK = (1 << 0),     /* An instruction invalidates the selection of RAM Banks.
+                                   (Only in "gpasm" and "absolute" mode.) */
+  INV_MASK_PAGE = (1 << 1),     /* An instruction invalidates the selection of ROM Pages.
+                                   (Only in "gpasm" and "absolute" mode.) */
+  INV_MASK_SKIP = (1 << 2)	/* An instruction following this may be skipped. Will not invalidates Banks nor Pages.
+                                   (Only in "gpasm" and "absolute" mode.) */
 };
 
 typedef int gpasmVal;   /* The type that internal arithmetic uses. */
