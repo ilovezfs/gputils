@@ -287,6 +287,7 @@ extern struct gpasm_state {
   struct macro_head *while_head;    /* WHILEs work a lot like macros... */
   unsigned int while_depth;         /* WHILE nesting depth, used in WHILE definition. */
   enum state_types next_state;
+  gp_boolean skipped_inst;          /* Instruction execution depends on the previous one (after btfsc etc.). */
 
   union {
     char *file;

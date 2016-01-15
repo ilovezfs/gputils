@@ -4051,7 +4051,7 @@ file_ok(unsigned int file)
   if (state.mpasm_compatible) {
     /* Only so much can be done compatibility reasons. */
     if (bank_addr > 0) {
-      gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank_num, bank_addr, reg_offs);
+      gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", 0, bank_addr, reg_offs);
     }
 
     return;
@@ -4071,18 +4071,18 @@ file_ok(unsigned int file)
 
   bank_assume = var->value;
 
+  /* Check if we are in correct bank. Negative __ACTIVE_BANK_ADDR value means bank is not set yet. */
   if (bank_assume >= 0) {
     /* Necessary only the selected bank address. */
     bank_assume = gp_processor_bank_addr(state.processor, bank_assume);
     bank_num    = gp_processor_bank_num(state.processor, bank_assume);
-  }
-  else {
-    bank_num    = -1;
-  }
-
-  /* Check if we are in correct bank. Negative __ACTIVE_BANK_ADDR value means bank is not set yet. */
-  if ((bank_assume < 0) || (bank_assume != bank_addr)) {
-    gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank_num, bank_addr, reg_offs);
+    if (bank_assume != bank_addr) {
+      gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank_num, bank_addr, reg_offs);
+    }
+  } else {
+    gpvmessage(GPM_NOB, NULL, bank_num);
+    /* If no bank is explicitly selected, set bank to this register now. */
+    set_global(GLOBAL_ACT_BANK_ADDR, file, LFT_TEMPORARY, GVT_GLOBAL);
   }
 }
 
@@ -5671,7 +5671,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
       } /* switch (i->class) */
 
-      if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+      if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE) && (!state.skipped_inst)) {
         if (i->inv_mask & INV_MASK_BANK) {
           /* Invalidates the selection of RAM Banks. */
           set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_GLOBAL);
@@ -5681,6 +5681,11 @@ do_insn(const char *name, struct pnode *parms)
           /* Invalidates the selection of ROM Pages. */
           set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_GLOBAL);
         }
+      }
+
+      /* Remember if this instruction may skip the next one. */
+      if (i->class != INSN_CLASS_FUNC) {
+        state.skipped_inst = ((i->inv_mask & INV_MASK_SKIP) != 0);
       }
     } /* if (asm_enabled() || (i->attribs & ATTRIB_COND)) */
   } /* if (s != NULL) */

@@ -521,6 +521,8 @@ gp_getmessage(unsigned int code)
     return "Special Instruction Mnemonic used.";
   case GPM_NOA:
     return "Using default access of 0 (Access Bank).";
+  case GPM_NOB:
+    return "RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank %d from now on.";
   case GPM_UNKNOWN:
   default:
     return "UNKNOWN MESSAGE";
