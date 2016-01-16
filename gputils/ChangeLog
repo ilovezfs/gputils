@@ -1,4 +1,8 @@
 2016-01-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p16f18855.inc, header/p16f18875.inc 
+    Added the missing DEBUG config option to these MCUs.
+
+2016-01-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, gpasm/gpasm.h.in, gpasm/gperror.c,
     gpasm/gperror.h, libgputils/gpopcode.c, libgputils/gpopcode.h:
     Patch 2: #65 Smarter message 302
