@@ -131,178 +131,200 @@ use constant PIC16_BANK_SIZE  => 2 ** PIC16_BANK_SHIFT;
 
 my %class_features_eeprom8 =
   (
-  CLASS       => PROC_CLASS_EEPROM8,
-  ENHANCED    => FALSE,
-  PAGE_SIZE   => -1,
-  WORD_SIZE   => 8,
-  CONF_SIZE   => -1,
-  CONF_MASK   => -1,
-  EE_START    => -1,
-  BANK_MAX    => -1,
-  BANK_SIZE   => -1,
-  BANK_MASK   => -1,
-  BANK_SHIFT  => -1,
-  IDLOCS_MASK => 0
+  CLASS         => PROC_CLASS_EEPROM8,
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => -1,
+  WORD_SIZE     => 8,
+  CONF_SIZE     => -1,
+  CONF_MASK     => -1,
+  EE_START      => -1,
+  BANK_MAX      => -1,
+  BANK_SIZE     => -1,
+  BANK_MASK     => -1,
+  BANK_SHIFT    => -1,
+  IDLOCS_MASK   => 0,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my %class_features_eeprom16 =
   (
-  CLASS       => PROC_CLASS_EEPROM16,
-  ENHANCED    => FALSE,
-  PAGE_SIZE   => -1,
-  WORD_SIZE   => 16,
-  CONF_SIZE   => -1,
-  CONF_MASK   => -1,
-  EE_START    => -1,
-  BANK_MAX    => -1,
-  BANK_SIZE   => -1,
-  BANK_MASK   => -1,
-  BANK_SHIFT  => -1,
-  IDLOCS_MASK => 0
+  CLASS         => PROC_CLASS_EEPROM16,
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => -1,
+  WORD_SIZE     => 16,
+  CONF_SIZE     => -1,
+  CONF_MASK     => -1,
+  EE_START      => -1,
+  BANK_MAX      => -1,
+  BANK_SIZE     => -1,
+  BANK_MASK     => -1,
+  BANK_SHIFT    => -1,
+  IDLOCS_MASK   => 0,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my %class_features_generic =
   (
-  CLASS       => PROC_CLASS_GENERIC,
-  ENHANCED    => FALSE,
-  PAGE_SIZE   => 512,
-  WORD_SIZE   => 12,
-  CONF_SIZE   => 12,
-  CONF_MASK   => 0x0FFF,
-  EE_START    => -1,
-  BANK_MAX    => 4,
-  BANK_SIZE   => PIC12_BANK_SIZE,
-  BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT  => PIC12_BANK_SHIFT,
-  IDLOCS_MASK => 0x0FF0
+  CLASS         => PROC_CLASS_GENERIC,
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => 512,
+  WORD_SIZE     => 12,
+  CONF_SIZE     => 12,
+  CONF_MASK     => 0x0FFF,
+  EE_START      => -1,
+  BANK_MAX      => 4,
+  BANK_SIZE     => PIC12_BANK_SIZE,
+  BANK_MASK     => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC12_BANK_SHIFT,
+  IDLOCS_MASK   => 0x0FF0,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my %class_features_p12 =
   (
-  CLASS       => PROC_CLASS_PIC12,
-  ENHANCED    => FALSE,
-  PAGE_SIZE   => 512,
-  WORD_SIZE   => 12,
-  CONF_SIZE   => 12,
-  CONF_MASK   => 0x0FFF,
-  EE_START    => -1,
-  BANK_MAX    => 4,
-  BANK_SIZE   => PIC12_BANK_SIZE,
-  BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT  => PIC12_BANK_SHIFT,
-  IDLOCS_MASK => 0x0FF0
+  CLASS         => PROC_CLASS_PIC12,
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => 512,
+  WORD_SIZE     => 12,
+  CONF_SIZE     => 12,
+  CONF_MASK     => 0x0FFF,
+  EE_START      => -1,
+  BANK_MAX      => 8,
+  BANK_SIZE     => PIC12_BANK_SIZE,
+  BANK_MASK     => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC12_BANK_SHIFT,
+  IDLOCS_MASK   => 0x0FF0,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my %class_features_p12e =
   (
-  CLASS       => PROC_CLASS_PIC12E,
-  ENHANCED    => TRUE,
-  PAGE_SIZE   => 512,
-  WORD_SIZE   => 12,
-  CONF_SIZE   => 12,
-  CONF_MASK   => 0x0FFF,
-  EE_START    => -1,
-  BANK_MAX    => 8,
-  BANK_SIZE   => PIC12_BANK_SIZE,
-  BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT  => PIC12_BANK_SHIFT,
-  IDLOCS_MASK => 0x0FF0
+  CLASS         => PROC_CLASS_PIC12E,
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => 512,
+  WORD_SIZE     => 12,
+  CONF_SIZE     => 12,
+  CONF_MASK     => 0x0FFF,
+  EE_START      => -1,
+  BANK_MAX      => 8,
+  BANK_SIZE     => PIC12_BANK_SIZE,
+  BANK_MASK     => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC12_BANK_SHIFT,
+  IDLOCS_MASK   => 0x0FF0,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my %class_features_p14 =
   (
-  CLASS       => PROC_CLASS_PIC14,
-  ENHANCED    => FALSE,
-  PAGE_SIZE   => 2048,
-  WORD_SIZE   => 14,
-  CONF_SIZE   => 14,
-  CONF_MASK   => 0x3FFF,
-  EE_START    => 0x2100,
-  BANK_MAX    => 4,
-  BANK_SIZE   => PIC14_BANK_SIZE,
-  BANK_MASK   => ~(PIC14_BANK_SIZE - 1),
-  BANK_SHIFT  => PIC14_BANK_SHIFT,
-  IDLOCS_MASK => 0x3F80
+  CLASS         => PROC_CLASS_PIC14,
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => 2048,
+  WORD_SIZE     => 14,
+  CONF_SIZE     => 14,
+  CONF_MASK     => 0x3FFF,
+  EE_START      => 0x2100,
+  BANK_MAX      => 4,
+  BANK_SIZE     => PIC14_BANK_SIZE,
+  BANK_MASK     => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC14_BANK_SHIFT,
+  IDLOCS_MASK   => 0x3F80,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my %class_features_p14e =
   (
-  CLASS       => PROC_CLASS_PIC14E,
-  ENHANCED    => TRUE,
-  PAGE_SIZE   => 2048,
-  WORD_SIZE   => 14,
-  CONF_SIZE   => 16,
-  CONF_MASK   => 0xFFFF,
-  EE_START    => 0xF000,
-  BANK_MAX    => 32,
-  BANK_SIZE   => PIC14_BANK_SIZE,
-  BANK_MASK   => ~(PIC14_BANK_SIZE - 1),
-  BANK_SHIFT  => PIC14_BANK_SHIFT,
-  IDLOCS_MASK => 0x3F80
+  CLASS         => PROC_CLASS_PIC14E,
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => 2048,
+  WORD_SIZE     => 14,
+  CONF_SIZE     => 16,
+  CONF_MASK     => 0xFFFF,
+  EE_START      => 0xF000,
+  BANK_MAX      => 32,
+  BANK_SIZE     => PIC14_BANK_SIZE,
+  BANK_MASK     => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC14_BANK_SHIFT,
+  IDLOCS_MASK   => 0x3F80,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my %class_features_p14ex =
   (
-  CLASS       => PROC_CLASS_PIC14EX,
-  ENHANCED    => TRUE,
-  PAGE_SIZE   => 2048,
-  WORD_SIZE   => 14,
-  CONF_SIZE   => 16,
-  CONF_MASK   => 0xFFFF,
-  EE_START    => 0xF000,
-  BANK_MAX    => 32,
-  BANK_SIZE   => PIC14_BANK_SIZE,
-  BANK_MASK   => ~(PIC14_BANK_SIZE - 1),
-  BANK_SHIFT  => PIC14_BANK_SHIFT,
-  IDLOCS_MASK => 0x3F80
+  CLASS         => PROC_CLASS_PIC14EX,
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => 2048,
+  WORD_SIZE     => 14,
+  CONF_SIZE     => 16,
+  CONF_MASK     => 0xFFFF,
+  EE_START      => 0xF000,
+  BANK_MAX      => 32,
+  BANK_SIZE     => PIC14_BANK_SIZE,
+  BANK_MASK     => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC14_BANK_SHIFT,
+  IDLOCS_MASK   => 0x3F80,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my %class_features_p16 =
   (
-  CLASS       => PROC_CLASS_PIC16,
-  ENHANCED    => FALSE,
-  PAGE_SIZE   => -1,
-  WORD_SIZE   => 16,
-  CONF_SIZE   => 8,
-  CONF_MASK   => 0x00FF,
-  EE_START    => -1,
-  BANK_MAX    => 9,
-  BANK_SIZE   => PIC16_BANK_SIZE,
-  BANK_MASK   => ~(PIC16_BANK_SIZE - 1),
-  BANK_SHIFT  => PIC16_BANK_SHIFT,
-  IDLOCS_MASK => 0x00
+  CLASS         => PROC_CLASS_PIC16,
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => -1,
+  WORD_SIZE     => 16,
+  CONF_SIZE     => 8,
+  CONF_MASK     => 0x00FF,
+  EE_START      => -1,
+  BANK_MAX      => 9,
+  BANK_SIZE     => PIC16_BANK_SIZE,
+  BANK_MASK     => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC16_BANK_SHIFT,
+  IDLOCS_MASK   => 0x00,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my %class_features_p16e =
   (
-  CLASS       => PROC_CLASS_PIC16E,
-  ENHANCED    => TRUE,
-  PAGE_SIZE   => -1,
-  WORD_SIZE   => 16,
-  CONF_SIZE   => 8,
-  CONF_MASK   => 0x00FF,
-  EE_START    => 0xF00000,
-  BANK_MAX    => 16,
-  BANK_SIZE   => PIC16_BANK_SIZE,
-  BANK_MASK   => ~(PIC16_BANK_SIZE - 1),
-  BANK_SHIFT  => PIC16_BANK_SHIFT,
-  IDLOCS_MASK => 0x00
+  CLASS         => PROC_CLASS_PIC16E,
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => -1,
+  WORD_SIZE     => 16,
+  CONF_SIZE     => 8,
+  CONF_MASK     => 0x00FF,
+  EE_START      => 0xF00000,
+  BANK_MAX      => 16,
+  BANK_SIZE     => PIC16_BANK_SIZE,
+  BANK_MASK     => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC16_BANK_SHIFT,
+  IDLOCS_MASK   => 0x00,
+  ACC_SPLIT_MIN => 0x5F,
+  ACC_SPLIT_MAX => 0x7F
   );
 
 my %class_features_sx =
   (
-  CLASS       => PROC_CLASS_SX,
-  ENHANCED    => FALSE,
-  PAGE_SIZE   => 512,
-  WORD_SIZE   => 12,
-  CONF_SIZE   => 12,
-  CONF_MASK   => 0x0FFF,
-  EE_START    => -1,
-  BANK_MAX    => -1,
-  BANK_SIZE   => PIC12_BANK_SIZE,
-  BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT  => PIC12_BANK_SHIFT,
-  IDLOCS_MASK => 0x3F80
+  CLASS         => PROC_CLASS_SX,
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => 512,
+  WORD_SIZE     => 12,
+  CONF_SIZE     => 12,
+  CONF_MASK     => 0x0FFF,
+  EE_START      => -1,
+  BANK_MAX      => -1,
+  BANK_SIZE     => PIC12_BANK_SIZE,
+  BANK_MASK     => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC12_BANK_SHIFT,
+  IDLOCS_MASK   => 0x3F80,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
   );
 
 my @classnames =
@@ -443,7 +465,7 @@ my %pp_defines = ();            # Value of definitions.
 
 my @pp_conditions = ();
 my @pp_else_conditions = ();
-my $pp_level = 0;   # Shows the lowest level.
+my $pp_level = 0;               # Shows the lowest level.
 my $pp_line_number;             # Line number of a lkr file.
 
 ################################################################################
@@ -1792,6 +1814,9 @@ sub read_all_mcu_info_from_mplabx()
   my $prev;
   my $name_error = '';
   my $tmp;
+  my $class_feat;
+  my $split_min;
+  my $split_max;
 
   Log("Reads the $path file.", 4);
 
@@ -1832,8 +1857,9 @@ sub read_all_mcu_info_from_mplabx()
 	$info = undef;
         }
 
-      my ($coff,  $name,   $class, $pages, $rom)     = (hex($1), lc($2),  str2class($3), hex($5),  hex($6));
-      my ($banks, $eeprom, $split, $fdata, $configs) = (hex($7), hex($9), hex($10),      hex($11), hex($12));
+      my $scl = $3;
+      my ($coff,  $name,   $class, $pages, $rom)     = (hex($1), lc($2),  str2class($scl), hex($5),  hex($6));
+      my ($banks, $eeprom, $split, $fdata, $configs) = (hex($7), hex($9), hex($10),        hex($11), hex($12));
 
       $name =~ s/^pic//o;
 
@@ -1843,7 +1869,8 @@ sub read_all_mcu_info_from_mplabx()
                $name eq 'ap7675' || $name =~ /^eeprom/o ||
                $name =~ /^mcp25/o);
 
-      $tmp = $class_features_by_mpasm{$class}->{BANK_MAX};
+      $class_feat = $class_features_by_mpasmx{$scl};
+      $tmp = $class_feat->{BANK_MAX};
       Log("Read info of the $name MCU.", 9);
 
       if ($banks > $tmp)
@@ -1851,6 +1878,25 @@ sub read_all_mcu_info_from_mplabx()
         # This is a Microchip bug in the database.
         print STDERR "Too much the Bank number of $name device: $banks, May at most $tmp.\n";
         $banks = $tmp;
+        }
+
+      if (($class_feat->{ACC_SPLIT_MIN} > 0) && ($class_feat->{ACC_SPLIT_MAX} > $class_feat->{ACC_SPLIT_MIN}))
+        {
+        $split_min = $class_feat->{ACC_SPLIT_MIN};
+        $split_max = $class_feat->{ACC_SPLIT_MAX};
+
+        if ($split < $split_min)
+          {
+          printf STDERR "The Access Bank split address (0x%03X) of $name device less than 0x%03X. Restated value: 0x%03X\n",
+                        $split, $split_min, $split_min;
+          $split = $split_min;
+          }
+        elsif ($split > $split_max)
+          {
+          printf STDERR "The Access Bank split address (0x%03X) of $name device greater than 0x%03X. Restated value: 0x%03X\n",
+                        $split, $split_max, $split_max;
+          $split = $split_max;
+          }
         }
 
       $info = {
@@ -1923,11 +1969,11 @@ sub new_px_row($$$$)
   my $bad_start = -1;
   my $bad_end   = -1;
 
-  if (! $p18j && $eeprom_start > 0 && $Info->{EEPROM} > 0)
+  if ((! $p18j) && ($eeprom_start > 0) && ($Info->{EEPROM} > 0))
     {
     $bad_start = $rom_end + 1;
-    $bad_end = $eeprom_start - 1;
-    $rom_end = $bad_end + $Info->{EEPROM} + 1;
+    $bad_end   = $lkr_eeprom_start - 1;
+    $rom_end   = $lkr_eeprom_start + $Info->{EEPROM};
     }
 
   my $num_pages = $Info->{PAGES};
@@ -1957,7 +2003,7 @@ sub new_px_row($$$$)
            IDLOCS_ADDRS => [ $lkr_idlocs_start, $lkr_idlocs_end ],
            CONFIG_ADDRS => [ $lkr_config_start, $lkr_config_end ],
            EEPROM_ADDRS => [ $lkr_eeprom_start, $lkr_eeprom_end ],
-           IDLOCS_MASK  => $Info->{IDLOCS_MASK},
+           IDLOCS_MASK  => $class_features_list[$class]->{IDLOCS_MASK},
            HEADER       => $Header,
            SCRIPT       => $Script,
     	   P16E_FLAGS   => $Info->{P16E_FLAGS},
@@ -2778,25 +2824,25 @@ sub show_diff_px_struct()
 
         # These important values.
 
-    if ($_->{COFF_TYPE}         != $mp->{COFF_TYPE} ||
-        $_->{NUM_PAGES}         != $mp->{NUM_PAGES} ||
-        $_->{NUM_BANKS}         != $mp->{NUM_BANKS} ||
-        $_->{BANK_BITS}         != $mp->{BANK_BITS} ||
-        $_->{COMMON_RAM}->[0]   != $mp->{COMMON_RAM}->[0] ||
-        $_->{COMMON_MAX}        != $mp->{COMMON_MAX} ||
-        $_->{LINEAR_RAM}->[0]   != $mp->{LINEAR_RAM}->[0] ||
-        $_->{MAXRAM}            != $mp->{MAXRAM} ||
-        $_->{MAXROM}            != $mp->{MAXROM} ||
-        $_->{PROGSIZE}          != $mp->{PROGSIZE} ||
-        $_->{BADROM}->[0]       != $mp->{BADROM}->[0] ||
-        $_->{BADROM}->[1]       != $mp->{BADROM}->[1] ||
-        $_->{IDLOCS_ADDRS}->[0] != $mp->{IDLOCS_ADDRS}->[0] ||
-        $_->{IDLOCS_ADDRS}->[1] != $mp->{IDLOCS_ADDRS}->[1] ||
-        $_->{CONFIG_ADDRS}->[0] != $mp->{CONFIG_ADDRS}->[0] ||
-        $_->{CONFIG_ADDRS}->[1] != $mp->{CONFIG_ADDRS}->[1] ||
-        $_->{EEPROM_ADDRS}->[0] != $mp->{EEPROM_ADDRS}->[0] ||
-        $_->{EEPROM_ADDRS}->[1] != $mp->{EEPROM_ADDRS}->[1]
-        $_->{IDLOCS_MASK}       != $mp->{IDLOCS_MASK})
+    if (($_->{COFF_TYPE}         != $mp->{COFF_TYPE})         ||
+        ($_->{NUM_PAGES}         != $mp->{NUM_PAGES})         ||
+        ($_->{NUM_BANKS}         != $mp->{NUM_BANKS})         ||
+        ($_->{BANK_BITS}         != $mp->{BANK_BITS})         ||
+        ($_->{COMMON_RAM}->[0]   != $mp->{COMMON_RAM}->[0])   ||
+        ($_->{COMMON_MAX}        != $mp->{COMMON_MAX})        ||
+        ($_->{LINEAR_RAM}->[0]   != $mp->{LINEAR_RAM}->[0])   ||
+        ($_->{MAXRAM}            != $mp->{MAXRAM})            ||
+        ($_->{MAXROM}            != $mp->{MAXROM})            ||
+        ($_->{PROGSIZE}          != $mp->{PROGSIZE})          ||
+        ($_->{BADROM}->[0]       != $mp->{BADROM}->[0])       ||
+        ($_->{BADROM}->[1]       != $mp->{BADROM}->[1])       ||
+        ($_->{IDLOCS_ADDRS}->[0] != $mp->{IDLOCS_ADDRS}->[0]) ||
+        ($_->{IDLOCS_ADDRS}->[1] != $mp->{IDLOCS_ADDRS}->[1]) ||
+        ($_->{CONFIG_ADDRS}->[0] != $mp->{CONFIG_ADDRS}->[0]) ||
+        ($_->{CONFIG_ADDRS}->[1] != $mp->{CONFIG_ADDRS}->[1]) ||
+        ($_->{EEPROM_ADDRS}->[0] != $mp->{EEPROM_ADDRS}->[0]) ||
+        ($_->{EEPROM_ADDRS}->[1] != $mp->{EEPROM_ADDRS}->[1]) ||
+        ($_->{IDLOCS_MASK}       != $mp->{IDLOCS_MASK}))
       {
       $out .= "$border\n";
       $out .= 'mplabx  ' . create_one_px_row($mp, FALSE) . "\n";

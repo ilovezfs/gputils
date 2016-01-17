@@ -3,7 +3,7 @@
 
 LIBPATH .
 
-CODEPAGE   NAME=page0      START=0x0               END=0x1FFF                   
+CODEPAGE   NAME=page0      START=0x0               END=0x7FFF                   
 CODEPAGE   NAME=.idlocs    START=0x8000            END=0x8003         PROTECTED 
 CODEPAGE   NAME=.devid     START=0x8006            END=0x8006         PROTECTED 
 CODEPAGE   NAME=.config    START=0x8007            END=0x800B         PROTECTED 

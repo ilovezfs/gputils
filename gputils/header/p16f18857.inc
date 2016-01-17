@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Dec 08 2015
 ;  MPASM PIC16F18857 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -65,18 +65,13 @@ INTCON           EQU  H'000B'
 PORTA            EQU  H'000C'
 PORTB            EQU  H'000D'
 PORTC            EQU  H'000E'
-PORTD            EQU  H'000F'
 PORTE            EQU  H'0010'
 TRISA            EQU  H'0011'
 TRISB            EQU  H'0012'
 TRISC            EQU  H'0013'
-TRISD            EQU  H'0014'
-TRISE            EQU  H'0015'
 LATA             EQU  H'0016'
 LATB             EQU  H'0017'
 LATC             EQU  H'0018'
-LATD             EQU  H'0019'
-LATE             EQU  H'001A'
 TMR0             EQU  H'001C'
 TMR0L            EQU  H'001C'
 PR0              EQU  H'001D'
@@ -407,6 +402,7 @@ WDTPSL           EQU  H'080E'
 WDTPSH           EQU  H'080F'
 WDTTMR           EQU  H'0810'
 BORCON           EQU  H'0811'
+VREGCON          EQU  H'0812'
 PCON0            EQU  H'0813'
 CCDCON           EQU  H'0814'
 NVMADRL          EQU  H'081A'
@@ -666,21 +662,7 @@ RC6              EQU  H'0006'
 RC7              EQU  H'0007'
 
 
-;----- PORTD Bits -----------------------------------------------------
-RD0              EQU  H'0000'
-RD1              EQU  H'0001'
-RD2              EQU  H'0002'
-RD3              EQU  H'0003'
-RD4              EQU  H'0004'
-RD5              EQU  H'0005'
-RD6              EQU  H'0006'
-RD7              EQU  H'0007'
-
-
 ;----- PORTE Bits -----------------------------------------------------
-RE0              EQU  H'0000'
-RE1              EQU  H'0001'
-RE2              EQU  H'0002'
 RE3              EQU  H'0003'
 
 
@@ -717,23 +699,6 @@ TRISC6           EQU  H'0006'
 TRISC7           EQU  H'0007'
 
 
-;----- TRISD Bits -----------------------------------------------------
-TRISD0           EQU  H'0000'
-TRISD1           EQU  H'0001'
-TRISD2           EQU  H'0002'
-TRISD3           EQU  H'0003'
-TRISD4           EQU  H'0004'
-TRISD5           EQU  H'0005'
-TRISD6           EQU  H'0006'
-TRISD7           EQU  H'0007'
-
-
-;----- TRISE Bits -----------------------------------------------------
-TRISE0           EQU  H'0000'
-TRISE1           EQU  H'0001'
-TRISE2           EQU  H'0002'
-
-
 ;----- LATA Bits -----------------------------------------------------
 LATA0            EQU  H'0000'
 LATA1            EQU  H'0001'
@@ -765,23 +730,6 @@ LATC4            EQU  H'0004'
 LATC5            EQU  H'0005'
 LATC6            EQU  H'0006'
 LATC7            EQU  H'0007'
-
-
-;----- LATD Bits -----------------------------------------------------
-LATD0            EQU  H'0000'
-LATD1            EQU  H'0001'
-LATD2            EQU  H'0002'
-LATD3            EQU  H'0003'
-LATD4            EQU  H'0004'
-LATD5            EQU  H'0005'
-LATD6            EQU  H'0006'
-LATD7            EQU  H'0007'
-
-
-;----- LATE Bits -----------------------------------------------------
-LATE0            EQU  H'0000'
-LATE1            EQU  H'0001'
-LATE2            EQU  H'0002'
 
 
 ;----- TMR0 Bits -----------------------------------------------------
@@ -2254,12 +2202,10 @@ PWMPW9           EQU  H'0007'
 ;----- PWM6CON Bits -----------------------------------------------------
 POL_PWM6CON      EQU  H'0004'
 OUT_PWM6CON      EQU  H'0005'
-OE               EQU  H'0006'
 EN               EQU  H'0007'
 
 PWM6POL          EQU  H'0004'
 PWM6OUT          EQU  H'0005'
-PWM6OE           EQU  H'0006'
 PWM6EN           EQU  H'0007'
 
 
@@ -2306,12 +2252,10 @@ PWMPW9           EQU  H'0007'
 ;----- PWM7CON Bits -----------------------------------------------------
 POL_PWM7CON      EQU  H'0004'
 OUT_PWM7CON      EQU  H'0005'
-OE               EQU  H'0006'
 EN               EQU  H'0007'
 
 PWM7POL          EQU  H'0004'
 PWM7OUT          EQU  H'0005'
-PWM7OE           EQU  H'0006'
 PWM7EN           EQU  H'0007'
 
 
@@ -3824,6 +3768,10 @@ WDTTMR3          EQU  H'0006'
 ;----- BORCON Bits -----------------------------------------------------
 BORRDY           EQU  H'0000'
 SBOREN           EQU  H'0007'
+
+
+;----- VREGCON Bits -----------------------------------------------------
+VREGPM           EQU  H'0001'
 
 
 ;----- PCON0 Bits -----------------------------------------------------
@@ -5884,6 +5832,9 @@ Z_SHAD           EQU  H'0002'
 ;
 ;==========================================================================
        __MAXRAM  H'1FFF'
+       __BADRAM  H'000F'
+       __BADRAM  H'0014'-H'0015'
+       __BADRAM  H'0019'-H'001A'
        __BADRAM  H'001B'
        __BADRAM  H'0092'
        __BADRAM  H'009F'
@@ -5950,7 +5901,6 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'079D'
        __BADRAM  H'079E'
        __BADRAM  H'079F'
-       __BADRAM  H'0812'
        __BADRAM  H'0815'-H'0819'
        __BADRAM  H'0894'
        __BADRAM  H'089C'-H'089F'
@@ -5968,55 +5918,55 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'0D0C'-H'0D1F'
        __BADRAM  H'0D8C'-H'0D9F'
        __BADRAM  H'0E0C'-H'0E0E'
-       __BADRAM  H'0E0F'-H'0E46'
+       __BADRAM  H'0E0F'-H'0E1F'
        __BADRAM  H'0E8C'-H'0E8E'
        __BADRAM  H'0E8F'-H'0E90'
        __BADRAM  H'0E91'-H'0E93'
        __BADRAM  H'0E94'-H'0E97'
        __BADRAM  H'0E98'-H'0E9B'
        __BADRAM  H'0E9C'-H'0E9E'
-       __BADRAM  H'0E9F'-H'0EAE'
+       __BADRAM  H'0E9F'
        __BADRAM  H'0F0C'-H'0F0F'
        __BADRAM  H'0F10'-H'0F1F'
        __BADRAM  H'0F8C'-H'0F98'
        __BADRAM  H'0F99'-H'0F9C'
        __BADRAM  H'0F9D'-H'0F9F'
-       __BADRAM  H'1000'-H'101F'
-       __BADRAM  H'1080'-H'109F'
-       __BADRAM  H'1100'-H'111F'
-       __BADRAM  H'1180'-H'119F'
-       __BADRAM  H'1200'-H'121F'
-       __BADRAM  H'1280'-H'129F'
-       __BADRAM  H'1300'-H'131F'
-       __BADRAM  H'1380'-H'139F'
-       __BADRAM  H'1400'-H'141F'
-       __BADRAM  H'1480'-H'149F'
-       __BADRAM  H'1500'-H'151F'
-       __BADRAM  H'1580'-H'159F'
-       __BADRAM  H'1600'-H'161F'
-       __BADRAM  H'1680'-H'169F'
-       __BADRAM  H'1700'-H'171F'
-       __BADRAM  H'1780'-H'179F'
-       __BADRAM  H'1800'-H'181F'
-       __BADRAM  H'1880'-H'189F'
-       __BADRAM  H'1900'-H'191F'
-       __BADRAM  H'1980'-H'199F'
+       __BADRAM  H'100C'-H'101F'
+       __BADRAM  H'108C'-H'109F'
+       __BADRAM  H'110C'-H'111F'
+       __BADRAM  H'118C'-H'119F'
+       __BADRAM  H'120C'-H'121F'
+       __BADRAM  H'128C'-H'129F'
+       __BADRAM  H'130C'-H'131F'
+       __BADRAM  H'138C'-H'139F'
+       __BADRAM  H'140C'-H'141F'
+       __BADRAM  H'148C'-H'149F'
+       __BADRAM  H'150C'-H'151F'
+       __BADRAM  H'158C'-H'159F'
+       __BADRAM  H'160C'-H'161F'
+       __BADRAM  H'168C'-H'169F'
+       __BADRAM  H'170C'-H'171F'
+       __BADRAM  H'178C'-H'179F'
+       __BADRAM  H'180C'-H'181F'
+       __BADRAM  H'188C'-H'189F'
+       __BADRAM  H'190C'-H'191F'
+       __BADRAM  H'198C'-H'199F'
        __BADRAM  H'19A0'-H'19EF'
-       __BADRAM  H'1A00'-H'1A1F'
+       __BADRAM  H'1A0C'-H'1A1F'
        __BADRAM  H'1A20'-H'1A6F'
-       __BADRAM  H'1A80'-H'1A9F'
+       __BADRAM  H'1A8C'-H'1A9F'
        __BADRAM  H'1AA0'-H'1AEF'
-       __BADRAM  H'1B00'-H'1B1F'
+       __BADRAM  H'1B0C'-H'1B1F'
        __BADRAM  H'1B20'-H'1B6F'
-       __BADRAM  H'1B80'-H'1B9F'
+       __BADRAM  H'1B8C'-H'1B9F'
        __BADRAM  H'1BA0'-H'1BEF'
-       __BADRAM  H'1C00'-H'1C1F'
+       __BADRAM  H'1C0C'-H'1C1F'
        __BADRAM  H'1C20'-H'1C6F'
-       __BADRAM  H'1C80'-H'1C9F'
+       __BADRAM  H'1C8C'-H'1C9F'
        __BADRAM  H'1CA0'-H'1CEF'
-       __BADRAM  H'1D00'-H'1D1F'
+       __BADRAM  H'1D0C'-H'1D1F'
        __BADRAM  H'1D20'-H'1D6F'
-       __BADRAM  H'1D80'-H'1D9F'
+       __BADRAM  H'1D8C'-H'1D9F'
        __BADRAM  H'1DA0'-H'1DEF'
        __BADRAM  H'1E0C'-H'1E0E'
        __BADRAM  H'1E38'-H'1E6F'
@@ -6114,8 +6064,8 @@ _BOREN_ON            EQU  H'3FFF'; Brown-out Reset Enabled, SBOREN bit is ignore
 _BORV_HI             EQU  H'3DFF'; Brown-out Reset Voltage (VBOR) is set to 2.7V
 _BORV_LO             EQU  H'3FFF'; Brown-out Reset Voltage (VBOR) set to 1.9V on LF, and 2.45V on F Devices
 
-_ZCDDIS_OFF          EQU  H'3BFF'; Zero-cross detect circuit is always enabled
-_ZCDDIS_ON           EQU  H'3FFF'; Zero-cross detect circuit is disabled at POR.
+_ZCD_OFF             EQU  H'3BFF'; Zero-cross detect circuit is always enabled
+_ZCD_ON              EQU  H'3FFF'; Zero-cross detect circuit is disabled at POR.
 
 _PPS1WAY_OFF         EQU  H'37FF'; The PPSLOCK bit can be set and cleared repeatedly by software
 _PPS1WAY_ON          EQU  H'3FFF'; The PPSLOCK bit can be cleared and set only once in software

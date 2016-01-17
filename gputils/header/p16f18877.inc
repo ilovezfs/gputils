@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Dec 08 2015
 ;  MPASM PIC16F18877 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -407,6 +407,7 @@ WDTPSL           EQU  H'080E'
 WDTPSH           EQU  H'080F'
 WDTTMR           EQU  H'0810'
 BORCON           EQU  H'0811'
+VREGCON          EQU  H'0812'
 PCON0            EQU  H'0813'
 CCDCON           EQU  H'0814'
 NVMADRL          EQU  H'081A'
@@ -2277,12 +2278,10 @@ PWMPW9           EQU  H'0007'
 ;----- PWM6CON Bits -----------------------------------------------------
 POL_PWM6CON      EQU  H'0004'
 OUT_PWM6CON      EQU  H'0005'
-OE               EQU  H'0006'
 EN               EQU  H'0007'
 
 PWM6POL          EQU  H'0004'
 PWM6OUT          EQU  H'0005'
-PWM6OE           EQU  H'0006'
 PWM6EN           EQU  H'0007'
 
 
@@ -2329,12 +2328,10 @@ PWMPW9           EQU  H'0007'
 ;----- PWM7CON Bits -----------------------------------------------------
 POL_PWM7CON      EQU  H'0004'
 OUT_PWM7CON      EQU  H'0005'
-OE               EQU  H'0006'
 EN               EQU  H'0007'
 
 PWM7POL          EQU  H'0004'
 PWM7OUT          EQU  H'0005'
-PWM7OE           EQU  H'0006'
 PWM7EN           EQU  H'0007'
 
 
@@ -3847,6 +3844,10 @@ WDTTMR3          EQU  H'0006'
 ;----- BORCON Bits -----------------------------------------------------
 BORRDY           EQU  H'0000'
 SBOREN           EQU  H'0007'
+
+
+;----- VREGCON Bits -----------------------------------------------------
+VREGPM           EQU  H'0001'
 
 
 ;----- PCON0 Bits -----------------------------------------------------
@@ -6179,7 +6180,6 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'079D'
        __BADRAM  H'079E'
        __BADRAM  H'079F'
-       __BADRAM  H'0812'
        __BADRAM  H'0815'-H'0819'
        __BADRAM  H'0894'
        __BADRAM  H'089C'-H'089F'
@@ -6197,7 +6197,7 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'0D0C'-H'0D1F'
        __BADRAM  H'0D8C'-H'0D9F'
        __BADRAM  H'0E0C'-H'0E0E'
-       __BADRAM  H'0E0F'-H'0E46'
+       __BADRAM  H'0E0F'-H'0E1F'
        __BADRAM  H'0E8C'-H'0E8E'
        __BADRAM  H'0E8F'-H'0E9F'
        __BADRAM  H'0F0C'-H'0F1F'
@@ -6205,39 +6205,39 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'100C'-H'101F'
        __BADRAM  H'108C'-H'109F'
        __BADRAM  H'110C'-H'111F'
-       __BADRAM  H'1180'-H'1193'
-       __BADRAM  H'1200'-H'1213'
-       __BADRAM  H'1280'-H'1293'
-       __BADRAM  H'1300'-H'1313'
-       __BADRAM  H'1380'-H'1393'
-       __BADRAM  H'1400'-H'1413'
-       __BADRAM  H'1480'-H'1493'
-       __BADRAM  H'1500'-H'1513'
-       __BADRAM  H'1580'-H'1593'
-       __BADRAM  H'1600'-H'1613'
-       __BADRAM  H'1680'-H'1693'
-       __BADRAM  H'1700'-H'1713'
-       __BADRAM  H'1780'-H'1793'
-       __BADRAM  H'1800'-H'1813'
-       __BADRAM  H'1880'-H'1893'
-       __BADRAM  H'1900'-H'1913'
-       __BADRAM  H'1980'-H'1993'
+       __BADRAM  H'118C'-H'119F'
+       __BADRAM  H'120C'-H'121F'
+       __BADRAM  H'128C'-H'129F'
+       __BADRAM  H'130C'-H'131F'
+       __BADRAM  H'138C'-H'139F'
+       __BADRAM  H'140C'-H'141F'
+       __BADRAM  H'148C'-H'149F'
+       __BADRAM  H'150C'-H'151F'
+       __BADRAM  H'158C'-H'159F'
+       __BADRAM  H'160C'-H'161F'
+       __BADRAM  H'168C'-H'169F'
+       __BADRAM  H'170C'-H'171F'
+       __BADRAM  H'178C'-H'179F'
+       __BADRAM  H'180C'-H'181F'
+       __BADRAM  H'188C'-H'189F'
+       __BADRAM  H'190C'-H'191F'
+       __BADRAM  H'198C'-H'199F'
        __BADRAM  H'19A0'-H'19EF'
-       __BADRAM  H'1A00'-H'1A13'
+       __BADRAM  H'1A0C'-H'1A1F'
        __BADRAM  H'1A20'-H'1A6F'
-       __BADRAM  H'1A80'-H'1A93'
+       __BADRAM  H'1A8C'-H'1A9F'
        __BADRAM  H'1AA0'-H'1AEF'
-       __BADRAM  H'1B00'-H'1B13'
+       __BADRAM  H'1B0C'-H'1B1F'
        __BADRAM  H'1B20'-H'1B6F'
-       __BADRAM  H'1B80'-H'1B93'
+       __BADRAM  H'1B8C'-H'1B9F'
        __BADRAM  H'1BA0'-H'1BEF'
-       __BADRAM  H'1C00'-H'1C13'
+       __BADRAM  H'1C0C'-H'1C1F'
        __BADRAM  H'1C20'-H'1C6F'
-       __BADRAM  H'1C80'-H'1C93'
+       __BADRAM  H'1C8C'-H'1C9F'
        __BADRAM  H'1CA0'-H'1CEF'
-       __BADRAM  H'1D00'-H'1D13'
+       __BADRAM  H'1D0C'-H'1D1F'
        __BADRAM  H'1D20'-H'1D6F'
-       __BADRAM  H'1D80'-H'1D93'
+       __BADRAM  H'1D8C'-H'1D9F'
        __BADRAM  H'1DA0'-H'1DEF'
        __BADRAM  H'1E0C'-H'1E0E'
        __BADRAM  H'1E38'-H'1E6F'
@@ -6336,8 +6336,8 @@ _BOREN_ON            EQU  H'3FFF'; Brown-out Reset Enabled, SBOREN bit is ignore
 _BORV_HI             EQU  H'3DFF'; Brown-out Reset Voltage (VBOR) is set to 2.7V
 _BORV_LO             EQU  H'3FFF'; Brown-out Reset Voltage (VBOR) set to 1.9V on LF, and 2.45V on F Devices
 
-_ZCDDIS_OFF          EQU  H'3BFF'; Zero-cross detect circuit is always enabled
-_ZCDDIS_ON           EQU  H'3FFF'; Zero-cross detect circuit is disabled at POR.
+_ZCD_OFF             EQU  H'3BFF'; Zero-cross detect circuit is always enabled
+_ZCD_ON              EQU  H'3FFF'; Zero-cross detect circuit is disabled at POR.
 
 _PPS1WAY_OFF         EQU  H'37FF'; The PPSLOCK bit can be set and cleared repeatedly by software
 _PPS1WAY_ON          EQU  H'3FFF'; The PPSLOCK bit can be cleared and set only once in software

@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Dec 08 2015
 ;  MPASM PIC18LF25K40 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -1140,12 +1140,10 @@ PWM4MD           EQU  H'0003'
 
 ;----- PMD4 Bits -----------------------------------------------------
 CWGMD            EQU  H'0000'
-MSSPMD           EQU  H'0004'
-UARTMD           EQU  H'0006'
-
-CWG1MD           EQU  H'0000'
 MSSP1MD          EQU  H'0004'
 UART1MD          EQU  H'0006'
+
+CWG1MD           EQU  H'0000'
 
 
 ;----- PMD5 Bits -----------------------------------------------------
@@ -3921,7 +3919,6 @@ SP5              EQU  H'0005'
 ;
 ;==========================================================================
        __MAXRAM  H'0FFF'
-       __BADRAM  H'0000'-H'005F'
        __BADRAM  H'0800'-H'0E90'
        __BADRAM  H'0E91'-H'0E9F'
        __BADRAM  H'0EDF'
@@ -3953,9 +3950,9 @@ SP5              EQU  H'0005'
 ;
 ;   :
 ;     RSTOSC = HFINTOSC_64MHZHFINTOSC with HFFRQ = 64 MHz and CDIV = 1:1
-;     RSTOSC = HFINTOSC_16MHZ_4PLLHFINTOSC with HFFRQ = 16 MHz, CDIV = 1:1 with 4xPLL
+;     RSTOSC = RESERVED_1  Reserved
 ;     RSTOSC = EXTOSC_4PLL EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
-;     RSTOSC = RESERVED    Reserved
+;     RSTOSC = RESERVED_2  Reserved
 ;     RSTOSC = SOSC        Secondary Oscillator
 ;     RSTOSC = LFINTOSC    Low-Frequency Oscillator
 ;     RSTOSC = HFINTOSC_1MHZHFINTOSC with HFFRQ = 4 MHz and CDIV = 4:1
@@ -4073,20 +4070,20 @@ SP5              EQU  H'0005'
 ;     WDTCCS = SC          Software Control
 ;
 ;   Write Protection Block 0:
-;     WRT0 = ON            Block 0 (000800-003FFFh) write-protected
-;     WRT0 = OFF           Block 0 (000800-003FFFh) not write-protected
+;     WRT0 = ON            Block 0 (000800-001FFFh) write-protected
+;     WRT0 = OFF           Block 0 (000800-001FFFh) not write-protected
 ;
 ;   Write Protection Block 1:
-;     WRT1 = ON            Block 1 (004000-007FFFh) write-protected
-;     WRT1 = OFF           Block 1 (004000-007FFFh) not write-protected
+;     WRT1 = ON            Block 1 (002000-003FFFh) write-protected
+;     WRT1 = OFF           Block 1 (002000-003FFFh) not write-protected
 ;
 ;   Write Protection Block 2:
-;     WRT2 = ON            Block 2 (008000-00BFFFh) write-protected
-;     WRT2 = OFF           Block 2 (008000-00BFFFh) not write-protected
+;     WRT2 = ON            Block 2 (004000-005FFFh) write-protected
+;     WRT2 = OFF           Block 2 (004000-005FFFh) not write-protected
 ;
 ;   Write Protection Block 3:
-;     WRT3 = ON            Block 3 (00C000-00FFFFh) write-protected
-;     WRT3 = OFF           Block 3 (00C000-00FFFFh) not write-protected
+;     WRT3 = ON            Block 3 (006000-007FFFh) write-protected
+;     WRT3 = OFF           Block 3 (006000-007FFFh) not write-protected
 ;
 ;   Configuration Register Write Protection bit:
 ;     WRTC = ON            Configuration registers (300000-30000Bh) write-protected
@@ -4183,9 +4180,9 @@ _FEXTOSC_ECM_1L      EQU  H'FE'; EC (external clock) for 500 kHz to 8 MHz; PFM s
 _FEXTOSC_ECH_1L      EQU  H'FF'; EC (external clock) above 8 MHz; PFM set to high power
 
 _RSTOSC_HFINTOSC_64MHZ_1L EQU  H'8F'; HFINTOSC with HFFRQ = 64 MHz and CDIV = 1:1
-_RSTOSC_HFINTOSC_16MHZ_4PLL_1L EQU  H'9F'; HFINTOSC with HFFRQ = 16 MHz, CDIV = 1:1 with 4xPLL
+_RSTOSC_RESERVED_1_1L EQU  H'9F'; Reserved
 _RSTOSC_EXTOSC_4PLL_1L EQU  H'AF'; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
-_RSTOSC_RESERVED_1L  EQU  H'BF'; Reserved
+_RSTOSC_RESERVED_2_1L EQU  H'BF'; Reserved
 _RSTOSC_SOSC_1L      EQU  H'CF'; Secondary Oscillator
 _RSTOSC_LFINTOSC_1L  EQU  H'DF'; Low-Frequency Oscillator
 _RSTOSC_HFINTOSC_1MHZ_1L EQU  H'EF'; HFINTOSC with HFFRQ = 4 MHz and CDIV = 4:1
@@ -4291,17 +4288,17 @@ _WDTCCS_HFINTOSC_3H  EQU  H'CF'; WDT reference clock is the 31.2kHz HFINTOSC out
 _WDTCCS_SC_3H        EQU  H'FF'; Software Control
 
 ;----- CONFIG4L Options --------------------------------------------------
-_WRT0_ON_4L          EQU  H'FE'; Block 0 (000800-003FFFh) write-protected
-_WRT0_OFF_4L         EQU  H'FF'; Block 0 (000800-003FFFh) not write-protected
+_WRT0_ON_4L          EQU  H'FE'; Block 0 (000800-001FFFh) write-protected
+_WRT0_OFF_4L         EQU  H'FF'; Block 0 (000800-001FFFh) not write-protected
 
-_WRT1_ON_4L          EQU  H'FD'; Block 1 (004000-007FFFh) write-protected
-_WRT1_OFF_4L         EQU  H'FF'; Block 1 (004000-007FFFh) not write-protected
+_WRT1_ON_4L          EQU  H'FD'; Block 1 (002000-003FFFh) write-protected
+_WRT1_OFF_4L         EQU  H'FF'; Block 1 (002000-003FFFh) not write-protected
 
-_WRT2_ON_4L          EQU  H'FB'; Block 2 (008000-00BFFFh) write-protected
-_WRT2_OFF_4L         EQU  H'FF'; Block 2 (008000-00BFFFh) not write-protected
+_WRT2_ON_4L          EQU  H'FB'; Block 2 (004000-005FFFh) write-protected
+_WRT2_OFF_4L         EQU  H'FF'; Block 2 (004000-005FFFh) not write-protected
 
-_WRT3_ON_4L          EQU  H'F7'; Block 3 (00C000-00FFFFh) write-protected
-_WRT3_OFF_4L         EQU  H'FF'; Block 3 (00C000-00FFFFh) not write-protected
+_WRT3_ON_4L          EQU  H'F7'; Block 3 (006000-007FFFh) write-protected
+_WRT3_OFF_4L         EQU  H'FF'; Block 3 (006000-007FFFh) not write-protected
 
 ;----- CONFIG4H Options --------------------------------------------------
 _WRTC_ON_4H          EQU  H'FE'; Configuration registers (300000-30000Bh) write-protected

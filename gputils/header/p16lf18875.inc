@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Dec 08 2015
 ;  MPASM PIC16LF18875 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -32,7 +32,7 @@
 ;
 ;==========================================================================
 
-;       08 Nov 2015  Added the _DEBUG_ON and _DEBUG_OFF config options.
+;       16 Jan 2015  Added the _DEBUG_ON and _DEBUG_OFF config options.
 ;;;; End: Added in gputils
 
 ;==========================================================================
@@ -6098,6 +6098,7 @@ ANSE2            EQU  H'0002'
 WPUE0            EQU  H'0000'
 WPUE1            EQU  H'0001'
 WPUE2            EQU  H'0002'
+WPUE3            EQU  H'0003'
 
 
 ;----- ODCONE Bits -----------------------------------------------------
@@ -6116,6 +6117,7 @@ SLRE2            EQU  H'0002'
 INLVLE0          EQU  H'0000'
 INLVLE1          EQU  H'0001'
 INLVLE2          EQU  H'0002'
+INLVLE3          EQU  H'0003'
 
 
 ;----- IOCEP Bits -----------------------------------------------------
@@ -6351,6 +6353,9 @@ _BOREN_ON            EQU  H'3FFF'; Brown-out Reset Enabled, SBOREN bit is ignore
 _BORV_HI             EQU  H'3DFF'; Brown-out Reset Voltage (VBOR) is set to 2.7V
 _BORV_LO             EQU  H'3FFF'; Brown-out Reset Voltage (VBOR) set to 1.9V on LF, and 2.45V on F Devices
 
+_ZCD_OFF             EQU  H'3BFF'; Zero-cross detect circuit is always enabled
+_ZCD_ON              EQU  H'3FFF'; Zero-cross detect circuit is disabled at POR.
+
 _ZCDDIS_OFF          EQU  H'3BFF'; Zero-cross detect circuit is always enabled
 _ZCDDIS_ON           EQU  H'3FFF'; Zero-cross detect circuit is disabled at POR.
 
@@ -6361,8 +6366,8 @@ _STVREN_OFF          EQU  H'2FFF'; Stack Overflow or Underflow will not cause a 
 _STVREN_ON           EQU  H'3FFF'; Stack Overflow or Underflow will cause a reset
 
 ;;;; Begin: Added in gputils
-_DEBUG_ON            EQU  H'1FFF'; In-Circuit Debugger enabled, ICSPCLK and ICSPDAT are dedicated to the debugger.
-_DEBUG_OFF           EQU  H'3FFF'; In-Circuit Debugger disabled, ICSPCLK and ICSPDAT are general purpose I/O pins.
+_DEBUG_ON            EQU  H'1FFF'; Background debugger enabled; ICSPCLK and ICSPDAT are dedicated to the debugger.
+_DEBUG_OFF           EQU  H'3FFF'; Background debugger disabled; ICSPCLK and ICSPDAT are general purpose I/O pins.
 
 ;;;; End: Added in gputils
 ;----- CONFIG3 Options --------------------------------------------------

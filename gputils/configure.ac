@@ -37,9 +37,9 @@ AC_ARG_ENABLE(html-doc,
 
 AC_ARG_WITH(mplabx-path,
   AC_HELP_STRING([--with-mplabx-path=DIR],
-                 [location of MPLAB-X (default=/opt/microchip/mplabx/v3.15)]),
+                 [location of MPLAB-X (default=/opt/microchip/mplabx/v3.20)]),
   [DEFAULT_MPLABX_PATH="$withval"],
-  [DEFAULT_MPLABX_PATH="/opt/microchip/mplabx/v3.15"])
+  [DEFAULT_MPLABX_PATH="/opt/microchip/mplabx/v3.20"])
 
 # Checks for programs.
 AC_PROG_CC

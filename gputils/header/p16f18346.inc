@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Dec 08 2015
 ;  MPASM PIC16F18346 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -274,7 +274,7 @@ PWMTMRS          EQU  H'061F'
 
 ;-----Bank13------------------
 CWG1CLKCON       EQU  H'0691'
-CWG1ISM          EQU  H'0692'
+CWG1DAT          EQU  H'0692'
 CWG1DBR          EQU  H'0693'
 CWG1DBF          EQU  H'0694'
 CWG1CON0         EQU  H'0695'
@@ -285,7 +285,7 @@ CWG1STR          EQU  H'0699'
 
 ;-----Bank14------------------
 CWG2CLKCON       EQU  H'0711'
-CWG2ISM          EQU  H'0712'
+CWG2DAT          EQU  H'0712'
 CWG2DBR          EQU  H'0713'
 CWG2DBF          EQU  H'0714'
 CWG2CON0         EQU  H'0715'
@@ -1937,11 +1937,11 @@ CS               EQU  H'0000'
 CWG1CS           EQU  H'0000'
 
 
-;----- CWG1ISM Bits -----------------------------------------------------
-CWG1ISM0         EQU  H'0000'
-CWG1ISM1         EQU  H'0001'
-CWG1ISM2         EQU  H'0002'
-CWG1ISM3         EQU  H'0003'
+;----- CWG1DAT Bits -----------------------------------------------------
+CWG1DAT0         EQU  H'0000'
+CWG1DAT1         EQU  H'0001'
+CWG1DAT2         EQU  H'0002'
+CWG1DAT3         EQU  H'0003'
 
 
 ;----- CWG1DBR Bits -----------------------------------------------------
@@ -2033,8 +2033,6 @@ AS1E             EQU  H'0001'
 AS2E             EQU  H'0002'
 AS3E             EQU  H'0003'
 AS4E             EQU  H'0004'
-AS5E             EQU  H'0005'
-AS6E             EQU  H'0006'
 
 
 ;----- CWG1STR Bits -----------------------------------------------------
@@ -2063,11 +2061,11 @@ CS               EQU  H'0000'
 CWG2CS           EQU  H'0000'
 
 
-;----- CWG2ISM Bits -----------------------------------------------------
-CWG2ISM0         EQU  H'0000'
-CWG2ISM1         EQU  H'0001'
-CWG2ISM2         EQU  H'0002'
-CWG2ISM3         EQU  H'0003'
+;----- CWG2DAT Bits -----------------------------------------------------
+CWG2DAT0         EQU  H'0000'
+CWG2DAT1         EQU  H'0001'
+CWG2DAT2         EQU  H'0002'
+CWG2DAT3         EQU  H'0003'
 
 
 ;----- CWG2DBR Bits -----------------------------------------------------
@@ -2159,8 +2157,6 @@ AS1E             EQU  H'0001'
 AS2E             EQU  H'0002'
 AS3E             EQU  H'0003'
 AS4E             EQU  H'0004'
-AS5E             EQU  H'0005'
-AS6E             EQU  H'0006'
 
 
 ;----- CWG2STR Bits -----------------------------------------------------

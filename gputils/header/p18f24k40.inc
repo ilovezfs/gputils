@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Dec 08 2015
 ;  MPASM PIC18F24K40 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -1146,12 +1146,10 @@ PWM4MD           EQU  H'0003'
 
 ;----- PMD4 Bits -----------------------------------------------------
 CWGMD            EQU  H'0000'
-MSSPMD           EQU  H'0004'
-UARTMD           EQU  H'0006'
-
-CWG1MD           EQU  H'0000'
 MSSP1MD          EQU  H'0004'
 UART1MD          EQU  H'0006'
+
+CWG1MD           EQU  H'0000'
 
 
 ;----- PMD5 Bits -----------------------------------------------------
@@ -3927,7 +3925,6 @@ SP5              EQU  H'0005'
 ;
 ;==========================================================================
        __MAXRAM  H'0FFF'
-       __BADRAM  H'0000'-H'005F'
        __BADRAM  H'0400'-H'0E90'
        __BADRAM  H'0E91'-H'0E9F'
        __BADRAM  H'0EFF'-H'0F09'
@@ -3958,9 +3955,9 @@ SP5              EQU  H'0005'
 ;
 ;   :
 ;     RSTOSC = HFINTOSC_64MHZHFINTOSC with HFFRQ = 64 MHz and CDIV = 1:1
-;     RSTOSC = HFINTOSC_16MHZ_4PLLHFINTOSC with HFFRQ = 16 MHz, CDIV = 1:1 with 4xPLL
+;     RSTOSC = RESERVED_1  Reserved
 ;     RSTOSC = EXTOSC_4PLL EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
-;     RSTOSC = RESERVED    Reserved
+;     RSTOSC = RESERVED_2  Reserved
 ;     RSTOSC = SOSC        Secondary Oscillator
 ;     RSTOSC = LFINTOSC    Low-Frequency Oscillator
 ;     RSTOSC = HFINTOSC_1MHZHFINTOSC with HFFRQ = 4 MHz and CDIV = 4:1
@@ -4078,12 +4075,12 @@ SP5              EQU  H'0005'
 ;     WDTCCS = SC          Software Control
 ;
 ;   Write Protection Block 0:
-;     WRT0 = ON            Block 0 (000800-003FFFh) write-protected
-;     WRT0 = OFF           Block 0 (000800-003FFFh) not write-protected
+;     WRT0 = ON            Block 0 (000800-001FFFh) write-protected
+;     WRT0 = OFF           Block 0 (000800-001FFFh) not write-protected
 ;
 ;   Write Protection Block 1:
-;     WRT1 = ON            Block 1 (004000-007FFFh) write-protected
-;     WRT1 = OFF           Block 1 (004000-007FFFh) not write-protected
+;     WRT1 = ON            Block 1 (002000-003FFFh) write-protected
+;     WRT1 = OFF           Block 1 (002000-003FFFh) not write-protected
 ;
 ;   Configuration Register Write Protection bit:
 ;     WRTC = ON            Configuration registers (300000-30000Bh) write-protected
@@ -4114,12 +4111,12 @@ SP5              EQU  H'0005'
 ;     CPD = OFF            DataNVM code protection disabled
 ;
 ;   Table Read Protection Block 0:
-;     EBTR0 = ON           Block 0 (000800-003FFFh) protected from table reads executed in other blocks
-;     EBTR0 = OFF          Block 0 (000800-003FFFh) not protected from table reads executed in other blocks
+;     EBTR0 = ON           Block 0 (000800-001FFFh) protected from table reads executed in other blocks
+;     EBTR0 = OFF          Block 0 (000800-001FFFh) not protected from table reads executed in other blocks
 ;
 ;   Table Read Protection Block 1:
-;     EBTR1 = ON           Block 1 (004000-007FFFh) protected from table reads executed in other blocks
-;     EBTR1 = OFF          Block 1 (004000-007FFFh) not protected from table reads executed in other blocks
+;     EBTR1 = ON           Block 1 (002000-003FFFh) protected from table reads executed in other blocks
+;     EBTR1 = OFF          Block 1 (002000-003FFFh) not protected from table reads executed in other blocks
 ;
 ;   Boot Block Table Read Protection bit:
 ;     EBTRB = ON           Boot Block (000000-0007FFh) protected from table reads executed in other blocks
@@ -4172,9 +4169,9 @@ _FEXTOSC_ECM_1L      EQU  H'FE'; EC (external clock) for 500 kHz to 8 MHz; PFM s
 _FEXTOSC_ECH_1L      EQU  H'FF'; EC (external clock) above 8 MHz; PFM set to high power
 
 _RSTOSC_HFINTOSC_64MHZ_1L EQU  H'8F'; HFINTOSC with HFFRQ = 64 MHz and CDIV = 1:1
-_RSTOSC_HFINTOSC_16MHZ_4PLL_1L EQU  H'9F'; HFINTOSC with HFFRQ = 16 MHz, CDIV = 1:1 with 4xPLL
+_RSTOSC_RESERVED_1_1L EQU  H'9F'; Reserved
 _RSTOSC_EXTOSC_4PLL_1L EQU  H'AF'; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
-_RSTOSC_RESERVED_1L  EQU  H'BF'; Reserved
+_RSTOSC_RESERVED_2_1L EQU  H'BF'; Reserved
 _RSTOSC_SOSC_1L      EQU  H'CF'; Secondary Oscillator
 _RSTOSC_LFINTOSC_1L  EQU  H'DF'; Low-Frequency Oscillator
 _RSTOSC_HFINTOSC_1MHZ_1L EQU  H'EF'; HFINTOSC with HFFRQ = 4 MHz and CDIV = 4:1
@@ -4280,11 +4277,11 @@ _WDTCCS_HFINTOSC_3H  EQU  H'CF'; WDT reference clock is the 31.2kHz HFINTOSC out
 _WDTCCS_SC_3H        EQU  H'FF'; Software Control
 
 ;----- CONFIG4L Options --------------------------------------------------
-_WRT0_ON_4L          EQU  H'FE'; Block 0 (000800-003FFFh) write-protected
-_WRT0_OFF_4L         EQU  H'FF'; Block 0 (000800-003FFFh) not write-protected
+_WRT0_ON_4L          EQU  H'FE'; Block 0 (000800-001FFFh) write-protected
+_WRT0_OFF_4L         EQU  H'FF'; Block 0 (000800-001FFFh) not write-protected
 
-_WRT1_ON_4L          EQU  H'FD'; Block 1 (004000-007FFFh) write-protected
-_WRT1_OFF_4L         EQU  H'FF'; Block 1 (004000-007FFFh) not write-protected
+_WRT1_ON_4L          EQU  H'FD'; Block 1 (002000-003FFFh) write-protected
+_WRT1_OFF_4L         EQU  H'FF'; Block 1 (002000-003FFFh) not write-protected
 
 ;----- CONFIG4H Options --------------------------------------------------
 _WRTC_ON_4H          EQU  H'FE'; Configuration registers (300000-30000Bh) write-protected
@@ -4311,11 +4308,11 @@ _CPD_OFF_5L          EQU  H'FF'; DataNVM code protection disabled
 
 ;----- CONFIG5H Options --------------------------------------------------
 ;----- CONFIG6L Options --------------------------------------------------
-_EBTR0_ON_6L         EQU  H'FE'; Block 0 (000800-003FFFh) protected from table reads executed in other blocks
-_EBTR0_OFF_6L        EQU  H'FF'; Block 0 (000800-003FFFh) not protected from table reads executed in other blocks
+_EBTR0_ON_6L         EQU  H'FE'; Block 0 (000800-001FFFh) protected from table reads executed in other blocks
+_EBTR0_OFF_6L        EQU  H'FF'; Block 0 (000800-001FFFh) not protected from table reads executed in other blocks
 
-_EBTR1_ON_6L         EQU  H'FD'; Block 1 (004000-007FFFh) protected from table reads executed in other blocks
-_EBTR1_OFF_6L        EQU  H'FF'; Block 1 (004000-007FFFh) not protected from table reads executed in other blocks
+_EBTR1_ON_6L         EQU  H'FD'; Block 1 (002000-003FFFh) protected from table reads executed in other blocks
+_EBTR1_OFF_6L        EQU  H'FF'; Block 1 (002000-003FFFh) not protected from table reads executed in other blocks
 
 ;----- CONFIG6H Options --------------------------------------------------
 _EBTRB_ON_6H         EQU  H'FD'; Boot Block (000000-0007FFh) protected from table reads executed in other blocks

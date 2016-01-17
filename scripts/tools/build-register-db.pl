@@ -2,7 +2,7 @@
 
 =back
 
-    Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
 
     This file is part of gputils.
 
@@ -890,7 +890,6 @@ sub print_mcu_array()
   while (1)
     {
     $mcu_name = $mcu_name_array[$i++];
-print "$mcu_name\n";
 
     next if (! defined($mcu_name));
 
