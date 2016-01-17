@@ -2,7 +2,7 @@
 #ifndef __GPREGISTER_H__
 #define __GPREGISTER_H__
 
-/* This file is generated automatically by the build-register-db.pl, 2014-07-06 12:44:15 UTC. */
+/* This file is generated automatically by the build-register-db.pl, 2016-01-17 10:12:31 UTC. */
 
 typedef struct {
   const char *name;

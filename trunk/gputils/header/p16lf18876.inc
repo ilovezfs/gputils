@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Dec 08 2015
 ;  MPASM PIC16LF18876 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -6296,8 +6296,8 @@ _BOREN_ON            EQU  H'3FFF'; Brown-out Reset Enabled, SBOREN bit is ignore
 _BORV_HI             EQU  H'3DFF'; Brown-out Reset Voltage (VBOR) is set to 2.7V
 _BORV_LO             EQU  H'3FFF'; Brown-out Reset Voltage (VBOR) set to 1.9V on LF, and 2.45V on F Devices
 
-_ZCDDIS_OFF          EQU  H'3BFF'; Zero-cross detect circuit is always enabled
-_ZCDDIS_ON           EQU  H'3FFF'; Zero-cross detect circuit is disabled at POR.
+_ZCD_OFF             EQU  H'3BFF'; Zero-cross detect circuit is always enabled
+_ZCD_ON              EQU  H'3FFF'; Zero-cross detect circuit is disabled at POR.
 
 _PPS1WAY_OFF         EQU  H'37FF'; The PPSLOCK bit can be set and cleared repeatedly by software
 _PPS1WAY_ON          EQU  H'3FFF'; The PPSLOCK bit can be cleared and set only once in software

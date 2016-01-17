@@ -1,3 +1,8 @@
+2016-01-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/build-register-db.pl, tools/device-help.pl,
+	  tools/device-manager.pl:
+	  Updated based on the mplabx-3.20.
+
 2016-01-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-help.pl:
 	  Fix a Microchip bug.

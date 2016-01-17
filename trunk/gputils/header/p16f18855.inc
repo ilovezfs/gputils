@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Dec 08 2015
 ;  MPASM PIC16F18855 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -3788,6 +3788,8 @@ SBOREN           EQU  H'0007'
 VREGPM0          EQU  H'0000'
 VREGPM1          EQU  H'0001'
 
+VREGPM           EQU  H'0001'
+
 
 ;----- PCON0 Bits -----------------------------------------------------
 NOT_BOR          EQU  H'0000'
@@ -6092,8 +6094,8 @@ _STVREN_OFF          EQU  H'2FFF'; Stack Overflow or Underflow will not cause a 
 _STVREN_ON           EQU  H'3FFF'; Stack Overflow or Underflow will cause a reset
 
 ;;;; Begin: Added in gputils
-_DEBUG_ON            EQU  H'1FFF'; Background debugger enabled
-_DEBUG_OFF           EQU  H'3FFF'; Background debugger disabled
+_DEBUG_ON            EQU  H'1FFF'; Background debugger enabled; ICSPCLK and ICSPDAT are dedicated to the debugger.
+_DEBUG_OFF           EQU  H'3FFF'; Background debugger disabled; ICSPCLK and ICSPDAT are general purpose I/O pins.
 
 ;;;; End: Added in gputils
 ;----- CONFIG3 Options --------------------------------------------------

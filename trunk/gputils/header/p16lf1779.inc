@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Dec 08 2015
 ;  MPASM PIC16LF1779 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -32,7 +32,7 @@
 ;
 ;==========================================================================
 
-;       15 Nov 2015  Added the _DEBUG_ON and _DEBUG_OFF config options.
+;       12 Jul 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
 ;;;; End: Added in gputils
 
 ;==========================================================================
@@ -235,11 +235,11 @@ SLRCONB          EQU  H'030D'
 SLRCONC          EQU  H'030E'
 SLRCOND          EQU  H'030F'
 SLRCONE          EQU  H'0310'
-CCPR4            EQU  H'0311'
-CCPR4L           EQU  H'0311'
-CCPR4H           EQU  H'0312'
-CCP4CON          EQU  H'0313'
-CCP4CAP          EQU  H'0314'
+CCPR8            EQU  H'0311'
+CCPR8L           EQU  H'0311'
+CCPR8H           EQU  H'0312'
+CCP8CON          EQU  H'0313'
+CCP8CAP          EQU  H'0314'
 MD1CON0          EQU  H'0315'
 MD1CON1          EQU  H'0316'
 MD1SRC           EQU  H'0317'
@@ -375,12 +375,12 @@ DAC7REF          EQU  H'059F'
 DAC8CON0         EQU  H'060C'
 DAC8CON1         EQU  H'060D'
 DAC8REF          EQU  H'060D'
-PRG8RTSS         EQU  H'060E'
-PRG8FTSS         EQU  H'060F'
-PRG8INS          EQU  H'0610'
-PRG8CON0         EQU  H'0611'
-PRG8CON1         EQU  H'0612'
-PRG8CON2         EQU  H'0613'
+PRG4RTSS         EQU  H'060E'
+PRG4FTSS         EQU  H'060F'
+PRG4INS          EQU  H'0610'
+PRG4CON0         EQU  H'0611'
+PRG4CON1         EQU  H'0612'
+PRG4CON2         EQU  H'0613'
 PWM3DCL          EQU  H'0614'
 PWM3DCH          EQU  H'0615'
 PWM3CON          EQU  H'0616'
@@ -2153,37 +2153,37 @@ SLRE1            EQU  H'0001'
 SLRE2            EQU  H'0002'
 
 
-;----- CCP4CON Bits -----------------------------------------------------
+;----- CCP8CON Bits -----------------------------------------------------
 FMT              EQU  H'0004'
-OUT_CCP4CON      EQU  H'0005'
+OUT_CCP8CON      EQU  H'0005'
 EN               EQU  H'0007'
 
-MODE0_CCP4CON    EQU  H'0000'
-MODE1_CCP4CON    EQU  H'0001'
+MODE0_CCP8CON    EQU  H'0000'
+MODE1_CCP8CON    EQU  H'0001'
 MODE2            EQU  H'0002'
 MODE3            EQU  H'0003'
 
-CCP4FMT          EQU  H'0004'
-CCP4OUT          EQU  H'0005'
-CCP4EN           EQU  H'0007'
+CCP8FMT          EQU  H'0004'
+CCP8OUT          EQU  H'0005'
+CCP8EN           EQU  H'0007'
 
-CCP4MODE0        EQU  H'0000'
-CCP4MODE1        EQU  H'0001'
-CCP4MODE2        EQU  H'0002'
-CCP4MODE3        EQU  H'0003'
+CCP8MODE0        EQU  H'0000'
+CCP8MODE1        EQU  H'0001'
+CCP8MODE2        EQU  H'0002'
+CCP8MODE3        EQU  H'0003'
 
 
-;----- CCP4CAP Bits -----------------------------------------------------
+;----- CCP8CAP Bits -----------------------------------------------------
 CTS0             EQU  H'0000'
 CTS1             EQU  H'0001'
 CTS2             EQU  H'0002'
 CTS3             EQU  H'0003'
 
 
-CCP4CTS0         EQU  H'0000'
-CCP4CTS1         EQU  H'0001'
-CCP4CTS2         EQU  H'0002'
-CCP4CTS3         EQU  H'0003'
+CCP8CTS0         EQU  H'0000'
+CCP8CTS1         EQU  H'0001'
+CCP8CTS2         EQU  H'0002'
+CCP8CTS3         EQU  H'0003'
 
 
 ;----- MD1CON0 Bits -----------------------------------------------------
@@ -4037,73 +4037,73 @@ DAC8REF3         EQU  H'0003'
 DAC8REF4         EQU  H'0004'
 
 
-;----- PRG8RTSS Bits -----------------------------------------------------
+;----- PRG4RTSS Bits -----------------------------------------------------
 RTSS0            EQU  H'0000'
 RTSS1            EQU  H'0001'
 RTSS2            EQU  H'0002'
 RTSS3            EQU  H'0003'
 
-RG8RTSS0         EQU  H'0000'
-RG8RTSS1         EQU  H'0001'
-RG8RTSS2         EQU  H'0002'
-RG8RTSS3         EQU  H'0003'
+RG4RTSS0         EQU  H'0000'
+RG4RTSS1         EQU  H'0001'
+RG4RTSS2         EQU  H'0002'
+RG4RTSS3         EQU  H'0003'
 
 
-;----- PRG8FTSS Bits -----------------------------------------------------
+;----- PRG4FTSS Bits -----------------------------------------------------
 FTSS0            EQU  H'0000'
 FTSS1            EQU  H'0001'
 FTSS2            EQU  H'0002'
 FTSS3            EQU  H'0003'
 
-RG8FTSS0         EQU  H'0000'
-RG8FTSS1         EQU  H'0001'
-RG8FTSS2         EQU  H'0002'
-RG8FTSS3         EQU  H'0003'
+RG4FTSS0         EQU  H'0000'
+RG4FTSS1         EQU  H'0001'
+RG4FTSS2         EQU  H'0002'
+RG4FTSS3         EQU  H'0003'
 
 
-;----- PRG8INS Bits -----------------------------------------------------
+;----- PRG4INS Bits -----------------------------------------------------
 INS0             EQU  H'0000'
 INS1             EQU  H'0001'
 INS2             EQU  H'0002'
 INS3             EQU  H'0003'
 
-RG8INS0          EQU  H'0000'
-RG8INS1          EQU  H'0001'
-RG8INS2          EQU  H'0002'
-RG8INS3          EQU  H'0003'
+RG4INS0          EQU  H'0000'
+RG4INS1          EQU  H'0001'
+RG4INS2          EQU  H'0002'
+RG4INS3          EQU  H'0003'
 
 
-;----- PRG8CON0 Bits -----------------------------------------------------
-GO_PRG8CON0      EQU  H'0000'
+;----- PRG4CON0 Bits -----------------------------------------------------
+GO_PRG4CON0      EQU  H'0000'
 OS               EQU  H'0001'
 REDG             EQU  H'0004'
 FEDG             EQU  H'0005'
 EN               EQU  H'0007'
 
-MODE0_PRG8CON0   EQU  H'0002'
-MODE1_PRG8CON0   EQU  H'0003'
+MODE0_PRG4CON0   EQU  H'0002'
+MODE1_PRG4CON0   EQU  H'0003'
 
-RG8GO            EQU  H'0000'
-RG8OS            EQU  H'0001'
-RG8REDG          EQU  H'0004'
-RG8FEDG          EQU  H'0005'
-RG8EN            EQU  H'0007'
+RG4GO            EQU  H'0000'
+RG4OS            EQU  H'0001'
+RG4REDG          EQU  H'0004'
+RG4FEDG          EQU  H'0005'
+RG4EN            EQU  H'0007'
 
-RG8MODE0         EQU  H'0002'
-RG8MODE1         EQU  H'0003'
+RG4MODE0         EQU  H'0002'
+RG4MODE1         EQU  H'0003'
 
 
-;----- PRG8CON1 Bits -----------------------------------------------------
+;----- PRG4CON1 Bits -----------------------------------------------------
 RPOL             EQU  H'0000'
 FPOL             EQU  H'0001'
 RDY              EQU  H'0002'
 
-RG8RPOL          EQU  H'0000'
-RG8FPOL          EQU  H'0001'
-RG8RDY           EQU  H'0002'
+RG4RPOL          EQU  H'0000'
+RG4FPOL          EQU  H'0001'
+RG4RDY           EQU  H'0002'
 
 
-;----- PRG8CON2 Bits -----------------------------------------------------
+;----- PRG4CON2 Bits -----------------------------------------------------
 ISET0            EQU  H'0000'
 ISET1            EQU  H'0001'
 ISET2            EQU  H'0002'
@@ -4111,11 +4111,11 @@ ISET3            EQU  H'0003'
 ISET4            EQU  H'0004'
 
 
-RG8ISET0         EQU  H'0000'
-RG8ISET1         EQU  H'0001'
-RG8ISET2         EQU  H'0002'
-RG8ISET3         EQU  H'0003'
-RG8ISET4         EQU  H'0004'
+RG4ISET0         EQU  H'0000'
+RG4ISET1         EQU  H'0001'
+RG4ISET2         EQU  H'0002'
+RG4ISET3         EQU  H'0003'
+RG4ISET4         EQU  H'0004'
 
 
 ;----- PWM3DCL Bits -----------------------------------------------------

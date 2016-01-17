@@ -107,149 +107,163 @@ use constant PIC16_BANK_SIZE   => 2 ** PIC16_BANK_SHIFT;
 
 my %class_features_p12 =
   (
-  CLASS      => PROC_CLASS_PIC12,
-  NAME       => '12 bit MCU',
-  CSS_CLASS  => 'mcuAttrP12',
-  CSS_BGRND  => '#FFB4B4',
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => 512,
-  WORD_SIZE  => 12,
-  CONF_SIZE  => 12,
-  EE_START   => 0,
-  BANK_MAX   => 8,
-  BANK_SIZE  => PIC12_BANK_SIZE,
-  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT => PIC12_BANK_SHIFT,
-  CORE_SFRS  => [
-                0x00, 0x02, 0x03, 0x04
-                ]
+  CLASS         => PROC_CLASS_PIC12,
+  NAME          => '12 bit MCU',
+  CSS_CLASS     => 'mcuAttrP12',
+  CSS_BGRND     => '#FFB4B4',
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => 512,
+  WORD_SIZE     => 12,
+  CONF_SIZE     => 12,
+  EE_START      => 0,
+  BANK_MAX      => 8,
+  BANK_SIZE     => PIC12_BANK_SIZE,
+  BANK_MASK     => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC12_BANK_SHIFT,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1,
+  CORE_SFRS     => [
+                   0x00, 0x02, 0x03, 0x04
+                   ]
   );
 
 my %class_features_p12e =
   (
-  CLASS      => PROC_CLASS_PIC12E,
-  NAME       => '12 bit enhanced MCU',
-  CSS_CLASS  => 'mcuAttrP12E',
-  CSS_BGRND  => '#FFB4FF',
-  ENHANCED   => TRUE,
-  PAGE_SIZE  => 512,
-  WORD_SIZE  => 12,
-  CONF_SIZE  => 12,
-  EE_START   => 0,
-  BANK_MAX   => 8,
-  BANK_SIZE  => PIC12_BANK_SIZE,
-  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT => PIC12_BANK_SHIFT,
-  CORE_SFRS  => [
-                0x00, 0x02, 0x03, 0x04
-                ]
+  CLASS         => PROC_CLASS_PIC12E,
+  NAME          => '12 bit enhanced MCU',
+  CSS_CLASS     => 'mcuAttrP12E',
+  CSS_BGRND     => '#FFB4FF',
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => 512,
+  WORD_SIZE     => 12,
+  CONF_SIZE     => 12,
+  EE_START      => 0,
+  BANK_MAX      => 8,
+  BANK_SIZE     => PIC12_BANK_SIZE,
+  BANK_MASK     => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC12_BANK_SHIFT,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1,
+  CORE_SFRS     => [
+                   0x00, 0x02, 0x03, 0x04
+                   ]
   );
 
 my %class_features_p14 =
   (
-  CLASS      => PROC_CLASS_PIC14,
-  NAME       => '14 bit MCU',
-  CSS_CLASS  => 'mcuAttrP14',
-  CSS_BGRND  => '#B4B4FF',
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => 2048,
-  WORD_SIZE  => 14,
-  CONF_SIZE  => 14,
-  EE_START   => 0x2100,
-  BANK_MAX   => 4,
-  BANK_SIZE  => PIC14_BANK_SIZE,
-  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
-  BANK_SHIFT => PIC14_BANK_SHIFT,
-  CORE_SFRS  => [
-                0x00, 0x02, 0x03, 0x04,
-                0x0A, 0x0B
-                ]
+  CLASS         => PROC_CLASS_PIC14,
+  NAME          => '14 bit MCU',
+  CSS_CLASS     => 'mcuAttrP14',
+  CSS_BGRND     => '#B4B4FF',
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => 2048,
+  WORD_SIZE     => 14,
+  CONF_SIZE     => 14,
+  EE_START      => 0x2100,
+  BANK_MAX      => 4,
+  BANK_SIZE     => PIC14_BANK_SIZE,
+  BANK_MASK     => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC14_BANK_SHIFT,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1,
+  CORE_SFRS     => [
+                   0x00, 0x02, 0x03, 0x04,
+                   0x0A, 0x0B
+                   ]
   );
 
 my %class_features_p14e =
   (
-  CLASS      => PROC_CLASS_PIC14E,
-  NAME       => '14 bit enhanced MCU',
-  CSS_CLASS  => 'mcuAttrP14E',
-  CSS_BGRND  => '#9BF0F0',
-  ENHANCED   => TRUE,
-  PAGE_SIZE  => 2048,
-  WORD_SIZE  => 14,
-  CONF_SIZE  => 16,
-  EE_START   => 0xF000,
-  BANK_MAX   => 32,
-  BANK_SIZE  => PIC14_BANK_SIZE,
-  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
-  BANK_SHIFT => PIC14_BANK_SHIFT,
-  CORE_SFRS  => [
-                0x00, 0x01, 0x02, 0x03,
-                0x04, 0x05, 0x06, 0x07,
-                0x08, 0x09, 0x0A, 0x0B
-                ]
+  CLASS         => PROC_CLASS_PIC14E,
+  NAME          => '14 bit enhanced MCU',
+  CSS_CLASS     => 'mcuAttrP14E',
+  CSS_BGRND     => '#9BF0F0',
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => 2048,
+  WORD_SIZE     => 14,
+  CONF_SIZE     => 16,
+  EE_START      => 0xF000,
+  BANK_MAX      => 32,
+  BANK_SIZE     => PIC14_BANK_SIZE,
+  BANK_MASK     => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC14_BANK_SHIFT,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1,
+  CORE_SFRS     => [
+                   0x00, 0x01, 0x02, 0x03,
+                   0x04, 0x05, 0x06, 0x07,
+                   0x08, 0x09, 0x0A, 0x0B
+                   ]
   );
 
 my %class_features_p14ex =
   (
-  CLASS      => PROC_CLASS_PIC14EX,
-  NAME       => '14 bit enhanced MCU',
-  CSS_CLASS  => 'mcuAttrP14E',
-  CSS_BGRND  => '#9BF0F0',
-  ENHANCED   => TRUE,
-  PAGE_SIZE  => 2048,
-  WORD_SIZE  => 14,
-  CONF_SIZE  => 16,
-  EE_START   => 0xF000,
-  BANK_MAX   => 32,
-  BANK_SIZE  => PIC14_BANK_SIZE,
-  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
-  BANK_SHIFT => PIC14_BANK_SHIFT,
-  CORE_SFRS  => [
-                0x00, 0x01, 0x02, 0x03,
-                0x04, 0x05, 0x06, 0x07,
-                0x08, 0x09, 0x0A, 0x0B
-                ]
+  CLASS         => PROC_CLASS_PIC14EX,
+  NAME          => '14 bit enhanced MCU',
+  CSS_CLASS     => 'mcuAttrP14E',
+  CSS_BGRND     => '#9BF0F0',
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => 2048,
+  WORD_SIZE     => 14,
+  CONF_SIZE     => 16,
+  EE_START      => 0xF000,
+  BANK_MAX      => 32,
+  BANK_SIZE     => PIC14_BANK_SIZE,
+  BANK_MASK     => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC14_BANK_SHIFT,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1,
+  CORE_SFRS     => [
+                   0x00, 0x01, 0x02, 0x03,
+                   0x04, 0x05, 0x06, 0x07,
+                   0x08, 0x09, 0x0A, 0x0B
+                   ]
   );
 
 my %class_features_p16 =
   (
-  CLASS      => PROC_CLASS_PIC16,
-  NAME       => '16 bit MCU',
-  CSS_CLASS  => 'mcuAttrP16',
-  CSS_BGRND  => '#B4FFB4',
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => 0,
-  WORD_SIZE  => 16,
-  CONF_SIZE  => 8,
-  EE_START   => 0,
-  BANK_MAX   => 9,
-  BANK_SIZE  => PIC16_BANK_SIZE,
-  BANK_MASK  => ~(PIC16_BANK_SIZE - 1),
-  BANK_SHIFT => PIC16_BANK_SHIFT,
-  CORE_SFRS  => [
-                0x00, 0x01, 0x02, 0x03,
-                0x04, 0x05, 0x06, 0x07,
-                0x08, 0x09, 0x0A, 0x0B,
-                0x0C, 0x0D, 0x0E, 0x0F,
-                0x18, 0x19
-                ]
+  CLASS         => PROC_CLASS_PIC16,
+  NAME          => '16 bit MCU',
+  CSS_CLASS     => 'mcuAttrP16',
+  CSS_BGRND     => '#B4FFB4',
+  ENHANCED      => FALSE,
+  PAGE_SIZE     => 0,
+  WORD_SIZE     => 16,
+  CONF_SIZE     => 8,
+  EE_START      => 0,
+  BANK_MAX      => 9,
+  BANK_SIZE     => PIC16_BANK_SIZE,
+  BANK_MASK     => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC16_BANK_SHIFT,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1,
+  CORE_SFRS     => [
+                   0x00, 0x01, 0x02, 0x03,
+                   0x04, 0x05, 0x06, 0x07,
+                   0x08, 0x09, 0x0A, 0x0B,
+                   0x0C, 0x0D, 0x0E, 0x0F,
+                   0x18, 0x19
+                   ]
   );
 
 my %class_features_p16e =
   (
-  CLASS      => PROC_CLASS_PIC16E,
-  NAME       => '16 bit extended MCU',
-  CSS_CLASS  => 'mcuAttrP16E',
-  CSS_BGRND  => '#EBEB81',
-  ENHANCED   => TRUE,
-  PAGE_SIZE  => 0,
-  WORD_SIZE  => 16,
-  CONF_SIZE  => 8,
-  EE_START   => 0xF00000,
-  BANK_MAX   => 16,
-  BANK_SIZE  => PIC16_BANK_SIZE,
-  BANK_MASK  => ~(PIC16_BANK_SIZE - 1),
-  BANK_SHIFT => PIC16_BANK_SHIFT,
-  CORE_SFRS  => undef
+  CLASS         => PROC_CLASS_PIC16E,
+  NAME          => '16 bit extended MCU',
+  CSS_CLASS     => 'mcuAttrP16E',
+  CSS_BGRND     => '#EBEB81',
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => 0,
+  WORD_SIZE     => 16,
+  CONF_SIZE     => 8,
+  EE_START      => 0xF00000,
+  BANK_MAX      => 16,
+  BANK_SIZE     => PIC16_BANK_SIZE,
+  BANK_MASK     => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC16_BANK_SHIFT,
+  ACC_SPLIT_MIN => 0x5F,
+  ACC_SPLIT_MAX => 0x7F,
+  CORE_SFRS     => undef
   );
 
 my @class_features_list =
@@ -1871,6 +1885,9 @@ sub read_device_informations()
   my $switch_count    = 0;
   my $option_count    = 0;
   my $bank_num;
+  my $split_min;
+  my $split_max;
+  my $split;
   my $state           = ST_WAIT;
   my ($dir_addr_min, $dir_addr_max, $directive_mask);
   my $debug_present;
@@ -1913,6 +1930,7 @@ sub read_device_informations()
         $directive_mask = 0;
         $debug_present  = FALSE;
         $bank_num       = hex($fields[7]);
+        $split          = hex($fields[10]);
 
         my $tr = $class_features_by_mpasmx{$class_name};
 
@@ -1923,6 +1941,26 @@ sub read_device_informations()
           # This is a Microchip bug in the database.
           print STDERR "Too much the Bank number of $mcu_name device: $bank_num, May at most $tr->{BANK_MAX}.\n";
           $bank_num = $tr->{BANK_MAX};
+          }
+
+        if (($tr->{ACC_SPLIT_MIN} > 0) && ($tr->{ACC_SPLIT_MAX} > $tr->{ACC_SPLIT_MIN}))
+          {
+          # This is a Microchip bug in the database.
+          $split_min = $tr->{ACC_SPLIT_MIN};
+          $split_max = $tr->{ACC_SPLIT_MAX};
+
+          if ($split < $split_min)
+            {
+            printf STDERR "The Access Bank split address (0x%03X) of $mcu_name device less than 0x%03X. Restated value: 0x%03X\n",
+                          $split, $split_min, $split_min;
+            $split = $split_min;
+            }
+          elsif ($split > $split_max)
+            {
+            printf STDERR "The Access Bank split address (0x%03X) of $mcu_name device greater than 0x%03X. Restated value: 0x%03X\n",
+                          $split, $split_max, $split_max;
+            $split = $split_max;
+            }
           }
 
         $mcu_features =
@@ -1956,7 +1994,7 @@ sub read_device_informations()
           BANK_SIZE  => $tr->{BANK_SIZE},
           BANK_MASK  => $tr->{BANK_MASK},
           BANK_SHIFT => $tr->{BANK_SHIFT},
-          ACCESS     => hex($fields[10]), # Last address of the lower Access RAM of pic18f series.
+          ACCESS     => $split,           # Last address of the lower Access RAM of pic18f series.
           OSCVAL     => undef,            # Oscillator Calibration Value.
           USERID     => undef,            # User ID.
           DEVID      => undef,            # Device ID.
