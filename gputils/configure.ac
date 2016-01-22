@@ -175,7 +175,7 @@ AC_OUTPUT
 
 AC_MSG_RESULT([
 
-gputils-$PACKAGE_VERSION is now configured for $canonical_host_type
+$PACKAGE_NAME-$PACKAGE_VERSION is now configured for $canonical_host_type
 
   Build:                $build
   Host:                 $host

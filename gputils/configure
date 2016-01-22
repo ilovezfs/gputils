@@ -6669,7 +6669,7 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result:
 
-gputils-$PACKAGE_VERSION is now configured for $canonical_host_type
+$PACKAGE_NAME-$PACKAGE_VERSION is now configured for $canonical_host_type
 
   Build:                $build
   Host:                 $host
@@ -6681,7 +6681,7 @@ gputils-$PACKAGE_VERSION is now configured for $canonical_host_type
 " >&5
 $as_echo "
 
-gputils-$PACKAGE_VERSION is now configured for $canonical_host_type
+$PACKAGE_NAME-$PACKAGE_VERSION is now configured for $canonical_host_type
 
   Build:                $build
   Host:                 $host
