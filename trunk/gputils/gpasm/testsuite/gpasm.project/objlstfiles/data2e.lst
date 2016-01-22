@@ -1,0 +1,292 @@
+MPASM 5.65                   /TMP/DATA2E.ASM   1-22-2016  19:53:14         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001      list p=12f1822
+  0000                00002      extern file
+                      00003 
+                      00004      code
+0000   30E2 31E4 32E6 00005      da "abcdefg"
+       3380 
+0004   30E2 31E4 32E6 00006      da "abcdefg",0
+       3380 0000 
+0009   18B2 19B4 1AB6 00007      da "12345678",0
+       1BB8 0000 
+000E   0001 0002 3080 00008      da 1,2,"a",4,"bc",5,"de",6,7
+       0004 3163 0005 
+       3265 0006 0007 
+Message[303]: Program word too large.  Truncated to core size. (FFFF)
+0017   3FFF           00009      da 0xFFFF
+0018   ????           00010      da file
+0019                  00011 cda
+                      00012 
+Message[303]: Program word too large.  Truncated to core size. (6162)
+Message[303]: Program word too large.  Truncated to core size. (6364)
+Message[303]: Program word too large.  Truncated to core size. (6566)
+Message[303]: Program word too large.  Truncated to core size. (6700)
+0019   2162 2364 2566 00013      data "abcdefg"
+       2700 
+001D   3132 3334 3536 00014      data "12345678",0x1421,2,3,4
+       3738 1421 0002 
+       0003 0004 
+Message[303]: Program word too large.  Truncated to core size. (6100)
+Message[303]: Program word too large.  Truncated to core size. (6263)
+Message[303]: Program word too large.  Truncated to core size. (6465)
+0025   0001 0002 2100 00015      data 1,2,"a",4,"bc",5,"de",6,7
+       0004 2263 0005 
+       2465 0006 0007 
+Message[303]: Program word too large.  Truncated to core size. (FFFF)
+002E   3FFF           00016      data 0xFFFF
+002F   ????           00017      data file
+0030                  00018 cdata
+                      00019 
+Message[303]: Program word too large.  Truncated to core size. (740F)
+Message[303]: Program word too large.  Truncated to core size. (650F)
+Message[303]: Program word too large.  Truncated to core size. (730F)
+Message[303]: Program word too large.  Truncated to core size. (740A)
+0030   340F 250F 330F 00020      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
+       340A 
+Message[303]: Program word too large.  Truncated to core size. (6104)
+Message[303]: Program word too large.  Truncated to core size. (6263)
+Message[303]: Program word too large.  Truncated to core size. (6506)
+0034   0102 2104 2263 00021      db 1,2,"a",4,"bc",5,"de",6,7
+       0564 2506 0700 
+003A   ??00           00022      db file
+003B                  00023 cdb
+                      00024 
+003B   004D 0079 0020 00025      de "My Program, v1.0",0
+MPASM 5.65                   /TMP/DATA2E.ASM   1-22-2016  19:53:14         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+       0050 0072 006F 
+       0067 0072 0061 
+       006D 002C 0020 
+       0076 0031 002E 
+       0030 0000 
+004C   0001 0002 0061 00026      de 1,2,"a",4,"bc",5,"de",6,7
+       0004 0062 0063 
+       0005 0064 0065 
+       0006 0007 
+0057   ????           00027      de file
+0058                  00028 cde
+                      00029 
+Message[303]: Program word too large.  Truncated to core size. (6162)
+Message[303]: Program word too large.  Truncated to core size. (6364)
+Message[303]: Program word too large.  Truncated to core size. (6566)
+Message[303]: Program word too large.  Truncated to core size. (6700)
+0058   2162 2364 2566 00030      dw "abcdefg"
+       2700 
+005C   3132 3334 3536 00031      dw "12345678",0
+       3738 0000 
+Message[303]: Program word too large.  Truncated to core size. (6100)
+Message[303]: Program word too large.  Truncated to core size. (6263)
+Message[303]: Program word too large.  Truncated to core size. (6465)
+0061   0001 0002 2100 00032      dw 1,2,"a",4,"bc",5,"de",6,7
+       0004 2263 0005 
+       2465 0006 0007 
+Message[303]: Program word too large.  Truncated to core size. (FFFF)
+006A   3FFF           00033      dw 0xFFFF
+006B   ????           00034      dw file
+006C                  00035 cdw
+                      00036 
+006C   3441 3420 344D 00037      dt "A Message",0
+       3465 3473 3473 
+       3461 3467 3465 
+       3400 
+0076   ????           00038      dt file
+0077                  00039 cdt
+                      00040 
+0077   01FF           00041      fill 0x1ff, 2
+0079                  00042 cfill1
+0079   2?             00043      fill (goto cfill1), 2
+007B                  00044 cfill2
+007B   28             00045      fill (goto $), 2
+007D                  00046 cfill3
+                      00047 
+007D   3FFF           00048      res 1
+007E                  00049 cres1
+007E   3FFF 3FFF      00050      res 2
+0080                  00051 cres2
+0080   3FFF 3FFF 3FFF 00052      res 3
+0083                  00053 cres3
+0083   3FFF 3FFF 3FFF 00054      res 4
+       3FFF 
+MPASM 5.65                   /TMP/DATA2E.ASM   1-22-2016  19:53:14         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0087                  00055 cres4
+                      00056 
+                      00057      idata
+0000   61 00 62 00 63 00058      da "abcdefg"
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 
+0010   61 00 62 00 63 00059      da "abcdefg",0
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 00 00 
+0022   31 00 32 00 33 00060      da "12345678",0
+       00 34 00 35 00 
+       36 00 37 00 38 
+       00 00 00 00 00 
+0036   01 00 02 00 61 00061      da 1,2,"a",4,"bc",5,"de",6,7
+       00 00 00 04 00 
+       62 00 63 00 00 
+       00 05 00 64 00 
+       65 00 00 00 06 
+       00 07 00 
+0052   FF FF          00062      da 0xFFFF
+0054   ?? ??          00063      da file
+0056                  00064 ida
+                      00065 
+0056   61 00 62 00 63 00066      data "abcdefg"
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 
+0066   31 00 32 00 33 00067      data "12345678",0x1421,2,3,4
+       00 34 00 35 00 
+       36 00 37 00 38 
+       00 00 00 21 14 
+       02 00 03 00 04 
+       00 
+0080   01 00 02 00 61 00068      data 1,2,"a",4,"bc",5,"de",6,7
+       00 00 00 04 00 
+       62 00 63 00 00 
+       00 05 00 64 00 
+       65 00 00 00 06 
+       00 07 00 
+009C   FF FF          00069      data 0xFFFF
+009E   ?? ??          00070      data file
+00A0                  00071 iddata
+                      00072 
+00A0   74 0F 65 0F 73 00073      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
+       0F 74 0A 
+00A8   01 02 61 04 62 00074      db 1,2,"a",4,"bc",5,"de",6,7
+       63 05 64 65 06 
+       07 
+00B3   ??             00075      db file
+00B4                  00076 idb
+                      00077 
+MPASM 5.65                   /TMP/DATA2E.ASM   1-22-2016  19:53:14         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00078         ;; MPASM gives Error[152]  : Executable code and data must be defined in an appropriate section 
+                      00079      ;de "My Program, v1.0",0
+                      00080      ;de 1,2,"a",4,"bc",5,"de",6,7
+                      00081      ;de file
+                      00082 
+00B4   61 00 62 00 63 00083      dw "abcdefg"
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 
+00C4   31 00 32 00 33 00084      dw "12345678",0
+       00 34 00 35 00 
+       36 00 37 00 38 
+       00 00 00 00 00 
+00D8   01 00 02 00 61 00085      dw 1,2,"a",4,"bc",5,"de",6,7
+       00 00 00 04 00 
+       62 00 63 00 00 
+       00 05 00 64 00 
+       65 00 00 00 06 
+       00 07 00 
+00F4   FF FF          00086      dw 0xFFFF
+00F6   ?? ??          00087      dw file
+00F8                  00088 idw
+                      00089 
+                      00090      ;; MPASM gives Error[152]  : Executable code and data must be defined in an appropriate section 
+                      00091      ;dt "A Message",0
+                      00092      ;dt file
+                      00093 
+                      00094      ;; MPASM gives Error[152]  : Executable code and data must be defined in an appropriate section 
+                      00095 ;     fill 0x1ff, 2
+                      00096 ;ifill1
+                      00097 ;     fill (goto ifill1), 2
+                      00098 ;ifill2
+                      00099 ;     fill (goto $), 2
+                      00100 ;ifill3
+                      00101 
+                      00102      udata
+0000                  00103 u0
+0000                  00104      res 1
+0001                  00105 u1   res 2
+0003                  00106 u3   res 3
+0006                  00107 u6   res 4
+000A                  00108 u10
+                      00109      udata_ovr
+0000                  00110 uo0
+0000                  00111      res 1
+0001                  00112 uo1  res 2
+0003                  00113 uo3  res 3
+0006                  00114 uo6  res 4
+000A                  00115 uo10
+                      00116      udata_shr
+0000                  00117 us0
+0000                  00118      res 1
+0001                  00119 us1  res 2
+MPASM 5.65                   /TMP/DATA2E.ASM   1-22-2016  19:53:14         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0003                  00120 us3  res 3
+0006                  00121 us6  res 4
+000A                  00122 us10
+                      00123      end
+MPASM 5.65                   /TMP/DATA2E.ASM   1-22-2016  19:53:14         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__12F1822                         00000001
+cda                               00000019
+cdata                             00000030
+cdb                               0000003B
+cde                               00000058
+cdt                               00000077
+cdw                               0000006C
+cfill1                            00000079
+cfill2                            0000007B
+cfill3                            0000007D
+cres1                             0000007E
+cres2                             00000080
+cres3                             00000083
+cres4                             00000087
+file                              00000000
+ida                               00000056
+idb                               000000B4
+iddata                            000000A0
+idw                               000000F8
+u0                                00000000
+u1                                00000001
+u10                               0000000A
+u3                                00000003
+u6                                00000006
+uo0                               00000000
+uo1                               00000001
+uo10                              0000000A
+uo3                               00000003
+uo6                               00000006
+us0                               00000000
+us1                               00000001
+us10                              0000000A
+us3                               00000003
+us6                               00000006
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    24 reported,     0 suppressed
+
+

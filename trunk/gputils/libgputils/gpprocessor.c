@@ -1584,22 +1584,10 @@ gp_processor_org_to_byte(proc_class_t class, int org)
 int
 gp_processor_real_to_byte(pic_processor_t processor, int org)
 {
-  const int *eeprom;
-  int start, end;
   proc_class_t class;
 
   if ((processor == NULL) || (class = processor->class) == NULL) {
     return org;
-  }
-
-  if ((eeprom = gp_processor_eeprom_exist(processor)) != NULL) {
-    start = eeprom[0];
-    end   = eeprom[1];
-
-    if ((start <= org) && (org <= end)) {
-      /* There is a need an address conversion. */
-      return ((org - start) + gp_org_to_byte(class->org_to_byte_shift, start));
-    }
   }
 
   return gp_org_to_byte(class->org_to_byte_shift, org);
@@ -1621,22 +1609,10 @@ gp_processor_byte_to_org(proc_class_t class, int byte_address)
 int
 gp_processor_byte_to_real(pic_processor_t processor, int byte_address)
 {
-  const int *eeprom;
-  int start, end;
   proc_class_t class;
 
   if ((processor == NULL) || (class = processor->class) == NULL) {
     return byte_address;
-  }
-
-  if ((eeprom = gp_processor_eeprom_exist(processor)) != NULL) {
-    /* There is a need an address conversion. */
-    start = gp_org_to_byte(class->org_to_byte_shift, eeprom[0]);
-    end   = start + eeprom[1] - eeprom[0];
-
-    if ((start <= byte_address) && (byte_address <= end)) {
-      return (byte_address - start + eeprom[0]);
-    }
   }
 
   return gp_byte_to_org(class->org_to_byte_shift, byte_address);

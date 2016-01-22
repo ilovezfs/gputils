@@ -580,7 +580,7 @@ line:
                 break;
 
               case SRC_MACRO:
-                gperror(GPW_EXPECTED,"Expected (ENDM)");
+                gperror(GPW_EXPECTED, "Expected (ENDM)");
                 /* fall through */
 
               default:

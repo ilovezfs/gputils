@@ -1,0 +1,28 @@
+	processor p16f887
+	radix	dec
+
+EEPROM_BASE	equ	0x2100
+
+K00_E	equ	0x10
+V00_E	equ	0x20
+CALDEF	equ	0xF333
+
+#define HIGH_EE(a)	(((a) >> 8) & 0xFF)
+#define LOW_EE(a)	((a) & 0xFF)
+
+	org	EEPROM_BASE+K00_E
+
+	de	HIGH_EE(CALDEF), LOW_EE(CALDEF)
+	de	HIGH_EE(CALDEF), LOW_EE(CALDEF)
+	de	HIGH_EE(CALDEF), LOW_EE(CALDEF)
+	de	HIGH_EE(CALDEF), LOW_EE(CALDEF)
+	de	HIGH_EE(CALDEF), LOW_EE(CALDEF)
+	de	HIGH_EE(CALDEF), LOW_EE(CALDEF)
+	de	HIGH_EE(CALDEF), LOW_EE(CALDEF)
+	de	HIGH_EE(CALDEF), LOW_EE(CALDEF)
+
+	org	EEPROM_BASE+V00_E
+
+	fill	0xFF, 0x20
+
+	end

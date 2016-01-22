@@ -256,7 +256,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
       pc = p->value.string;
 
       if (IS_PIC16E_CORE && !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
-        /* Special case of PIC16E strings in code */
+        /* Special case of PIC16E strings in code. */
         int n = 0;
         while (*pc != '\0') {
           int value;
@@ -265,7 +265,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
           emit_byte(value, name);
           ++n;
         }
-        /* Pad using zero if 16-bit numbers */
+        /* Pad using zero if 16-bit numbers. */
         if (n & 1) {
           emit_byte(0, name);
           ++n;
@@ -278,7 +278,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
 
           pc = convert_escape_chars(pc, &value);
           value &= 0xff;
-          /* If idata or packed and not db or de, emit one character per word */
+          /* If idata or packed and not db or de, emit one character per word. */
           if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
             v = value;
           }
@@ -292,7 +292,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
           }
           emit(v, name);
         }
-        /* For data and packed emit a terminating nul for strings */
+        /* For data and packed emit a terminating nul for strings. */
         if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
           emit(0, name);
         }
@@ -334,11 +334,11 @@ enter_if(void)
     new->prev_enabled = state.astack->enabled && state.astack->prev_enabled;
   }
 
-  new->enabled = false;         /* Only the default */
+  new->enabled = false;         /* Only the default. */
   state.astack = new;
 }
 
-/* Checking that a macro definition's parameters are correct */
+/* Checking that a macro definition's parameters are correct. */
 
 static int
 macro_parms_simple(struct pnode *parms)

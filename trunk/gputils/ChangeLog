@@ -1,3 +1,22 @@
+2016-01-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/testsuite/gpasm.project/asmfiles/eeprom-16f887.asm,
+    gpasm/testsuite/gpasm.project/asmfiles/eeprom-16f1937.asm,
+    gpasm/testsuite/gpasm.project/asmfiles/eeprom-18f4520.asm,
+    gpasm/testsuite/gpasm.project/hexfiles/eeprom-16f887.hex,
+    gpasm/testsuite/gpasm.project/hexfiles/eeprom-16f1937.hex,
+    gpasm/testsuite/gpasm.project/hexfiles/eeprom-18f4520.hex,
+    gpasm/testsuite/gpasm.project/lstfiles/eeprom-16f887.lst,
+    gpasm/testsuite/gpasm.project/lstfiles/eeprom-16f1937.lst,
+    gpasm/testsuite/gpasm.project/lstfiles/eeprom-18f4520.lst,
+    libgputils/gpprocessor.c:
+    Fixed bug: "#287 de directive uses 2 addresses per item for 16f1937"
+
+  * configure.ac, configure:
+    Small development.
+
+  * gpasm/gpasm.c, gpasm/parse.y:
+    Code cosmetic.
+
 2016-01-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, libgputils/gpcfg-table.c, libgputils/gpprocessor.c,
     libgputils/gpreg-table.c, header/*, lkr/*:

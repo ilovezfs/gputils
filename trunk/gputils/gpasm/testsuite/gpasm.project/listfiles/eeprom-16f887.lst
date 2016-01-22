@@ -1,0 +1,64 @@
+MPASM 5.65            /TMP/EEPROM-16F887.ASM   1-21-2016  19:52:08         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         processor p16f887
+                      00002         radix   dec
+                      00003 
+  00002100            00004 EEPROM_BASE     equ     0x2100
+                      00005 
+  00000010            00006 K00_E   equ     0x10
+  00000020            00007 V00_E   equ     0x20
+  0000F333            00008 CALDEF  equ     0xF333
+                      00009 
+                      00010 #define HIGH_EE(a)      (((a) >> 8) & 0xFF)
+                      00011 #define LOW_EE(a)       ((a) & 0xFF)
+                      00012 
+2110                  00013         org     EEPROM_BASE+K00_E
+                      00014 
+2110   00F3 0033      00015         de      HIGH_EE(CALDEF), LOW_EE(CALDEF)
+2112   00F3 0033      00016         de      HIGH_EE(CALDEF), LOW_EE(CALDEF)
+2114   00F3 0033      00017         de      HIGH_EE(CALDEF), LOW_EE(CALDEF)
+2116   00F3 0033      00018         de      HIGH_EE(CALDEF), LOW_EE(CALDEF)
+2118   00F3 0033      00019         de      HIGH_EE(CALDEF), LOW_EE(CALDEF)
+211A   00F3 0033      00020         de      HIGH_EE(CALDEF), LOW_EE(CALDEF)
+211C   00F3 0033      00021         de      HIGH_EE(CALDEF), LOW_EE(CALDEF)
+211E   00F3 0033      00022         de      HIGH_EE(CALDEF), LOW_EE(CALDEF)
+                      00023 
+2120                  00024         org     EEPROM_BASE+V00_E
+                      00025 
+2120   00FF           00026         fill    0xFF, 0x20
+                      00027 
+                      00028         end
+MPASM 5.65            /TMP/EEPROM-16F887.ASM   1-21-2016  19:52:08         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CALDEF                            0000F333
+EEPROM_BASE                       00002100
+HIGH_EE                           (((a) >> 8) & 0xFF)
+K00_E                             00000010
+LOW_EE                            ((a) & 0xFF)
+V00_E                             00000020
+__16F887                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+2100 : ---------------- XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:  8192
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+
