@@ -1,3 +1,7 @@
+2016-01-31  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
+    Feature requests: "#64 Better error handling"
+
 2016-01-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/testsuite/gpasm.project/asmfiles/eeprom-16f887.asm,
     gpasm/testsuite/gpasm.project/asmfiles/eeprom-16f1937.asm,
