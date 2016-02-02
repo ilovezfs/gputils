@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jan 17, 2016
+Feb 02, 2016
 \end_layout
 
 \begin_layout Standard
@@ -2188,7 +2188,7 @@ Lists properties of the processors.
 
 \begin_layout Plain Layout
 Set the strict level of the recommended instruction-parameters (W or F and
- A or B).
+ A or B) and the "Undefined Processor" messages.
  The "strict messages" have higher priority than the warnings.
  (See: -w [0|1|2])
 \end_layout
@@ -11606,6 +11606,14 @@ A user-generated error.
 \end_layout
 
 \begin_layout Description
+105 Cannot open file.
+\end_layout
+
+\begin_layout Description
+106 String substitution too complex.
+\end_layout
+
+\begin_layout Description
 108 Illegal character.
 \end_layout
 
@@ -11829,6 +11837,11 @@ Attempt to use relocatable-mode directive when generating HEX file directly.
 \end_layout
 
 \begin_layout Description
+150 Labels must be defined in a code or data section when making an object
+ file.
+\end_layout
+
+\begin_layout Description
 151 Operand contains unresolvable labels or is too complex.
 \end_layout
 
@@ -11886,7 +11899,15 @@ In PIC18CXX devices the number of bytes must be even.
 \end_layout
 
 \begin_layout Description
+165 Extended mode not available for this device.
+\end_layout
+
+\begin_layout Description
 168 Square brackets required around offset operand.
+\end_layout
+
+\begin_layout Description
+170 Expression within brackets must be constant.
 \end_layout
 
 \begin_layout Description
@@ -11908,6 +11929,34 @@ CONFIG and __CONFIG directives cannot both be used in the same project.
 
 \begin_layout Description
 180 RES directive cannot reserve odd number of bytes in PIC18 absolute mode.
+\end_layout
+
+\begin_layout Description
+1101 Internal error.
+\end_layout
+
+\begin_layout Description
+1102 Parser error.
+\end_layout
+
+\begin_layout Description
+1103 Scanner error.
+\end_layout
+
+\begin_layout Description
+1501 IDLOCS directive use solely to the pic18 family.
+\end_layout
+
+\begin_layout Description
+1502 The destination of the storage is not selected (W or F).
+\end_layout
+
+\begin_layout Description
+1503 The access of RAM is not selected (A or B).
+\end_layout
+
+\begin_layout Description
+1504 A string too length.
 \end_layout
 
 \begin_layout Subsection
@@ -12075,6 +12124,14 @@ gpasm encountered an invalid ROM location as specified by the __MAXROM and
  __BADROM directives.
 \end_layout
 
+\begin_layout Description
+1201 RAM Bank selection after skip instruction.
+\end_layout
+
+\begin_layout Description
+1202 Processor type is undefined.
+\end_layout
+
 \begin_layout Subsection
 Messages
 \end_layout
@@ -12193,6 +12250,15 @@ Hidden use of the W register overwrites previous value.
 
 \begin_layout Standard
 Using special instruction mnemonic which may map to one or several instructions.
+\end_layout
+
+\begin_layout Description
+1301 Using default access of 0 (Access Bank).
+\end_layout
+
+\begin_layout Description
+1302 RAM Bank undefined in this chunk of code.
+ Ensure that bank bits are correct.
 \end_layout
 
 \begin_layout Chapter

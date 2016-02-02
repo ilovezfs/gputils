@@ -33,7 +33,7 @@ Boston, MA 02111-1307, USA.  */
 
 /* Create a new defines table and place the macro parms in it. */
 
-void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
+void setup_macro(struct macro_head *h, int arity, const struct pnode *parms)
 {
   if (enforce_arity(arity, list_length(h->parms))) {
     /* push table for the marco parms */
@@ -42,8 +42,8 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
     /* Now add the macro's declared parameter list to the new
        defines table. */
     if (arity > 0) {
-      struct pnode *pFrom, *pFromH;
-      struct pnode *pTo, *pToH;
+      const struct pnode *pFrom, *pFromH;
+      const struct pnode *pTo, *pToH;
       struct symbol *sym;
 
       pTo = parms;
@@ -111,19 +111,26 @@ push_macro_symbol_table(struct symbol_table *table)
   if (state.pass == 1) {
     new = push_symbol_table(table, state.case_insensitive);
     add_macro_table(new);
-  } else if (macro_table_list->line_number != state.src->line_number) {
+  } else {
+    if (macro_table_list == NULL) {
+      gpverror(GPE_UNKNOWN, "An error occurred during a macro execution on pass %i.", state.pass);
+      exit(1);
+    }
+
+    if (macro_table_list->line_number != state.src->line_number) {
     /* The user must have conditionally assembled a macro using a forward
        reference to a label.  This is a very bad practice. It means that
        a macro wasn't executed on the first pass, but it was on the second.
        Probably errors will be generated.  Forward references to local
        symbols probably won't be correct.  */
-    new = push_symbol_table(table, state.case_insensitive);
-    gpwarning(GPW_UNKNOWN, "macro not executed on pass 1");
-  } else {
-    assert(macro_table_list != NULL);
-    new = macro_table_list->table;
-    new->prev = table;
-    macro_table_list = macro_table_list->next; /* setup for next macro */
+      new = push_symbol_table(table, state.case_insensitive);
+      gpwarning(GPW_UNKNOWN, "Macro not executed on pass 1.");
+    } else {
+      assert(macro_table_list != NULL);
+      new = macro_table_list->table;
+      new->prev = table;
+      macro_table_list = macro_table_list->next; /* setup for next macro */
+    }
   }
 
   return new;

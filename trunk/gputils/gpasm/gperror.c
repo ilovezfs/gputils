@@ -428,6 +428,8 @@ gp_getwarning(unsigned int code)
   /* gputils special warnings */
   case GPW_BANK_PAGE_SEL_AFTER_SKIP:
     return "%s after skip instruction. I this really what you intended?";
+  case GPW_UNDEF_PROC:
+    return "Processor type is undefined.";
 
   default:
     return "UNKNOWN";
@@ -519,10 +521,12 @@ gp_getmessage(unsigned int code)
     return "W Register modified.";
   case GPM_SPECIAL_MNEMONIC:
     return "Special Instruction Mnemonic used.";
+
   case GPM_NOA:
     return "Using default access of 0 (Access Bank).";
   case GPM_NOB:
     return "RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank %d from now on.";
+
   case GPM_UNKNOWN:
   default:
     return "UNKNOWN MESSAGE";

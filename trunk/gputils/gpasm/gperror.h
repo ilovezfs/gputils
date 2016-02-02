@@ -148,7 +148,8 @@ enum GPW_codes {
   GPW_UNKNOWN          = 231,
 
   /* gputils special warnings */
-  GPW_BANK_PAGE_SEL_AFTER_SKIP = 1201 /* %s after skip instruction. I this really what you intended? */
+  GPW_BANK_PAGE_SEL_AFTER_SKIP = 1201, /* %s after skip instruction. I this really what you intended? */
+  GPW_UNDEF_PROC       = 1202
 };
 
 /* Message codes

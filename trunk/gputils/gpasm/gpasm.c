@@ -462,8 +462,9 @@ show_usage(void)
          "                                 with the '-p' option, shows only the specified device.\n"
          "                                   ('f' mean 'x')\n");
   printf("  -S [0|1|2], --strict [0|1|2]   Set the strict level of the recommended instruction-parameters\n"
-         "                                 (W or F and A or B). The \"strict messages\" have higher\n"
-         "                                 priority than the warnings. (See: -w [0|1|2]) [0]\n");
+         "                                 (W or F and A or B) and the \"Undefined Processor\" messages.\n"
+         "                                 The \"strict messages\" have higher priority than the warnings.\n"
+         "                                 (See: -w [0|1|2]) [0]\n");
   printf("                                     0: Is the default. No strict messages.\n"
          "                                     1: Show warning messages if one of is missing.\n"
          "                                     2: Show error messages if one of is missing.\n");
@@ -1020,7 +1021,7 @@ assemble(void)
   }
 
   open_src(state.srcfilename, false);
-  yydebug = (!gp_debug_disable) ? 1 : 0;
+  yydebug = (!gp_debug_disable) ? true : false;
   yyparse();
 
   assert(state.pass == 2);
