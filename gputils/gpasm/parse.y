@@ -189,7 +189,7 @@ struct pnode *mk_1op(int op, struct pnode *p0)
 /************************************************************************/
 /* shared functions */
 
-gpasmVal set_label(char *label, struct pnode *parms)
+gpasmVal set_label(const char *label, struct pnode *parms)
 {
   gpasmVal value = 0;
 
@@ -651,20 +651,17 @@ statement:
         |
         DEFINE IDENTIFIER STRING '\n'
         {
-          $$ = do_or_append_insn($1, mk_list(mk_string($2),
-                                 mk_list(mk_string($3), NULL)));
+          $$ = do_or_append_insn($1, mk_list(mk_string($2), mk_list(mk_string($3), NULL)));
         }
         |
         DEFINE IDENT_BRACKET list_args ')' STRING '\n'
         {
-          $$ = do_or_append_insn($1, mk_list(mk_string($2),
-                                 mk_list(mk_string($5), $3)));
+          $$ = do_or_append_insn($1, mk_list(mk_string($2), mk_list(mk_string($5), $3)));
         }
         |
         DEFINE IDENT_BRACKET ')' STRING '\n'
         {
-          $$ = do_or_append_insn($1, mk_list(mk_string($2),
-                                 mk_list(mk_string($4), NULL)));
+          $$ = do_or_append_insn($1, mk_list(mk_string($2), mk_list(mk_string($4), NULL)));
         }
         |
         DEFINE IDENTIFIER '\n'

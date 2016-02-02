@@ -1,6 +1,17 @@
+2016-02-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpasm.c,
+    gpasm/gperror.c, gpasm/gperror.h:
+    Feature requests: "#64 Better error handling" 2.
+
+  * gpasm/macro.c, gpasm/macro.h:
+    bugfix
+
+  * gpasm/parse.y, gpasm/util.c:
+    "char *" --> "const char *" and code cosmetic.
+
 2016-01-31  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
-    Feature requests: "#64 Better error handling"
+    Feature requests: "#64 Better error handling" 1.
 
 2016-01-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/testsuite/gpasm.project/asmfiles/eeprom-16f887.asm,

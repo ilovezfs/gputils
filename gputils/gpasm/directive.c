@@ -137,6 +137,24 @@ checkwrite(unsigned short value)
   return value;
 }
 
+static gp_boolean
+check_processor_select(const char *Name)
+{
+  if (state.processor == NULL) {
+    if ((!state.mpasm_compatible) && (state.strict_level > 0)) {
+      if (state.strict_level == 2) {
+        gpverror(GPE_UNDEF_PROC, "\"%s\"", Name);
+        return true;
+      }
+      else {
+        gpvwarning(GPW_UNDEF_PROC, "\"%s\"", Name);
+      }
+    }
+  }
+
+  return false;
+}
+
 /* Write a word into the memory image at the current location. */
 
 static void
@@ -770,8 +788,7 @@ do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct pnode *p;
   gp_boolean first;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -1806,8 +1823,7 @@ do_define(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -2099,8 +2115,7 @@ do_dw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_else(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -2132,8 +2147,7 @@ do_end(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_endif(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -2159,8 +2173,7 @@ do_endif(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_endm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -2183,8 +2196,7 @@ do_endm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_endw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -2233,8 +2245,7 @@ do_eof(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_equ(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -2416,8 +2427,7 @@ do_error(gpasmVal r, const char *name, int arity, struct pnode *parms)
   const struct pnode *p;
   const char *str;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -2460,8 +2470,7 @@ do_errlvl(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -2499,8 +2508,7 @@ do_errlvl(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_exitm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -2521,11 +2529,6 @@ do_exitm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_expand(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
-  }
-
   state.lst.line.linetype = LTY_DIR;
 
   if (state.cmd_line.macro_expand) {
@@ -2543,11 +2546,6 @@ static gpasmVal
 do_extern(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const char *p;
-
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
-  }
 
   state.lst.line.linetype = LTY_SET4;
 
@@ -2630,11 +2628,6 @@ do_global(gpasmVal r, const char *name, int arity, struct pnode *parms)
   const struct symbol *s;
   struct variable *var;
   char buf[BUFSIZ];
-
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
-  }
 
   state.lst.line.linetype = LTY_SET4;
 
@@ -3080,8 +3073,7 @@ do_if(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -3106,8 +3098,7 @@ do_ifdef(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -3141,8 +3132,7 @@ do_ifndef(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -3388,8 +3378,7 @@ do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
   const struct pnode *p;
   gp_boolean first;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -3522,8 +3511,7 @@ do_macro(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct macro_head *head;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -3556,8 +3544,7 @@ do_messg(gpasmVal r, const char *name, int arity, struct pnode *parms)
   const struct pnode *p;
   const char *str;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -3851,8 +3838,7 @@ do_set(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -4156,8 +4142,7 @@ do_undefine(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -4186,8 +4171,7 @@ do_variable(gpasmVal r, const char *name, int arity, struct pnode *parms)
   const struct pnode *p;
   gp_boolean first;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -4235,8 +4219,7 @@ do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct macro_head *head;
 
-  if (state.processor == NULL) {
-    gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
+  if (check_processor_select(name)) {
     return r;
   }
 
@@ -4267,8 +4250,7 @@ do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
 int
 asm_enabled(void)
 {
-  return ((state.astack == NULL) ||
-          (state.astack->enabled && state.astack->prev_enabled));
+  return ((state.astack == NULL) || (state.astack->enabled && state.astack->prev_enabled));
 }
 
 static gp_boolean
@@ -4411,7 +4393,7 @@ check_flag(int flag)
                                  * Offset Mode */
 
 static gp_boolean
-check_16e_arg_types(struct pnode *parms, int arity, unsigned int types)
+check_16e_arg_types(const struct pnode *parms, int arity, unsigned int types)
 {
   gp_boolean ret = true;
 

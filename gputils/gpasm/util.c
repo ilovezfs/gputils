@@ -589,7 +589,7 @@ macro_append(void)
 }
 
 gpasmVal
-do_or_append_insn(char *op, struct pnode *parms)
+do_or_append_insn(const char *op, struct pnode *parms)
 {
   if (IN_MACRO_WHILE_DEFINITION) {
     if (strcasecmp(op, "endm") == 0) {
@@ -615,8 +615,8 @@ do_or_append_insn(char *op, struct pnode *parms)
   }
 }
 
-void
-print_pnode(struct pnode *p)
+/*static void
+print_pnode(const struct pnode *p)
 {
   if (p == NULL) {
     printf("Null\n");
@@ -653,26 +653,26 @@ print_pnode(struct pnode *p)
   }
 }
 
-void
-print_macro_node(struct macro_body *mac)
+static void
+print_macro_node(const struct macro_body *mac)
 {
-  if (mac->src_line) {
+  if (mac->src_line != NULL) {
     printf(" src_line = %s\n", mac->src_line);
   }
 }
 
-void print_macro_body(struct macro_body *mac)
+static void
+print_macro_body(const struct macro_body *mac)
 {
-  struct macro_body *mb = mac;
+  const struct macro_body *mb = mac;
 
   printf("{\n");
-  while(mb) {
+  while(mb != NULL) {
     print_macro_node(mb);
     mb = mb->next;
   }
   printf("}\n");
-}
-
+}*/
 
 /************************************************************************/
 
