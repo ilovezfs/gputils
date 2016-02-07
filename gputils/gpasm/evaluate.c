@@ -492,7 +492,7 @@ add_reloc(const struct pnode *p, short offs, unsigned short type)
       /* RELOCT_ACCESS has always also RELOCT_F, which has already
          created this symbol.*/
       if (type != RELOCT_ACCESS) {
-        set_global(buffer, org, LFT_PERMANENT, IS_RAM_ORG ? GVT_STATIC : GVT_ADDRESS);
+        set_global(buffer, org, LFT_PERMANENT, IS_RAM_ORG ? GVT_STATIC : GVT_ADDRESS, false);
       }
 
       s = get_symbol(state.stTop, buffer);

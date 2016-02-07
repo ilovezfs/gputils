@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Feb 02, 2016
+Feb 07, 2016
 \end_layout
 
 \begin_layout Standard
@@ -4543,6 +4543,30 @@ not
 \begin_inset Newline newline
 \end_inset
 
+The size of the instruction set of processor (of course, at the same time
+ only one exists):
+\end_layout
+
+\begin_layout LyX-Code
+__12_BIT            -- e.g.
+ p10f222
+\end_layout
+
+\begin_layout LyX-Code
+__14_BIT            -- e.g.
+ p16f887
+\end_layout
+
+\begin_layout LyX-Code
+__16_BIT            -- e.g.
+ p18f2523
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
 The bounds of the Lower Access RAM area (
 \emph on
 only
@@ -4801,13 +4825,13 @@ if
 \begin_layout LyX-Code
 __EEPROM_START     -- Start address of the EEPROM area.
  (e.g.
- 0x0400, 0x2100, 0xF000, 0xF00000)
+ 0x0400, 0x2100, 0xF000, 0x310000, 0xF00000)
 \end_layout
 
 \begin_layout LyX-Code
 __EEPROM_END       -- End address of the EEPROM area.
    (e.g.
- 0x043F, 0x21FF, 0xF0FF, 0xF000FF)
+ 0x043F, 0x21FF, 0xF0FF, 0x3103FF, 0xF000FF)
 \end_layout
 
 \begin_layout LyX-Code

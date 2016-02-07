@@ -77,57 +77,64 @@ void select_processor(const char *name)
           }
         }
 
-        set_global(found->defined_as, 1, LFT_PERMANENT, GVT_CONSTANT);
+        set_global(found->defined_as, 1, LFT_PERMANENT, GVT_CONSTANT, false);
 
         if (!state.mpasm_compatible) {
           class = found->class;
 
-          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_CONSTANT);
-          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_CONSTANT);
+          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_CONSTANT, true);
+          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_CONSTANT, true);
 
           if ((class == PROC_CLASS_GENERIC) || (class == PROC_CLASS_PIC12) ||
               (class == PROC_CLASS_PIC12E)) {
-            set_global("__PAGE_BITS", PIC12_PAGE_BITS,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_MASK", PIC12_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_SIZE", PIC12_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__12_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_BITS", PIC12_PAGE_BITS,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_MASK", PIC12_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_SIZE", PIC12_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT, true);
           }
           else if (class == PROC_CLASS_SX) {
-            set_global("__PAGE_BITS", SX_PAGE_BITS,        LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_MASK", PIC12_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_SIZE", PIC12_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__12_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_BITS", SX_PAGE_BITS,        LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_MASK", PIC12_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_SIZE", PIC12_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT, true);
           }
           else if (class == PROC_CLASS_PIC14) {
-            set_global("__PAGE_BITS", PIC14_PAGE_BITS,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_MASK", PIC14_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_SIZE", PIC14_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__14_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_BITS", PIC14_PAGE_BITS,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_MASK", PIC14_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_SIZE", PIC14_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT, true);
           }
           else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-            set_global("__PAGE_BITS", PIC14E_PAGE_BITS,    LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_MASK", PIC14_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_SIZE", PIC14_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__14_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_BITS", PIC14E_PAGE_BITS,    LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_MASK", PIC14_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_SIZE", PIC14_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT, true);
+          }
+          else if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
+            set_global("__16_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
           }
 
-          set_global("__BANK_BITS", found->bank_bits,     LFT_PERMANENT, GVT_CONSTANT);
-          set_global("__BANK_MASK", class->bank_size - 1, LFT_PERMANENT, GVT_CONSTANT);
-          set_global("__BANK_SIZE", class->bank_size,     LFT_PERMANENT, GVT_CONSTANT);
-          set_global("__BANK_INV",  GLOBAL_ACT_BANK_INV,  LFT_PERMANENT, GVT_CONSTANT);
+          set_global("__BANK_BITS", found->bank_bits,     LFT_PERMANENT, GVT_CONSTANT, true);
+          set_global("__BANK_MASK", class->bank_size - 1, LFT_PERMANENT, GVT_CONSTANT, true);
+          set_global("__BANK_SIZE", class->bank_size,     LFT_PERMANENT, GVT_CONSTANT, true);
+          set_global("__BANK_INV",  GLOBAL_ACT_BANK_INV,  LFT_PERMANENT, GVT_CONSTANT, true);
 
           if ((pair = gp_processor_common_ram_exist(found)) != NULL) {
-            set_global("__COMMON_RAM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__COMMON_RAM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__COMMON_RAM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__COMMON_RAM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT, true);
           }
 
           if (found->common_ram_max > 0) {
-            set_global("__COMMON_RAM_MAX", found->common_ram_max, LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__COMMON_RAM_MAX", found->common_ram_max, LFT_PERMANENT, GVT_CONSTANT, true);
           }
 
           if ((pair = gp_processor_linear_ram_exist(found)) != NULL) {
-            set_global("__LINEAR_RAM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__LINEAR_RAM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__LINEAR_RAM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__LINEAR_RAM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT, true);
           }
 
           if ((found->class->vector_table != NULL) || (found->class->vector_number > 0)) {
@@ -151,37 +158,37 @@ void select_processor(const char *name)
                 addr = vec->address;
               }
 
-              set_global(buf, addr, LFT_PERMANENT, GVT_CONSTANT);
+              set_global(buf, addr, LFT_PERMANENT, GVT_CONSTANT, true);
             }
           }
 
           addr = found->prog_mem_size;
 
           if (addr > 0) {
-            set_global("__CODE_START",        0, LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__CODE_END",   addr - 1, LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__CODE_START",        0, LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__CODE_END",   addr - 1, LFT_PERMANENT, GVT_CONSTANT, true);
           }
 
           if ((pair = gp_processor_idlocs_exist(found)) != NULL) {
-            set_global("__IDLOCS_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__IDLOCS_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__IDLOCS_START", pair[0], LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__IDLOCS_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT, true);
           }
 
           if ((pair = gp_processor_config_exist(found)) != NULL) {
-            set_global("__CONFIG_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__CONFIG_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__CONFIG_START", pair[0], LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__CONFIG_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT, true);
           }
 
           if ((pair = gp_processor_eeprom_exist(found)) != NULL) {
-            set_global("__EEPROM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__EEPROM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__EEPROM_START", pair[0], LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__EEPROM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT, true);
           }
 
           addr = gp_processor_bsr_boundary(found);
 
           if (addr > 0) {
-            set_global("__ACC_RAM_LOW_START",      0, LFT_PERMANENT, GVT_CONSTANT);
-            set_global("__ACC_RAM_LOW_END", addr - 1, LFT_PERMANENT, GVT_CONSTANT);
+            set_global("__ACC_RAM_LOW_START",      0, LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__ACC_RAM_LOW_END", addr - 1, LFT_PERMANENT, GVT_CONSTANT, true);
           }
         } /* if (!state.mpasm_compatible) */
       } /* if (state.processor == NULL) */

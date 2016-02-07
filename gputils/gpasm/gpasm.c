@@ -982,6 +982,7 @@ assemble(void)
   state.stDefines          = push_symbol_table(cmd_defines, state.case_insensitive);
   state.stMacroParams      = push_symbol_table(NULL, state.case_insensitive);
   purge_temp_symbols(state.stTop);
+  purge_processor_const_symbols(state.stTop);
 
   if (!state.cmd_line.radix) {
     state.radix = 16;
