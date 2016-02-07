@@ -720,7 +720,7 @@ set_source_line(const char *line, int len, struct src_line_s *src_line)
 static inline gp_boolean
 in_macro_expansion(void)
 {
-  struct source_context *p;
+  const struct source_context *p;
 
   for (p = state.src; p != NULL; p = p->prev) {
     if (p->type == SRC_MACRO) {

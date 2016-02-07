@@ -616,7 +616,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
     gpvmessage(GPM_EXTPAGE, NULL);
     /* do nothing */
     if (!state.mpasm_compatible) {
-      set_global(GLOBAL_ACT_BANK_ADDR, 0, LFT_TEMPORARY, GVT_GLOBAL);
+      set_global(GLOBAL_ACT_BANK_ADDR, 0, LFT_TEMPORARY, GVT_GLOBAL, false);
     }
     return r;
   }
@@ -639,7 +639,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
       if (!state.mpasm_compatible) {
         set_global(GLOBAL_ACT_BANK_ADDR,
                    gp_processor_bank_num_to_addr(state.processor, bank),
-                   LFT_TEMPORARY, GVT_GLOBAL);
+                   LFT_TEMPORARY, GVT_GLOBAL, false);
       }
     }
     else {
@@ -809,7 +809,7 @@ do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
         val = maybe_evaluate(p->value.binop.p1);
         /* put the symbol and value in the table*/
-        set_global(lhs, val, LFT_PERMANENT, GVT_CONSTANT);
+        set_global(lhs, val, LFT_PERMANENT, GVT_CONSTANT, false);
 
         if (first) {
           r = val;
@@ -1799,7 +1799,7 @@ do_def(gpasmVal r, const char *name, int arity, struct pnode *parms)
     }
   }
 
-  set_global(symbol_name, value, LFT_PERMANENT, type);
+  set_global(symbol_name, value, LFT_PERMANENT, type, false);
 
   /* update the symbol with the values */
   if ((state.pass == 2) && (new_class || new_type)) {
@@ -2557,7 +2557,7 @@ do_extern(gpasmVal r, const char *name, int arity, struct pnode *parms)
       p = HEAD(parms)->value.symbol;
 
       if (p != NULL) {
-        set_global(p, 0, LFT_PERMANENT, GVT_EXTERN);
+        set_global(p, 0, LFT_PERMANENT, GVT_EXTERN, false);
       }
     }
   }
@@ -3404,7 +3404,7 @@ do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
           val = maybe_evaluate(p->value.binop.p1);
           /* put the symbol and value in the TOP table*/
           add_symbol(state.stTop, lhs);
-          set_global(lhs, val, LFT_TEMPORARY, GVT_CONSTANT);
+          set_global(lhs, val, LFT_TEMPORARY, GVT_CONSTANT, false);
 
           if (first) {
             r = val;
@@ -3663,7 +3663,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
       if (!state.mpasm_compatible) {
         set_global(GLOBAL_ACT_PAGE_ADDR,
                    gp_processor_page_bits_to_addr(state.device.class, page),
-                   LFT_TEMPORARY, GVT_GLOBAL);
+                   LFT_TEMPORARY, GVT_GLOBAL, false);
       }
     }
     else {
@@ -4189,7 +4189,7 @@ do_variable(gpasmVal r, const char *name, int arity, struct pnode *parms)
         lhs = p->value.binop.p0->value.symbol;
         val = maybe_evaluate(p->value.binop.p1);
         /* put the symbol and value in the table */
-        set_global(lhs, val, LFT_TEMPORARY, GVT_CONSTANT);
+        set_global(lhs, val, LFT_TEMPORARY, GVT_CONSTANT, false);
 
         if (first) {
           r = val;
@@ -4199,7 +4199,7 @@ do_variable(gpasmVal r, const char *name, int arity, struct pnode *parms)
     }
     else if (p->tag == PTAG_SYMBOL) {
       /* put the symbol with a 0 value in the table */
-      set_global(p->value.symbol, 0, LFT_TEMPORARY, GVT_CONSTANT);
+      set_global(p->value.symbol, 0, LFT_TEMPORARY, GVT_CONSTANT, false);
 
       if (first) {
         r = 0;
@@ -4330,7 +4330,7 @@ file_ok(unsigned int file)
   } else {
     gpvmessage(GPM_NOB, NULL, bank_num);
     /* If no bank is explicitly selected, set bank to this register now. */
-    set_global(GLOBAL_ACT_BANK_ADDR, file, LFT_TEMPORARY, GVT_GLOBAL);
+    set_global(GLOBAL_ACT_BANK_ADDR, file, LFT_TEMPORARY, GVT_GLOBAL, false);
   }
 }
 
@@ -4543,7 +4543,7 @@ do_insn(const char *name, struct pnode *parms)
             bank_num = r & (PIC12E_MASK_MOVLB ^ PIC12_CORE_MASK);
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, GVT_GLOBAL);
+                       LFT_TEMPORARY, GVT_GLOBAL, false);
           }
         }
         break;
@@ -4580,7 +4580,7 @@ do_insn(const char *name, struct pnode *parms)
             bank_num = r & (PIC16E_MASK_MOVLB ^ PIC16_CORE_MASK);
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, GVT_GLOBAL);
+                       LFT_TEMPORARY, GVT_GLOBAL, false);
           }
         }
         break;
@@ -4615,7 +4615,7 @@ do_insn(const char *name, struct pnode *parms)
             bank_num = r & (PIC14E_MASK_MOVLB ^ PIC14_CORE_MASK);
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, GVT_GLOBAL);
+                       LFT_TEMPORARY, GVT_GLOBAL, false);
           }
         }
         break;
@@ -6168,12 +6168,12 @@ do_insn(const char *name, struct pnode *parms)
       if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE) && (!state.skipped_inst)) {
         if (i->inv_mask & INV_MASK_BANK) {
           /* Invalidates the selection of RAM Banks. */
-          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_GLOBAL);
+          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_GLOBAL, false);
         }
 
         if (i->inv_mask & INV_MASK_PAGE) {
           /* Invalidates the selection of ROM Pages. */
-          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_GLOBAL);
+          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_GLOBAL, false);
         }
       }
 
@@ -6466,7 +6466,7 @@ void
 cblock_expr(const struct pnode *s)
 {
   if (asm_enabled()) {
-    set_global(s->value.symbol, state.cblock, LFT_PERMANENT, GVT_CBLOCK);
+    set_global(s->value.symbol, state.cblock, LFT_PERMANENT, GVT_CBLOCK, false);
     state.cblock++;
   }
 }
@@ -6475,7 +6475,7 @@ void
 cblock_expr_incr(const struct pnode *s, const struct pnode *incr)
 {
   if (asm_enabled()) {
-    set_global(s->value.symbol, state.cblock, LFT_PERMANENT, GVT_CBLOCK);
+    set_global(s->value.symbol, state.cblock, LFT_PERMANENT, GVT_CBLOCK, false);
     state.cblock += maybe_evaluate(incr);
   }
 }

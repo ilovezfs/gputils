@@ -327,7 +327,8 @@ coerce_str1(struct pnode *exp)
 }
 
 void
-set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type)
+set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type,
+           gp_boolean procDependent)
 {
   struct symbol *sym;
   struct variable *var;
@@ -352,6 +353,7 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
     var->type             = type;
     var->previous_type    = type;  /* coff symbols can be changed to global */
     var->lifetime         = lifetime;
+    var->isProcDependent  = procDependent;
 
     /* increment the index into the coff symbol table for the relocations */
     switch(type) {
@@ -436,6 +438,48 @@ purge_temp_symbols(struct symbol_table *table) {
     }
 
     purge_temp_symbols(table->prev);
+  }
+}
+
+void
+purge_processor_const_symbols(struct symbol_table *table) {
+  int i;
+
+  if (table != NULL) {
+    for (i = 0; i < HASH_SIZE; ++i) {
+      struct symbol *cur_symbol;
+      struct symbol *last_symbol = NULL;
+
+      cur_symbol = table->hash_table[i];
+      while (cur_symbol != NULL) {
+        if (cur_symbol != NULL) {
+          struct variable *var = (struct variable *)get_symbol_annotation(cur_symbol);
+
+          if (var != NULL) {
+            if ((var->lifetime == LFT_PERMANENT) && (var->type == GVT_CONSTANT) && var->isProcDependent) {
+              struct symbol *next_symbol = cur_symbol->next;
+
+              free(cur_symbol);
+              table->count--;
+
+              if (last_symbol == NULL) {
+                table->hash_table[i] = next_symbol;
+              }
+              else {
+                last_symbol->next = next_symbol;
+              }
+
+              cur_symbol = next_symbol;
+              continue;
+            }
+          }
+        }
+        last_symbol = cur_symbol;
+        cur_symbol = cur_symbol->next;
+      }
+    }
+
+    purge_processor_const_symbols(table->prev);
   }
 }
 
