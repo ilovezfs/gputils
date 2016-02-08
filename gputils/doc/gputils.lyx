@@ -4543,6 +4543,34 @@ not
 \begin_inset Newline newline
 \end_inset
 
+The version numbers of gputils:
+\end_layout
+
+\begin_layout LyX-Code
+__GPUTILS_SVN_VERSION   -- e.g.
+ 1181
+\end_layout
+
+\begin_layout LyX-Code
+__GPUTILS_VERSION_MAJOR -- e.g.
+ 1
+\end_layout
+
+\begin_layout LyX-Code
+__GPUTILS_VERSION_MINOR -- e.g.
+ 4
+\end_layout
+
+\begin_layout LyX-Code
+__GPUTILS_VERSION_MICRO -- e.g.
+ 2
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
 The size of the instruction set of processor (of course, at the same time
  only one exists):
 \end_layout

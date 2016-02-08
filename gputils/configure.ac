@@ -42,6 +42,7 @@ AC_ARG_WITH(mplabx-path,
   [DEFAULT_MPLABX_PATH="/opt/microchip/mplabx/v3.20"])
 
 # Checks for programs.
+AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_YACC
 AM_PROG_LEX
@@ -107,6 +108,18 @@ case "${host}" in
     ;;
 esac
 
+VERSION_MAJOR=`echo $PACKAGE_VERSION | $AWK 'BEGIN {FS="."} {print $1}'`
+VERSION_MINOR=`echo $PACKAGE_VERSION | $AWK 'BEGIN {FS="."} {print $2}'`
+VERSION_MICRO=`echo $PACKAGE_VERSION | $AWK 'BEGIN {FS="."} {print $3}'`
+
+AC_DEFINE_UNQUOTED(GPUTILS_VERSION_MAJOR, $VERSION_MAJOR, [gputils major version number])
+AC_DEFINE_UNQUOTED(GPUTILS_VERSION_MINOR, $VERSION_MINOR, [gputils minor version number])
+AC_DEFINE_UNQUOTED(GPUTILS_VERSION_MICRO, $VERSION_MICRO, [gputils micro version number])
+AC_DEFINE_UNQUOTED(GPUTILS_VERSION_STR, "$PACKAGE_VERSION", [gputils version string])
+
+AM_GPUTILS_SVN_VERSION="\$(shell \$(top_srcdir)/get_cl_revision.sh \$(top_srcdir)/ChangeLog)"
+CFLAGS="-DGPUTILS_SVN_VERSION=\$(AM_GPUTILS_SVN_VERSION)"
+
 # Host filesystem options
 case "${host}" in
   *mingw* | *-pc-os2_emx | *-pc-os2-emx | *djgpp* )
@@ -129,8 +142,10 @@ fi
 # Substitute configuration variables
 AC_SUBST(ENABLE_HTML_DOC)
 AC_SUBST(DEFAULT_MPLABX_PATH)
+AC_SUBST(AM_GPUTILS_SVN_VERSION)
 AC_SUBST(AM_CFLAGS)
 AC_SUBST(AM_LDFLAGS)
+AC_SUBST(CFLAGS)
 AC_SUBST(GPUTILS_HEADER_PATH)
 AC_SUBST(GPUTILS_LKR_PATH)
 AC_SUBST(GPUTILS_LIB_PATH)
