@@ -3,6 +3,18 @@
 /* Define if you want to enable GPUTILS debug features. */
 #undef GPUTILS_DEBUG
 
+/* gputils major version number */
+#undef GPUTILS_VERSION_MAJOR
+
+/* gputils micro version number */
+#undef GPUTILS_VERSION_MICRO
+
+/* gputils minor version number */
+#undef GPUTILS_VERSION_MINOR
+
+/* gputils version string */
+#undef GPUTILS_VERSION_STR
+
 /* Define to 1 if you have the declaration of `asprintf', and to 0 if you
    don't. */
 #undef HAVE_DECL_ASPRINTF
@@ -27,9 +39,6 @@
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
-
-/* Define to 1 if you have the <linux/limits.h> header file. */
-#undef HAVE_LINUX_LIMITS_H
 
 /* Define to 1 if you have the <malloc.h> header file. */
 #undef HAVE_MALLOC_H
@@ -82,8 +91,8 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if you have the <windows.h,> header file. */
-#undef HAVE_WINDOWS_H_
+/* Define to 1 if you have the <windows.h> header file. */
+#undef HAVE_WINDOWS_H
 
 /* Name of package */
 #undef PACKAGE
