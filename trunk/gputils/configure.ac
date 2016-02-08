@@ -44,6 +44,7 @@ AC_ARG_WITH(mplabx-path,
 # Checks for programs.
 AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_RANLIB
 AC_PROG_YACC
 AM_PROG_LEX
 set `$LEX -V`
@@ -55,6 +56,11 @@ AC_PROG_INSTALL
 # append the host alias to the tools for cross compiling
 AC_CHECK_TOOL(RANLIB, ranlib, :)
 AC_CHECK_TOOL(AR, ar, :)
+
+AC_ARG_VAR([LIB_TYPE], [library type: LIB, AR or RANLIB (default)])
+if test "x${LIB_TYPE}" = "x"; then
+  LIB_TYPE="RANLIB"
+fi
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -139,6 +145,8 @@ if test x$enable_gputils_path = xyes; then
     [Define if you want to add default search paths. ])
 fi
 
+LDFLAGS=
+
 # Substitute configuration variables
 AC_SUBST(ENABLE_HTML_DOC)
 AC_SUBST(DEFAULT_MPLABX_PATH)
@@ -146,6 +154,7 @@ AC_SUBST(AM_GPUTILS_SVN_VERSION)
 AC_SUBST(AM_CFLAGS)
 AC_SUBST(AM_LDFLAGS)
 AC_SUBST(CFLAGS)
+AC_SUBST(LDLAGS)
 AC_SUBST(GPUTILS_HEADER_PATH)
 AC_SUBST(GPUTILS_LKR_PATH)
 AC_SUBST(GPUTILS_LIB_PATH)

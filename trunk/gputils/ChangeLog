@@ -1,4 +1,12 @@
 2016-02-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Corrected the date.
+
+  * Makefile.in, */Makefile.in, bootstrap.sh, config.h.in,
+    configure.ac, configure:
+    refresh
+
+2016-02-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * Makefile.in, */Makefile.in, bootstrap.sh, config.h.in,
     configure.ac, configure, doc/gputils.lyx, gpasm/processor.c:
     New constants: __GPUTILS_SVN_VERSION, __GPUTILS_VERSION_MAJOR,
