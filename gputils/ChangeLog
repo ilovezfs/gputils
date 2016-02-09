@@ -1,3 +1,7 @@
+2016-02-09  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/processor.c:
+    Feature requests: "#64 Better error handling" 5.
+
 2016-02-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Corrected the date.
