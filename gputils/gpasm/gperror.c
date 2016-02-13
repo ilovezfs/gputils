@@ -355,13 +355,13 @@ gperror(unsigned int code, char *message)
 void
 gpverror(unsigned int code, const char *message, ...)
 {
+  char buf[BUFSIZ];
+
   if (state.pass == 2) {
     va_list(ap);
     const char *msg = gp_geterror(code);
 
     if ((message != NULL) && (*message != '\0')) {
-      char buf[BUFSIZ];
-
       snprintf(buf, sizeof(buf), "%s %s", msg, message);
       msg = buf;
     }
@@ -430,6 +430,8 @@ gp_getwarning(unsigned int code)
     return "%s after skip instruction. I this really what you intended?";
   case GPW_UNDEF_PROC:
     return "Processor type is undefined.";
+  case GPW_USER:
+    return "WARNING: (%s)";
 
   default:
     return "UNKNOWN";

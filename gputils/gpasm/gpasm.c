@@ -98,6 +98,18 @@ static list_params_t list_options;
 
 /*------------------------------------------------------------------------------------------------*/
 
+static void set_global_constants(void)
+{
+  if (!state.mpasm_compatible) {
+    set_global("__GPUTILS_SVN_VERSION",   GPUTILS_SVN_VERSION,   LFT_PERMANENT, GVT_CONSTANT, false);
+    set_global("__GPUTILS_VERSION_MAJOR", GPUTILS_VERSION_MAJOR, LFT_PERMANENT, GVT_CONSTANT, false);
+    set_global("__GPUTILS_VERSION_MINOR", GPUTILS_VERSION_MINOR, LFT_PERMANENT, GVT_CONSTANT, false);
+    set_global("__GPUTILS_VERSION_MICRO", GPUTILS_VERSION_MICRO, LFT_PERMANENT, GVT_CONSTANT, false);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
 init(void)
 {
@@ -966,6 +978,8 @@ assemble(void)
     state.cmd_line.processor = true;
   }
 
+  set_global_constants();
+
   state.pass = 1;
   open_src(state.srcfilename, false);
   yyparse();
@@ -1020,6 +1034,8 @@ assemble(void)
     select_processor(processor_name);
     state.cmd_line.processor = true;
   }
+
+  set_global_constants();
 
   open_src(state.srcfilename, false);
   yydebug = (!gp_debug_disable) ? true : false;
