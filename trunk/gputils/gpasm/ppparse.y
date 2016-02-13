@@ -22,6 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 #include "gpasm.h"
+#include "gperror.h"
 #include "preprocess.h"
 
 int ppresult = 0;
@@ -75,7 +76,18 @@ exp:
       $$ = var->value;
     }
     else {
-      /* The default value is 0. */
+      char buf[BUFSIZ];
+
+      if ((!state.mpasm_compatible) && (state.strict_level > 0)) {
+        snprintf(buf, sizeof(buf), "Symbol %s not assigned a value.", $1);
+
+        if (state.strict_level == 2) {
+          gpverror(GPE_USER, NULL, buf);
+        }
+        else {
+          gpvwarning(GPW_USER, NULL, buf);
+        }
+      }
       $$ = 0;
     }
   }

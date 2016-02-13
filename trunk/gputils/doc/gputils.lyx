@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Feb 08, 2016
+Feb 13, 2016
 \end_layout
 
 \begin_layout Standard
@@ -12182,6 +12182,10 @@ gpasm encountered an invalid ROM location as specified by the __MAXROM and
 
 \begin_layout Description
 1202 Processor type is undefined.
+\end_layout
+
+\begin_layout Description
+1203 A user-generated warning.
 \end_layout
 
 \begin_layout Subsection

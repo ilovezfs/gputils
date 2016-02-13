@@ -149,7 +149,8 @@ enum GPW_codes {
 
   /* gputils special warnings */
   GPW_BANK_PAGE_SEL_AFTER_SKIP = 1201, /* %s after skip instruction. I this really what you intended? */
-  GPW_UNDEF_PROC       = 1202
+  GPW_UNDEF_PROC       = 1202,
+  GPW_USER             = 1203
 };
 
 /* Message codes
