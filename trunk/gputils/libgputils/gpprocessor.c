@@ -807,7 +807,7 @@ static struct px pics[] = {
   { PROC_CLASS_PIC16E   , "__18LF46K80"   , { "pic18lf46k80"   , "p18lf46k80"     , "18lf46k80"       }, 0xE680,  0, 0x60, 0x0F00, {   -1,   -1 },    -1, {     -1,     -1 }, 0x0FFF, 0xF003FF, 0x010000, { 0x010000, 0xEFFFFF }, { 0x200000, 0x200007 }, { 0x300000, 0x30000D }, { 0xF00000, 0xF003FF }, 0x0000, "p18lf46k80.inc"   , "18lf46k80_g.lkr"   , 1 },
   { PROC_CLASS_PIC16E   , "__18LF47J13"   , { "pic18lf47j13"   , "p18lf47j13"     , "18lf47j13"       }, 0xC712,  0, 0x60, 0x0F00, {   -1,   -1 },    -1, {     -1,     -1 }, 0x0FFF, 0x01FFF7, 0x01FFF8, {       -1,       -1 }, {       -1,       -1 }, { 0x01FFF8, 0x01FFFF }, {       -1,       -1 }, 0x0000, "p18lf47j13.inc"   , "18lf47j13_g.lkr"   , 3 },
   { PROC_CLASS_PIC16E   , "__18LF47J53"   , { "pic18lf47j53"   , "p18lf47j53"     , "18lf47j53"       }, 0xC751,  0, 0x60, 0x0F00, {   -1,   -1 },    -1, {     -1,     -1 }, 0x0FFF, 0x01FFF7, 0x01FFF8, {       -1,       -1 }, {       -1,       -1 }, { 0x01FFF8, 0x01FFFF }, {       -1,       -1 }, 0x0000, "p18lf47j53.inc"   , "18lf47j53_g.lkr"   , 3 },
-  { PROC_CLASS_PIC16E   , "__18LF47K40"   , { "pic18lf47k40"   , "p18lf47k40"     , "18lf47k40"       }, 0xFFFF,  0, 0x60, 0x0F00, {   -1,   -1 },    -1, {     -1,     -1 }, 0x0FFF, 0xF003FF, 0x020000, { 0x020000, 0x30FFFF }, { 0x200000, 0x20000F }, { 0x300000, 0x30000B }, { 0x310000, 0x3103FF }, 0x0000, "p18lf47k40.inc"   , "18lf47k40_g.lkr"   , 1 },
+  { PROC_CLASS_PIC16E   , "__18LF47K40"   , { "pic18lf47k40"   , "p18lf47k40"     , "18lf47k40"       }, 0xA276,  0, 0x60, 0x0F00, {   -1,   -1 },    -1, {     -1,     -1 }, 0x0FFF, 0xF003FF, 0x020000, { 0x020000, 0x30FFFF }, { 0x200000, 0x20000F }, { 0x300000, 0x30000B }, { 0x310000, 0x3103FF }, 0x0000, "p18lf47k40.inc"   , "18lf47k40_g.lkr"   , 1 },
   { PROC_CLASS_PIC16E   , "__18LF65K40"   , { "pic18lf65k40"   , "p18lf65k40"     , "18lf65k40"       }, 0xA270,  0, 0x60, 0x0F00, {   -1,   -1 },    -1, {     -1,     -1 }, 0x0FFF, 0xF003FF, 0x008000, { 0x008000, 0x30FFFF }, { 0x200000, 0x20000F }, { 0x300000, 0x30000B }, { 0x310000, 0x3103FF }, 0x0000, "p18lf65k40.inc"   , "18lf65k40_g.lkr"   , 1 },
   { PROC_CLASS_PIC16E   , "__18LF65K80"   , { "pic18lf65k80"   , "p18lf65k80"     , "18lf65k80"       }, 0xF580,  0, 0x60, 0x0F00, {   -1,   -1 },    -1, {     -1,     -1 }, 0x0FFF, 0xF003FF, 0x008000, { 0x008000, 0xEFFFFF }, { 0x200000, 0x200007 }, { 0x300000, 0x30000D }, { 0xF00000, 0xF003FF }, 0x0000, "p18lf65k80.inc"   , "18lf65k80_g.lkr"   , 1 },
   { PROC_CLASS_PIC16E   , "__18LF66K40"   , { "pic18lf66k40"   , "p18lf66k40"     , "18lf66k40"       }, 0xA271,  0, 0x60, 0x0F00, {   -1,   -1 },    -1, {     -1,     -1 }, 0x0FFF, 0xF003FF, 0x010000, { 0x010000, 0x30FFFF }, { 0x200000, 0x20000F }, { 0x300000, 0x30000B }, { 0x310000, 0x3103FF }, 0x0000, "p18lf66k40.inc"   , "18lf66k40_g.lkr"   , 1 },
@@ -1769,12 +1769,13 @@ gp_processor_set_page_pic12_14(int num_pages, int page, MemBlock *m, unsigned in
 
 static int
 gp_processor_set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned int address,
-                               int bcf_insn, int bsf_insn, int location, int bank0, int bank1)
+                               int bcf_insn, int bsf_insn, int location, int bank0, int bank1, int bank2)
 {
   unsigned int data;
   char buf[BUFSIZ];
 
-  assert(num_banks <= 4);
+  /* 16F59 */
+  assert(num_banks <= 8);
 
   if (num_banks == 1) {
     return 0;
@@ -1790,8 +1791,21 @@ gp_processor_set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned in
     data = ((bank & 2) ? bsf_insn : bcf_insn) | bank1 | location;
     i_memory_put_le(m, address + 2, data, buf, NULL);
   }
+  if (num_banks > 4) {
+    /* bank high bit */
+    data = ((bank & 4) ? bsf_insn : bcf_insn) | bank2 | location;
+    i_memory_put_le(m, address + 2, data, buf, NULL);
+  }
 
-  return ((num_banks == 2) ? 2 : 4);
+  if (num_banks < 4) {
+    return 2;
+  }
+  else if (num_banks < 8) {
+    return 4;
+  }
+  else {
+    return 8;
+  }
 }
 
 /* PIC12 */
@@ -1817,7 +1831,9 @@ gp_processor_set_bank_pic12(int num_banks, int bank, MemBlock *m, unsigned int a
 {
   return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
                                         PIC12_INSN_BCF, PIC12_INSN_BSF, PIC12_REG_FSR,
-                                        5 << 5, 6 << 5);
+                                        PIC14_BIT_FSR_RP0 << 5,
+                                        PIC14_BIT_FSR_RP1 << 5,
+                                        PIC14_BIT_FSR_RP2 << 5);
 }
 
 static int
@@ -1846,7 +1862,8 @@ gp_processor_set_page_pic12(int num_pages, int page, MemBlock *m, unsigned int a
   return gp_processor_set_page_pic12_14(num_pages, page, m, address, use_wreg,
                                         PIC12_INSN_BCF, PIC12_INSN_BSF,
                                         PIC12_INSN_MOVLW, PIC12_INSN_MOVWF, PIC12_REG_STATUS,
-                                        5 << 5, 6 << 5);
+                                        PIC12_BIT_STATUS_PA0 << 5,
+                                        PIC12_BIT_STATUS_PA1 << 5);
 }
 
 
@@ -1994,7 +2011,8 @@ gp_processor_set_bank_pic14(int num_banks, int bank, MemBlock *m, unsigned int a
                                         PIC14_INSN_BSF,
                                         PIC14_REG_STATUS,
                                         PIC14_BIT_STATUS_RP0 << PIC14_INSN_BxF_BITSHIFT,
-                                        PIC14_BIT_STATUS_RP1 << PIC14_INSN_BxF_BITSHIFT);
+                                        PIC14_BIT_STATUS_RP1 << PIC14_INSN_BxF_BITSHIFT,
+                                        -1);
 }
 
 static int

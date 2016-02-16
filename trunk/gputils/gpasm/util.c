@@ -399,6 +399,21 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
   }
 }
 
+struct variable *
+get_global_constant(const char *Name)
+{
+  struct symbol *sym;
+  struct variable *var;
+
+  if (((sym = get_symbol(state.stGlobal, Name)) != NULL) &&
+      ((var = get_symbol_annotation(sym)) != NULL) &&
+      (var->type == GVT_CONSTANT)) {
+    return var;
+  }
+
+  return NULL;
+}
+
 void
 purge_temp_symbols(struct symbol_table *table) {
   int i;

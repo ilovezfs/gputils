@@ -28,15 +28,94 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "gperror.h"
 
-void select_processor(const char *name)
+static void
+make_bank_constants(pic_processor_t Proc, int Num_of_banks)
 {
-  pic_processor_t found = NULL;
-  proc_class_t class;
-  const int *pair;
-  const vector_t *vec;
-  unsigned int num;
-  int addr;
-  char buf[BUFSIZ];
+  int  bank_size;
+  int  bank_addr;
+  int  i;
+  char name[64];
+
+  set_global(GLOBAL_ACT_BANK_ADDR, (Num_of_banks == 1) ? 0 : GLOBAL_ACT_BANK_INV,
+             LFT_TEMPORARY, GVT_CONSTANT, true);
+
+  if (Num_of_banks <= 0) {
+    return;
+  }
+
+  set_global("__NUM_BANKS", Num_of_banks, LFT_PERMANENT, GVT_CONSTANT, true);
+
+  bank_size = Proc->class->bank_size;
+  bank_addr = 0;
+  i = 0;
+  while (true) {
+    if (i == 0) {
+      set_global("__BANK_FIRST", bank_addr, LFT_PERMANENT, GVT_CONSTANT, true);
+    }
+
+    snprintf(name, sizeof(name), "__BANK_%i", i);
+    set_global(name, bank_addr, LFT_PERMANENT, GVT_CONSTANT, true);
+    ++i;
+
+    if (i == Num_of_banks) {
+      set_global("__BANK_LAST", bank_addr, LFT_PERMANENT, GVT_CONSTANT, true);
+      break;
+    }
+
+    bank_addr += bank_size;
+  }
+}
+
+static void
+make_page_constants(pic_processor_t Proc, int Num_of_pages)
+{
+  int  page_size;
+  int  page_addr;
+  int  i;
+  char name[64];
+
+  set_global(GLOBAL_ACT_PAGE_ADDR, (Num_of_pages == 1) ? 0 : GLOBAL_ACT_PAGE_INV,
+             LFT_TEMPORARY, GVT_CONSTANT, true);
+
+  if (Num_of_pages <= 0) {
+    return;
+  }
+
+  set_global("__NUM_PAGES", Num_of_pages, LFT_PERMANENT, GVT_CONSTANT, true);
+
+  page_size = Proc->class->page_size;
+  page_addr = 0;
+  i = 0;
+  while (true) {
+    if (i == 0) {
+      set_global("__PAGE_FIRST", page_addr, LFT_PERMANENT, GVT_CONSTANT, true);
+    }
+
+    snprintf(name, sizeof(name), "__PAGE_%i", i);
+    set_global(name, page_addr, LFT_PERMANENT, GVT_CONSTANT, true);
+    ++i;
+
+    if (i == Num_of_pages) {
+      set_global("__PAGE_LAST", page_addr, LFT_PERMANENT, GVT_CONSTANT, true);
+      break;
+    }
+
+    page_addr += page_size;
+  }
+}
+
+void
+select_processor(const char *name)
+{
+  pic_processor_t  found;
+  proc_class_t     class;
+  const int       *pair;
+  const vector_t  *vec;
+  unsigned int     num;
+  int              addr;
+  int              num_of_banks;
+  int              num_of_pages;
+  char             buf[BUFSIZ];
 
   if (state.cmd_line.processor) {
     gpvwarning(GPW_CMDLINE_PROC, NULL);
@@ -47,7 +126,7 @@ void select_processor(const char *name)
       int badrom_idx;
 
       if (state.processor == NULL) {
-        /* If in extended mode: check if processor supports extended instruction set. */
+        /* If in extended mode: Check if processor supports extended instruction set. */
         if (state.extended_pic16e && !(found->pic16e_flags & PIC16E_FLAG_HAVE_EXTINST)) {
           gpverror(GPE_NO_EXTENDED_MODE, NULL);
         }
@@ -59,15 +138,13 @@ void select_processor(const char *name)
         state.badrom = NULL;
 
         for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx += 2) {
-          long start, end;
+          long start;
+          long end;
 
           start = found->badrom[badrom_idx];
           end   = found->badrom[badrom_idx + 1];
 
-          if ((start == -1) || (end == -1)) {
-            break;
-          }
-          else {
+          if ((start >= 0) && (end >= 0)) {
             struct range_pair *new_pair = GP_Malloc(sizeof(struct range_pair));
 
             new_pair->start = start;
@@ -82,16 +159,23 @@ void select_processor(const char *name)
         if (!state.mpasm_compatible) {
           class = found->class;
 
-          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_CONSTANT, true);
-          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_CONSTANT, true);
+          num_of_banks = gp_processor_num_banks(found);
+          num_of_pages = gp_processor_num_pages(found);
 
           if ((class == PROC_CLASS_GENERIC) || (class == PROC_CLASS_PIC12) ||
               (class == PROC_CLASS_PIC12E)) {
-            set_global("__12_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_BITS", PIC12_PAGE_BITS,     LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_MASK", PIC12_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_SIZE", PIC12_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT, true);
+            if (class == PROC_CLASS_PIC12E) {
+              set_global("__ENHANCED", 1,                     LFT_PERMANENT, GVT_CONSTANT, true);
+            }
+
+            set_global("__12_BIT",     1,                     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_BITS",  PIC12_PAGE_BITS,       LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_MASK",  PIC12_PAGE_MASK,       LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_SIZE",  PIC12_PAGE_SIZE,       LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_INV",   GLOBAL_ACT_PAGE_INV,   LFT_PERMANENT, GVT_CONSTANT, true);
+
+            make_bank_constants(found, num_of_banks);
+            make_page_constants(found, num_of_pages);
           }
           else if (class == PROC_CLASS_SX) {
             set_global("__12_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
@@ -99,23 +183,42 @@ void select_processor(const char *name)
             set_global("__PAGE_MASK", PIC12_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT, true);
             set_global("__PAGE_SIZE", PIC12_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT, true);
             set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT, true);
+
+            make_bank_constants(found, num_of_banks);
+            make_page_constants(found, num_of_pages);
           }
           else if (class == PROC_CLASS_PIC14) {
-            set_global("__14_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_BITS", PIC14_PAGE_BITS,     LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_MASK", PIC14_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_SIZE", PIC14_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__14_BIT",     1,                     LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_BITS",  PIC14_PAGE_BITS,       LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_MASK",  PIC14_PAGE_MASK,       LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_SIZE",  PIC14_PAGE_SIZE,       LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_INV",   GLOBAL_ACT_PAGE_INV,   LFT_PERMANENT, GVT_CONSTANT, true);
+
+            make_bank_constants(found, num_of_banks);
+            make_page_constants(found, num_of_pages);
           }
           else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-            set_global("__14_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_BITS", PIC14E_PAGE_BITS,    LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_MASK", PIC14_PAGE_MASK,     LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_SIZE", PIC14_PAGE_SIZE,     LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__PAGE_INV",  GLOBAL_ACT_PAGE_INV, LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__14_BIT",        1,                         LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__ENHANCED",      1,                         LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_BITS",     PIC14E_PAGE_BITS,          LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_MASK",     PIC14_PAGE_MASK,           LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_SIZE",     PIC14_PAGE_SIZE,           LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE512_SHIFT", PIC14E_SHIFT_PAGE512_ADDR, LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__PAGE_INV",      GLOBAL_ACT_PAGE_INV,       LFT_PERMANENT, GVT_CONSTANT, true);
+
+            make_bank_constants(found, num_of_banks);
+            make_page_constants(found, num_of_pages);
           }
           else if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
-            set_global("__16_BIT",    1,                   LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__16_BIT", 1, LFT_PERMANENT, GVT_CONSTANT, true);
+
+            if (class == PROC_CLASS_PIC16E) {
+              set_global("__EXTENDED", 1, LFT_PERMANENT, GVT_CONSTANT, true);
+
+              make_bank_constants(found, 16);
+            }
+
+            make_page_constants(found, num_of_pages);
           }
 
           set_global("__BANK_BITS", found->bank_bits,     LFT_PERMANENT, GVT_CONSTANT, true);
@@ -137,9 +240,9 @@ void select_processor(const char *name)
             set_global("__LINEAR_RAM_END",   pair[1], LFT_PERMANENT, GVT_CONSTANT, true);
           }
 
-          if ((found->class->vector_table != NULL) || (found->class->vector_number > 0)) {
-            vec = found->class->vector_table;
-            num = found->class->vector_number;
+          if ((class->vector_table != NULL) || (class->vector_number > 0)) {
+            vec = class->vector_table;
+            num = class->vector_number;
 
             for (; num; ++vec, --num) {
               buf[0] = '_';
@@ -187,8 +290,8 @@ void select_processor(const char *name)
           addr = gp_processor_bsr_boundary(found);
 
           if (addr > 0) {
-            set_global("__ACC_RAM_LOW_START",      0, LFT_PERMANENT, GVT_CONSTANT, true);
-            set_global("__ACC_RAM_LOW_END", addr - 1, LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__ACC_RAM_LOW_START",        0, LFT_PERMANENT, GVT_CONSTANT, true);
+            set_global("__ACC_RAM_LOW_END",   addr - 1, LFT_PERMANENT, GVT_CONSTANT, true);
           }
         } /* if (!state.mpasm_compatible) */
       } /* if (state.processor == NULL) */
@@ -197,7 +300,7 @@ void select_processor(const char *name)
         gpverror(GPE_EXTRA_PROC, NULL);
       }
     } else {
-      if (state.pass) {
+      if (state.pass > 0) {
         gpverror(GPE_UNKNOWN_PROC, NULL, name);
       } else {
         printf("Didn't find any processor named: %s\nHere are the supported processors:\n", name);
