@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Feb 13, 2016
+Feb 16, 2016
 \end_layout
 
 \begin_layout Standard
@@ -4595,6 +4595,23 @@ __16_BIT            -- e.g.
 \end_layout
 
 \begin_layout Standard
+The sign of advanced types:
+\end_layout
+
+\begin_layout LyX-Code
+__ENHANCED          -- e.g.
+ p12f1501, p16f527, p16f1519
+\end_layout
+
+\begin_layout LyX-Code
+__EXTENDED          -- all PIC18XXX
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
 The bounds of the Lower Access RAM area (
 \emph on
 only
@@ -4652,6 +4669,31 @@ __BANK_INV          -- This the invalid RAM Bank value (-1).
 \end_layout
 
 \begin_layout LyX-Code
+__NUM_BANKS         -- Number of RAM Banks.
+\end_layout
+
+\begin_layout LyX-Code
+__BANK_0            -- Address of first RAM Bank (0x000).
+ This definitely exists.
+\end_layout
+
+\begin_layout LyX-Code
+__BANK_n            -- Address of last RAM Bank, if more than one exists.
+ (n = __NUM_BANKS - 1)
+\end_layout
+
+\begin_layout LyX-Code
+__BANK_FIRST        -- Address of first RAM Bank (0x000).
+ This definitely exists.
+\end_layout
+
+\begin_layout LyX-Code
+__BANK_LAST         -- Address of last RAM Bank.
+ This definitely exists.
+ (This in some cases identical with the first.)
+\end_layout
+
+\begin_layout LyX-Code
 
 \end_layout
 
@@ -4690,6 +4732,31 @@ __PAGE_SIZE         -- This is a ROM Page size.
 
 \begin_layout LyX-Code
 __PAGE_INV          -- This the invalid ROM Page value (-1).
+\end_layout
+
+\begin_layout LyX-Code
+__NUM_PAGES         -- Number of ROM Pages.
+\end_layout
+
+\begin_layout LyX-Code
+__PAGE_0            -- Address of first ROM Page (0x0000).
+ This definitely exists.
+\end_layout
+
+\begin_layout LyX-Code
+__PAGE_n            -- Address of last ROM Page, if more than one exists.
+ (n = __NUM_PAGES - 1)
+\end_layout
+
+\begin_layout LyX-Code
+__PAGE_FIRST        -- Address of first ROM Page (0x0000).
+ This definitely exists.
+\end_layout
+
+\begin_layout LyX-Code
+__PAGE_LAST         -- Address of last ROM Page.
+ This definitely exists.
+ (This in some cases identical with the first.)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4981,6 +5048,8 @@ not
 
 The last time selected (with BANKSEL directive, or MOVLB instruction) RAM
  Bank.
+ Partially or completely is still usable: bcf/bcf FSR, [5-7] (12 bit), bcf/bsf
+ STATUS, RP[0-1] (14 bit)
 \begin_inset Newline newline
 \end_inset
 
@@ -5023,7 +5092,8 @@ __ACTIVE_BANK_ADDR -- e.g.
 \begin_layout Standard
 The last time selected (with PAGESEL or PAGESELW directive, or MOVLP instruction
 ) ROM Page in the (Enhanced and Regular) 12 and 14 bit core -- PIC12XXX,
- PIC16XXX.
+ PIC16XXX.Partially or completely is still usable: bcf/bcf STATUS, PA[0-2]
+ (12 bit), bcf/bsf PCLATH, [3-4] (14 bit)
 \begin_inset Newline newline
 \end_inset
 

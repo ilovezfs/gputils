@@ -400,6 +400,7 @@ char *convert_escaped_char(char *str, char c);
 void coerce_str1(struct pnode *exp);
 gpasmVal do_or_append_insn(const char *op, struct pnode *parms);
 void set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type, gp_boolean procDependent);
+struct variable *get_global_constant(const char *Name);
 void purge_temp_symbols(struct symbol_table *table);
 void purge_processor_const_symbols(struct symbol_table *table);
 void select_errorlevel(int level);

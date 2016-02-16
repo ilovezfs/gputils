@@ -30,7 +30,7 @@
     of the PIC MCU-s. The data reads from the 8bit_device.info called file of MPLAB-X.
     On Linux is usually located on this path:
 
-                /opt/microchip/mplabx/v3.05/mpasmx/8bit_device.info
+                /opt/microchip/mplabx/v3.20/mpasmx/8bit_device.info
 
     Of course for the program it is necessary to the gputils source from the svn.
 
@@ -2242,15 +2242,16 @@ EOT
 sub print_source_info($)
   {
   my $Align = $_[0];
-  my $href = "<a href=\"http://${gputils_url}#Download\">gputils</a> source package";
-  my $time = strftime('%F %T UTC', gmtime);
+  my $href1 = "<a href=\"http://${gputils_url}#Download\">gputils</a> source package";
+  my $href2 = "<a href=\"https://sourceforge.net/p/gputils/code/$svn_rev/\">$svn_rev</a>";
+  my $time  = strftime('%F %T UTC', gmtime);
 
   aOutl($Align, '<div class="legendContainer">');
   aOutml($Align + 2, '<p class="srcInfo">',
                      '  This page generated automatically by the',
                      "  <a href=\"https://sourceforge.net/p/gputils/code/HEAD/tree/trunk/scripts/tools/device-help.pl\"><em>$PROGRAM</em></a>",
                      "  program ($time) from the <em>" . basename($dev_info_path) . "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the",
-                     "  $href (rev: svn $svn_rev). The <em>mpasmx</em>",
+                     "  $href1 (rev: svn $href2). The <em>mpasmx</em>",
                      "  is included in the <a href=\"http://$mplabx_url\">MPLAB X</a>.",
                      "</p>");
   aOutl($Align, '</div>');

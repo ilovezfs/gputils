@@ -331,7 +331,7 @@ lister_of_devices(pic_processor_t processor)
   int addr_digits;
   const char *txt;
 
-  if (processor == NULL || (class = processor->class) == NULL) {
+  if ((processor == NULL) || ((class = processor->class) == NULL)) {
     fprintf(stderr, "Warning: The processor not selected!\n");
     return;
   }
@@ -370,12 +370,7 @@ lister_of_devices(pic_processor_t processor)
 
   printf("Max. RAM Addr. : 0x%03X\n", processor->maxram);
 
-  if (processor->class == PROC_CLASS_PIC16E) {
-    txt = "bytes";
-  }
-  else {
-    txt = "words";
-  }
+  txt = (processor->class == PROC_CLASS_PIC16E) ? "bytes" : "words";
 
   if (class->page_size > 0) {
     printf("Page Size      : %i %s\n", class->page_size, txt);

@@ -29,14 +29,23 @@ Boston, MA 02111-1307, USA.  */
 #define PIC12_BANK_SIZE             32
 #define PIC12_BANK_SHIFT            5
 #define PIC12_RAM_ADDR_BITS         PIC12_BANK_SHIFT
-#define PIC12_BMSK_BANK             0x003
+#define PIC12_BMSK_BANK             0x007
 #define PIC12_PAGE_SIZE             512
 #define PIC12_PAGE_MASK             (PIC12_PAGE_SIZE - 1)
 #define PIC12_PAGE_BITS             (PIC12_PC_MASK ^ PIC12_PAGE_MASK)
 #define PIC12_SHIFT_PAGE_ADDR       9
 
 #define PIC12_REG_STATUS            0x03
+
+#define PIC12_BIT_STATUS_PA0        5
+#define PIC12_BIT_STATUS_PA1        6
+#define PIC12_BIT_STATUS_PA2        7
+
 #define PIC12_REG_FSR               0x04
+
+#define PIC14_BIT_FSR_RP0           5
+#define PIC14_BIT_FSR_RP1           6
+#define PIC14_BIT_FSR_RP2           7
 
 #define PIC12_IDLOCS_SIZE           4
 
@@ -85,6 +94,7 @@ Boston, MA 02111-1307, USA.  */
 #define PIC14E_BMSK_BANK            0x001F
 #define PIC14E_BMSK_PAGE512         0x007F
 #define PIC14E_PAGE_BITS            (PIC14E_PC_MASK ^ PIC14_PAGE_MASK)
+#define PIC14E_SHIFT_PAGE512_ADDR   8
 
 #define PIC14E_REG_INDF0            0x00
 #define PIC14E_REG_FSR0             0x04

@@ -1,3 +1,13 @@
+2016-02-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpasm.c,
+    gpasm/gpasm.h.in, gpasm/processor.c, gpasm/util.c,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.c:
+    New constants: __ENHANCED, __EXTENDED, __NUM_BANKS,
+    __BANK_..., __NUM_PAGES, __PAGE_...
+
+  * libgputils/Makefile.am, libgputils/Makefile.in:
+    Removed this unnecessary line: -DPUB_PATH=\"@GPUTILS_PUB_PATH@\"
+
 2016-02-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c, gpasm/gperror.c, gpasm/gperror.h,
     gpasm/processor.c, gpasm/pparse.y:

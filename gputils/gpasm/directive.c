@@ -358,17 +358,17 @@ enter_if(void)
 
 /* Checking that a macro definition's parameters are correct. */
 
-static int
+static gp_boolean
 macro_parms_simple(struct pnode *parms)
 {
   while (parms != NULL) {
     if (HEAD(parms)->tag != PTAG_SYMBOL) {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
-      return 0;
+      return false;
     }
     parms = TAIL(parms);
   }
-  return 1;
+  return true;
 }
 
 static gp_boolean
@@ -616,7 +616,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
     gpvmessage(GPM_EXTPAGE, NULL);
     /* do nothing */
     if (!state.mpasm_compatible) {
-      set_global(GLOBAL_ACT_BANK_ADDR, 0, LFT_TEMPORARY, GVT_GLOBAL, false);
+      set_global(GLOBAL_ACT_BANK_ADDR, 0, LFT_TEMPORARY, GVT_CONSTANT, true);
     }
     return r;
   }
@@ -639,7 +639,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
       if (!state.mpasm_compatible) {
         set_global(GLOBAL_ACT_BANK_ADDR,
                    gp_processor_bank_num_to_addr(state.processor, bank),
-                   LFT_TEMPORARY, GVT_GLOBAL, false);
+                   LFT_TEMPORARY, GVT_CONSTANT, true);
       }
     }
     else {
@@ -2041,7 +2041,7 @@ static gpasmVal
 do_dtm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  struct symbol *s;
+  const struct symbol *s;
   const struct insn *i;
 
   if (state.processor == NULL) {
@@ -3663,7 +3663,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
       if (!state.mpasm_compatible) {
         set_global(GLOBAL_ACT_PAGE_ADDR,
                    gp_processor_page_bits_to_addr(state.device.class, page),
-                   LFT_TEMPORARY, GVT_GLOBAL, false);
+                   LFT_TEMPORARY, GVT_CONSTANT, true);
       }
     }
     else {
@@ -4277,7 +4277,6 @@ file_ok(unsigned int file)
   int bank_num;
   int reg_offs;
   int bank_assume;
-  const struct symbol *sym_bank;
   const struct variable *var;
 
   /* Don't check address, the linker takes care of it. */
@@ -4311,8 +4310,7 @@ file_ok(unsigned int file)
   }
 
   /* The __ACTIVE_BANK_ADDR variable shows the register which used for BANKSEL directive last time. */
-  if (((sym_bank = get_symbol(state.stGlobal, GLOBAL_ACT_BANK_ADDR)) == NULL) ||
-      ((var = get_symbol_annotation(sym_bank)) == NULL)) {
+  if ((var = get_global_constant(GLOBAL_ACT_BANK_ADDR)) == NULL) {
     gpverror(GPE_INTERNAL, NULL, "The \"" GLOBAL_ACT_BANK_ADDR "\" variable not exists.");
     return;
   }
@@ -4327,10 +4325,14 @@ file_ok(unsigned int file)
     if (bank_assume != bank_addr) {
       gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank_num, bank_addr, reg_offs);
     }
-  } else {
-    gpvmessage(GPM_NOB, NULL, bank_num);
+  }
+  else {
+    if (gp_processor_num_banks(state.processor) > 1) {
+      gpvmessage(GPM_NOB, NULL, bank_num);
+    }
+
     /* If no bank is explicitly selected, set bank to this register now. */
-    set_global(GLOBAL_ACT_BANK_ADDR, file, LFT_TEMPORARY, GVT_GLOBAL, false);
+    set_global(GLOBAL_ACT_BANK_ADDR, file, LFT_TEMPORARY, GVT_CONSTANT, true);
   }
 }
 
@@ -4440,6 +4442,157 @@ check_16e_arg_types(const struct pnode *parms, int arity, unsigned int types)
   return ret;
 }
 
+static gp_boolean
+check_and_set_bank_bit(enum common_insn Icode, int Bit, int BankSel0, int BankSel1, int BankSel2)
+{
+  struct variable *var;
+  int              addr;
+  int              num_of_banks;
+
+  num_of_banks = gp_processor_num_banks(state.processor);
+
+  if (num_of_banks < 2) {
+    /* There is no option to choose. */
+    return true;
+  }
+
+  if ((var = get_global_constant(GLOBAL_ACT_BANK_ADDR)) == NULL) {
+    gpverror(GPE_INTERNAL, NULL, "The \"" GLOBAL_ACT_BANK_ADDR "\" variable not exists.");
+    return false;
+  }
+
+  addr = gp_processor_bank_num_to_addr(state.processor, 1);
+
+  if (var->value < 0) {
+    /* This value is not valid Bank address. */
+    if ((num_of_banks == 2) && (Bit == BankSel0)) {
+      /* If exist only two RAM Bank, then choice be evident. */
+      if (Icode == ICODE_BCF) {
+        /* bcf FSR, 5 or bcf STATUS, RP0 */
+        var->value = 0;
+      }
+      else if (Icode == ICODE_BSF) {
+        /* bsf FSR, 5 or bsf STATUS, RP0 */
+        var->value = addr;
+      }
+    }
+    return true;
+  }
+
+  if (Bit == BankSel0) {
+    if (Icode == ICODE_BCF) {
+      /* bcf FSR, 5 or bcf STATUS, RP0 */
+      var->value &= ~addr;
+    }
+    else if (Icode == ICODE_BSF) {
+      /* bsf FSR, 5 or bsf STATUS, RP0 */
+      var->value |= addr;
+    }
+  }
+  else if (Bit == BankSel1) {
+    addr = gp_processor_bank_num_to_addr(state.processor, 2);
+
+    if (Icode == ICODE_BCF) {
+      /* bcf FSR, 6 or bcf STATUS, RP1 */
+      var->value &= ~addr;
+    }
+    else if (Icode == ICODE_BSF) {
+      /* bsf FSR, 6 or bsf STATUS, RP1 */
+      var->value |= addr;
+    }
+  }
+  else if (Bit == BankSel2) {
+    /* 16F59 */
+    addr = gp_processor_bank_num_to_addr(state.processor, 4);
+
+    if (Icode == ICODE_BCF) {
+      /* bcf FSR, 7 */
+      var->value &= ~addr;
+    }
+    else if (Icode == ICODE_BSF) {
+      /* bsf FSR, 7 */
+      var->value |= addr;
+    }
+  }
+
+  return true;
+}
+
+static gp_boolean
+check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageSel1, int PageSel2)
+{
+  struct variable *var;
+  int              addr;
+  int              num_of_pages;
+
+  num_of_pages = gp_processor_num_pages(state.processor);
+
+  if (num_of_pages < 2) {
+    /* There is no option to choose. */
+    return true;
+  }
+
+  if ((var = get_global_constant(GLOBAL_ACT_PAGE_ADDR)) == NULL) {
+    gpverror(GPE_INTERNAL, NULL, "The \"" GLOBAL_ACT_PAGE_ADDR "\" variable not exists.");
+    return false;
+  }
+
+  addr = gp_processor_page_bits_to_addr(state.device.class, 1);
+
+  if (var->value < 0) {
+    /* This value is not valid Page address. */
+    if ((num_of_pages == 2) && (Bit == PageSel0)) {
+      /* If exist only two ROM Page, then choice be evident. */
+      if (Icode == ICODE_BCF) {
+        /* bcf STATUS, PA0 or bcf PCLATH, 3 */
+        var->value = 0;
+      }
+      else if (Icode == ICODE_BSF) {
+        /* bsf STATUS, PA0 or bsf PCLATH, 3 */
+        var->value = addr;
+      }
+    }
+    return true;
+  }
+
+  if (Bit == PageSel0) {
+    if (Icode == ICODE_BCF) {
+      /* bcf STATUS, PA0 or bcf PCLATH, 3 */
+      var->value &= ~addr;
+    }
+    else if (Icode == ICODE_BSF) {
+      /* bsf STATUS, PA0 or bsf PCLATH, 3 */
+      var->value |= addr;
+    }
+  }
+  else if (Bit == PageSel1) {
+    addr = gp_processor_page_bits_to_addr(state.device.class, 2);
+
+    if (Icode == ICODE_BCF) {
+      /* bcf STATUS, PA1 or bcf PCLATH, 4 */
+      var->value &= ~addr;
+    }
+    else if (Icode == ICODE_BSF) {
+      /* bsf STATUS, PA1 or bsf PCLATH, 4 */
+      var->value |= addr;
+    }
+  }
+  else if (Bit == PageSel2) {
+    addr = gp_processor_page_bits_to_addr(state.device.class, 4);
+
+    if (Icode == ICODE_BCF) {
+      /* bcf STATUS, PA2 */
+      var->value &= ~addr;
+    }
+    else if (Icode == ICODE_BSF) {
+      /* bsf STATUS, PA2 */
+      var->value |= addr;
+    }
+  }
+
+  return true;
+}
+
 gpasmVal
 do_insn(const char *name, struct pnode *parms)
 {
@@ -4543,7 +4696,7 @@ do_insn(const char *name, struct pnode *parms)
             bank_num = r & (PIC12E_MASK_MOVLB ^ PIC12_CORE_MASK);
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, GVT_GLOBAL, false);
+                       LFT_TEMPORARY, GVT_CONSTANT, true);
           }
         }
         break;
@@ -4580,7 +4733,7 @@ do_insn(const char *name, struct pnode *parms)
             bank_num = r & (PIC16E_MASK_MOVLB ^ PIC16_CORE_MASK);
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, GVT_GLOBAL, false);
+                       LFT_TEMPORARY, GVT_CONSTANT, true);
           }
         }
         break;
@@ -4615,7 +4768,7 @@ do_insn(const char *name, struct pnode *parms)
             bank_num = r & (PIC14E_MASK_MOVLB ^ PIC14_CORE_MASK);
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, GVT_GLOBAL, false);
+                       LFT_TEMPORARY, GVT_CONSTANT, true);
           }
         }
         break;
@@ -4643,8 +4796,17 @@ do_insn(const char *name, struct pnode *parms)
         }
 
         if (enforce_arity(arity, 1)) {
+          int page;
+
           p = HEAD(parms);
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_PAGESEL_MOVLP), PIC14E_BMSK_PAGE512, s->name);
+          page = reloc_evaluate(p, RELOCT_PAGESEL_MOVLP);
+          emit_check(i->opcode, page, PIC14E_BMSK_PAGE512, s->name);
+
+          if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+            set_global(GLOBAL_ACT_PAGE_ADDR,
+                       gp_processor_page_bits_to_addr(state.device.class, page),
+                       LFT_TEMPORARY, GVT_CONSTANT, true);
+          }
         }
         break;
 
@@ -5014,7 +5176,7 @@ do_insn(const char *name, struct pnode *parms)
         {
           int dest;
           int flag;
-          struct pnode *p2; /* second parameter */
+          const struct pnode *p2; /* second parameter */
 
           if (state.processor == NULL) {
             gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -5267,7 +5429,7 @@ do_insn(const char *name, struct pnode *parms)
         /* {PIC12x, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
                          iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
         {
-          struct pnode *p2; /* second parameter */
+          const struct pnode *p2; /* second parameter */
           int d; /* Default destination of 1 (file). */
 
           if (state.processor == NULL) {
@@ -5315,7 +5477,8 @@ do_insn(const char *name, struct pnode *parms)
       case INSN_CLASS_B5:
         /* {PIC12x, SX} (bcf, bsf, btfsc, btfss) */
         {
-          struct pnode *f, *b;
+          const struct pnode *b;
+          const struct pnode *f;
           int bit;
 
           if (state.processor == NULL) {
@@ -5337,12 +5500,32 @@ do_insn(const char *name, struct pnode *parms)
             }
 
             file_ok(file);
+            bit &= 7;
 
             if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
               is_btfsx = true;
             }
 
-            emit(i->opcode | ((bit & 7) << 5) | (file & PIC12_BMSK_FILE), s->name);
+            emit(i->opcode | (bit << 5) | (file & PIC12_BMSK_FILE), s->name);
+
+            if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+              if (IS_PIC12_CORE) {
+                int reg = file & PIC12_BMSK_FILE;
+
+                if (reg == PIC12_REG_STATUS) {
+                  /* This code monitors the change of ROM Pages. */
+                  if (!check_and_set_page_bit(icode, bit, PIC12_BIT_STATUS_PA0, PIC12_BIT_STATUS_PA1, PIC12_BIT_STATUS_PA2)) {
+                    return 0;
+                  }
+                }
+                else if (reg == PIC12_REG_FSR) {
+                  /* This code monitors the change of RAM Banks. */
+                  if (!check_and_set_bank_bit(icode, bit, PIC14_BIT_FSR_RP0, PIC14_BIT_FSR_RP1, PIC14_BIT_FSR_RP2)) {
+                    return 0;
+                  }
+                }
+              }
+            }
           }
         }
         break;
@@ -5350,7 +5533,8 @@ do_insn(const char *name, struct pnode *parms)
       case INSN_CLASS_B8:
         /* PIC16 (bcf, bsf, btfsc, btfss, btg) */
         {
-          struct pnode *f, *b;
+          const struct pnode *b;
+          const struct pnode *f;
           int bit;
 
           if (state.processor == NULL) {
@@ -5425,7 +5609,7 @@ do_insn(const char *name, struct pnode *parms)
                    rlf, rrf, subwf, swapf, xorwf)
            PIC14E (addwfc, asrf, lslf, lsrf, subwfb) */
         {
-          struct pnode *p2; /* second parameter */
+          const struct pnode *p2; /* second parameter */
           int d;
 
           if (state.processor == NULL) {
@@ -5475,7 +5659,7 @@ do_insn(const char *name, struct pnode *parms)
                   incfsz, infsnz, iorwf, rlcf, rlncf, rrcf, rrncf, setf, subwf, subwfb,
                   swapf, xorwf) */
         {
-          struct pnode *p2; /* second parameter */
+          const struct pnode *p2; /* second parameter */
           int d;
 
           if (state.processor == NULL) {
@@ -5523,7 +5707,8 @@ do_insn(const char *name, struct pnode *parms)
       case INSN_CLASS_B7:
         /* PIC14x (bcf, bsf, btfsc, btfss) */
         {
-          struct pnode *f, *b;
+          const struct pnode *b;
+          const struct pnode *f;
           int bit;
 
           if (state.processor == NULL) {
@@ -5545,12 +5730,32 @@ do_insn(const char *name, struct pnode *parms)
             }
 
             file_ok(file);
+            bit &= 7;
 
             if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
               is_btfsx = true;
             }
 
-            emit(i->opcode | ((bit & 7) << 7) | (file & PIC14_BMSK_FILE), s->name);
+            emit(i->opcode | (bit << 7) | (file & PIC14_BMSK_FILE), s->name);
+
+            if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+              if (IS_PIC14_CORE) {
+                int reg = file & PIC14_BMSK_FILE;
+
+                if (reg == PIC14_REG_PCLATH) {
+                  /* This code monitors the change of ROM Pages. */
+                  if (!check_and_set_page_bit(icode, bit, 3, 4, -1)) {
+                    return 0;
+                  }
+                }
+                else if (reg == PIC14_REG_STATUS) {
+                  /* This code monitors the change of RAM Banks. */
+                  if (!check_and_set_bank_bit(icode, bit, PIC14_BIT_STATUS_RP0, PIC14_BIT_STATUS_RP1, -1)) {
+                    return 0;
+                  }
+                }
+              }
+            }
           }
         }
         break;
@@ -5558,7 +5763,7 @@ do_insn(const char *name, struct pnode *parms)
       case INSN_CLASS_OPFA8:
         /* PIC16E (clrf, cpfseq, cpfsgt, cpfslt, movwf, mulwf, negf, setf, tstfsz) */
         {
-          struct pnode *par; /* second parameter */
+          const struct pnode *par; /* second parameter */
           int a; /* Default destination of 0 (access). */
           gp_boolean isAccess;
 
@@ -5662,7 +5867,9 @@ do_insn(const char *name, struct pnode *parms)
       case INSN_CLASS_BA8:
         /* PIC16E (bcf, bsf, btfsc, btfss, btg) */
         {
-          struct pnode *f, *b, *par;
+          const struct pnode *b;
+          const struct pnode *f;
+          const struct pnode *par;
           int bit;
           int a;
           gp_boolean isAccess;
@@ -5779,7 +5986,7 @@ do_insn(const char *name, struct pnode *parms)
                    infsnz, iorwf, movf, rlcf, rlncf, rrcf, rrncf, subfwb, subwf,
                    subwfb, swapf, xorwf) */
         {
-          struct pnode *par; /* second parameter */
+          const struct pnode *par; /* second parameter */
           int d; /* Default destination of 1 (file). */
           int a;
           gp_boolean isAccess;
@@ -5980,7 +6187,7 @@ do_insn(const char *name, struct pnode *parms)
         }
 
         if (enforce_arity(arity, 2)) {
-          struct pnode *p2; /* second parameter */
+          const struct pnode *p2; /* second parameter */
           int t; /* read low byte by default */
 
           /* "0" (lower byte) and "1" (upper byte) */
@@ -6003,8 +6210,8 @@ do_insn(const char *name, struct pnode *parms)
         }
 
         if (enforce_arity(arity, 3)) {
-          struct pnode *p2; /* second parameter */
-          struct pnode *p3; /* third parameter */
+          const struct pnode *p2; /* second parameter */
+          const struct pnode *p3; /* third parameter */
           int t;
           int inc;
 
@@ -6168,12 +6375,12 @@ do_insn(const char *name, struct pnode *parms)
       if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE) && (!state.skipped_inst)) {
         if (i->inv_mask & INV_MASK_BANK) {
           /* Invalidates the selection of RAM Banks. */
-          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_GLOBAL, false);
+          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, GVT_CONSTANT, true);
         }
 
         if (i->inv_mask & INV_MASK_PAGE) {
           /* Invalidates the selection of ROM Pages. */
-          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_GLOBAL, false);
+          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, GVT_CONSTANT, true);
         }
       }
 
