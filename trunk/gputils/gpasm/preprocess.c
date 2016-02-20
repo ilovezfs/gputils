@@ -354,10 +354,14 @@ no_process_iden(const char *iden, int len)
     "#define",
     "#ifdef",
     "#ifndef",
+    "#elifdef",
+    "#elifndef",
     "#undefine",
     "define",
     "ifdef",
     "ifndef",
+    "elifdef",
+    "elifndef",
   };
   unsigned int i;
 
