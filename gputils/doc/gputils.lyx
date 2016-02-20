@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Feb 16, 2016
+Feb 20, 2016
 \end_layout
 
 \begin_layout Standard
@@ -259,7 +259,7 @@ name "sec:Supported-processors"
 \end_layout
 
 \begin_layout Standard
-The gputils currently supports most processors supported by MPLABX v3.15.
+The gputils currently supports most processors supported by MPLABX v3.20.
  This includes the following processors:
 \begin_inset Newline newline
 \end_inset
@@ -6429,6 +6429,125 @@ See also: DA, DATA, DB, DW
 \end_layout
 
 \begin_layout Subsection*
+ELIF
+\begin_inset Index idx
+status collapsed
+
+\begin_layout Plain Layout
+ELIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+ELIF <expression>
+\end_layout
+
+\begin_layout Standard
+A conditional assembly block after an IF...
+ or ELIF...
+ statement.
+ If the value obtained by evaluating <expression> is true (i.e.
+ non-zero), code up to the following ELIF..., ELSE or ENDIF is assembled.
+ If the value is false (i.e.
+ zero), code is not assembled until the corresponding ELIF..., ELSE or ENDIF.
+ This directive can not be used in 
+\begin_inset Quotes eld
+\end_inset
+
+mpasm compatible
+\begin_inset Quotes erd
+\end_inset
+
+ mode!
+\end_layout
+
+\begin_layout Standard
+See also: IF, IFDEF, IFNDEF, ELIFDEF, ELIFNDEF, ELSE, ENDIF
+\end_layout
+
+\begin_layout Subsection*
+ELIFDEF
+\begin_inset Index idx
+status collapsed
+
+\begin_layout Plain Layout
+ELIFDEF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+ELIFDEF <symbol>
+\end_layout
+
+\begin_layout Standard
+A conditional assembly block after an IF...
+ or ELIF...
+ statement.
+ If <symbol> appears in the symbol table, gpasm assembles the following
+ code.
+ This directive can not be used in 
+\begin_inset Quotes eld
+\end_inset
+
+mpasm compatible
+\begin_inset Quotes erd
+\end_inset
+
+ mode!
+\end_layout
+
+\begin_layout Standard
+See also: IF, IFDEF, IFNDEF, ELIF, ELIFNDEF, ELSE, ENDIF
+\end_layout
+
+\begin_layout Subsection*
+ELIFNDEF
+\begin_inset Index idx
+status collapsed
+
+\begin_layout Plain Layout
+ELIFNDEF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+ELIFNDEF <symbol>
+\end_layout
+
+\begin_layout Standard
+A conditional assembly block after an IF...
+ or ELIF...
+ statement.
+ If <symbol>does not appear in the symbol table, gpasm assembles the following
+ code.
+ This directive can not be used in 
+\begin_inset Quotes eld
+\end_inset
+
+mpasm compatible
+\begin_inset Quotes erd
+\end_inset
+
+ mode!
+\end_layout
+
+\begin_layout Standard
+See also: IF, IFDEF, IFNDEF, ELIF, ELIFDEF, ELSE, ENDIF
+\end_layout
+
+\begin_layout Subsection*
 ELSE
 \begin_inset Index idx
 status collapsed
@@ -6451,7 +6570,7 @@ Marks the alternate section of a conditional assembly block.
 \end_layout
 
 \begin_layout Standard
-See also: IF, IFDEF, IFNDEF, ELSE, ENDIF
+See also: IF, IFDEF, IFNDEF, ELIF, ELIFDEF, ELIFNDEF, ENDIF
 \end_layout
 
 \begin_layout Subsection*
@@ -6525,7 +6644,7 @@ Ends a conditional assembly block.
 \end_layout
 
 \begin_layout Standard
-See also: IFDEF, IFNDEF, ELSE, ENDIF
+See also: IF, IFDEF, IFNDEF, ELIF, ELIFDEF, ELIFNDEF, ELSE
 \end_layout
 
 \begin_layout Subsection*
@@ -7086,7 +7205,7 @@ Begin a conditional assembly block.
 \end_layout
 
 \begin_layout Standard
-See also: IFDEF, IFNDEF, ELSE, ENDIF
+See also: IFDEF, IFNDEF, ELIF, ELIFDEF, ELIFNDEF, ELSE, ENDIF
 \end_layout
 
 \begin_layout Subsection*
@@ -7114,7 +7233,7 @@ Begin a conditional assembly block.
 \end_layout
 
 \begin_layout Standard
-See also: IF, IFNDEF, ELSE, ENDIF
+See also: IF, IFNDEF, ELIF, ELIFDEF, ELIFNDEF, ELSE, ENDIF
 \end_layout
 
 \begin_layout Subsection*
@@ -7142,7 +7261,7 @@ Begin a conditional assembly block.
 \end_layout
 
 \begin_layout Standard
-See also: IF, IFNDEF, ELSE, ENDIF
+See also: IF, IFDEF, ELIF, ELIFDEF, ELIFNDEF, ELSE, ENDIF
 \end_layout
 
 \begin_layout Subsection*

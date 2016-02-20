@@ -445,12 +445,14 @@ struct macro_body {
 struct amode {
   enum {
     IN_THEN,
+    IN_ELIF,
     IN_ELSE
   } mode;
 
   gp_boolean    enabled;                /* Are we currently enabled? */
-  gp_boolean    prev_enabled;
-  struct amode *prev;
+  gp_boolean    before_else_enabled;    /* This true if before else branch was an another enabled branch. */
+  gp_boolean    upper_enabled;
+  struct amode *upper;
 };
 
 #endif

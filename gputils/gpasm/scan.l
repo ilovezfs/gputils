@@ -271,6 +271,11 @@ processor                {
                            yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
+#?elif                   {
+                           /* #elif and elif can appear in column 1 */
+                           yylval.s = GP_Strdup(yytext);
+                           return IDENTIFIER;
+                         }
 #?else                   {
                            /* #else and else can appear in column 1 */
                            yylval.s = GP_Strdup(yytext);
@@ -286,8 +291,18 @@ processor                {
                            yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
+#?elifdef                {
+                           /* #elifdef and elifdef can appear in column 1 */
+                           yylval.s = GP_Strdup(yytext);
+                           return IDENTIFIER;
+                         }
 #?ifndef                 {
                            /* #ifndef and ifndef can appear in column 1 */
+                           yylval.s = GP_Strdup(yytext);
+                           return IDENTIFIER;
+                         }
+#?elifndef               {
+                           /* #elifndef and elifndef can appear in column 1 */
                            yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
@@ -804,14 +819,14 @@ close_file(void)
 void
 execute_exitm(void)
 {
-  struct amode *previous;
+  struct amode *upper;
   struct amode *old;
 
-  /* The macro is ended early, so return the stack to its previous state */
-  previous = state.src->prev->astack;
-  while ((state.astack != NULL) && (state.astack != previous)) {
+  /* The macro is ended early, so return the stack to its previous state. */
+  upper = state.src->prev->astack;
+  while ((state.astack != NULL) && (state.astack != upper)) {
     old = state.astack;
-    state.astack = state.astack->prev;
+    state.astack = state.astack->upper;
     free(old);
   }
 

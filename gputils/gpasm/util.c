@@ -101,62 +101,118 @@ stringtolong(const char *string, int radix)
   return value;
 }
 
-gp_boolean
-find_hv_macro(const char *String, const char **Start, const char **End)
+#define HVM_NONE	0
+#define HVM_BEGIN	1
+#define HVM_NAME	2
+
+static gp_boolean
+find_hv_macro_start(const char *String, const char **Start, const char **Body)
 {
   const char *ptr;
-  int bracket_count;
-  char ch;
+  char        ch;
+  int         state;
 
   if ((String == NULL) || (*String == '\0')) {
     return false;
   }
 
-  if ((ptr = strchr(String, '#')) == NULL) {
-    return false;
-  }
+  ptr = String;
+  do {
+    *Start = NULL;
+    *Body  = NULL;
+    state  = HVM_NONE;
+    do {
+      /* Find the beginner '#' character. */
+      while (true) {
+        if ((ch = *ptr) == '\0') {
+          /* Too soon it's over the string. */
+          return false;
+        }
 
-  *Start = ptr;
+        if (ch == '#') {
+          /* This is the beginner '#' character. */
+          *Start = ptr;
+          ++ptr;
+          state = HVM_BEGIN;
+          break;
+        }
+
+        ++ptr;
+      }
+
+      /* Skip the ' ' characters. */
+      while (true) {
+        if ((ch = *ptr) == '\0') {
+          /* Too soon it's over the string. */
+          return false;
+        }
+
+        if (ch != ' ') {
+          break;
+        }
+
+        ++ptr;
+      }
+      /* Next if this a '#' character. */
+    } while (ch == '#');
+
+    /* Find the 'v' or 'V' character. */
+    do {
+      if ((ch = *ptr) == '\0') {
+        /* Too soon it's over the string. */
+        return false;
+      }
+
+      ++ptr;
+
+      if ((ch == 'v') || (ch == 'V')) {
+        /* This a "v" macro. */
+        state = HVM_NAME;
+        break;
+      }
+    } while (ch == ' ');
+  } while (state != HVM_NAME);
+
+  /* Find the '(' character. */
   while (true) {
-    ++ptr;
-    ch = *ptr;
-
-    if (ch == '#') {
-      /* Repetitive '#' characters. */
-      *Start = ptr;
-      continue;
-    }
-
-    if ((ch == 'v') || (ch == 'V')) {
-      break;
-    }
-
-    if ((ch == '\0') || (ch != ' ')) {
-      return false;
-    }
-  }
-
-  while (true) {
-    ++ptr;
     ch = *ptr;
 
     if (ch == '(') {
-      /* This the starting bracket. */
-      break;
+      /* This a body of "v" macro. */
+      *Body = ptr;
+      return true;
     }
 
     if ((ch == '\0') || (ch != ' ')) {
+      /* Too soon it's over the string or this no space character. */
       return false;
     }
+
+  ++ptr;
+  }
+}
+
+gp_boolean
+find_hv_macro(const char *String, const char **Start, const char **End)
+{
+  const char *ptr;
+  int         bracket_count;
+  char        ch;
+  const char *body;
+
+  if ((String == NULL) || (*String == '\0')) {
+    return false;
+  }
+
+  if (!find_hv_macro_start(String, Start, &body)) {
+    return false;
   }
 
   bracket_count = 1;
-
+  ptr = body;
   while (true) {
     ++ptr;
-    ch = *ptr;
-
-    if (ch == '\0') {
+    if ((ch = *ptr) == '\0') {
       break;
     }
 

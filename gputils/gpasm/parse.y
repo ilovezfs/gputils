@@ -592,7 +592,7 @@ line:
 
                 while (state.astack != NULL) {
                   old = state.astack;
-                  state.astack = state.astack->prev;
+                  state.astack = state.astack->upper;
                   free(old);
                 }
                 gpwarning(GPW_EXPECTED, "Expected (ENDIF)");

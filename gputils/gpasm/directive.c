@@ -333,27 +333,40 @@ emit_data(struct pnode *L, int char_shift, const char *name)
   return (state.byte_addr - begin_org);
 }
 
-/* Do the work for beginning a conditional assembly block.  Leave it
-   disabled by default.  This is used by do_if, do_ifdef and
-   do_ifndef. */
+/* Do the work for beginning a conditional assembly block. Leave it disabled by default.
+   This is used by do_if, do_ifdef and do_ifndef. */
 
 static void
 enter_if(void)
 {
   struct amode *new = GP_Malloc(sizeof(*new));
 
-  new->mode = IN_THEN;
-  new->prev = state.astack;
+  new->mode  = IN_THEN;
+  new->upper = state.astack;
 
   if (state.astack == NULL) {
-    new->prev_enabled = true;
+    new->upper_enabled = true;
   }
   else {
-    new->prev_enabled = state.astack->enabled && state.astack->prev_enabled;
+    new->upper_enabled = (state.astack->enabled && state.astack->upper_enabled);
   }
 
-  new->enabled = false;         /* Only the default. */
+  new->enabled             = false;     /* Only the default. */
+  new->before_else_enabled = false;
   state.astack = new;
+}
+
+static void
+enter_elif(void)
+{
+  if (state.astack == NULL) {
+    gpverror(GPE_ILLEGAL_COND, NULL);
+  }
+  else if ((state.astack->mode != IN_THEN) && (state.astack->mode != IN_ELIF)) {
+    gpverror(GPE_ILLEGAL_COND, NULL);
+  }
+
+  state.astack->mode = IN_ELIF;
 }
 
 /* Checking that a macro definition's parameters are correct. */
@@ -2125,11 +2138,11 @@ do_else(gpasmVal r, const char *name, int arity, struct pnode *parms)
   if (state.astack == NULL) {
     gpverror(GPE_ILLEGAL_COND, NULL);
   }
-  else if ((state.astack->mode != IN_THEN)) {
+  else if ((state.astack->mode != IN_THEN) && (state.astack->mode != IN_ELIF)) {
     gpverror(GPE_ILLEGAL_COND, NULL);
   }
   else {
-    state.astack->enabled = !state.astack->enabled;
+    state.astack->enabled = !state.astack->before_else_enabled;
   }
 
   return r;
@@ -2157,14 +2170,16 @@ do_endif(gpasmVal r, const char *name, int arity, struct pnode *parms)
   if (state.astack == NULL) {
     gperror(GPE_ILLEGAL_COND, "Illegal condition: \"ENDIF\"");
   }
-  else if ((state.astack->mode != IN_THEN) && (state.astack->mode != IN_ELSE)) {
+  else if ((state.astack->mode != IN_THEN) &&
+           (state.astack->mode != IN_ELIF) &&
+           (state.astack->mode != IN_ELSE)) {
     gperror(GPE_ILLEGAL_COND, "Illegal condition: \"ENDIF\"");
   }
   else {
     struct amode *old;
 
     old = state.astack;
-    state.astack = state.astack->prev;
+    state.astack = state.astack->upper;
     free(old);
   }
   return r;
@@ -2316,15 +2331,15 @@ hv_macro_resolver(const char *String)
 {
   static char out[BUFSIZ];
 
-  char buf[BUFSIZ];
+  char        buf[BUFSIZ];
   const char *st_start;
   const char *st_end;
   const char *hv_start;
   const char *hv_end;
-  int out_idx;
-  int raw_size;
-  int mt_size;
-  gp_boolean is_meta;
+  int         out_idx;
+  int         raw_size;
+  int         mt_size;
+  gp_boolean  is_meta;
 
   st_start = String;
   st_end   = st_start + strlen(String);
@@ -3083,10 +3098,44 @@ do_if(gpasmVal r, const char *name, int arity, struct pnode *parms)
   enter_if();
 
   /* Only evaluate the conditional if it matters... */
-  if (state.astack->prev_enabled) {
+  if (state.astack->upper_enabled) {
     if (enforce_arity(arity, 1)) {
       p = HEAD(parms);
-      state.astack->enabled = maybe_evaluate(p);
+      state.astack->enabled             = maybe_evaluate(p);
+      state.astack->before_else_enabled = state.astack->enabled;
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal
+do_elif(gpasmVal r, const char *name, int arity, struct pnode *parms)
+{
+  const struct pnode *p;
+  char                buf[BUFSIZ];
+
+  if (state.mpasm_compatible) {
+    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
+    gperror(GPE_UNKNOWN, buf);
+    return r;
+  }
+
+  if (check_processor_select(name)) {
+    return r;
+  }
+
+  state.lst.line.linetype = LTY_DIR;
+  state.preproc.do_emit = false;
+
+  enter_elif();
+
+  /* Only evaluate the conditional elif it matters... */
+  if (state.astack->upper_enabled) {
+    if (enforce_arity(arity, 1)) {
+      p = HEAD(parms);
+      state.astack->enabled              = maybe_evaluate(p);
+      state.astack->before_else_enabled |= state.astack->enabled;
     }
   }
 
@@ -3107,19 +3156,58 @@ do_ifdef(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   enter_if();
 
-  /* Only evaluate the conditional if it matters... */
-  if (state.astack->prev_enabled) {
+  /* Only evaluate the conditional ifdef it matters... */
+  if (state.astack->upper_enabled) {
     if (enforce_arity(arity, 1)) {
       p = HEAD(parms);
 
       if (p->tag != PTAG_SYMBOL) {
         gperror(GPE_ILLEGAL_LABEL, "Illegal label.");
       }
-      else {
-        if ((get_symbol(state.stDefines, p->value.symbol)) ||
-            (get_symbol(state.stTop, p->value.symbol))) {
-          state.astack->enabled = true;
-        }
+      else if ((get_symbol(state.stDefines, p->value.symbol) != NULL) ||
+               (get_symbol(state.stTop, p->value.symbol) != NULL)) {
+        state.astack->enabled             = true;
+        state.astack->before_else_enabled = state.astack->enabled;
+      }
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal
+do_elifdef(gpasmVal r, const char *name, int arity, struct pnode *parms)
+{
+  const struct pnode *p;
+  char                buf[BUFSIZ];
+
+  if (state.mpasm_compatible) {
+    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
+    gperror(GPE_UNKNOWN, buf);
+    return r;
+  }
+
+  if (check_processor_select(name)) {
+    return r;
+  }
+
+  state.lst.line.linetype = LTY_DIR;
+  state.preproc.do_emit = false;
+
+  enter_elif();
+
+  /* Only evaluate the conditional elifdef it matters... */
+  if (state.astack->upper_enabled) {
+    if (enforce_arity(arity, 1)) {
+      p = HEAD(parms);
+
+      if (p->tag != PTAG_SYMBOL) {
+        gperror(GPE_ILLEGAL_LABEL, "Illegal label.");
+      }
+      else if ((get_symbol(state.stDefines, p->value.symbol) != NULL) ||
+               (get_symbol(state.stTop, p->value.symbol) != NULL)) {
+        state.astack->enabled              = true;
+        state.astack->before_else_enabled |= state.astack->enabled;
       }
     }
   }
@@ -3141,19 +3229,58 @@ do_ifndef(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   enter_if();
 
-  /* Only evaluate the conditional if it matters... */
-  if (state.astack->prev_enabled) {
+  /* Only evaluate the conditional ifndef it matters... */
+  if (state.astack->upper_enabled) {
     if (enforce_arity(arity, 1)) {
       p = HEAD(parms);
 
       if (p->tag != PTAG_SYMBOL) {
         gperror(GPE_ILLEGAL_LABEL, "Illegal label.");
       }
-      else {
-        if ((!get_symbol(state.stDefines, p->value.symbol)) &&
-            (!get_symbol(state.stTop, p->value.symbol))) {
-          state.astack->enabled = true;
-        }
+      else if ((get_symbol(state.stDefines, p->value.symbol) == NULL) &&
+               (get_symbol(state.stTop, p->value.symbol) == NULL)) {
+        state.astack->enabled             = true;
+        state.astack->before_else_enabled = state.astack->enabled;
+      }
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal
+do_elifndef(gpasmVal r, const char *name, int arity, struct pnode *parms)
+{
+  const struct pnode *p;
+  char                buf[BUFSIZ];
+
+  if (state.mpasm_compatible) {
+    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
+    gperror(GPE_UNKNOWN, buf);
+    return r;
+  }
+
+  if (check_processor_select(name)) {
+    return r;
+  }
+
+  state.lst.line.linetype = LTY_DIR;
+  state.preproc.do_emit = false;
+
+  enter_elif();
+
+  /* Only evaluate the conditional elifndef it matters... */
+  if (state.astack->upper_enabled) {
+    if (enforce_arity(arity, 1)) {
+      p = HEAD(parms);
+
+      if (p->tag != PTAG_SYMBOL) {
+        gperror(GPE_ILLEGAL_LABEL, "Illegal label.");
+      }
+      else if ((get_symbol(state.stDefines, p->value.symbol) == NULL) &&
+               (get_symbol(state.stTop, p->value.symbol) == NULL)) {
+        state.astack->enabled              = true;
+        state.astack->before_else_enabled |= state.astack->enabled;
       }
     }
   }
@@ -4250,7 +4377,7 @@ do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
 int
 asm_enabled(void)
 {
-  return ((state.astack == NULL) || (state.astack->enabled && state.astack->prev_enabled));
+  return ((state.astack == NULL) || (state.astack->enabled && state.astack->upper_enabled));
 }
 
 static gp_boolean
@@ -6443,9 +6570,7 @@ const struct insn op_0[] = {
   { "code",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_code       },
   { "code_pack",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_code_pack  },
   { "constant",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_constant   },
-  { "else",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_else       },
   { "end",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_end        },
-  { "endif",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_endif      },
   { "endm",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_endm       },
   { "endw",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_endw       },
   { "equ",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_equ        },
@@ -6460,6 +6585,11 @@ const struct insn op_0[] = {
   { "if",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_if         },
   { "ifdef",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifdef      },
   { "ifndef",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifndef     },
+  { "elif",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elif       },
+  { "elifdef",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elifdef    },
+  { "elifndef",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elifndef   },
+  { "else",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_else       },
+  { "endif",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_endif      },
   { "include",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_include    },
   { "list",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_list       },
   { "local",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_local      },
@@ -6490,10 +6620,13 @@ const struct insn op_0[] = {
   { ".set",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_set        },
   { ".type",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_type       },
   { "#if",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_if         },
-  { "#else",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_else       },
-  { "#endif",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_endif      },
   { "#ifdef",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifdef      },
   { "#ifndef",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifndef     },
+  { "#elif",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elif       },
+  { "#elifdef",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elifdef    },
+  { "#elifndef",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elifndef   },
+  { "#else",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_else       },
+  { "#endif",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_endif      },
   { "#define",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_define     },
   { "#undefine",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_undefine   }
 };
