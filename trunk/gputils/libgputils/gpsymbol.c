@@ -124,12 +124,12 @@ struct symbol *add_symbol(struct symbol_table *table, const char *name)
 /* FIXME: remove_symbol does not search all of the symbol tables in the stack.
 Maybe this is ok, but it seems wrong. */
 
-int remove_symbol(struct symbol_table *table, const char *name)
+gp_boolean remove_symbol(struct symbol_table *table, const char *name)
 {
   struct symbol *r = NULL;
   struct symbol *last = NULL;
   int index;
-  int found_symbol = 0;
+  gp_boolean found_symbol = false;
 
   assert(name != NULL);
   assert(table != NULL);
@@ -154,7 +154,7 @@ int remove_symbol(struct symbol_table *table, const char *name)
       table->hash_table[index] = r->next;
     }
     table->count--;
-    found_symbol = 1;
+    found_symbol = true;
 
     if (r->name != NULL) {
       free((void *)r->name);

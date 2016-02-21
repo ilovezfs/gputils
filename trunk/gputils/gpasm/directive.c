@@ -1130,7 +1130,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   if ((k->tag != PTAG_SYMBOL) ||
       ((v->tag != PTAG_SYMBOL) && (v->tag != PTAG_CONSTANT))) {
-    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use `CONFIG KEY = VALUE'");
+    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use 'CONFIG KEY = VALUE'");
     return r;
   }
 
@@ -1286,7 +1286,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   /* validate argument format */
   if ((parms == NULL) || (parms->tag != PTAG_BINOP) || (parms->value.binop.op != '=')) {
-    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use `CONFIG KEY = VALUE'");
+    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use 'CONFIG KEY = VALUE'");
     return r;
   }
 
@@ -1295,7 +1295,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   v = parms->value.binop.p1;
 
   if ((k->tag != PTAG_SYMBOL) || ((v->tag != PTAG_SYMBOL) && (v->tag != PTAG_CONSTANT))) {
-    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use `CONFIG KEY = VALUE'");
+    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use 'CONFIG KEY = VALUE'");
     return r;
   }
 
@@ -2617,7 +2617,6 @@ do_fill(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *h;
   int number;
-  int i;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -2628,7 +2627,7 @@ do_fill(gpasmVal r, const char *name, int arity, struct pnode *parms)
     h = HEAD(parms);
     number = eval_fill_number(HEAD(TAIL(parms)));
 
-    for (i = 1; i <= number ; i += 1) {
+    for (; number > 0; --number) {
       /* we must evaluate each loop, because some symbols change (i.e. $) */
       emit(maybe_evaluate(h), name);
     }
@@ -4280,7 +4279,7 @@ do_undefine(gpasmVal r, const char *name, int arity, struct pnode *parms)
     p = HEAD(parms);
 
     if (p->tag == PTAG_SYMBOL) {
-      if (remove_symbol(state.stDefines, p->value.symbol) == 0) {
+      if (!remove_symbol(state.stDefines, p->value.symbol)) {
         gpvwarning(GPW_NOT_DEFINED, NULL, p->value.symbol);
       }
     }
@@ -4374,7 +4373,7 @@ do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
   return r;
 }
 
-int
+gp_boolean
 asm_enabled(void)
 {
   return ((state.astack == NULL) || (state.astack->enabled && state.astack->upper_enabled));
