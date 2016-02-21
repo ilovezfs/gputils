@@ -40,12 +40,11 @@ struct symbol_table {
   struct symbol_table *prev;
 };
 
-struct symbol_table *push_symbol_table(struct symbol_table *,
-                                       gp_boolean case_insensitive);
+struct symbol_table *push_symbol_table(struct symbol_table *, gp_boolean case_insensitive);
 struct symbol_table *pop_symbol_table(struct symbol_table *);
 
 struct symbol *add_symbol(struct symbol_table *, const char *name);
-int remove_symbol(struct symbol_table *table, const char *name);
+gp_boolean remove_symbol(struct symbol_table *table, const char *name);
 struct symbol *get_symbol(struct symbol_table *, const char *name);
 struct symbol *get_symbol_len(struct symbol_table *, const char *name, size_t len);
 

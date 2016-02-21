@@ -31,7 +31,3 @@ gplink
 
 gpvc
   * Use the disassembler to decode the program memory sections.
-
-gpprocessor.c
-  * Coff_type of the pic18lf47k40 bogus. (Microchip error in the MPLABX-3.15, original value is 0x0000.)
-    Temporarily fixed to 0xFFFF.

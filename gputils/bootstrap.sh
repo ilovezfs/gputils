@@ -1,7 +1,7 @@
 #!/bin/bash
 
 aclocal
-autoheader
 autoconf
+autoheader
 automake --add-missing --copy
 rm -rf ./autom4te.cache

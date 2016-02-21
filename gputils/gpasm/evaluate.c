@@ -29,10 +29,10 @@ Boston, MA 02111-1307, USA.  */
 #include "parse.h"
 #include "coff.h"
 
-int enforce_arity(int arity, int must_be)
+gp_boolean enforce_arity(int arity, int must_be)
 {
   if (arity == must_be) {
-    return 1;
+    return true;
   }
   else {
     if (arity < must_be) {
@@ -41,15 +41,15 @@ int enforce_arity(int arity, int must_be)
     else {
       gpverror(GPE_TOO_MANY_ARGU, NULL);
     }
-    return 0;
+    return false;
   }
 }
 
-int enforce_simple(const struct pnode *p)
+gp_boolean enforce_simple(const struct pnode *p)
 {
   switch (p->tag) {
   case PTAG_SYMBOL:
-    return 1;
+    return true;
     break;
 
   case PTAG_STRING:
@@ -59,7 +59,7 @@ int enforce_simple(const struct pnode *p)
   default:
     gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
   }
-  return 0;
+  return false;
 }
 
 int list_length(const struct pnode *L)
@@ -75,11 +75,11 @@ int list_length(const struct pnode *L)
   return ((p != NULL) ? (n + 1) : n);
 }
 
-int can_evaluate(const struct pnode *p)
+gp_boolean can_evaluate(const struct pnode *p)
 {
   switch (p->tag) {
   case PTAG_CONSTANT:
-    return 1;
+    return true;
 
   case PTAG_OFFSET:
     if (state.extended_pic16e == false) {
@@ -90,14 +90,14 @@ int can_evaluate(const struct pnode *p)
   case PTAG_SYMBOL:
     {
       char buf[BUFSIZ];
-      struct symbol *s;
+      const struct symbol *s;
 
       /* '$' means current org, which we can always evaluate */
       if (strcmp(p->value.symbol, "$") == 0) {
-        return 1;
+        return true;
       }
       else {
-        struct variable *var = NULL;
+        const struct variable *var = NULL;
 
         /* Otherwise look it up */
         s = get_symbol(state.stTop, p->value.symbol);
@@ -114,9 +114,7 @@ int can_evaluate(const struct pnode *p)
           var = get_symbol_annotation(s);
 
           if (var == NULL) {
-            snprintf(buf, sizeof(buf),
-                     "Symbol not assigned a value: \"%s\"",
-                     p->value.symbol);
+            snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", p->value.symbol);
             gpwarning(GPW_UNKNOWN, buf);
           }
         }
@@ -129,24 +127,24 @@ int can_evaluate(const struct pnode *p)
     return can_evaluate(p->value.unop.p0);
 
   case PTAG_BINOP:
-    return can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1);
+    return (can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1));
 
   case PTAG_STRING:
     gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
-    return 0;
+    return false;
 
   default:
     assert(0);
   }
 
-  return 0;
+  return false;
 }
 
-int can_evaluate_value(const struct pnode *p)
+gp_boolean can_evaluate_value(const struct pnode *p)
 {
   switch (p->tag) {
   case PTAG_CONSTANT:
-    return 1;
+    return true;
 
   case PTAG_OFFSET:
     if (state.extended_pic16e == false) {
@@ -164,13 +162,13 @@ int can_evaluate_value(const struct pnode *p)
       struct symbol *s = get_symbol(state.stTop, p->value.symbol);
 
       if (s == NULL) {
-        return 0;
+        return false;
       }
       else {
-        struct variable *var = get_symbol_annotation(s);
+        const struct variable *var = get_symbol_annotation(s);
 
         if (NULL == var) {
-          return 0;
+          return false;
         }
         else {
           switch (var->type) {
@@ -179,10 +177,10 @@ int can_evaluate_value(const struct pnode *p)
           case GVT_STATIC:
           case GVT_ABSOLUTE:
           case GVT_DEBUG:
-            return 0;
+            return false;
 
           default:
-            return 1;
+            return true;
           }
         }
       }
@@ -192,24 +190,25 @@ int can_evaluate_value(const struct pnode *p)
     return can_evaluate_value(p->value.unop.p0);
 
   case PTAG_BINOP:
-    return can_evaluate_value(p->value.binop.p0) && can_evaluate_value(p->value.binop.p1);
+    return (can_evaluate_value(p->value.binop.p0) && can_evaluate_value(p->value.binop.p1));
 
   case PTAG_STRING:
     gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
-    return 0;
+    return false;
 
   default:
     assert(0);
   }
 
-  return 0;
+  return false;
 }
 
 static int is_program_segment(const struct pnode *p)
 {
   if ((p->tag == PTAG_SYMBOL) && (strcmp(p->value.symbol, "$") != 0)) {
-    struct symbol *s = get_symbol(state.stTop, p->value.symbol);
-    struct variable *var = get_symbol_annotation(s);
+    const struct symbol *s = get_symbol(state.stTop, p->value.symbol);
+    const struct variable *var = get_symbol_annotation(s);
+
     assert(var != NULL);
     /* If var type is GVT_ADDRESS return 1, else return 0. */
     return ((var->type == GVT_ADDRESS) ? true : false);
@@ -221,7 +220,7 @@ static int is_program_segment(const struct pnode *p)
 
 gpasmVal evaluate(const struct pnode *p)
 {
-  struct variable *var;
+  const struct variable *var;
   gpasmVal p0, p1;
 
   switch (p->tag) {
@@ -233,7 +232,7 @@ gpasmVal evaluate(const struct pnode *p)
 
   case PTAG_SYMBOL:
     {
-      struct symbol *s;
+      const struct symbol *s;
 
       if (strcmp(p->value.symbol, "$") == 0) {
         return (IS_RAM_ORG ? state.byte_addr :
@@ -250,19 +249,19 @@ gpasmVal evaluate(const struct pnode *p)
   case PTAG_UNOP:
     switch (p->value.unop.op) {
     case '!':
-      return !evaluate(p->value.unop.p0);
+      return (!evaluate(p->value.unop.p0));
 
     case '+':
       return  evaluate(p->value.unop.p0);
 
     case '-':
-      return -evaluate(p->value.unop.p0);
+      return (-evaluate(p->value.unop.p0));
 
     case '~':
-      return ~evaluate(p->value.unop.p0);
+      return (~evaluate(p->value.unop.p0));
 
     case UPPER:
-      return (evaluate(p->value.unop.p0) >> 16) & 0xff;
+      return ((evaluate(p->value.unop.p0) >> 16) & 0xff);
 
     case HIGH:
       {
@@ -277,13 +276,13 @@ gpasmVal evaluate(const struct pnode *p)
       }
 
     case LOW:
-      return evaluate(p->value.unop.p0) & 0xff;
+      return (evaluate(p->value.unop.p0) & 0xff);
 
     case INCREMENT:
-      return evaluate(p->value.unop.p0) + 1;
+      return (evaluate(p->value.unop.p0) + 1);
 
     case DECREMENT:
-      return evaluate(p->value.unop.p0) - 1;
+      return (evaluate(p->value.unop.p0) - 1);
 
     default:
       assert(0);
@@ -294,13 +293,13 @@ gpasmVal evaluate(const struct pnode *p)
     p1 = evaluate(p->value.binop.p1);
     switch (p->value.binop.op) {
     case '+':
-      return p0 + p1;
+      return (p0 + p1);
 
     case '-':
-      return p0 - p1;
+      return (p0 - p1);
 
     case '*':
-      return p0 * p1;
+      return (p0 * p1);
 
     case '/':
       if (p1 == 0){
@@ -308,7 +307,7 @@ gpasmVal evaluate(const struct pnode *p)
         return 0;
       }
       else {
-        return p0 / p1;
+        return (p0 / p1);
       }
 
     case '%':
@@ -317,17 +316,17 @@ gpasmVal evaluate(const struct pnode *p)
         return 0;
       }
       else {
-        return p0 % p1;
+        return (p0 % p1);
       }
 
     case '&':
-      return p0 & p1;
+      return (p0 & p1);
 
     case '|':
-      return p0 | p1;
+      return (p0 | p1);
 
     case '^':
-      return p0 ^ p1;
+      return (p0 ^ p1);
 
     case LSH:
       if (state.mpasm_compatible) {
@@ -335,7 +334,7 @@ gpasmVal evaluate(const struct pnode *p)
          * It seems that x << n is actually x << (n % (sizeof(int) * 8))
          * on x86 architectures, so 0x1234 << 32 results 0x1234
          * which is wrong but compatible with MPASM. */
-        return p0 << p1;
+        return (p0 << p1);
       }
       else {
       /* x << n results sign extension for n >= (sizeof(int) * 8) */
@@ -348,7 +347,7 @@ gpasmVal evaluate(const struct pnode *p)
          * It seems that x >> n is actually x >> (n % (sizeof(int) * 8))
          * on x86 architectures, so 0x1234 >> 32 results 0x1234
          * which is wrong but compatible with MPASM. */
-        return p0 >> p1;
+        return (p0 >> p1);
       }
       else {
       /* x >> n results sign extension for n >= (sizeof(int) * 8) */
@@ -356,41 +355,41 @@ gpasmVal evaluate(const struct pnode *p)
       }
 
     case EQUAL:
-      return p0 == p1;
+      return (p0 == p1);
 
     case '<':
-      return p0 < p1;
+      return (p0 < p1);
 
     case '>':
-      return p0 > p1;
+      return (p0 > p1);
 
     case NOT_EQUAL:
-      return p0 != p1;
+      return (p0 != p1);
 
     case GREATER_EQUAL:
-      return p0 >= p1;
+      return (p0 >= p1);
 
     case LESS_EQUAL:
-      return p0 <= p1;
+      return (p0 <= p1);
 
     case LOGICAL_AND:
-      return p0 && p1;
+      return (p0 && p1);
 
     case LOGICAL_OR:
-      return p0 || p1;
+      return (p0 || p1);
 
     case '=':
       gpverror(GPE_BADCHAR, NULL, '=');
       return 0;
 
     default:
-      assert(0); /* Unhandled binary operator */
+      assert(0); /* Unhandled binary operator. */
     }
 
   default:
-    assert(0); /* Unhandled parse node tag */
+    assert(0); /* Unhandled parse node tag. */
   }
-  return (0); /* Should never reach here */
+  return 0;    /* Should never reach here. */
 }
 
 /* Attempt to evaluate expression 'p'.  Return its value if
@@ -414,8 +413,8 @@ gpasmVal maybe_evaluate(const struct pnode *p)
 
 int count_reloc(const struct pnode *p)
 {
-  struct symbol *s;
-  struct variable *var;
+  const struct symbol *s;
+  const struct variable *var;
 
   if (state.mode == MODE_ABSOLUTE) {
     return 0;
@@ -472,8 +471,8 @@ int count_reloc(const struct pnode *p)
 static void
 add_reloc(const struct pnode *p, short offs, unsigned short type)
 {
-  struct symbol *s = NULL;
-  struct variable *var = NULL;
+  const struct symbol *s = NULL;
+  const struct variable *var = NULL;
 
   switch (p->tag) {
   case PTAG_OFFSET:
@@ -483,7 +482,7 @@ add_reloc(const struct pnode *p, short offs, unsigned short type)
   case PTAG_SYMBOL:
     if (strcmp(p->value.symbol, "$") == 0) {
       char buffer[BUFSIZ];
-      unsigned org;
+      unsigned int org;
 
       org = IS_RAM_ORG ? state.byte_addr :
                          gp_processor_byte_to_real(state.processor, state.byte_addr);
@@ -607,7 +606,7 @@ add_reloc(const struct pnode *p, short offs, unsigned short type)
 
 */
 
-static int
+static gp_boolean
 same_section(const struct pnode *p)
 {
   const struct pnode *p0;
@@ -618,7 +617,7 @@ same_section(const struct pnode *p)
   struct variable *var1;
 
   if (!state.obj.enabled) {
-    return 0;
+    return false;
   }
 
   if ((p->tag == PTAG_UNOP) &&
@@ -631,14 +630,14 @@ same_section(const struct pnode *p)
   if ((p->tag != PTAG_BINOP) ||
       (p->value.binop.op != '-') ||
       (count_reloc(p->value.binop.p0) != 1)) {
-    return 0;
+    return false;
   }
 
   p0 = p->value.binop.p0;
   p1 = p->value.binop.p1;
 
   if ((p0->tag != PTAG_SYMBOL) || (p1->tag != PTAG_SYMBOL)) {
-    return 0;
+    return false;
   }
 
   sym0 = get_symbol(state.stTop, p0->value.symbol);
@@ -647,15 +646,15 @@ same_section(const struct pnode *p)
   var1 = get_symbol_annotation(sym1);
 
   /* They must come from the same section. Debug symbols are not placed
-     in the global symbol table, so don't worry about symbol type. */
-  /* Fail if sections are not known (== 0) or not the same. */
+     in the global symbol table, so don't worry about symbol type.
+     Fail if sections are not known (== 0) or not the same. */
   if ((var0->coff_section_num == 0) ||
       (var1->coff_section_num == 0) ||
       (var0->coff_section_num != var1->coff_section_num)) {
-    return 0;
+    return false;
   }
 
-  return 1;
+  return true;
 }
 
 gpasmVal reloc_evaluate(const struct pnode *p, unsigned short type)
@@ -705,7 +704,5 @@ int eval_fill_number(const struct pnode *p)
     gpverror(GPE_FILL_ODD, NULL);
   }
 
-  number = gp_processor_org_to_byte(state.device.class, number) >> 1;
-
-  return number;
+  return (gp_processor_org_to_byte(state.device.class, number) >> 1);
 }

@@ -325,6 +325,7 @@ convert_escape_chars(const char *ps, int *value)
         count++;
       }
       break;
+
     case 'x':
       /* hex number */
       if ((ps[2] == '\0') || (ps[3] == '\0')) {
@@ -346,11 +347,12 @@ convert_escape_chars(const char *ps, int *value)
         ps += 4;
       }
       break;
+
     default:
       if (ps[1] == '\0') {
         gperror(GPE_UNKNOWN, "Missing value in \\ escape character.");
         *value = 0;
-        /* return a NULL character */
+        /* return a NIL character */
         ps++;
       } else {
         *value = gpasm_magic(ps);
@@ -458,7 +460,7 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
 struct variable *
 get_global_constant(const char *Name)
 {
-  struct symbol *sym;
+  struct symbol   *sym;
   struct variable *var;
 
   if (((sym = get_symbol(state.stGlobal, Name)) != NULL) &&
@@ -472,86 +474,92 @@ get_global_constant(const char *Name)
 
 void
 purge_temp_symbols(struct symbol_table *table) {
-  int i;
+  int              i;
+  struct symbol   *cur_symbol;
+  struct symbol   *next_symbol;
+  struct symbol   *last_symbol;
+  struct variable *var;
 
-  if (table != NULL) {
-    for (i = 0; i < HASH_SIZE; ++i) {
-      struct symbol *cur_symbol;
-      struct symbol *last_symbol = NULL;
-
-      cur_symbol = table->hash_table[i];
-      while (cur_symbol != NULL) {
-        if (cur_symbol != NULL) {
-          struct variable *var = (struct variable *)get_symbol_annotation(cur_symbol);
-
-          if (var != NULL) {
-            if (var->lifetime == LFT_TEMPORARY) {
-              struct symbol *next_symbol = cur_symbol->next;
-
-              free(cur_symbol);
-              table->count--;
-
-              if (last_symbol == NULL) {
-                table->hash_table[i] = next_symbol;
-              }
-              else {
-                last_symbol->next = next_symbol;
-              }
-
-              cur_symbol = next_symbol;
-              continue;
-            }
-          }
-        }
-        last_symbol = cur_symbol;
-        cur_symbol = cur_symbol->next;
-      }
-    }
-
-    purge_temp_symbols(table->prev);
+  if (table == NULL) {
+    return;
   }
+
+  for (i = 0; i < HASH_SIZE; ++i) {
+    cur_symbol  = table->hash_table[i];
+    last_symbol = NULL;
+    while (cur_symbol != NULL) {
+      var = (struct variable *)get_symbol_annotation(cur_symbol);
+
+      if (var != NULL) {
+        if (var->lifetime == LFT_TEMPORARY) {
+          next_symbol = cur_symbol->next;
+
+          free(cur_symbol);
+          table->count--;
+
+          if (last_symbol == NULL) {
+            table->hash_table[i] = next_symbol;
+          }
+          else {
+            last_symbol->next = next_symbol;
+          }
+
+          cur_symbol = next_symbol;
+          continue;
+        }
+      }
+
+      last_symbol = cur_symbol;
+      cur_symbol = cur_symbol->next;
+    }
+  }
+
+  purge_temp_symbols(table->prev);
 }
 
 void
 purge_processor_const_symbols(struct symbol_table *table) {
   int i;
+  struct symbol   *cur_symbol;
+  struct symbol   *next_symbol;
+  struct symbol   *last_symbol;
+  struct variable *var;
 
-  if (table != NULL) {
-    for (i = 0; i < HASH_SIZE; ++i) {
-      struct symbol *cur_symbol;
-      struct symbol *last_symbol = NULL;
-
-      cur_symbol = table->hash_table[i];
-      while (cur_symbol != NULL) {
-        if (cur_symbol != NULL) {
-          struct variable *var = (struct variable *)get_symbol_annotation(cur_symbol);
-
-          if (var != NULL) {
-            if ((var->lifetime == LFT_PERMANENT) && (var->type == GVT_CONSTANT) && var->isProcDependent) {
-              struct symbol *next_symbol = cur_symbol->next;
-
-              free(cur_symbol);
-              table->count--;
-
-              if (last_symbol == NULL) {
-                table->hash_table[i] = next_symbol;
-              }
-              else {
-                last_symbol->next = next_symbol;
-              }
-
-              cur_symbol = next_symbol;
-              continue;
-            }
-          }
-        }
-        last_symbol = cur_symbol;
-        cur_symbol = cur_symbol->next;
-      }
-    }
-
-    purge_processor_const_symbols(table->prev);
+  if (table == NULL) {
+    return;
   }
+
+  for (i = 0; i < HASH_SIZE; ++i) {
+    cur_symbol  = table->hash_table[i];
+    last_symbol = NULL;
+    while (cur_symbol != NULL) {
+      var = (struct variable *)get_symbol_annotation(cur_symbol);
+
+      if (var != NULL) {
+        if ((var->lifetime == LFT_PERMANENT) && (var->type == GVT_CONSTANT) && var->isProcDependent) {
+          next_symbol = cur_symbol->next;
+
+          free(cur_symbol);
+          table->count--;
+
+          if (last_symbol == NULL) {
+            table->hash_table[i] = next_symbol;
+          }
+          else {
+            last_symbol->next = next_symbol;
+          }
+
+          cur_symbol = next_symbol;
+          continue;
+        }
+      }
+
+      last_symbol = cur_symbol;
+      cur_symbol = cur_symbol->next;
+    }
+  }
+
+  purge_processor_const_symbols(table->prev);
 }
 
 void
@@ -797,6 +805,7 @@ struct file_context *
 add_file(unsigned int type, const char *name)
 {
   static unsigned int file_id = 0;
+
   struct file_context *new;
 
   /* First check to make sure this file is not already in the list. */
@@ -872,7 +881,7 @@ hex_init(void)
       gperror(GPE_UNKNOWN, "Error generating hex file.");
     }
   } else {
-    /* Won't have anything to write, just remove any old files */
+    /* Won't have anything to write, just remove any old files. */
     writehex(state.basefilename, state.i_memory,
              state.hex_format, 1,
              state.dos_newlines, 1);
