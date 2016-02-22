@@ -26,17 +26,17 @@ Boston, MA 02111-1307, USA.  */
                         * and we use up memory and run slow.. */
 
 struct symbol {
-  const char *name;
-  void *annotation;
+  const char    *name;
+  void          *annotation;
   struct symbol *next;
 };
 
 struct symbol_table {
-  int count;
-  gp_boolean case_insensitive;
-  int (*compare)(const char *__s1, const char *__s2);
-  int (*compare_len)(const char *__s1, const char *__s2, size_t len);
-  struct symbol *hash_table[HASH_SIZE];
+  int                  count;
+  gp_boolean           case_insensitive;
+  int                (*compare)(const char *__s1, const char *__s2);
+  int                (*compare_len)(const char *__s1, const char *__s2, size_t len);
+  struct symbol       *hash_table[HASH_SIZE];
   struct symbol_table *prev;
 };
 

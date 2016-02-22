@@ -1,3 +1,10 @@
+2016-02-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/scan.l,
+    New constant: __WHILE_LOOP_COUNT_MAX
+
+  * gpasm/directive.c, libgputils/gpsymbol.c, libgputils/gpsymbol.h:
+    Code formatting.
+
 2016-02-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * Makefile.in, */Makefile.in, bootstrap.sh, compile,
     config.guess, config.sub, configure.ac, configure,
