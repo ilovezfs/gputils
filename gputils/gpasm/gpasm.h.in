@@ -34,6 +34,8 @@ Boston, MA 02111-1307, USA.  */
 #define GLOBAL_ACT_PAGE_ADDR      "__ACTIVE_PAGE_ADDR"
 #define GLOBAL_ACT_PAGE_INV       -1
 
+#define WHILE_LOOP_COUNT_MAX      255
+
 #define STRCMP(s1, s2)  ((state.case_insensitive) ? \
                          strcasecmp((s1), (s2)) : \
                          strcmp((s1), (s2)))

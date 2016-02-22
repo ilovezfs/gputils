@@ -28,7 +28,7 @@ Boston, MA 02111-1307, USA.  */
 static int hashfunc_len(struct symbol_table *t, const char *s, size_t len)
 {
   union {
-    char b[4];
+    char          b[4];
     unsigned long ul;
   } change;
 
@@ -65,8 +65,7 @@ static int compare_len(const char *s1, const char *s2, size_t n)
   return (n == strlen(s2)) ? strncmp(s1, s2, n) : -1;
 }
 
-struct symbol_table *push_symbol_table(struct symbol_table * table,
-                                       gp_boolean case_insensitive)
+struct symbol_table *push_symbol_table(struct symbol_table * table, gp_boolean case_insensitive)
 {
   struct symbol_table *new = GP_Calloc(1, sizeof(struct symbol_table));
 
@@ -87,38 +86,34 @@ struct symbol_table *push_symbol_table(struct symbol_table * table,
 
 struct symbol_table *pop_symbol_table(struct symbol_table *table)
 {
-  struct symbol_table *prev;
-
-  prev = table->prev;
-
-  return prev;
+  return table->prev;
 }
 
 struct symbol *add_symbol(struct symbol_table *table, const char *name)
 {
-  struct symbol *r;
-  int index;
+  struct symbol *sym;
+  int            index;
 
   assert(name != NULL);
   assert(table != NULL);
 
   index = hashfunc(table, name);
 
-  r = table->hash_table[index];
-  while ((r != NULL) && ((*table->compare)(name, r->name) != 0)) {
-    r = r->next;
+  sym = table->hash_table[index];
+  while ((sym != NULL) && ((*table->compare)(name, sym->name) != 0)) {
+    sym = sym->next;
   }
 
-  if (r == NULL) {     /* No match. */
-    r = GP_Malloc(sizeof(*r));
-    r->name = GP_Strdup(name);
-    r->next = table->hash_table[index];
-    r->annotation = NULL;
-    table->hash_table[index] = r;
+  if (sym == NULL) {     /* No match. */
+    sym             = GP_Malloc(sizeof(*sym));
+    sym->name       = GP_Strdup(name);
+    sym->next       = table->hash_table[index];
+    sym->annotation = NULL;
+    table->hash_table[index] = sym;
     table->count++;
   }
 
-  return r;
+  return sym;
 }
 
 /* FIXME: remove_symbol does not search all of the symbol tables in the stack.
@@ -126,41 +121,41 @@ Maybe this is ok, but it seems wrong. */
 
 gp_boolean remove_symbol(struct symbol_table *table, const char *name)
 {
-  struct symbol *r = NULL;
+  struct symbol *sym = NULL;
   struct symbol *last = NULL;
-  int index;
-  gp_boolean found_symbol = false;
+  int            index;
+  gp_boolean     found_symbol = false;
 
   assert(name != NULL);
   assert(table != NULL);
 
   index = hashfunc(table, name);
 
-  /* Search for the symbol */
+  /* Search for the symbol. */
   if (table != NULL) {
-    r = table->hash_table[index];
-    while ((r != NULL) && ((*table->compare)(name, r->name) != 0)) {
-      last = r;
-      r = r->next;
+    sym = table->hash_table[index];
+    while ((sym != NULL) && ((*table->compare)(name, sym->name) != 0)) {
+      last = sym;
+      sym = sym->next;
     }
   }
 
-  if (r != NULL) {
+  if (sym != NULL) {
     /* remove the symbol */
     if (last != NULL) {
-      last->next = r->next;
+      last->next = sym->next;
     } else {
-      /* r was first in the list */
-      table->hash_table[index] = r->next;
+      /* sym was first in the list */
+      table->hash_table[index] = sym->next;
     }
     table->count--;
     found_symbol = true;
 
-    if (r->name != NULL) {
-      free((void *)r->name);
+    if (sym->name != NULL) {
+      free((void *)sym->name);
     }
 
-    free(r);
+    free(sym);
   }
 
   return found_symbol;
@@ -168,73 +163,73 @@ gp_boolean remove_symbol(struct symbol_table *table, const char *name)
 
 struct symbol *get_symbol(struct symbol_table *table, const char *name)
 {
-  struct symbol *r = NULL;
+  struct symbol *sym = NULL;
 
   assert(name != NULL);
 
   while (table != NULL) {
     int index = hashfunc(table, name);
 
-    r = table->hash_table[index];
-    while ((r != NULL) && ((*table->compare)(name, r->name) != 0)) {
-      r = r->next;
+    sym = table->hash_table[index];
+    while ((sym != NULL) && ((*table->compare)(name, sym->name) != 0)) {
+      sym = sym->next;
     }
 
-    if (r != NULL) {
+    if (sym != NULL) {
       break;
     }
 
-    /* If r is still NULL, we didn't match.  Try the prev table on the stack */
+    /* If sym is still NULL, we didn't match. Try the prev table on the stack. */
     table = table->prev;
   }
 
-  return r;
+  return sym;
 }
 
 struct symbol *get_symbol_len(struct symbol_table *table, const char *name, size_t len)
 {
-  struct symbol *r = NULL;
+  struct symbol *sym = NULL;
 
   assert(name != NULL);
 
   while (table != NULL) {
     int index = hashfunc_len(table, name, len);
 
-    r = table->hash_table[index];
-    while ((r != NULL) && ((*table->compare_len)(name, r->name, len) != 0)) {
-      r = r->next;
+    sym = table->hash_table[index];
+    while ((sym != NULL) && ((*table->compare_len)(name, sym->name, len) != 0)) {
+      sym = sym->next;
     }
 
-    if (r != NULL) {
+    if (sym != NULL) {
       break;
     }
 
-    /* If r is still NULL, we didn't match.  Try the prev table on the stack */
+    /* If sym is still NULL, we didn't match. Try the prev table on the stack. */
     table = table->prev;
   }
 
-  return r;
+  return sym;
 }
 
-void annotate_symbol(struct symbol *s, void *a)
+void annotate_symbol(struct symbol *sym, void *a)
 {
-  s->annotation = a;
+  sym->annotation = a;
 }
 
-const char *get_symbol_name(const struct symbol *s)
+const char *get_symbol_name(const struct symbol *sym)
 {
-  return s->name;
+  return sym->name;
 }
 
-void *get_symbol_annotation(const struct symbol *s)
+void *get_symbol_annotation(const struct symbol *sym)
 {
-  return s->annotation;
+  return sym->annotation;
 }
 
 int symbol_compare(const void *p0, const void *p1)
 {
-  struct symbol *s0 = *(struct symbol **)p0;
-  struct symbol *s1 = *(struct symbol **)p1;
+  struct symbol *sym0 = *(struct symbol **)p0;
+  struct symbol *sym1 = *(struct symbol **)p1;
 
-  return strcmp(s0->name, s1->name);
+  return strcmp(sym0->name, sym1->name);
 }

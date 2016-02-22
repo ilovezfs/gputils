@@ -49,7 +49,7 @@ static unsigned short
 checkwrite(unsigned short value)
 {
   unsigned short insn;
-  int org;
+  int            org;
 
   if (state.mode == MODE_RELOCATABLE) {
     if (state.obj.section == NULL) {
@@ -229,7 +229,8 @@ emit_byte(unsigned short value, const char *name)
 static gp_boolean
 off_or_on(struct pnode *p)
 {
-  int had_error = false, ret = false;
+  int had_error = false;
+  int ret = false;
 
   if (p->tag != PTAG_SYMBOL) {
     had_error = true;
@@ -263,11 +264,14 @@ off_or_on(struct pnode *p)
 static int
 emit_data(struct pnode *L, int char_shift, const char *name)
 {
-  unsigned begin_org = state.byte_addr;
-  struct pnode *p;
+  const struct pnode *p;
+  const char         *pc;
+  unsigned int        begin_org;
+  int                 value;
+  unsigned short      v;
+  int                 n;
 
-  for (; L != NULL; L = TAIL(L)) {
-    const char *pc;
+  for (begin_org = state.byte_addr; L != NULL; L = TAIL(L)) {
     p = HEAD(L);
 
     if (p->tag == PTAG_STRING) {
@@ -275,25 +279,17 @@ emit_data(struct pnode *L, int char_shift, const char *name)
 
       if (IS_PIC16E_CORE && !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
         /* Special case of PIC16E strings in code. */
-        int n = 0;
-        while (*pc != '\0') {
-          int value;
-
+        for (n = 0; *pc != '\0'; ++n) {
           pc = convert_escape_chars(pc, &value);
           emit_byte(value, name);
-          ++n;
         }
         /* Pad using zero if 16-bit numbers. */
         if (n & 1) {
           emit_byte(0, name);
-          ++n;
         }
       }
       else {
         while (*pc != '\0') {
-          int value;
-          unsigned short v;
-
           pc = convert_escape_chars(pc, &value);
           value &= 0xff;
           /* If idata or packed and not db or de, emit one character per word. */
@@ -317,13 +313,10 @@ emit_data(struct pnode *L, int char_shift, const char *name)
       }
     }
     else if (state.device.class->core_mask > 0xff) {
-      unsigned short v;
-
       v = reloc_evaluate(p, RELOCT_ALL);
       emit(v, name);
     }
     else {
-      unsigned short v;
       /* FIXME: This case is for EEPROM8. Do we need the RELOCT_LOW? */
       v = reloc_evaluate(p, RELOCT_LOW);
       emit_byte(v, name);
@@ -425,7 +418,7 @@ macro_parms_ok(struct pnode *parms)
 static gpasmVal
 do_access_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
+  const struct pnode *p;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -466,10 +459,10 @@ do_access_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
-  int maxram;
-  int start;
-  int end;
+  const struct pnode *p;
+  int                 maxram;
+  int                 start;
+  int                 end;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -550,8 +543,8 @@ do_badrom(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_bankisel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
-  int num_reloc;
+  const struct pnode *p;
+  int                 num_reloc;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -614,10 +607,10 @@ do_bankisel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
-  int address;
-  int bank;
-  int num_reloc;
+  const struct pnode *p;
+  int                 address;
+  int                 bank;
+  int                 num_reloc;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -711,7 +704,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_code(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
+  const struct pnode *p;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -752,7 +745,7 @@ do_code(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_code_pack(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
+  const struct pnode *p;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -798,8 +791,10 @@ do_code_pack(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
-  gp_boolean first;
+  const struct pnode *p;
+  gp_boolean          first;
+  const char         *lhs;
+  gpasmVal            val;
 
   if (check_processor_select(name)) {
     return r;
@@ -813,9 +808,6 @@ do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
     if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
-        char *lhs;
-        gpasmVal val;
-
         /* fetch the symbol */
         lhs = p->value.binop.p0->value.symbol;
         /* constants must be assigned a value at declaration */
@@ -932,7 +924,7 @@ config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
                        int ca, unsigned char byte, unsigned char mask)
 {
   unsigned char old_byte;
-  char buf[BUFSIZ];
+  char          buf[BUFSIZ];
 
   snprintf(buf, sizeof(buf), "CONFIG_%#x", ca);
 
@@ -948,7 +940,7 @@ config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
                        int ca, unsigned char byte, unsigned char mask)
 {
   unsigned char other_byte;
-  char buf[BUFSIZ];
+  char          buf[BUFSIZ];
 
   if (!b_memory_get(config_mem, ca ^ 1, &other_byte, NULL, NULL)) {
     snprintf(buf, sizeof(buf), "CONFIG_%#x", ca);
@@ -961,9 +953,9 @@ config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
 static gpasmVal
 do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
-  int ca;
-  int value;
+  const struct pnode *p;
+  int                 ca;
+  int                 value;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -1088,18 +1080,20 @@ config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 
 /* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC16(E) devices. */
 static gpasmVal
-do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
+do_16_config(gpasmVal r, const char *name, int arity, const struct pnode *parms)
 {
   static unsigned char double_mask[64] = { 0, };
 
-  const gp_cfg_device_t *p_dev;
+  const gp_cfg_device_t    *p_dev;
   const gp_cfg_directive_t *p_dir;
-  const gp_cfg_option_t *p_opt;
-  const char *k_str, *v_str;
-  struct pnode *k, *v;
-  int ca;
-  char v_buff[64];
-  char buf[BUFSIZ];
+  const gp_cfg_option_t    *p_opt;
+  const char               *k_str;
+  const char               *v_str;
+  struct pnode             *k;
+  struct pnode             *v;
+  int                       ca;
+  char                      v_buff[64];
+  char                      buf[BUFSIZ];
 
   state.lst.line.linetype = LTY_DIR;
   config_mpasm_used = true;
@@ -1181,8 +1175,8 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   /* emit the bytes if appropriate */
   if (state.pass == 2) {
-    unsigned int dm_addr = (ca - p_dev->addresses->address) & 0xFF;
-    MemBlock *config_mem = get_config_mem(ca, true);
+    unsigned int  dm_addr = (ca - p_dev->addresses->address) & 0xFF;
+    MemBlock     *config_mem = get_config_mem(ca, true);
 
     if (state.mode != MODE_RELOCATABLE) {
       config_16_check_defaults(config_mem, p_dev);
@@ -1216,9 +1210,9 @@ static void
 config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
                           int ca, unsigned short word, unsigned short mask)
 {
-  int org;
+  int            org;
   unsigned short old_word;
-  char buf[BUFSIZ];
+  char           buf[BUFSIZ];
 
   org = gp_processor_byte_to_org(state.device.class, ca);
   snprintf(buf, sizeof(buf), "CONFIG_%#x", org);
@@ -1237,9 +1231,9 @@ static void
 config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 {
   const gp_cfg_addr_t *addrs = p_dev->addresses;
-  unsigned int addr;
-  unsigned short word;
-  int t;
+  unsigned int         addr;
+  unsigned short       word;
+  int                  t;
 
   for (t = 0; t < p_dev->address_count; ++addrs, ++t) {
     addr = gp_processor_org_to_byte(state.device.class, addrs->address);
@@ -1253,19 +1247,21 @@ config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 
 /* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC14(E) and PIC12(E) devices. */
 static gpasmVal
-do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
+do_12_14_config(gpasmVal r, const char *name, int arity, const struct pnode *parms)
 {
   static unsigned short double_mask[256] = { 0, };
 
-  const gp_cfg_device_t *p_dev;
+  const gp_cfg_device_t    *p_dev;
   const gp_cfg_directive_t *p_dir;
-  const gp_cfg_option_t *p_opt;
-  const char *k_str, *v_str;
-  const struct pnode *k, *v;
-  int conf_org;
-  int ca;
-  char v_buff[64];
-  char buf[BUFSIZ];
+  const gp_cfg_option_t    *p_opt;
+  const char               *k_str;
+  const char               *v_str;
+  const struct pnode       *k;
+  const struct pnode       *v;
+  int                       conf_org;
+  int                       ca;
+  char                      v_buff[64];
+  char                      buf[BUFSIZ];
 
   state.lst.line.linetype = LTY_DIR;
   config_mpasm_used = true;
@@ -1378,8 +1374,8 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_gpasm_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
-  char buf[BUFSIZ];
+  const struct pnode *p;
+  char                buf[BUFSIZ];
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -1502,7 +1498,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *L;
   const struct pnode *p;
-  unsigned int org;
+  unsigned int        org;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -1577,10 +1573,11 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
   } /* if (IS_PIC16E_CORE || (SECTION_FLAGS & STYP_DATA)) */
   else {
     unsigned short v = 0;
-    unsigned int n = 0;
+    unsigned int   n = 0;
+
     while (L != NULL) {
       const char *pc = NULL;
-      int value;
+      int         value;
 
       p = HEAD(L);
 
@@ -1699,15 +1696,15 @@ static gpasmVal
 do_def(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  char *symbol_name = NULL;
-  gp_symbol_type *coff_symbol = NULL;
-  int eval;
-  int value = 0;
-  gp_boolean new_class = false;
-  int coff_class = C_NULL;
-  gp_boolean new_type = false;
-  int coff_type = T_NULL;
-  enum gpasmValTypes type = GVT_DEBUG;
+  char               *symbol_name = NULL;
+  gp_symbol_type     *coff_symbol = NULL;
+  int                 eval;
+  int                 value = 0;
+  gp_boolean          new_class = false;
+  int                 coff_class = C_NULL;
+  gp_boolean          new_type = false;
+  int                 coff_type = T_NULL;
+  enum gpasmValTypes  type = GVT_DEBUG;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -1876,12 +1873,12 @@ static gpasmVal
 do_dim(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  const char *symbol_name;
-  gp_symbol_type *coff_symbol = NULL;
-  int number_symbols;
-  gp_aux_type *aux_list;
-  int i;
-  int value;
+  const char         *symbol_name;
+  gp_symbol_type     *coff_symbol = NULL;
+  int                 number_symbols;
+  gp_aux_type        *aux_list;
+  int                 i;
+  int                 value;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -1960,10 +1957,10 @@ do_dim(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_direct(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
-  int value;
-  unsigned char direct_command = 0;
-  const char *direct_string = NULL;
+  struct pnode       *p;
+  int                 value;
+  unsigned char       direct_command = 0;
+  const char         *direct_string = NULL;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -1978,8 +1975,8 @@ do_direct(gpasmVal r, const char *name, int arity, struct pnode *parms)
     if (value < 0) {
       gpverror(GPE_RANGE, "%i (%#x) < 0", value, value);
     }
-    else if (value > 255) {
-      gpverror(GPE_RANGE, "%i (%#x) > 255", value, value);
+    else if (value > WHILE_LOOP_COUNT_MAX) {
+      gpverror(GPE_RANGE, "%i (%#x) > %u", value, value, WHILE_LOOP_COUNT_MAX);
     }
     else {
       direct_command = value;
@@ -2017,7 +2014,7 @@ static gpasmVal
 do_dt(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  int retlw;
+  int                 retlw;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -2053,9 +2050,9 @@ do_dt(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_dtm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  const struct pnode *p;
+  const struct pnode  *p;
   const struct symbol *s;
-  const struct insn *i;
+  const struct insn   *i;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -2277,9 +2274,9 @@ do_equ(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static int
 resolve_meta_chars(char *Dst, int Max_size, const char *Src, int Size)
 {
-  char *d;
-  char ch;
-  gp_boolean meta;
+  char       *d;
+  char        ch;
+  gp_boolean  meta;
 
   if (Max_size <= 0) {
     return 0;
@@ -2440,7 +2437,7 @@ static gpasmVal
 do_error(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  const char *str;
+  const char         *str;
 
   if (check_processor_select(name)) {
     return r;
@@ -2616,7 +2613,7 @@ static gpasmVal
 do_fill(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *h;
-  int number;
+  int                 number;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -2638,10 +2635,10 @@ do_fill(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_global(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  const char *p;
+  const char          *p;
   const struct symbol *s;
-  struct variable *var;
-  char buf[BUFSIZ];
+  struct variable     *var;
+  char                 buf[BUFSIZ];
 
   state.lst.line.linetype = LTY_SET4;
 
@@ -2806,10 +2803,11 @@ do_ident(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  int value, v;
+  int          value;
+  int          v;
   unsigned int id_location;
   unsigned int idreg;
-  char buf[BUFSIZ];
+  char         buf[BUFSIZ];
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -2934,13 +2932,14 @@ do_16_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
   static unsigned int last_idreg = 0;
 
   const struct pnode *p;
-  unsigned int idreg;
-  unsigned char curvalue;
-  const char *pc;
-  int value, v;
-  int max_bytes;
-  int n;
-  char buf[BUFSIZ];
+  unsigned int        idreg;
+  unsigned char       curvalue;
+  const char         *pc;
+  int                 value;
+  int                 v;
+  int                 max_bytes;
+  int                 n;
+  char                buf[BUFSIZ];
 
   if (state.mpasm_compatible) {
     snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
@@ -3502,7 +3501,7 @@ static gpasmVal
 do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  gp_boolean first;
+  gp_boolean          first;
 
   if (check_processor_select(name)) {
     return r;
@@ -3668,7 +3667,7 @@ static gpasmVal
 do_messg(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  const char *str;
+  const char         *str;
 
   if (check_processor_select(name)) {
     return r;
@@ -3757,9 +3756,9 @@ static gpasmVal
 _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsigned short reloc_type)
 {
   const struct pnode *p;
-  int page;
-  int num_reloc;
-  gp_boolean use_wreg = false;
+  int                 page;
+  int                 num_reloc;
+  gp_boolean          use_wreg = false;
 
   if ((reloc_type == RELOCT_PAGESEL_WREG) || IS_PIC16_CORE) {
     use_wreg = true;
@@ -3905,8 +3904,8 @@ static gpasmVal
 do_res(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  int count;
-  int i;
+  int                 count;
+  int                 i;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -4059,9 +4058,9 @@ static gpasmVal
 do_type(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   const struct pnode *p;
-  const char *symbol_name = NULL;
-  gp_symbol_type *coff_symbol = NULL;
-  int value;
+  const char         *symbol_name = NULL;
+  gp_symbol_type     *coff_symbol = NULL;
+  int                 value;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -4399,10 +4398,10 @@ core_sfr_or_common_ram(int file)
 void
 file_ok(unsigned int file)
 {
-  int bank_addr;
-  int bank_num;
-  int reg_offs;
-  int bank_assume;
+  int                    bank_addr;
+  int                    bank_num;
+  int                    reg_offs;
+  int                    bank_assume;
   const struct variable *var;
 
   /* Don't check address, the linker takes care of it. */
@@ -4523,12 +4522,14 @@ check_flag(int flag)
 static gp_boolean
 check_16e_arg_types(const struct pnode *parms, int arity, unsigned int types)
 {
-  gp_boolean ret = true;
+  const struct pnode *p;
+  int                 i;
+  int                 val;
+  gp_boolean          ret = true;
+  char                buf[80];
 
   if (state.extended_pic16e) {
-    const struct pnode *p = parms;
-    int i;
-
+    p = parms;
     for (i = 0; i < arity; ++i) {
       assert(p != NULL);
 
@@ -4541,11 +4542,9 @@ check_16e_arg_types(const struct pnode *parms, int arity, unsigned int types)
           const struct pnode *p1 = HEAD(p)->value.offset;
 
           if (can_evaluate_value(p1)) {
-            int val = evaluate(p1);
+            val = evaluate(p1);
 
             if (val < 0 || val > 0x5f) {
-              char buf[64];
-
               snprintf(buf, sizeof(buf), "Argument out of range (%i (%#x) not between 0 and 95).", val, val);
               gperror(GPE_RANGE, buf);
               ret = false;
@@ -4722,13 +4721,13 @@ check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageSe
 gpasmVal
 do_insn(const char *name, struct pnode *parms)
 {
+  struct pnode        *p;
   const struct symbol *s;
-  int arity;
-  struct pnode *p;
-  int file;             /* register file address, if applicable */
-  unsigned int bank_num;
-  gpasmVal r;           /* Return value. */
-  gp_boolean is_btfsx = false;
+  int                  arity;
+  int                  file;            /* register file address, if applicable */
+  unsigned int         bank_num;
+  gpasmVal             r;               /* Return value. */
+  gp_boolean           is_btfsx = false;
 
   /* We want to have r as the value to assign to label. */
   r = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(state.device.class, state.byte_addr);
@@ -6663,9 +6662,9 @@ const int num_op_1 = TABLE_SIZE(op_1);
 void
 opcode_init(int stage)
 {
-  int i;
-  int count = 0;
   const struct insn *base = NULL;
+  int                i;
+  int                count = 0;
 
   switch (stage) {
   case 0:

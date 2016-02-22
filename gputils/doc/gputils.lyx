@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Feb 20, 2016
+Feb 22, 2016
 \end_layout
 
 \begin_layout Standard
@@ -5011,6 +5011,18 @@ __VECTOR_INT_LOW   -- Address of the Low Priority Interrupt Vector.
 
 \begin_layout LyX-Code
                       PIC18XXX)
+\end_layout
+
+\begin_layout Standard
+Maximum count of loop for the WHILE directive:
+\end_layout
+
+\begin_layout LyX-Code
+__WHILE_LOOP_COUNT_MAX
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Subsection

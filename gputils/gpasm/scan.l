@@ -863,7 +863,7 @@ found_eof(void)
 
   if (IN_WHILE_EXPANSION) {
     if (maybe_evaluate(state.src->mac_head->parms)) {
-      if (state.src->loop_number > 255) {
+      if (state.src->loop_number > WHILE_LOOP_COUNT_MAX) {
         gpverror(GPE_BAD_WHILE_LOOP, NULL);
       }
       else {
