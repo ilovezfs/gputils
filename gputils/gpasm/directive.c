@@ -2414,7 +2414,7 @@ hv_macro_resolver(const char *String)
         out_idx += raw_size;
         out[out_idx] = '\0';
       }
-    } // if (find_hv_macro(st_start, &hv_start, &hv_end))
+    } /* if (find_hv_macro(st_start, &hv_start, &hv_end)) */
     else {
       raw_size = st_end - st_start;
       if (raw_size > (int)(sizeof(out) - out_idx - 1)) {

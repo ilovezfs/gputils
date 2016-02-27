@@ -65,8 +65,7 @@ enum {
   OPT_STRICT_OPTIONS
 };
 
-//#define GET_OPTIONS "?chijk:lmnop:stvy"
-#define GET_OPTIONS "chijk:lmnop:stvy"
+#define GET_OPTIONS "?chijk:lmnop:stvy"
 
 static struct option longopts[] =
 {
