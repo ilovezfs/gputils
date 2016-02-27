@@ -786,7 +786,7 @@ _set_used(gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsigned i
   const char *old_symbol_name;
 
   if (p16e_align_needed && (size & 1)) {
-    // code_pack --> STYP_BPACK
+    /* code_pack --> STYP_BPACK */
     gp_debug("    align to even size: %u ==> %u", size, size + 1);
     ++size;
   }
@@ -1289,7 +1289,7 @@ gp_cofflink_reloc_unassigned(gp_object_type *object, MemBlock *m, int org_to_byt
 
     first_time = true;
 
-    // Workaround for the "odd size memory problem" in the PIC16E class.
+    /* Workaround for the "odd size memory problem" in the PIC16E class. */
     if ((object->class == PROC_CLASS_PIC16E) && (type == SECT_CODEPAGE) && (size & 1)) {
       org = gp_processor_byte_to_real(object->processor, current->address);
 
@@ -1775,10 +1775,10 @@ gp_cofflink_make_memory(gp_object_type *object)
 
           if (gp_processor_is_idlocs_org(object->processor, org) >= 0) {
             if (addr & 1) {
-              // This is higher byte.
+              /* This is higher byte. */
               byte |= ((object->processor->idlocs_mask) >> 8) & 0xFF;
             } else {
-              // This is lower byte.
+              /* This is lower byte. */
               byte |= object->processor->idlocs_mask & 0xFF;
             }
           }
