@@ -166,6 +166,9 @@ This option sets the message level.
 .ti +4
 2: Will suppress the messages and warnings.
 .TP
+.BR \-X ", "\-\-macro\-dereference
+Use the source from where the macro was invoked for errors.
+.TP
 .BR \-y ", "\-\-extended
 Enable 18xx extended mode.
 .SH SEE ALSO
