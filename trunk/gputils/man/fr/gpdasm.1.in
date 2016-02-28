@@ -20,7 +20,7 @@ pour avoir des détails sur les autres utilitaires GNU PIC.
 .BR \-c ", " \-\-mnemonics
 Décoder les mnémoniques spéciales.
 .TP
-.BR \-h ", "\-\-help
+.BR \-? ", " \-h ", " \-\-help
 Afficher un message d'utilisation et quitter.
 .TP
 .BR \-i ", "\-\-hex-info

@@ -1,3 +1,14 @@
+2016-02-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, man/*, gpasm/gpasm.c, gplink/gplink.c,
+    gputils/gpdasm.c, gputils/gplib.c, gputils/gpstrip.c,
+    gputils/gpvc.c, gputils/gpvo.c:
+    Added the description of '-?' option.
+
+  * doc/gputils.lyx, man/gpasm.1.in, gpasm/gpasm.c, gpasm/gpasm.h.in,
+    gpasm/gperror.c:
+    Patch: #67 Errors with macros dereferenced 
+    Tanks to Petr Mikse.
+
 2016-02-27  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, gputils/gpdasm.c, libgputils/gpcofflink.c:
     Patch: #66 C89 style comments to prevent warnings 

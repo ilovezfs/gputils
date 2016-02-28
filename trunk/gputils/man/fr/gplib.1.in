@@ -24,7 +24,7 @@ Créer une nouvelle bibliothèque.
 .BR \-d ", "\-\-delete
 Supprimer «\ membre\ » de «\ bibliothèque\ ».
 .TP
-.BR \-h ", "\-\-help
+.BR \-? ", " \-h ", " \-\-help
 Afficher un message d'utilisation et quitter.
 .TP
 .BR \-n ", "\-\-no-index

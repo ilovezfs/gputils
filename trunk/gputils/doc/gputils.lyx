@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Feb 22, 2016
+Feb 28, 2016
 \end_layout
 
 \begin_layout Standard
@@ -1405,7 +1405,7 @@ Use debug directives for COFF.
 \begin_inset Text
 
 \begin_layout Plain Layout
--h
+-?, -h
 \end_layout
 
 \end_inset
@@ -2259,7 +2259,7 @@ Set the strict level of the recommended instruction-parameters (W or F and
 \begin_layout Standard
 \noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="3">
+<lyxtabular version="3" rows="8" columns="3">
 <features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="3.5cm">
 <column alignment="left" valignment="top" width="7.4cm">
@@ -2513,6 +2513,35 @@ warnings, and errors to be reported.
 \end_inset
 
 2: Will suppress the messages and warnings.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--macro-dereference
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Use the source from where the macro was invoked for errors.
 \end_layout
 
 \end_inset
@@ -12719,7 +12748,7 @@ Fill unused unprotected program memory with <value>
 \begin_inset Text
 
 \begin_layout Plain Layout
--h
+-?, -h
 \end_layout
 
 \end_inset
@@ -13449,7 +13478,7 @@ Delete member from library
 \begin_inset Text
 
 \begin_layout Plain Layout
--h
+-?, -h
 \end_layout
 
 \end_inset
@@ -13957,7 +13986,7 @@ Decode the special mnemonics.
 \begin_inset Text
 
 \begin_layout Plain Layout
--h
+-?, -h
 \end_layout
 
 \end_inset
@@ -14685,7 +14714,7 @@ Strip debug symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
--h
+-?, -h
 \end_layout
 
 \end_inset
@@ -15196,7 +15225,7 @@ Display directory header
 \begin_inset Text
 
 \begin_layout Plain Layout
--h
+-?, -h
 \end_layout
 
 \end_inset
@@ -15637,7 +15666,7 @@ File header
 \begin_inset Text
 
 \begin_layout Plain Layout
--h
+-?, -h
 \end_layout
 
 \end_inset
