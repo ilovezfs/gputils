@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Feb 01 2016
 ;  MPASM PIC16LF1566 processor include
 ; 
-;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -155,9 +155,9 @@ SSP2CON2         EQU  H'021E'
 SSP2CON3         EQU  H'021F'
 
 ;-----Bank7------------------
-IOCBP            EQU  H'0391'
-IOCBN            EQU  H'0392'
-IOCBF            EQU  H'0393'
+IOCBP            EQU  H'0394'
+IOCBN            EQU  H'0395'
+IOCBF            EQU  H'0396'
 
 ;-----Bank8------------------
 TMR4             EQU  H'0415'
@@ -1921,8 +1921,8 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'020E'-H'020F'
        __BADRAM  H'028C'-H'029F'
        __BADRAM  H'030C'-H'031F'
-       __BADRAM  H'038C'-H'0390'
-       __BADRAM  H'0394'-H'039F'
+       __BADRAM  H'038C'-H'0393'
+       __BADRAM  H'0397'-H'039F'
        __BADRAM  H'040C'-H'0414'
        __BADRAM  H'0418'-H'041F'
        __BADRAM  H'048C'-H'049F'

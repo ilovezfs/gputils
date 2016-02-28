@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Dec 08 2015
+; Build date : Feb 01 2016
 ;  MPASM PIC18F24K40 processor include
 ; 
-;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -1922,7 +1922,6 @@ AS2E             EQU  H'0002'
 AS3E             EQU  H'0003'
 AS4E             EQU  H'0004'
 AS5E             EQU  H'0005'
-AS6E             EQU  H'0006'
 
 
 ;----- CWG1STR Bits -----------------------------------------------------

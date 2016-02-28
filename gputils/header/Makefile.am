@@ -313,6 +313,7 @@ HEADER_FILES = \
 	p16f18875.inc \
 	p16f18876.inc \
 	p16f18877.inc \
+	p16f19197.inc \
 	p16hv540.inc \
 	p16hv610.inc \
 	p16hv616.inc \

@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Dec 08 2015
+; Build date : Feb 01 2016
 ;  MPASM PIC18LF65K40 processor include
 ; 
-;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -248,7 +248,6 @@ INLVLC           EQU  H'0E9E'
 SLRCONC          EQU  H'0E9F'
 ODCONC           EQU  H'0EA0'
 WPUC             EQU  H'0EA1'
-ANSELC           EQU  H'0EA2'
 INLVLD           EQU  H'0EA3'
 SLRCOND          EQU  H'0EA4'
 ODCOND           EQU  H'0EA5'
@@ -279,7 +278,6 @@ INLVLH           EQU  H'0EBD'
 SLRCONH          EQU  H'0EBE'
 ODCONH           EQU  H'0EBF'
 WPUH             EQU  H'0EC0'
-ANSELH           EQU  H'0EC1'
 HLVDCON0         EQU  H'0EC2'
 HLVDCON1         EQU  H'0EC3'
 FVRCON           EQU  H'0EC4'
@@ -1295,7 +1293,7 @@ TMR8IE           EQU  H'0007'
 
 
 ;----- PIE6 Bits -----------------------------------------------------
-TMR1E            EQU  H'0000'
+TMR1GIE          EQU  H'0000'
 TMR3GIE          EQU  H'0001'
 TMR5GIE          EQU  H'0002'
 TMR7GIE          EQU  H'0003'
@@ -1653,35 +1651,46 @@ TMR3MD           EQU  H'0003'
 TMR4MD           EQU  H'0004'
 TMR5MD           EQU  H'0005'
 TMR6MD           EQU  H'0006'
+TMR7MD           EQU  H'0007'
 
 
 ;----- PMD2 Bits -----------------------------------------------------
+TMR8MD           EQU  H'0000'
+SMU1MD           EQU  H'0001'
+SMU2MD           EQU  H'0002'
+DSMMD            EQU  H'0003'
+CWGMD            EQU  H'0005'
+
+CWG1MD           EQU  H'0005'
+
+
+;----- PMD3 Bits -----------------------------------------------------
 ZCDMD            EQU  H'0000'
 CMP1MD           EQU  H'0001'
 CMP2MD           EQU  H'0002'
+CMP3MD           EQU  H'0003'
 ADCMD            EQU  H'0005'
 DACMD            EQU  H'0006'
 
 
-;----- PMD3 Bits -----------------------------------------------------
+;----- PMD4 Bits -----------------------------------------------------
 CCP1MD           EQU  H'0000'
 CCP2MD           EQU  H'0001'
-PWM3MD           EQU  H'0002'
-PWM4MD           EQU  H'0003'
-
-
-;----- PMD4 Bits -----------------------------------------------------
-CWGMD            EQU  H'0000'
-MSSP1MD          EQU  H'0004'
-MSSP2MD          EQU  H'0005'
-UART1MD          EQU  H'0006'
-UART2MD          EQU  H'0007'
-
-CWG1MD           EQU  H'0000'
+CCP3MD           EQU  H'0002'
+CCP4MD           EQU  H'0003'
+CCP5MD           EQU  H'0004'
+PWM6MD           EQU  H'0005'
+PWM7MD           EQU  H'0006'
 
 
 ;----- PMD5 Bits -----------------------------------------------------
-DSMMD            EQU  H'0000'
+MSSP1MD          EQU  H'0000'
+MSSP2MD          EQU  H'0001'
+UART1MD          EQU  H'0002'
+UART2MD          EQU  H'0003'
+UART3MD          EQU  H'0004'
+UART4MD          EQU  H'0005'
+UART5MD          EQU  H'0006'
 
 
 ;----- RA0PPS Bits -----------------------------------------------------
@@ -2435,17 +2444,6 @@ WPUC6            EQU  H'0006'
 WPUC7            EQU  H'0007'
 
 
-;----- ANSELC Bits -----------------------------------------------------
-ANSELC0          EQU  H'0000'
-ANSELC1          EQU  H'0001'
-ANSELC2          EQU  H'0002'
-ANSELC3          EQU  H'0003'
-ANSELC4          EQU  H'0004'
-ANSELC5          EQU  H'0005'
-ANSELC6          EQU  H'0006'
-ANSELC7          EQU  H'0007'
-
-
 ;----- INLVLD Bits -----------------------------------------------------
 INLVLD0          EQU  H'0000'
 INLVLD1          EQU  H'0001'
@@ -2774,17 +2772,6 @@ WPUH4            EQU  H'0004'
 WPUH5            EQU  H'0005'
 WPUH6            EQU  H'0006'
 WPUH7            EQU  H'0007'
-
-
-;----- ANSELH Bits -----------------------------------------------------
-ANSELH0          EQU  H'0000'
-ANSELH1          EQU  H'0001'
-ANSELH2          EQU  H'0002'
-ANSELH3          EQU  H'0003'
-ANSELH4          EQU  H'0004'
-ANSELH5          EQU  H'0005'
-ANSELH6          EQU  H'0006'
-ANSELH7          EQU  H'0007'
 
 
 ;----- HLVDCON0 Bits -----------------------------------------------------
@@ -4290,6 +4277,7 @@ AS3E             EQU  H'0003'
 AS4E             EQU  H'0004'
 AS5E             EQU  H'0005'
 AS6E             EQU  H'0006'
+AS7E             EQU  H'0007'
 
 
 ;----- CWG1STR Bits -----------------------------------------------------
@@ -6523,6 +6511,8 @@ SP5              EQU  H'0005'
        __BADRAM  H'0DDE'-H'0DEE'
        __BADRAM  H'0E4A'
        __BADRAM  H'0E87'
+       __BADRAM  H'0EA2'
+       __BADRAM  H'0EC1'
        __BADRAM  H'0FF0'-H'0FF1'
 
 ;==========================================================================
