@@ -31,7 +31,7 @@ Afficher le listage des sources.
 .BR \-m ", "\-\-message
 Afficher la zone de messages de débogage.
 .TP
-.BR \-? ", " \-h ", " \-\-help
+.BR \-h ", " \-\-help
 Afficher un message d'utilisation et quitter.
 .TP
 .BR \-r ", "\-\-rom

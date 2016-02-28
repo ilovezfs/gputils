@@ -20,7 +20,7 @@ manpage for details on other GNU PIC utilities.
 .BR \-g ", "\-\-strip\-debug
 Strip debug symbols.
 .TP
-.BR \-? ", " \-h ", " \-\-help
+.BR \-h ", " \-\-help
 Show the usage message and exit.
 .TP
 .BR "\-k SYMBOL" , " \-\-keep\-symbol SYMBOL

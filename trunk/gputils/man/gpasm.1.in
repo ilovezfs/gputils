@@ -53,7 +53,7 @@ Show full address in .lst file at the memory map region.
 .BR \-g ", " \-\-debug-info
 Use debug directives for COFF.
 .TP
-.BR \-?", " \-h ", " \-\-help
+.BR \-h ", " \-\-help
 Show the usage message and exit.
 .TP
 .BR \-i ", " \-\-ignore\-case

@@ -27,7 +27,7 @@ Decode special mnemonics.
 .BR \-f ", "\-\-file
 Display file header.
 .TP
-.BR \-? ", " \-h ", " \-\-help
+.BR \-h ", " \-\-help
 Show the usage message and exit.
 .TP
 .BR \-n ", "\-\-no\-names

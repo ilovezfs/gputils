@@ -1405,7 +1405,7 @@ Use debug directives for COFF.
 \begin_inset Text
 
 \begin_layout Plain Layout
--?, -h
+-h
 \end_layout
 
 \end_inset
@@ -12748,7 +12748,7 @@ Fill unused unprotected program memory with <value>
 \begin_inset Text
 
 \begin_layout Plain Layout
--?, -h
+-h
 \end_layout
 
 \end_inset
@@ -13478,7 +13478,7 @@ Delete member from library
 \begin_inset Text
 
 \begin_layout Plain Layout
--?, -h
+-h
 \end_layout
 
 \end_inset
@@ -13986,7 +13986,7 @@ Decode the special mnemonics.
 \begin_inset Text
 
 \begin_layout Plain Layout
--?, -h
+-h
 \end_layout
 
 \end_inset
@@ -14714,7 +14714,7 @@ Strip debug symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
--?, -h
+-h
 \end_layout
 
 \end_inset
@@ -15225,7 +15225,7 @@ Display directory header
 \begin_inset Text
 
 \begin_layout Plain Layout
--?, -h
+-h
 \end_layout
 
 \end_inset
@@ -15666,7 +15666,7 @@ File header
 \begin_inset Text
 
 \begin_layout Plain Layout
--?, -h
+-h
 \end_layout
 
 \end_inset

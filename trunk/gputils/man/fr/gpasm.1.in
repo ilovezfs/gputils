@@ -51,7 +51,7 @@ développées sans se soucier de la présence de NOEXPAND. De la même manière,
 .BR \-g ", " \-\-debug-info
 Utiliser les directives de débogage pour COFF.
 .TP
-.BR \-? ", " \-h ", " \-\-help
+.BR \-h ", " \-\-help
 Afficher un message d'utilisation et quitter.
 .TP
 .BR \-i ", " \-\-ignore-case

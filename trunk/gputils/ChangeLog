@@ -2,6 +2,12 @@
   * doc/gputils.lyx, man/*, gpasm/gpasm.c, gplink/gplink.c,
     gputils/gpdasm.c, gputils/gplib.c, gputils/gpstrip.c,
     gputils/gpvc.c, gputils/gpvo.c:
+    Removed the unnecessary '-?' option.
+
+2016-02-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, man/*, gpasm/gpasm.c, gplink/gplink.c,
+    gputils/gpdasm.c, gputils/gplib.c, gputils/gpstrip.c,
+    gputils/gpvc.c, gputils/gpvo.c:
     Added the description of '-?' option.
 
   * doc/gputils.lyx, man/gpasm.1.in, gpasm/gpasm.c, gpasm/gpasm.h.in,

@@ -65,7 +65,7 @@ enum {
   OPT_STRICT_OPTIONS
 };
 
-#define GET_OPTIONS "?chijk:lmnop:stvy"
+#define GET_OPTIONS "chijk:lmnop:stvy"
 
 static struct option longopts[] =
 {
@@ -1422,7 +1422,7 @@ show_usage(void)
   printf("Usage: gpdasm [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -c, --mnemonics                Decode the special mnemonics.\n");
-  printf("  -?, -h, --help                 Show this usage message.\n");
+  printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --hex-info                 Show the informations of the input hex file.\n");
   printf("  -j, --mov-fsrn                 In the MOVIW or MOVWI instructions show as base\n");
   printf("                                 the FSRn register instead of the INDFn. [INDFn]\n");
