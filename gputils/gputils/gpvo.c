@@ -694,7 +694,7 @@ static void show_usage(void)
   printf("  -b, --binary            Print binary data.\n");
   printf("  -c, --mnemonics         Decode special mnemonics.\n");
   printf("  -f, --file              File header.\n");
-  printf("  -?, -h, --help          Show this usage message.\n");
+  printf("  -h, --help              Show this usage message.\n");
   printf("  -n, --no-names          Suppress filenames.\n");
   printf("  -s, --section           Section data.\n");
   printf("      --strict-options    If this is set, then an option may not be parameter\n"
@@ -712,7 +712,7 @@ enum {
   OPT_STRICT_OPTIONS = 0x100
 };
 
-#define GET_OPTIONS "?bcfhnstvx:y"
+#define GET_OPTIONS "bcfhnstvx:y"
 
 /* Used: himpsv */
 static struct option longopts[] =

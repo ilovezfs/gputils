@@ -24,7 +24,7 @@ Create a new library.
 .BR \-d ", "\-\-delete
 Delete member from library.
 .TP
-.BR \-? ", " \-h ", " \-\-help
+.BR \-h ", " \-\-help
 Show the usage message and exit.
 .TP
 .BR \-n ", "\-\-no-index

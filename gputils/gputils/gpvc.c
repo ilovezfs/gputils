@@ -86,7 +86,7 @@ show_usage(void)
   printf("  -d, --directory    Display directory header.\n");
   printf("  -l, --listing      Display source listing.\n");
   printf("  -m, --message      Display debug message area.\n");
-  printf("  -?, -h, --help     Show this usage message.\n");
+  printf("  -h, --help         Show this usage message.\n");
   printf("  -r, --rom          Display rom.\n");
   printf("  -s, --symbols      Display symbols.\n");
   printf("  -v, --version      Show version.\n\n");
@@ -95,7 +95,7 @@ show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?adhlmrsv"
+#define GET_OPTIONS "adhlmrsv"
 
 /* Used: adhlmrsv */
 static struct option longopts[] =

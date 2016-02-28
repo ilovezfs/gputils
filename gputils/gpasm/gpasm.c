@@ -43,7 +43,7 @@ struct gpasm_state state;
 static gp_boolean cmd_processor = false;
 static const char *processor_name = NULL;
 
-#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:s::S:tuvw:yP:X"
+#define GET_OPTIONS "D:I:a:cCde:fghijkl::LmMno:p:qr:s::S:tuvw:yP:X"
 
 typedef struct {
   pic_processor_t processor;
@@ -436,7 +436,7 @@ show_usage(void)
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
   printf("  -f, --full-address             Show full address in .lst file at the memory map region.\n");
   printf("  -g, --debug-info               Use debug directives for COFF.\n");
-  printf("  -?, -h, --help                 Show this usage message.\n");
+  printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --ignore-case              Case insensitive.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -j, --sdcc-dev16-list          Help to the extension of the pic16devices.txt file\n"

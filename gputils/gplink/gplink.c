@@ -397,7 +397,7 @@ set_optimize_level(void)
   }
 }
 
-#define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:u:vw"
+#define GET_OPTIONS "a:cdf:hI:lmo:O:qrs:t:u:vw"
 
 enum {
   OPT_MPLINK_COMPATIBLE = 0x100,
@@ -500,7 +500,7 @@ show_usage(void)
   printf("  -c, --object                   Output executable object file.\n");
   printf("  -d, --debug                    Output debug messages.\n");
   printf("  -f VALUE, --fill VALUE         Fill unused program memory with value.\n");
-  printf("  -?, -h, --help                 Show this usage message.\n");
+  printf("  -h, --help                     Show this usage message.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -l, --no-list                  Disable list file output.\n");
   printf("  -m, --map                      Output a map file.\n");
