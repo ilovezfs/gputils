@@ -2389,7 +2389,7 @@ sub print_mcu_list($$)
       }
 
     my $td_href    = "<th><a class=\"mcuLink\" href=\"${remote_url}${name}-$feat_tag.html\">$name</a></th>";
-    my $td_sh_href = "<td><a class=\"mcuDSheet\" href=\"http://www.microchip.com/TechDoc.aspx?type=datasheet&product=$href_name\">search</a></td>";
+    my $td_sh_href = "<td><a class=\"mcuDSheet\" href=\"https://www.microchip.com/search/searchapp/searchhome.aspx?q=${href_name}&resperpage=10&id=24&ac=1\">search</a></td>";
 
     given ($menu_class)
       {
