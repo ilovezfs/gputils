@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Feb 01 2016
 ;  MPASM PIC16F18854 processor include
 ; 
-;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -3776,6 +3776,8 @@ SBOREN           EQU  H'0007'
 ;----- VREGCON Bits -----------------------------------------------------
 VREGPM0          EQU  H'0000'
 VREGPM1          EQU  H'0001'
+
+VREGPM           EQU  H'0001'
 
 
 ;----- PCON0 Bits -----------------------------------------------------

@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Dec 08 2015
+; Build date : Feb 01 2016
 ;  MPASM PIC16LF18876 processor include
 ; 
-;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -6055,6 +6055,7 @@ ANSE2            EQU  H'0002'
 WPUE0            EQU  H'0000'
 WPUE1            EQU  H'0001'
 WPUE2            EQU  H'0002'
+WPUE3            EQU  H'0003'
 
 
 ;----- ODCONE Bits -----------------------------------------------------
@@ -6073,6 +6074,7 @@ SLRE2            EQU  H'0002'
 INLVLE0          EQU  H'0000'
 INLVLE1          EQU  H'0001'
 INLVLE2          EQU  H'0002'
+INLVLE3          EQU  H'0003'
 
 
 ;----- IOCEP Bits -----------------------------------------------------

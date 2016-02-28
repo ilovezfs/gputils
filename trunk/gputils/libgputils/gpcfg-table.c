@@ -1,5 +1,5 @@
 
-/* This file is generated automatically by the cfg-import.pl 2016-01-17 10:06:51 UTC. */
+/* This file is generated automatically by the cfg-import.pl 2016-02-28 11:36:15 UTC. */
 
 /*  Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
 
@@ -249,6 +249,11 @@ static const gp_cfg_option_t PIC18F4331_EXCLKMX_RC3_10            = { "RC3"     
 static const gp_cfg_option_t PIC18F4331_EXCLKMX_RD0_00            = { "RD0"           , 0x00 };
 static const gp_cfg_option_t PIC12F635_FCMEN_ON_0800              = { "ON"            , 0x0800 };
 static const gp_cfg_option_t PIC16F18313_FEXTOSC_OFF_0004         = { "OFF"           , 0x0004 };
+static const gp_cfg_option_t PIC16F19197_FEXTOSC_OFF_0_0004       = { "OFF_0"         , 0x0004 };
+static const gp_cfg_option_t PIC16F19197_FEXTOSC_OFF_1_0003       = { "OFF_1"         , 0x0003 };
+static const gp_cfg_option_t PIC16F19197_FEXTOSC_OFF_2_0002       = { "OFF_2"         , 0x0002 };
+static const gp_cfg_option_t PIC16F19197_FEXTOSC_OFF_3_0001       = { "OFF_3"         , 0x0001 };
+static const gp_cfg_option_t PIC16F19197_FEXTOSC_OFF_4_0000       = { "OFF_4"         , 0x0000 };
 static const gp_cfg_option_t PIC16F18854_FEXTOSC_RESERVED_0003    = { "RESERVED"      , 0x0003 };
 static const gp_cfg_option_t PIC18F1230_FLTAMX_RA5_01             = { "RA5"           , 0x01 };
 static const gp_cfg_option_t PIC18F1230_FLTAMX_RA7_00             = { "RA7"           , 0x00 };
@@ -2429,6 +2434,17 @@ static const gp_cfg_option_t *PIC16F18857_ZCD[] = {
 static const gp_cfg_option_t *PIC16F18875_ZCDDIS[] = {
   &MCP19110_WDTE_OFF_0000,
   &PIC12F635_IESO_ON_0400
+};
+
+static const gp_cfg_option_t *PIC16F19197_FEXTOSC[] = {
+  &PIC16F19197_FEXTOSC_OFF_4_0000,
+  &PIC16F19197_FEXTOSC_OFF_3_0001,
+  &PIC16F19197_FEXTOSC_OFF_2_0002,
+  &PIC16F19197_FEXTOSC_OFF_1_0003,
+  &PIC16F19197_FEXTOSC_OFF_0_0004,
+  &PIC12F1822_FOSC_ECL_0005,
+  &PIC12F1822_FOSC_ECM_0006,
+  &PIC12F1822_FOSC_ECH_0007
 };
 
 static const gp_cfg_option_t *PIC18C242_PWRT[] = {
@@ -5519,6 +5535,14 @@ static const gp_cfg_directive_t PIC16F18875_8008[] = {
   { "DEBUG"  , 0x2000,  2, PIC16F18313_DEBUG   }
 };
 
+static const gp_cfg_directive_t PIC16F19197_8007[] = {
+  { "FEXTOSC" , 0x0007,  8, PIC16F19197_FEXTOSC  },
+  { "RSTOSC"  , 0x0070,  8, PIC16F18854_RSTOSC   },
+  { "CLKOUTEN", 0x0100,  2, PIC16F18313_CLKOUTEN },
+  { "CSWEN"   , 0x0800,  2, PIC16F18313_CSWEN    },
+  { "FCMEN"   , 0x2000,  2, PIC12F1822_FCMEN     }
+};
+
 static const gp_cfg_directive_t PIC16LF1782_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "PLLEN" , 0x0100,  2, PIC12F1571_PLLEN  },
@@ -7973,6 +7997,14 @@ static const gp_cfg_addr_t PIC16F18875_addrs[] = {
   { 0x00800B, 0x3FFF,  2, PIC16F18854_800B    }
 };
 
+static const gp_cfg_addr_t PIC16F19197_addrs[] = {
+  { 0x008007, 0x3FFF,  5, PIC16F19197_8007    },
+  { 0x008008, 0x3FFF,  8, PIC16F18857_8008    },
+  { 0x008009, 0x3FFF,  4, PIC16F18854_8009    },
+  { 0x00800A, 0x3FFF,  3, PIC16F18854_800A    },
+  { 0x00800B, 0x3FFF,  2, PIC16F18854_800B    }
+};
+
 static const gp_cfg_addr_t PIC16F1933_addrs[] = {
   { 0x008007, 0xFFFF, 10, PIC12F1822_8007     },
   { 0x008008, 0xFFFF,  7, PIC16F1933_8008     }
@@ -10367,6 +10399,7 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "PIC16F18875"    ,  5, PIC16F18875_addrs   },
   { "PIC16F18876"    ,  5, PIC16F18857_addrs   },
   { "PIC16F18877"    ,  5, PIC16F18857_addrs   },
+  { "PIC16F19197"    ,  5, PIC16F19197_addrs   },
   { "PIC16F1933"     ,  2, PIC16F1933_addrs    },
   { "PIC16F1934"     ,  2, PIC16F1933_addrs    },
   { "PIC16F1936"     ,  2, PIC16F1933_addrs    },
@@ -11019,4 +11052,4 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "RF675K"         ,  1, PIC12F629_addrs     }
 };
 
-const int gp_cfg_device_count = 889;
+const int gp_cfg_device_count = 890;

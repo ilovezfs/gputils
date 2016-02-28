@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : Feb 01 2016
 ;  MPASM PIC16F18326 processor include
 ; 
-;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -83,8 +83,8 @@ PR2              EQU  H'001E'
 T2CON            EQU  H'001F'
 
 ;-----Bank1------------------
-TRISA            EQU  H'008C'
-TRISC            EQU  H'008E'
+TRISA            EQU  H'0080'
+TRISC            EQU  H'0082'
 PIE0             EQU  H'0090'
 PIE1             EQU  H'0091'
 PIE2             EQU  H'0092'
@@ -3208,8 +3208,8 @@ Z_SHAD           EQU  H'0002'
        __MAXRAM  H'0FFF'
        __BADRAM  H'000D'
        __BADRAM  H'000F'
-       __BADRAM  H'008D'
-       __BADRAM  H'008F'
+       __BADRAM  H'0081'
+       __BADRAM  H'0083'
        __BADRAM  H'0095'
        __BADRAM  H'0096'
        __BADRAM  H'0098'
