@@ -291,6 +291,7 @@ extern struct gpasm_state {
   unsigned int           while_depth;   /* WHILE nesting depth, used in WHILE definition. */
   enum state_types       next_state;
   gp_boolean             skipped_inst;  /* Instruction execution depends on the previous one (after btfsc etc.). */
+  gp_boolean             macro_dereference;  /* Use the source from where the macro was invoked for errors. */
 
   union {
     char              *file;

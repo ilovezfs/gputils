@@ -200,7 +200,7 @@ void show_usage(void)
   printf("Usage: gpstrip [options] file(s)\n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -g, --strip-debug                     Strip debug symbols.\n");
-  printf("  -h, --help                            Show this usage message.\n");
+  printf("  -?, -h, --help                        Show this usage message.\n");
   printf("  -k SYMBOL, --keep-symbol SYMBOL       Keep symbol.\n");
   printf("  -n SYMBOL, --strip-symbol SYMBOL      Remove symbol.\n");
   printf("  -o FILE, --output FILE                Alternate name of output file.\n");

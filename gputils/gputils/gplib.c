@@ -87,7 +87,7 @@ void show_usage(void)
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -c, --create       Create a new library.\n");
   printf("  -d, --delete       Delete member from library.\n");
-  printf("  -h, --help         Show this usage message.\n");
+  printf("  -?, -h, --help     Show this usage message.\n");
   printf("  -n, --no-index     Don't add symbol index.\n");
   printf("  -q, --quiet        Quiet mode.\n");
   printf("  -r, --replace      Add or replace member from library.\n");

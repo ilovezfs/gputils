@@ -28,7 +28,7 @@ Boston, MA 02111-1307, USA.  */
 #include "lst.h"
 
 struct error_list {
-  int value;
+  int                value;
   struct error_list *next;
 };
 
@@ -37,8 +37,7 @@ static struct error_list *errorcodes_list = NULL;
 void
 gperror_init(void) {
   if (state.errfile != OUT_NAMED) {
-    snprintf(state.errfilename, sizeof(state.errfilename),
-       "%s.err", state.basefilename);
+    snprintf(state.errfilename, sizeof(state.errfilename), "%s.err", state.basefilename);
   }
 
   if (state.errfile == OUT_SUPPRESS) {
@@ -85,9 +84,9 @@ add_code(int code)
 static gp_boolean
 check_code(int code)
 {
-  struct error_list *p;
-  gp_boolean print = true;
+  const struct error_list *p;
 
+  gp_boolean print = true;
   p = errorcodes_list;
 
   while (p != NULL) {
@@ -112,34 +111,39 @@ typedef enum {
 static void
 verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
 {
-  va_list ap0;
+  va_list                      ap0;
+  const char                  *type;
+  const char                  *gap;
+  const struct source_context *src = state.src;
+
+  if ((src != NULL) && state.macro_dereference) {
+    while ((src != NULL) && (src->type == SRC_MACRO)) {
+      src = src->prev;
+    }
+  }
+
+  switch (err_type) {
+    case ET_ERROR:
+      type = "Error";
+      gap  = "  ";
+      break;
+
+    case ET_WARNING:
+      type = "Warning";
+      gap  = "";
+      break;
+
+    case ET_MESSAGE:
+    default:
+      type = "Message";
+      gap  = "";
+      break;
+  }
 
   /* standard output */
   if (!state.quiet) {
-    const char *type;
-    const char *gap;
-
-    switch (err_type) {
-      case ET_ERROR:
-        type = "Error";
-        gap  = "  ";
-        break;
-
-      case ET_WARNING:
-        type = "Warning";
-        gap  = "";
-        break;
-
-      case ET_MESSAGE:
-      default:
-        type = "Message";
-        gap  = "";
-        break;
-    }
-
-    if (state.src != NULL) {
-      printf("%s:%d:%s[%03u] %s", state.src->name, state.src->line_number,
-             type, code, gap);
+    if (src != NULL) {
+      printf("%s:%d:%s[%03u] %s", src->name, src->line_number, type, code, gap);
     }
     else {
       printf("%s[%03u] %s", type, code, gap);
@@ -149,64 +153,70 @@ verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
     vprintf(message, ap0);
     va_end(ap0);
     putchar('\n');
+  }
 
-    if (state.err.enabled) {
-      if (state.src != NULL) {
-        fprintf(state.err.f, "%s[%03u] %s%s %d : ", type, code, gap,
-                state.src->name, state.src->line_number);
-      }
-      else {
-        fprintf(state.err.f, "%s[%03u] %s", type, code, gap);
-      }
-
-      vfprintf(state.err.f, message, ap);
-      putc('\n', state.err.f);
+  /* error file */
+  if (state.err.enabled) {
+    if (src != NULL) {
+      fprintf(state.err.f, "%s[%03u] %s%s %d : ", type, code, gap, src->name, src->line_number);
     }
+    else {
+      fprintf(state.err.f, "%s[%03u] %s", type, code, gap);
+    }
+
+    vfprintf(state.err.f, message, ap);
+    putc('\n', state.err.f);
   }
 }
 
 static void
 err(err_type_t err_type, unsigned int code, const char *message)
 {
+  const char                  *type;
+  const char                  *gap;
+  const struct source_context *src = state.src;
+
+  if ((src != NULL) && state.macro_dereference) {
+    while ((src != NULL) && (src->type == SRC_MACRO)) {
+      src = src->prev;
+    }
+  }
+
+  switch (err_type) {
+    case ET_ERROR:
+      type = "Error";
+      gap  = "  ";
+      break;
+
+    case ET_WARNING:
+      type = "Warning";
+      gap  = "";
+      break;
+
+    case ET_MESSAGE:
+    default:
+      type = "Message";
+      gap  = "";
+      break;
+  }
+
   /* standard output */
   if (!state.quiet) {
-    const char *type;
-    const char *gap;
-
-    switch (err_type) {
-      case ET_ERROR:
-        type = "Error";
-        gap  = "  ";
-        break;
-
-      case ET_WARNING:
-        type = "Warning";
-        gap  = "";
-        break;
-
-      case ET_MESSAGE:
-      default:
-        type = "Message";
-        gap  = "";
-        break;
-    }
-
-    if (state.src != NULL) {
-      printf("%s:%d:%s[%03u] %s%s\n", state.src->name, state.src->line_number,
-             type, code, gap, message);
+    if (src != NULL) {
+      printf("%s:%d:%s[%03u] %s%s\n", src->name, src->line_number, type, code, gap, message);
     }
     else {
       printf("%s[%03u] %s%s\n", type, code, gap, message);
     }
+  }
 
-    if (state.err.enabled) {
-      if (state.src != NULL) {
-        fprintf(state.err.f, "%s[%03u] %s%s %d : %s\n", type, code, gap,
-                state.src->name, state.src->line_number, message);
-      }
-      else {
-        fprintf(state.err.f, "%s[%03u] %s%s\n", type, code, gap, message);
-      }
+  /* error file */
+  if (state.err.enabled) {
+    if (src != NULL) {
+      fprintf(state.err.f, "%s[%03u] %s%s %d : %s\n", type, code, gap, src->name, src->line_number, message);
+    }
+    else {
+      fprintf(state.err.f, "%s[%03u] %s%s\n", type, code, gap, message);
     }
   }
 }

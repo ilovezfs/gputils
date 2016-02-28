@@ -43,7 +43,7 @@ struct gpasm_state state;
 static gp_boolean cmd_processor = false;
 static const char *processor_name = NULL;
 
-#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:s::S:tuvw:yP:"
+#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:s::S:tuvw:yP:X"
 
 typedef struct {
   pic_processor_t processor;
@@ -91,6 +91,7 @@ static struct option longopts[] =
   { "extended",                  no_argument,       NULL, 'y' },
   { "mpasm-compatible",          no_argument,       NULL, OPT_MPASM_COMPATIBLE },
   { "preprocess",                required_argument, NULL, 'P' },
+  { "macro-dereference",         no_argument,       NULL, 'X' },
   { NULL,                        no_argument,       NULL, '\0' }
 };
 
@@ -435,7 +436,7 @@ show_usage(void)
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
   printf("  -f, --full-address             Show full address in .lst file at the memory map region.\n");
   printf("  -g, --debug-info               Use debug directives for COFF.\n");
-  printf("  -h, --help                     Show this usage message.\n");
+  printf("  -?, -h, --help                 Show this usage message.\n");
   printf("  -i, --ignore-case              Case insensitive.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -j, --sdcc-dev16-list          Help to the extension of the pic16devices.txt file\n"
@@ -489,6 +490,7 @@ show_usage(void)
          "                                        warnings and errors to be reported.\n"
          "                                     1: Will suppress the messages.\n"
          "                                     2: Will suppress the messages and warnings.\n");
+  printf("  -X, --macro-dereference        Use the source from where the macro was invoked for errors.\n");
   printf("  -y, --extended                 Enable 18xx extended mode.\n\n");
 #ifdef USE_DEFAULT_PATHS
   if (gp_header_path != NULL) {
@@ -854,6 +856,10 @@ process_args(int argc, char *argv[])
     case 'w':
       select_errorlevel(atoi(optarg));
       state.cmd_line.error_level = true;
+      break;
+
+    case 'X':
+      state.macro_dereference = true;
       break;
 
     case 'y':
