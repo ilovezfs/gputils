@@ -614,7 +614,7 @@ coff_add_identsym(const char *string)
 char *
 coff_local_name(const char *name)
 {
-  struct symbol *local;
+  symbol_t *local;
   gp_symbol_type *symbol;
   char buffer[BUFSIZ];
   int count = 1;
@@ -623,10 +623,10 @@ coff_local_name(const char *name)
     return NULL;
   }
 
-  local = get_symbol(state.stGlobal, name);
+  local = sym_get_symbol(state.stGlobal, name);
   if (local == NULL) {
     /* It isn't in the stGlobal so it must be in stTop. It's local. */
-    while (1) {
+    while (true) {
       snprintf(buffer, sizeof(buffer), "_%d%s", count, name);
       symbol = gp_coffgen_findsymbol(state.obj.object, buffer);
 

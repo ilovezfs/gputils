@@ -90,7 +90,7 @@ gp_boolean can_evaluate(const struct pnode *p)
   case PTAG_SYMBOL:
     {
       char buf[BUFSIZ];
-      const struct symbol *s;
+      const symbol_t *s;
 
       /* '$' means current org, which we can always evaluate */
       if (strcmp(p->value.symbol, "$") == 0) {
@@ -100,7 +100,7 @@ gp_boolean can_evaluate(const struct pnode *p)
         const struct variable *var = NULL;
 
         /* Otherwise look it up */
-        s = get_symbol(state.stTop, p->value.symbol);
+        s = sym_get_symbol(state.stTop, p->value.symbol);
 
         if (s == NULL) {
           if (*p->value.symbol == '\0') {
@@ -111,7 +111,7 @@ gp_boolean can_evaluate(const struct pnode *p)
           }
         }
         else {
-          var = get_symbol_annotation(s);
+          var = sym_get_symbol_annotation(s);
 
           if (var == NULL) {
             snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", p->value.symbol);
@@ -159,13 +159,13 @@ gp_boolean can_evaluate_value(const struct pnode *p)
     }
     else {
       /* Otherwise look it up */
-      struct symbol *s = get_symbol(state.stTop, p->value.symbol);
+      symbol_t *s = sym_get_symbol(state.stTop, p->value.symbol);
 
       if (s == NULL) {
         return false;
       }
       else {
-        const struct variable *var = get_symbol_annotation(s);
+        const struct variable *var = sym_get_symbol_annotation(s);
 
         if (NULL == var) {
           return false;
@@ -206,8 +206,8 @@ gp_boolean can_evaluate_value(const struct pnode *p)
 static int is_program_segment(const struct pnode *p)
 {
   if ((p->tag == PTAG_SYMBOL) && (strcmp(p->value.symbol, "$") != 0)) {
-    const struct symbol *s = get_symbol(state.stTop, p->value.symbol);
-    const struct variable *var = get_symbol_annotation(s);
+    const symbol_t *s = sym_get_symbol(state.stTop, p->value.symbol);
+    const struct variable *var = sym_get_symbol_annotation(s);
 
     assert(var != NULL);
     /* If var type is GVT_ADDRESS return 1, else return 0. */
@@ -232,15 +232,15 @@ gpasmVal evaluate(const struct pnode *p)
 
   case PTAG_SYMBOL:
     {
-      const struct symbol *s;
+      const symbol_t *s;
 
       if (strcmp(p->value.symbol, "$") == 0) {
         return (IS_RAM_ORG ? state.byte_addr :
                              gp_processor_byte_to_real(state.processor, state.byte_addr));
       }
       else {
-        s = get_symbol(state.stTop, p->value.symbol);
-        var = get_symbol_annotation(s);
+        s = sym_get_symbol(state.stTop, p->value.symbol);
+        var = sym_get_symbol_annotation(s);
         assert(var != NULL);
         return var->value;
       }
@@ -413,7 +413,7 @@ gpasmVal maybe_evaluate(const struct pnode *p)
 
 int count_reloc(const struct pnode *p)
 {
-  const struct symbol *s;
+  const symbol_t *s;
   const struct variable *var;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -432,9 +432,9 @@ int count_reloc(const struct pnode *p)
       return 1;
     }
     else {
-      s = get_symbol(state.stTop, p->value.symbol);
+      s = sym_get_symbol(state.stTop, p->value.symbol);
       if (s != NULL) {
-        var = get_symbol_annotation(s);
+        var = sym_get_symbol_annotation(s);
 
         if (var != NULL) {
           switch (var->type) {
@@ -471,7 +471,7 @@ int count_reloc(const struct pnode *p)
 static void
 add_reloc(const struct pnode *p, short offs, unsigned short type)
 {
-  const struct symbol *s = NULL;
+  const symbol_t *s = NULL;
   const struct variable *var = NULL;
 
   switch (p->tag) {
@@ -494,13 +494,13 @@ add_reloc(const struct pnode *p, short offs, unsigned short type)
         set_global(buffer, org, LFT_PERMANENT, IS_RAM_ORG ? GVT_STATIC : GVT_ADDRESS, false);
       }
 
-      s = get_symbol(state.stTop, buffer);
+      s = sym_get_symbol(state.stTop, buffer);
     }
     else {
-      s = get_symbol(state.stTop, p->value.symbol);
+      s = sym_get_symbol(state.stTop, p->value.symbol);
     }
     if (s != NULL) {
-      var = get_symbol_annotation(s);
+      var = sym_get_symbol_annotation(s);
 
       if (var != NULL) {
         switch(var->type) {
@@ -609,21 +609,19 @@ add_reloc(const struct pnode *p, short offs, unsigned short type)
 static gp_boolean
 same_section(const struct pnode *p)
 {
-  const struct pnode *p0;
-  const struct pnode *p1;
-  struct symbol *sym0;
-  struct symbol *sym1;
-  struct variable *var0;
-  struct variable *var1;
+  const struct pnode    *p0;
+  const struct pnode    *p1;
+  const symbol_t        *sym0;
+  const symbol_t        *sym1;
+  const struct variable *var0;
+  const struct variable *var1;
 
   if (!state.obj.enabled) {
     return false;
   }
 
   if ((p->tag == PTAG_UNOP) &&
-      ((p->value.unop.op == UPPER) ||
-       (p->value.unop.op == HIGH) ||
-       (p->value.unop.op == LOW))) {
+      ((p->value.unop.op == UPPER) || (p->value.unop.op == HIGH) || (p->value.unop.op == LOW))) {
     p = p->value.unop.p0;
   }
 
@@ -640,10 +638,10 @@ same_section(const struct pnode *p)
     return false;
   }
 
-  sym0 = get_symbol(state.stTop, p0->value.symbol);
-  sym1 = get_symbol(state.stTop, p1->value.symbol);
-  var0 = get_symbol_annotation(sym0);
-  var1 = get_symbol_annotation(sym1);
+  sym0 = sym_get_symbol(state.stTop, p0->value.symbol);
+  sym1 = sym_get_symbol(state.stTop, p1->value.symbol);
+  var0 = sym_get_symbol_annotation(sym0);
+  var1 = sym_get_symbol_annotation(sym1);
 
   /* They must come from the same section. Debug symbols are not placed
      in the global symbol table, so don't worry about symbol type.

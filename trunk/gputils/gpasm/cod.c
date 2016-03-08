@@ -239,21 +239,26 @@ cod_lst_line(int line_type)
  */
 
 void
-cod_write_symbols(struct symbol **symbol_list, int num_symbols)
+cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 {
-  int i, len, type;
+  size_t i;
+  int len, type;
   const struct variable *var;
   const char *name;
   BlockList *sb = NULL;
+
+  if ((symbol_list == NULL) || (num_symbols == 0)) {
+    return;
+  }
 
   if (!state.cod.enabled) {
     return;
   }
 
   for (i = 0; i < num_symbols; i++) {
-    var = get_symbol_annotation(symbol_list[i]);
-    name = get_symbol_name(symbol_list[i]);
-    len = strlen(name);
+    name = sym_get_symbol_name(symbol_list[i]);
+    var  = sym_get_symbol_annotation(symbol_list[i]);
+    len  = strlen(name);
 
     /* If this symbol extends past the end of the cod block
      * then write this block out */

@@ -76,6 +76,9 @@
 /* Define to 1 if you have the `strnicmp' function. */
 #undef HAVE_STRNICMP
 
+/* Define to 1 if you have the 'strverscmp' function. */
+#undef HAVE_STRVERSCMP
+
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 #undef HAVE_SYS_IOCTL_H
 
@@ -93,6 +96,9 @@
 
 /* Define to 1 if you have the <windows.h> header file. */
 #undef HAVE_WINDOWS_H
+
+/* Native word size. */
+#undef NATIVE_WORD_SIZE
 
 /* Name of package */
 #undef PACKAGE
@@ -115,11 +121,38 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* The size of `char', as computed by sizeof. */
+#undef SIZEOF_CHAR
+
+/* The size of `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* The size of `long long', as computed by sizeof. */
+#undef SIZEOF_LONG_LONG
+
+/* The size of `short', as computed by sizeof. */
+#undef SIZEOF_SHORT
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
+
+/* int16_t */
+#undef TYPE_INT16
+
+/* int32_t */
+#undef TYPE_INT32
+
+/* int64_t */
+#undef TYPE_INT64
+
+/* int8_t */
+#undef TYPE_INT8
 
 /* Define if you want to add default search paths. */
 #undef USE_DEFAULT_PATHS

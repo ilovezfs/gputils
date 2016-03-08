@@ -169,7 +169,7 @@ extern struct gpasm_state {
   } device;
 
   char badram[MAX_RAM];                 /* nonzero indicates illegal memory */
-  struct symbol_table
+  symbol_table_t
     *stBuiltin,                         /* Built-ins: instructions, pseudo-ops */
     *stDirective,                       /* bottom half of Builtin with directives */
     *stGlobal,                          /* Global symbols. */
@@ -404,8 +404,8 @@ void coerce_str1(struct pnode *exp);
 gpasmVal do_or_append_insn(const char *op, struct pnode *parms);
 void set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type, gp_boolean procDependent);
 struct variable *get_global_constant(const char *Name);
-void purge_temp_symbols(struct symbol_table *table);
-void purge_processor_const_symbols(struct symbol_table *table);
+void purge_temp_symbols(symbol_table_t *Table);
+void purge_processor_const_symbols(symbol_table_t *Table);
 void select_errorlevel(int level);
 void select_strictlevel(int level);
 void select_expand(const char *expand);

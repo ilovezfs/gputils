@@ -52,15 +52,15 @@ struct arg_list_s {
 static const char *
 check_defines(char *symbol, int symlen, struct pnode **param_list_p)
 {
-  struct symbol *sym;
+  symbol_t *sym;
   struct pnode *p;
   const char *subst = NULL;
 
   *param_list_p = NULL;
 
   /* If not quoted, check for #define substitution. */
-  if ((sym = get_symbol_len(state.stDefines, symbol, symlen)) != NULL) {
-    p = get_symbol_annotation(sym);
+  if ((sym = sym_get_symbol_len(state.stDefines, symbol, symlen)) != NULL) {
+    p = sym_get_symbol_annotation(sym);
 
     if (p != NULL) {
       struct pnode *p2 = HEAD(p);
@@ -634,12 +634,12 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
 static const char *
 check_macro_params(char *symbol, int symlen)
 {
-  const struct symbol *sym;
+  const symbol_t *sym;
   const struct pnode *p;
   const char *subst = NULL;
 
-  if ((sym = get_symbol_len(state.stMacroParams, symbol, symlen)) != NULL) {
-    p = get_symbol_annotation(sym);
+  if ((sym = sym_get_symbol_len(state.stMacroParams, symbol, symlen)) != NULL) {
+    p = sym_get_symbol_annotation(sym);
     if (p != NULL) {
       const struct pnode *p2 = HEAD(p);
 

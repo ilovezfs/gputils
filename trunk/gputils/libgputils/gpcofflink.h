@@ -44,33 +44,28 @@ enum section_type {
 /* Section definitions from the linker script are stored in the following
    structure.  These structures are placed in a symbol table.  */
 
-struct linker_section {
+typedef struct linker_section {
   enum section_type type;
-  int start;
-  int end;
-  int fill;
-  gp_boolean use_fill;
-  gp_boolean protected;
-  int shadow_val;
-  const char *shadow_sym;
-};
+  int               start;
+  int               end;
+  int               fill;
+  gp_boolean        use_fill;
+  gp_boolean        protected;
+  int               shadow_val;
+  const char       *shadow_sym;
+} linker_section_t;
 
-void gp_link_add_symbol(struct symbol_table *table,
-                        gp_symbol_type *symbol,
-                        gp_object_type *file);
+void gp_link_add_symbol(symbol_table_t *table, gp_symbol_type *symbol, gp_object_type *file);
 
-void gp_link_remove_symbol(struct symbol_table *table, char *name);
+void gp_link_remove_symbol(symbol_table_t *table, char *name);
 
-int gp_link_add_symbols(struct symbol_table *,
-                        struct symbol_table *missing,
-                        gp_object_type *object);
+int gp_link_add_symbols(symbol_table_t *, symbol_table_t *missing, gp_object_type *object);
 
 void gp_cofflink_combine_objects(gp_object_type *object);
 
-void gp_cofflink_clean_table(gp_object_type *object,
-                             struct symbol_table *symbols);
+void gp_cofflink_clean_table(gp_object_type *object, symbol_table_t *symbols);
 
-void gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol);
+void gp_cofflink_combine_overlay(gp_object_type *object, gp_boolean remove_symbol);
 
 void gp_cofflink_make_stack(gp_object_type *object, int num_bytes);
 
@@ -82,35 +77,22 @@ void gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit);
 
 void gp_add_cinit_section(gp_object_type *object);
 
-void gp_cofflink_reloc_abs(gp_object_type *object,
-                           MemBlock *m,
-                           int org_to_byte_shift,
+void gp_cofflink_reloc_abs(gp_object_type *object, MemBlock *m, int org_to_byte_shift,
                            unsigned long flags);
 
-void gp_cofflink_reloc_assigned(gp_object_type *object,
-                                MemBlock *m,
-                                int org_to_byte_shift,
-                                unsigned long flags,
-                                struct symbol_table *sections,
-                                struct symbol_table *logical_sections);
+void gp_cofflink_reloc_assigned(gp_object_type *object, MemBlock *m, int org_to_byte_shift,
+                                unsigned long flags, symbol_table_t *sections,
+                                symbol_table_t *logical_sections);
 
-void gp_cofflink_reloc_cinit(gp_object_type *object,
-                             MemBlock *m,
-                             int org_to_byte_shift,
-                             gp_section_type *cinit_section,
-                             struct symbol_table *sections);
+void gp_cofflink_reloc_cinit(gp_object_type *object, MemBlock *m, int org_to_byte_shift,
+                             gp_section_type *cinit_section, const symbol_table_t *sections);
 
-void gp_cofflink_reloc_unassigned(gp_object_type *object,
-                                  MemBlock *m,
-                                  int org_to_byte_shift,
-                                  unsigned long flags,
-                                  struct symbol_table *sections);
+void gp_cofflink_reloc_unassigned(gp_object_type *object, MemBlock *m, int org_to_byte_shift,
+                                  unsigned long flags, const symbol_table_t *sections);
 
 void gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift);
 
-void gp_cofflink_fill_pages(gp_object_type *object,
-                            MemBlock *m,
-                            struct symbol_table *sections);
+void gp_cofflink_fill_pages(gp_object_type *object, MemBlock *m, const symbol_table_t *sections);
 
 void gp_cofflink_patch(gp_object_type *object);
 

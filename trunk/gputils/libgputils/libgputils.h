@@ -23,32 +23,32 @@ Boston, MA 02111-1307, USA.  */
 #define __LIBGPUTILS_H__
 
 /* library files */
-#include <gptypes.h>
-#include <gpsystem.h>
-#include <gpmessage.h>
+#include "gptypes.h"
+#include "gpsystem.h"
+#include "gpmessage.h"
 
 /* common files */
-#include <gpmemory.h>
-#include <gpopcode.h>
-#include <gpprocessor.h>
-#include <gpsymbol.h>
-#include <gpdis.h>
-#include <gpwritehex.h>
-#include <gpreadhex.h>
+#include "gpmemory.h"
+#include "gpopcode.h"
+#include "gpprocessor.h"
+#include "gpsymbol.h"
+#include "gpdis.h"
+#include "gpwritehex.h"
+#include "gpreadhex.h"
 
 /* COFF files */
-#include <gpcoff.h>
-#include <gparchive.h>
-#include <gpcoffgen.h>
-#include <gpcofflink.h>
-#include <gpcoffopt.h>
-#include <gpreadobj.h>
-#include <gpwriteobj.h>
+#include "gpcoff.h"
+#include "gparchive.h"
+#include "gpcoffgen.h"
+#include "gpcofflink.h"
+#include "gpcoffopt.h"
+#include "gpreadobj.h"
+#include "gpwriteobj.h"
 
 /* COD files */
-#include <gpcod.h>
+#include "gpcod.h"
 
-#include <gphash.h>
-#include <gpregister.h>
+#include "gphash.h"
+#include "gpregister.h"
 
 #endif

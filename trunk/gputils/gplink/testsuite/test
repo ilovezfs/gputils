@@ -125,7 +125,7 @@ test_gplink_compile()
     do
       # split the base file name from the extension
       basefilename="${x%%.asm}"
-      "$GPASMBIN" $GPASMFLAGS -I $HEADER "$x"
+      "$GPASMBIN" $GPASMFLAGS -I "$HEADER" "$x"
       if test -e "$basefilename.o"; then
         echo "$x compiled."
       else
@@ -210,10 +210,10 @@ test_gplink_sub()
         echo "linking $basefilename.o"
         if [ $basefilename == "dead_code" ]; then
           echo "$GPLINKBIN -O2 -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
-          "$GPLINKBIN" -O2 -o "$basefilename.hex" $GPLINKFLAGS -I $LKR -s "$basefilename.lkr"
+          "$GPLINKBIN" -O2 -o "$basefilename.hex" $GPLINKFLAGS -I "$LKR" -s "$basefilename.lkr"
         else
           echo "$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
-          "$GPLINKBIN" -o "$basefilename.hex" $GPLINKFLAGS -I $LKR -s "$basefilename.lkr"
+          "$GPLINKBIN" -o "$basefilename.hex" $GPLINKFLAGS -I "$LKR" -s "$basefilename.lkr"
         fi
         if test -e "$basefilename.hex"; then
           compiled=$((compiled+1))

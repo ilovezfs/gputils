@@ -2,6 +2,8 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman
 
+   Copyright (C) 2016 Molnar Karoly
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -22,37 +24,35 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPSYMBOL_H__
 #define __GPSYMBOL_H__
 
-#define HASH_SIZE 173  /* Too small and we get collisions.  Too big
-                        * and we use up memory and run slow.. */
+struct symbol;
+typedef struct symbol symbol_t;
 
-struct symbol {
-  const char    *name;
-  void          *annotation;
-  struct symbol *next;
-};
+struct symbol_table;
+typedef struct symbol_table symbol_table_t;
 
-struct symbol_table {
-  int                  count;
-  gp_boolean           case_insensitive;
-  int                (*compare)(const char *__s1, const char *__s2);
-  int                (*compare_len)(const char *__s1, const char *__s2, size_t len);
-  struct symbol       *hash_table[HASH_SIZE];
-  struct symbol_table *prev;
-};
+typedef int (*symbol_compare_t)(const void *, const void *);
 
-struct symbol_table *push_symbol_table(struct symbol_table *, gp_boolean case_insensitive);
-struct symbol_table *pop_symbol_table(struct symbol_table *);
+extern size_t sym_get_symbol_count(const symbol_table_t *Table);
 
-struct symbol *add_symbol(struct symbol_table *, const char *name);
-gp_boolean remove_symbol(struct symbol_table *table, const char *name);
-struct symbol *get_symbol(struct symbol_table *, const char *name);
-struct symbol *get_symbol_len(struct symbol_table *, const char *name, size_t len);
+extern symbol_table_t *sym_push_table(symbol_table_t *Table, gp_boolean Case_insensitive);
+extern symbol_table_t *sym_pop_table(symbol_table_t *Table);
+extern void sym_set_guest_table(symbol_table_t *Table_host, symbol_table_t *Table_guest);
+extern symbol_table_t *sym_get_guest_table(symbol_table_t *Table);
 
-void annotate_symbol(struct symbol *, void *);
+extern symbol_t *sym_add_symbol(symbol_table_t *Table, const char *Name);
+extern gp_boolean sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index);
+extern gp_boolean sym_remove_symbol(symbol_table_t *Table, const char *Name);
+extern symbol_t *sym_get_symbol(symbol_table_t *Table, const char *Name);
+extern symbol_t *sym_get_symbol_len(symbol_table_t *Table, const char *Name, size_t Len);
+extern symbol_t *sym_get_symbol_with_index(symbol_table_t *Table, size_t Index);
 
-const char *get_symbol_name(const struct symbol *);
-void *get_symbol_annotation(const struct symbol *);
+extern const symbol_t **sym_clone_symbol_array(const symbol_table_t *Table, symbol_compare_t Cmp);
 
-int symbol_compare(const void *p0, const void *p1);
+extern void sym_annotate_symbol(symbol_t *Sym, void *Value);
+
+extern const char *sym_get_symbol_name(const symbol_t *Sym);
+extern void *sym_get_symbol_annotation(const symbol_t *Sym);
+
+extern int sym_compare_fn(const void *P0, const void *P1);
 
 #endif

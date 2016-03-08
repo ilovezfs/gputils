@@ -494,12 +494,12 @@ line:
 
             if (state.mac_head != NULL) {
               /* This is a macro definition. Set it up. */
-              struct symbol *mac;
+              symbol_t *mac;
               struct macro_head *h = NULL;
 
-              mac = get_symbol(state.stMacros, $1);
+              mac = sym_get_symbol(state.stMacros, $1);
               if (mac != NULL) {
-                h = get_symbol_annotation(mac);
+                h = sym_get_symbol_annotation(mac);
               }
 
               /* It's not an error if macro was defined on pass 1 and we're in pass 2. */
@@ -507,9 +507,9 @@ line:
                 gpverror(GPE_DUPLICATE_MACRO, NULL);
               } else {
                 if (mac == NULL) {
-                  mac = add_symbol(state.stMacros, $1);
+                  mac = sym_add_symbol(state.stMacros, $1);
                 }
-                annotate_symbol(mac, state.mac_head);
+                sym_annotate_symbol(mac, state.mac_head);
                 h = state.mac_head;
                 h->line_number = state.src->line_number;
                 h->file_symbol = state.src->file_symbol;

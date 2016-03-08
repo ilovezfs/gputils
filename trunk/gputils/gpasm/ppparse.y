@@ -68,10 +68,10 @@ exp:
   |
   IDENTIFIER
   {
-    struct symbol *sym;
+    symbol_t *sym;
 
-    if ((sym = get_symbol(state.stTop, $1)) != NULL) {
-      struct variable *var = get_symbol_annotation(sym);
+    if ((sym = sym_get_symbol(state.stTop, $1)) != NULL) {
+      struct variable *var = sym_get_symbol_annotation(sym);
       assert(var != NULL);
       $$ = var->value;
     }

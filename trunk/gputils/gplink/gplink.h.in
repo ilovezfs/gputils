@@ -27,9 +27,9 @@ Boston, MA 02111-1307, USA.  */
 #define MAX_PATHS 100
 
 struct archivelist {
-  char                *name;
-  gp_archive_type     *archive;
-  struct archivelist  *next;
+  char               *name;
+  gp_archive_type    *archive;
+  struct archivelist *next;
 };
 
 enum outfile {
@@ -39,104 +39,104 @@ enum outfile {
 };
 
 struct srcfns {
-  char *filename;
+  char          *filename;
   struct srcfns *next;
 };
 
 extern struct gplink_state {
-  gp_boolean mplink_compatible;    /* MPLINK compatibility mode */
-  char startdate[80];              /* When gplink ran */
-  enum formats hex_format;         /* format of the output */
-  char *paths[MAX_PATHS];          /* the list of include paths */
-  int numpaths;                    /* number of paths in the list */
-  pic_processor_t processor;
-  proc_class_t class;
+  gp_boolean       mplink_compatible;   /* MPLINK compatibility mode */
+  char             startdate[80];       /* When gplink ran */
+  enum formats     hex_format;          /* format of the output */
+  char            *paths[MAX_PATHS];    /* the list of include paths */
+  int              numpaths;            /* number of paths in the list */
+  pic_processor_t  processor;
+  proc_class_t     class;
 
   struct {
-    int level;
+    int        level;
     gp_boolean dead_sections;
     gp_boolean weak_symbols;
   } optimize;
 
   enum outfile
-    codfile,                       /* Symbol output file control */
-    hexfile,                       /* Hex output file control */
-    lstfile,                       /* List output file control */
-    mapfile,                       /* Map output file control */
-    objfile;                       /* Executable object file control */
+    codfile,                        /* Symbol output file control */
+    hexfile,                        /* Hex output file control */
+    lstfile,                        /* List output file control */
+    mapfile,                        /* Map output file control */
+    objfile;                        /* Executable object file control */
 
-  gp_boolean fill_enable;          /* Fill unused program memory with value */
-  unsigned int fill_value;         /* Value to fill program memory with */
-  gp_boolean has_stack;            /* Has stack directive in linker script */
-  unsigned int stack_size;         /* Value to fill program memory with */
-  gp_boolean has_idata;            /* Has initialized data memory */
-  struct srcfns *srcfilenames;     /* List of script file names */
+  gp_boolean     fill_enable;       /* Fill unused program memory with value */
+  unsigned int   fill_value;        /* Value to fill program memory with */
+  gp_boolean     has_stack;         /* Has stack directive in linker script */
+  unsigned int   stack_size;        /* Value to fill program memory with */
+  gp_boolean     has_idata;         /* Has initialized data memory */
+  struct srcfns *srcfilenames;      /* List of script file names */
 
-  char basefilename[BUFSIZ],       /* basename for generating hex,list,symbol filenames */
-    codfilename[BUFSIZ],           /* Symbol (.cod) file name */
-    hexfilename[BUFSIZ],           /* Hex (.hex) file name */
-    lstfilename[BUFSIZ],           /* Symbol (.lst) file name */
-    mapfilename[BUFSIZ],           /* List (.map) file name */
-    objfilename[BUFSIZ];           /* Object (.o) file name */
+  char basefilename[BUFSIZ],        /* basename for generating hex,list,symbol filenames */
+    codfilename[BUFSIZ],            /* Symbol (.cod) file name */
+    hexfilename[BUFSIZ],            /* Hex (.hex) file name */
+    lstfilename[BUFSIZ],            /* Symbol (.lst) file name */
+    mapfilename[BUFSIZ],            /* List (.map) file name */
+    objfilename[BUFSIZ];            /* Object (.o) file name */
 
-  struct source_context *src;      /* Top of the stack of the script files */
-  struct ifdef *ifdef;             /* Top of the stack of ifdef nesting */
-  struct symbol_table *script_symbols;
+  struct source_context *src;       /* Top of the stack of the script files */
+  struct ifdef          *ifdef;     /* Top of the stack of ifdef nesting */
+  symbol_table_t        *script_symbols;
 
-  struct {                         /* Map file state: */
-    FILE *f;                         /*   Map file output */
+  struct {                          /* Map file state: */
+    FILE *f;                        /*   Map file output */
   } map;
 
-  struct {                         /* Symbol file state: */
-    FILE *f;                         /*   Symbol file output */
-    gp_boolean enabled;              /*   symbol file is enabled */
-    gp_boolean emitting;             /*   flag indicating when an opcode is emitted */
+  struct {                          /* Symbol file state: */
+    FILE       *f;                  /*   Symbol file output */
+    gp_boolean  enabled;            /*   symbol file is enabled */
+    gp_boolean  emitting;           /*   flag indicating when an opcode is emitted */
   } cod;
 
-  struct {                         /* List file state: */
-    FILE *f;                         /*   List file output */
-    gp_boolean enabled;              /*   list file is enabled */
-    struct list_context *src;        /*   list file context */
-    int was_org;                     /*   last address that generated code */
+  struct {                          /* List file state: */
+    FILE                *f;         /*   List file output */
+    gp_boolean           enabled;   /*   list file is enabled */
+    struct list_context *src;       /*   list file context */
+    int                  was_org;   /*   last address that generated code */
   } lst;
 
   struct {
-    struct symbol_table *definition; /* section definitions from script */
-    struct symbol_table *logical;    /* logical definitions from script */
+    symbol_table_t *definition;     /* section definitions from script */
+    symbol_table_t *logical;        /* logical definitions from script */
   } section;
 
   struct {
-    struct symbol_table *definition; /* external symbol definition */
-    struct symbol_table *missing;    /* missing external symbols */
-    struct symbol_table *archive;    /* archive symbol index */
+    symbol_table_t *definition;     /* external symbol definition */
+    symbol_table_t *missing;        /* missing external symbols */
+    symbol_table_t *archive;        /* archive symbol index */
   } symbol;
 
   struct archivelist    *archives;
-  gp_object_type        *object;     /* object files */
-  MemBlock              *i_memory;   /* Instruction memory linked list */
+  gp_object_type        *object;    /* object files */
+  MemBlock              *i_memory;  /* Instruction memory linked list */
 } state;
 
 struct source_context {
-  char *name;
-  FILE *f;
-  unsigned int line_number;
+  char                   *name;
+  FILE                   *f;
+  unsigned int            line_number;
   struct yy_buffer_state *yybuf;
-  gp_boolean last_char_is_nl;     /* If the last read character is a newline */
-  struct source_context *prev;
+  gp_boolean              last_char_is_nl;  /* If the last read character is a newline */
+  struct source_context  *prev;
 };
 
 struct ifdef {
-  gp_boolean istrue;
-  gp_boolean inelse;
+  gp_boolean    istrue;
+  gp_boolean    inelse;
   struct ifdef *prev;
 };
 
 struct list_context {
-  char *name;
-  gp_symbol_type *symbol;
-  FILE *f;
-  gp_boolean missing_source;
-  unsigned int line_number;
+  char                *name;
+  gp_symbol_type      *symbol;
+  FILE                *f;
+  gp_boolean           missing_source;
+  unsigned int         line_number;
   struct list_context *prev;
 };
 

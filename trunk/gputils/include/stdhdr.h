@@ -24,7 +24,60 @@ Boston, MA 02111-1307, USA.  */
 #define __STDHDR_H__
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
+#endif
+
+#if defined(HAVE_STRING_H)
+  #define _GNU_SOURCE
+  #include <string.h>
+#elif defined(HAVE_STRINGS_H)
+  #include <strings.h>
+#endif
+
+#ifdef HAVE_INTTYPES_H
+  #include <inttypes.h>
+#else
+
+  #ifdef TYPE_INT8
+    typedef signed   TYPE_INT8 int8_t;
+    typedef unsigned TYPE_INT8 uint8_t;
+  #endif
+  #ifdef TYPE_INT16
+    typedef signed   TYPE_INT16 int16_t;
+    typedef unsigned TYPE_INT16 uint16_t;
+  #endif
+  #ifdef TYPE_INT32
+    typedef signed   TYPE_INT32 int32_t;
+    typedef unsigned TYPE_INT32 uint32_t;
+  #endif
+  #ifdef TYPE_INT64
+    typedef signed   TYPE_INT64 int64_t;
+    typedef unsigned TYPE_INT64 uint64_t;
+  #endif
+
+  #if (NATIVE_WORD_SIZE == 64)
+    #define __INT64_C(Cnt)	Cnt ## L
+    #define __UINT64_C(Cnt)	Cnt ## UL
+  #else
+    #define __INT64_C(Cnt)	Cnt ## LL
+    #define __UINT64_C(Cnt)	Cnt ## ULL
+  #endif
+
+  #define INT8_MIN		(-128)
+  #define INT16_MIN		(-32767-1)
+  #define INT32_MIN		(-2147483647-1)
+  #define INT64_MIN		(-__INT64_C(9223372036854775807)-1)
+
+  #define INT8_MAX		(127)
+  #define INT16_MAX		(32767)
+  #define INT32_MAX		(2147483647)
+  #define INT64_MAX		(__INT64_C(9223372036854775807))
+
+  #define UINT8_MAX		(255)
+  #define UINT16_MAX		(65535)
+  #define UINT32_MAX		(4294967295U)
+  #define UINT64_MAX		(__UINT64_C(18446744073709551615))
+
 #endif
 
 #include <stdio.h>
@@ -32,47 +85,41 @@ Boston, MA 02111-1307, USA.  */
 #include <sys/stat.h>
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+  #include <stdlib.h>
 #endif
 
 #ifndef EXIT_SUCCESS
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
+  #define EXIT_SUCCESS 0
+  #define EXIT_FAILURE 1
 #endif
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+  #include <unistd.h>
 #endif
 
 #include "getopt.h"
 
 #ifndef HAVE_STDLIB_H
-#ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif
+  #ifdef HAVE_MALLOC_H
+    #include <malloc.h>
+  #endif
 #endif
 
 #ifndef HAVE_STRCASECMP
-#ifdef HAVE_STRICMP
-#define strcasecmp stricmp
-#endif
+  #ifdef HAVE_STRICMP
+    #define strcasecmp stricmp
+  #endif
 #endif
 
 #ifndef HAVE_STRNCASECMP
-#ifdef HAVE_STRNICMP
-#define strncasecmp strnicmp
-#endif
+  #ifdef HAVE_STRNICMP
+    #define strncasecmp strnicmp
+  #endif
 #endif
 
 #ifndef HAVE_STRNDUP
 /* No system strndup: Use the one implemented in libiberty. */
-char *strndup (const char *s, size_t n);
-#endif
-
-#if defined(HAVE_STRING_H)
-#include <string.h>
-#elif defined(HAVE_STRINGS_H)
-#include <strings.h>
+char *strndup(const char *s, size_t n);
 #endif
 
 #include <time.h>

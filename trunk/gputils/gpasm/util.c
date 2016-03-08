@@ -29,6 +29,8 @@ Boston, MA 02111-1307, USA.  */
 
 static struct file_context *last = NULL;
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* MPASM compatible stripped version of strtoul:
  * gp_strtoi returns low sizeof(int) * 8 bits of the value:
  * value & ((2 ^ (sizeof(int) * 8)) - 1);
@@ -37,7 +39,7 @@ static struct file_context *last = NULL;
  * platform dependent: (int)strtoul("123456789", 16) returns -1 on 32 bit
  * platforms and 0x23456789 on 64 bit platforms. */
 static int
-gp_strtoi(const char *string, char **endptr, int radix)
+_strtoi(const char *string, char **endptr, int radix)
 {
   int value = 0;
   int sign  = 1;
@@ -79,6 +81,8 @@ gp_strtoi(const char *string, char **endptr, int radix)
   return (value * sign);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 stringtolong(const char *string, int radix)
 {
@@ -86,7 +90,7 @@ stringtolong(const char *string, int radix)
   int value;
   char ch;
 
-  value = gp_strtoi(string, &endptr, radix);
+  value = _strtoi(string, &endptr, radix);
   if ((endptr == NULL) || ((ch = *endptr) != '\0')) {
     char complaint[80];
 
@@ -101,12 +105,14 @@ stringtolong(const char *string, int radix)
   return value;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 #define HVM_NONE	0
 #define HVM_BEGIN	1
 #define HVM_NAME	2
 
 static gp_boolean
-find_hv_macro_start(const char *String, const char **Start, const char **Body)
+_find_hv_macro_start(const char *String, const char **Start, const char **Body)
 {
   const char *ptr;
   char        ch;
@@ -192,6 +198,8 @@ find_hv_macro_start(const char *String, const char **Start, const char **Body)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_boolean
 find_hv_macro(const char *String, const char **Start, const char **End)
 {
@@ -204,7 +212,7 @@ find_hv_macro(const char *String, const char **Start, const char **End)
     return false;
   }
 
-  if (!find_hv_macro_start(String, Start, &body)) {
+  if (!_find_hv_macro_start(String, Start, &body)) {
     return false;
   }
 
@@ -234,6 +242,8 @@ find_hv_macro(const char *String, const char **Start, const char **End)
   return false;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gpasm_magic(const char *c)
 {
@@ -252,6 +262,8 @@ gpasm_magic(const char *c)
 
   return c[0];
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /*
   convert_escaped_char(char *src,char c)
@@ -288,6 +300,8 @@ convert_escaped_char(char *str, char c)
 
   return str;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Determine the value of the escape char pointed to by ps.  Return a pointer
 to the next character. */
@@ -364,6 +378,8 @@ convert_escape_chars(const char *ps, int *value)
   return ps;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* In some contexts, such as in the operand to a literal instruction, a
  * single-character string literal in an expression can be coerced to a
  * character literal. coerce_str1 converts a string-type pnode to a
@@ -384,27 +400,28 @@ coerce_str1(struct pnode *exp)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type,
            gp_boolean procDependent)
 {
-  struct symbol *sym;
+  symbol_t        *sym;
   struct variable *var;
 
   /* Search the entire stack (i.e. include macro's local symbol tables) for the symbol.
      If not found, then add it to the global symbol table.  */
-  sym = get_symbol(state.stTop, name);
+  sym = sym_get_symbol(state.stTop, name);
 
   if (sym == NULL) {
-    sym = add_symbol(state.stGlobal, name);
+    sym = sym_add_symbol(state.stGlobal, name);
   }
 
-  var = get_symbol_annotation(sym);
+  var = sym_get_symbol_annotation(sym);
 
   if (var == NULL) {
     /* new symbol */
     var = GP_Malloc(sizeof(*var));
-    annotate_symbol(sym, var);
     var->value            = value;
     var->coff_num         = state.obj.symbol_num;
     var->coff_section_num = state.obj.section_num;
@@ -412,6 +429,7 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
     var->previous_type    = type;  /* coff symbols can be changed to global */
     var->lifetime         = lifetime;
     var->isProcDependent  = procDependent;
+    sym_annotate_symbol(sym, var);
 
     /* increment the index into the coff symbol table for the relocations */
     switch(type) {
@@ -457,14 +475,16 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 struct variable *
 get_global_constant(const char *Name)
 {
-  struct symbol   *sym;
+  const symbol_t  *sym;
   struct variable *var;
 
-  if (((sym = get_symbol(state.stGlobal, Name)) != NULL) &&
-      ((var = get_symbol_annotation(sym)) != NULL) &&
+  if (((sym = sym_get_symbol(state.stGlobal, Name)) != NULL) &&
+      ((var = sym_get_symbol_annotation(sym)) != NULL) &&
       (var->type == GVT_CONSTANT)) {
     return var;
   }
@@ -472,95 +492,66 @@ get_global_constant(const char *Name)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-purge_temp_symbols(struct symbol_table *table) {
-  int              i;
-  struct symbol   *cur_symbol;
-  struct symbol   *next_symbol;
-  struct symbol   *last_symbol;
+purge_temp_symbols(symbol_table_t *Table) {
+  size_t           i;
+  symbol_t        *sym;
   struct variable *var;
 
-  if (table == NULL) {
+  if (Table == NULL) {
     return;
   }
 
-  for (i = 0; i < HASH_SIZE; ++i) {
-    cur_symbol  = table->hash_table[i];
-    last_symbol = NULL;
-    while (cur_symbol != NULL) {
-      var = (struct variable *)get_symbol_annotation(cur_symbol);
+  for (i = 0; i < sym_get_symbol_count(Table); ) {
+    sym = sym_get_symbol_with_index(Table, i);
+    assert(sym != NULL);
 
-      if (var != NULL) {
-        if (var->lifetime == LFT_TEMPORARY) {
-          next_symbol = cur_symbol->next;
+    var = (struct variable *)sym_get_symbol_annotation(sym);
 
-          free(cur_symbol);
-          table->count--;
-
-          if (last_symbol == NULL) {
-            table->hash_table[i] = next_symbol;
-          }
-          else {
-            last_symbol->next = next_symbol;
-          }
-
-          cur_symbol = next_symbol;
-          continue;
-        }
-      }
-
-      last_symbol = cur_symbol;
-      cur_symbol = cur_symbol->next;
+    if ((var != NULL) && (var->lifetime == LFT_TEMPORARY)) {
+      sym_remove_symbol_with_index(Table, i);
+    }
+    else {
+      ++i;
     }
   }
 
-  purge_temp_symbols(table->prev);
+  purge_temp_symbols(sym_get_guest_table(Table));
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-purge_processor_const_symbols(struct symbol_table *table) {
-  int i;
-  struct symbol   *cur_symbol;
-  struct symbol   *next_symbol;
-  struct symbol   *last_symbol;
+purge_processor_const_symbols(symbol_table_t *Table) {
+  size_t           i;
+  symbol_t        *sym;
   struct variable *var;
 
-  if (table == NULL) {
+  if (Table == NULL) {
     return;
   }
 
-  for (i = 0; i < HASH_SIZE; ++i) {
-    cur_symbol  = table->hash_table[i];
-    last_symbol = NULL;
-    while (cur_symbol != NULL) {
-      var = (struct variable *)get_symbol_annotation(cur_symbol);
+  for (i = 0; i < sym_get_symbol_count(Table); ) {
+    sym = sym_get_symbol_with_index(Table, i);
+    assert(sym != NULL);
 
-      if (var != NULL) {
-        if ((var->lifetime == LFT_PERMANENT) && (var->type == GVT_CONSTANT) && var->isProcDependent) {
-          next_symbol = cur_symbol->next;
+    var = (struct variable *)sym_get_symbol_annotation(sym);
 
-          free(cur_symbol);
-          table->count--;
-
-          if (last_symbol == NULL) {
-            table->hash_table[i] = next_symbol;
-          }
-          else {
-            last_symbol->next = next_symbol;
-          }
-
-          cur_symbol = next_symbol;
-          continue;
-        }
-      }
-
-      last_symbol = cur_symbol;
-      cur_symbol = cur_symbol->next;
+    if ((var != NULL) && (var->lifetime == LFT_PERMANENT) && (var->type == GVT_CONSTANT) &&
+        var->isProcDependent) {
+      sym_remove_symbol_with_index(Table, i);
+    }
+    else {
+      ++i;
     }
   }
 
-  purge_processor_const_symbols(table->prev);
+  purge_processor_const_symbols(sym_get_guest_table(Table));
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 select_errorlevel(int level)
@@ -589,6 +580,8 @@ select_errorlevel(int level)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 select_strictlevel(int level)
 {
@@ -612,6 +605,8 @@ select_strictlevel(int level)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 select_expand(const char *expand)
 {
@@ -633,6 +628,8 @@ select_expand(const char *expand)
     }
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 #define STR_INHX8M              "inhx8m"
 #define STR_INHX8S              "inhx8s"
@@ -665,6 +662,8 @@ select_hexformat(const char *format_name)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 select_radix(const char *radix_name)
 {
@@ -695,7 +694,7 @@ select_radix(const char *radix_name)
   }
 }
 
-/************************************************************************/
+/*------------------------------------------------------------------------------------------------*/
 
 /* Function to append a line to an ongoing macro definition. */
 void
@@ -710,6 +709,8 @@ macro_append(void)
   state.mac_body = body;
   body->next = NULL;            /* make sure it's terminated */
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 gpasmVal
 do_or_append_insn(const char *op, struct pnode *parms)
@@ -737,6 +738,8 @@ do_or_append_insn(const char *op, struct pnode *parms)
     return do_insn(op, parms);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /*static void
 print_pnode(const struct pnode *p)
@@ -797,7 +800,7 @@ print_macro_body(const struct macro_body *mac)
   printf("}\n");
 }*/
 
-/************************************************************************/
+/*------------------------------------------------------------------------------------------------*/
 
 /* add_file: Add a file of type 'type' to the file_context stack. */
 
@@ -840,6 +843,8 @@ add_file(unsigned int type, const char *name)
 /* free_files: free memory allocated to the file_context stack
  */
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 free_files(void)
 {
@@ -853,37 +858,27 @@ free_files(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 hex_init(void)
 {
-
   if (state.hexfile == OUT_SUPPRESS) {
     /* Must delete hex file when suppressed. */
-    writehex(state.basefilename,
-             state.i_memory,
-             state.hex_format,
-             1,
-             state.dos_newlines,
-             1);
+    writehex(state.basefilename, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
     return;
   }
 
   if (check_writehex(state.i_memory, state.hex_format)) {
     gpverror(GPE_IHEX, NULL);
-    writehex(state.basefilename, state.i_memory,
-             state.hex_format, 1,
-             state.dos_newlines, 1);
+    writehex(state.basefilename, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
   } else if (state.device.class != NULL) {
-    if (writehex(state.basefilename, state.i_memory,
-                 state.hex_format, state.num.errors,
-                 state.dos_newlines,
-                 state.device.class->core_mask)) {
+    if (writehex(state.basefilename, state.i_memory, state.hex_format, state.num.errors,
+                 state.dos_newlines, state.device.class->core_mask)) {
       gperror(GPE_UNKNOWN, "Error generating hex file.");
     }
   } else {
     /* Won't have anything to write, just remove any old files. */
-    writehex(state.basefilename, state.i_memory,
-             state.hex_format, 1,
-             state.dos_newlines, 1);
+    writehex(state.basefilename, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
   }
 }

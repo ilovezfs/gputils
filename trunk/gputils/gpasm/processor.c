@@ -313,7 +313,7 @@ select_processor(const char *name)
     if ((!state.processor_chosen) && (state.processor != NULL)) {
       opcode_init(1);   /* General directives. */
       /* Separate the directives from the opcodes. */
-      state.stBuiltin = push_symbol_table(state.stBuiltin, true);
+      state.stBuiltin = sym_push_table(state.stBuiltin, true);
       opcode_init(2);   /* Processor-specific. */
 
       if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE)) {

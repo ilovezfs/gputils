@@ -30,6 +30,6 @@ Boston, MA 02111-1307, USA.  */
 void cod_init(void);
 void cod_close_file(void);
 void cod_lst_line(int line_type);
-void cod_write_symbols(struct symbol **,int);
+void cod_write_symbols(const symbol_t **, size_t);
 
 #endif
