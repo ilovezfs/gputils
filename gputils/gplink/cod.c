@@ -68,32 +68,32 @@ init_dir_block(void)
 static void
 assign_file_id(void)
 {
-  struct symbol_table *file_table;
+  symbol_table_t *file_table;
   gp_symbol_type *symbol;
   gp_aux_type *aux;
-  struct symbol *sym;
+  symbol_t *sym;
   int file_id = 0;
   int *value;
 
   /* build a case sensitive file table */
-  file_table = push_symbol_table(NULL, false);
+  file_table = sym_push_table(NULL, false);
 
   symbol = state.object->symbols;
   while (symbol != NULL) {
     if (symbol->class == C_FILE) {
       aux = symbol->aux_list;
       assert(aux != NULL);
-      sym = get_symbol(file_table, aux->_aux_symbol._aux_file.filename);
+      sym = sym_get_symbol(file_table, aux->_aux_symbol._aux_file.filename);
 
       if (sym != NULL) {
         /* fetch the file number */
-        value = get_symbol_annotation(sym);
+        value = sym_get_symbol_annotation(sym);
       } else {
         /* the file hasn't been assigned a value */
         value = GP_Malloc(sizeof(int));
         *value = file_id++;
-        sym = add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
-        annotate_symbol(sym, value);
+        sym = sym_add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
+        sym_annotate_symbol(sym, value);
       }
       symbol->number = *value;
     }
@@ -101,7 +101,7 @@ assign_file_id(void)
   }
 
   /* destory the table */
-  file_table = pop_symbol_table(file_table);
+  file_table = sym_pop_table(file_table);
 }
 
 /*
@@ -262,22 +262,27 @@ cod_lst_line(int line_type)
  *
  */
 void
-cod_write_symbols(struct symbol **symbol_list, int num_symbols)
+cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 {
-  int i, len, type;
+  size_t i;
+  int len, type;
   const gp_coffsymbol_type *var;
   const gp_symbol_type *symbol;
   const gp_section_type *section;
   const char *name;
   BlockList *sb = NULL;
 
+  if ((symbol_list == NULL) || (num_symbols == 0)) {
+    return;
+  }
+
   if (!state.cod.enabled) {
     return;
   }
 
   for (i = 0; i < num_symbols; i++) {
-    var  = get_symbol_annotation(symbol_list[i]);
-    name = get_symbol_name(symbol_list[i]);
+    name = sym_get_symbol_name(symbol_list[i]);
+    var  = sym_get_symbol_annotation(symbol_list[i]);
     len  = strlen(name);
 
     /* If this symbol extends past the end of the cod block
@@ -457,24 +462,20 @@ cod_write_debug(void)
 }
 
 static void
-cod_symbol_table(struct symbol_table *table)
+cod_symbol_table(const symbol_table_t *Table)
 {
-  int i;
-  struct symbol **sym, **ps, *s;
+  const symbol_t **lst;
+  size_t           sym_count;
 
-  ps = sym = GP_Malloc(table->count * sizeof(sym[0]));
+  sym_count = sym_get_symbol_count(Table);
 
-  for (i = 0; i < HASH_SIZE; i++) {
-    for (s = table->hash_table[i]; s != NULL; s = s->next) {
-      *ps++ = s;
-    }
+  if (sym_count == 0) {
+    return;
   }
 
-  assert(ps == &sym[table->count]);
-
-  qsort(sym, table->count, sizeof(sym[0]), symbol_compare);
-
-  cod_write_symbols(sym, table->count);
+  lst = sym_clone_symbol_array(Table, sym_compare_fn);
+  cod_write_symbols(lst, sym_count);
+  free(lst);
 }
 
 void

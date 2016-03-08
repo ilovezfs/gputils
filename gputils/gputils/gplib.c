@@ -29,10 +29,10 @@ struct gplib_state state = {
   .numobjects = 0,                  /* number of objects */
 };
 
-struct symbol_table *definition_tbl = NULL;
-struct symbol_table *symbol_index = NULL;
+static symbol_table_t *definition_tbl = NULL;
+static symbol_table_t *symbol_index = NULL;
 
-void select_mode(enum lib_modes mode)
+static void select_mode(enum lib_modes mode)
 {
   if (state.mode == AR_NULL) {
     state.mode = mode;
@@ -129,8 +129,8 @@ int main(int argc, char *argv[])
   gp_init();
 
   /* symbols are case sensitive */
-  definition_tbl = push_symbol_table(NULL, false);
-  symbol_index = push_symbol_table(NULL, false);
+  definition_tbl = sym_push_table(NULL, false);
+  symbol_index   = sym_push_table(NULL, false);
 
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {

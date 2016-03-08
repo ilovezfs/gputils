@@ -30,9 +30,9 @@ gp_boolean verbose;
 void
 conditional_remove(gp_symbol_type *symbol)
 {
-  struct symbol *sym;
+  const symbol_t *sym;
 
-  sym = get_symbol(state.symbol_keep, symbol->name);
+  sym = sym_get_symbol(state.symbol_keep, symbol->name);
   if (sym == NULL) {
     if (verbose) {
       gp_message("removing symbol \"%s\"", symbol->name);
@@ -44,29 +44,25 @@ conditional_remove(gp_symbol_type *symbol)
 void
 remove_sections(void)
 {
-  int i;
-  struct symbol *sym;
+  size_t           i;
+  const symbol_t  *sym;
   gp_section_type *section;
 
-  /* FIXME:  Check for relocations from other sections.  Error out if
-     they exist */
+  /* FIXME: Check for relocations from other sections. Error out if they exist. */
 
-  for (i = 0; i < HASH_SIZE; i++) {
-    for (sym = state.section_remove->hash_table[i]; sym; sym = sym->next) {
-      section = gp_coffgen_findsection(state.object, 
-                                       state.object->sections,
-                                       sym->name);
-      if (section != NULL) {
-        if (verbose) {
-          gp_message("removing section \"%s\"", sym->name);
-        }
-
-        /* remove the sections symbols */
-        gp_coffgen_delsectionsyms(state.object, section);
-
-        /* remove the section */
-        gp_coffgen_delsection(state.object, section);
+  for (i = 0; i < sym_get_symbol_count(state.section_remove); ++i) {
+    sym     = sym_get_symbol_with_index(state.section_remove, i);
+    section = gp_coffgen_findsection(state.object, state.object->sections, sym_get_symbol_name(sym));
+    if (section != NULL) {
+      if (verbose) {
+        gp_message("removing section \"%s\"", sym_get_symbol_name(sym));
       }
+
+      /* remove the sections symbols */
+      gp_coffgen_delsectionsyms(state.object, section);
+
+      /* remove the section */
+      gp_coffgen_delsection(state.object, section);
     }
   }
 }
@@ -74,17 +70,16 @@ remove_sections(void)
 void
 remove_symbols(void)
 {
-  int i;
-  struct symbol *sym;
-  gp_symbol_type *symbol = NULL;
+  size_t          i;
+  const symbol_t *sym;
+  gp_symbol_type *symbol;
 
-  for (i = 0; i < HASH_SIZE; i++) {
-    for (sym = state.symbol_remove->hash_table[i]; sym; sym = sym->next) {
-      symbol = gp_coffgen_findsymbol(state.object, sym->name);
-      if (symbol) {
-        if (!gp_coffgen_has_reloc(state.object, symbol)) {
-          conditional_remove(symbol);
-        }
+  for (i = 0; i < sym_get_symbol_count(state.symbol_remove); ++i) {
+    sym    = sym_get_symbol_with_index(state.symbol_remove, i);
+    symbol = gp_coffgen_findsymbol(state.object, sym_get_symbol_name(sym));
+    if (symbol != NULL) {
+      if (!gp_coffgen_has_reloc(state.object, symbol)) {
+        conditional_remove(symbol);
       }
     }
   }
@@ -93,12 +88,12 @@ remove_symbols(void)
 void
 strip_all(void)
 {
-  gp_section_type *section = state.object->sections;
+  gp_section_type *section;
 
   if (state.object->flags & F_EXEC) {
+    section = state.object->sections;
     while (section != NULL) {
-      /* remove the line numbers, have too because the symbols will be
-         removed */
+      /* remove the line numbers, have too because the symbols will be removed */
       section->num_lineno = 0;
       section->line_numbers = NULL;
       section->line_numbers_tail = NULL;
@@ -124,10 +119,11 @@ strip_all(void)
 void
 strip_debug(void)
 {
-  gp_section_type *section = state.object->sections;
-  gp_symbol_type *list = NULL;
-  gp_symbol_type *symbol = NULL;
+  gp_section_type *section;
+  gp_symbol_type  *list;
+  gp_symbol_type  *symbol;
 
+  section = state.object->sections;
   while (section != NULL) {
     /* remove the line numbers */
     section->num_lineno = 0;
@@ -151,8 +147,8 @@ strip_debug(void)
 void
 strip_unneeded(void)
 {
-  gp_symbol_type *list = NULL;
-  gp_symbol_type *symbol = NULL;
+  gp_symbol_type *list;
+  gp_symbol_type *symbol;
 
   list = state.object->symbols;
   while (list != NULL) {
@@ -160,8 +156,7 @@ strip_unneeded(void)
     list = list->next;
     
     /* if the symbol has a relocation or is global it can't be removed */
-    if (!gp_coffgen_has_reloc(state.object, symbol) && 
-        !gp_coffgen_is_global(symbol)) {
+    if (!gp_coffgen_has_reloc(state.object, symbol) && !gp_coffgen_is_global(symbol)) {
       conditional_remove(symbol);
     }
   }
@@ -170,8 +165,8 @@ strip_unneeded(void)
 void
 discard_all(void)
 {
-  gp_symbol_type *list = NULL;
-  gp_symbol_type *symbol = NULL;
+  gp_symbol_type *list;
+  gp_symbol_type *symbol;
 
   list = state.object->symbols;
   while (list != NULL) {
@@ -185,13 +180,13 @@ discard_all(void)
 }
 
 void 
-add_name(struct symbol_table *table, char *name)
+add_name(symbol_table_t *table, char *name)
 {
-  struct symbol *sym;
+  const symbol_t *sym;
 
-  sym = get_symbol(table, name);
+  sym = sym_get_symbol(table, name);
   if (sym == NULL) {
-    sym = add_symbol(table, name);
+    sym_add_symbol(table, name);
   }
 }
 
@@ -254,15 +249,15 @@ int main(int argc, char *argv[])
 
   /* initalize */
   verbose = false;
-  state.strip_debug = false;
+  state.strip_debug    = false;
   state.preserve_dates = false;
-  state.strip_all = false;
+  state.strip_all      = false;
   state.strip_unneeded = false;
-  state.discard_all = false;
-  state.output_file = NULL;
-  state.symbol_keep = push_symbol_table(NULL, false);
-  state.symbol_remove = push_symbol_table(NULL, false);
-  state.section_remove = push_symbol_table(NULL, false);
+  state.discard_all    = false;
+  state.output_file    = NULL;
+  state.symbol_keep    = sym_push_table(NULL, false);
+  state.symbol_remove  = sym_push_table(NULL, false);
+  state.section_remove = sym_push_table(NULL, false);
 
   /* Scan through the options for the --strict-options flag. */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {

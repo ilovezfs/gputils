@@ -83,8 +83,7 @@ void gp_archive_list_members(const gp_archive_type *archive);
 gp_archive_type *gp_archive_find_member(gp_archive_type *archive, const char *objectname);
 void gp_archive_free_member(gp_archive_type *archive);
 gp_archive_type *gp_archive_delete_member(gp_archive_type *archive, const char *objectname);
-gp_archive_type *gp_archive_add_member(gp_archive_type *archive,
-                                       const char *filename,
+gp_archive_type *gp_archive_add_member(gp_archive_type *archive, const char *filename,
                                        const char *objectname);
 int gp_archive_extract_member(gp_archive_type *archive, const char *objectname);
 int gp_archive_write(gp_archive_type *archive, const char *archivename);
@@ -92,15 +91,10 @@ void gp_archive_update_offsets(gp_archive_type *archive);
 gp_archive_type *gp_archive_read(const char *filename);
 gp_boolean gp_archive_have_index(const gp_archive_type *archive);
 gp_archive_type *gp_archive_remove_index(gp_archive_type *archive);
-int gp_archive_make_index(gp_archive_type *archive,
-                          struct symbol_table *);
-gp_archive_type *gp_archive_add_index(struct symbol_table *table,
-                                      gp_archive_type *archive);
-gp_boolean gp_archive_add_symbol(struct symbol_table *table,
-                          const char *name,
-                          gp_archive_type *member);
-void gp_archive_read_index(struct symbol_table *table,
-                           gp_archive_type *archive);
-void gp_archive_print_table(struct symbol_table *table);
+int gp_archive_make_index(gp_archive_type *archive, symbol_table_t *);
+gp_archive_type *gp_archive_add_index(symbol_table_t *table, gp_archive_type *archive);
+gp_boolean gp_archive_add_symbol(symbol_table_t *table, const char *name, gp_archive_type *member);
+void gp_archive_read_index(symbol_table_t *table, gp_archive_type *archive);
+void gp_archive_print_table(const symbol_table_t *table);
 
 #endif

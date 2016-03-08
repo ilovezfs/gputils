@@ -90,8 +90,7 @@ static void
 lst_check_page_start(void)
 {
   if ((state.lst.linesperpage != 0) &&
-      ((state.lst.lineofpage == 0) ||
-       (state.lst.lineofpage > state.lst.linesperpage))) {
+      ((state.lst.lineofpage == 0) || (state.lst.lineofpage > state.lst.linesperpage))) {
     lst_page_start();
   }
 }
@@ -191,8 +190,7 @@ lst_init(void)
   state.lst.line_width = 132;   /* Default line width is 132 */
 
   if (state.lstfile != OUT_NAMED) {
-    snprintf(state.lstfilename, sizeof(state.lstfilename),
-             "%s.lst", state.basefilename);
+    snprintf(state.lstfilename, sizeof(state.lstfilename), "%s.lst", state.basefilename);
   }
 
   if (state.lstfile == OUT_SUPPRESS) {
@@ -306,12 +304,8 @@ lst_close(void)
   if (state.lst.f != NULL) {
     lst_line(NULL);
     lst_line("Errors   : %5d", state.num.errors);
-    lst_line("Warnings : %5d reported, %5d suppressed",
-             state.num.warnings,
-             state.num.warnings_suppressed);
-    lst_line("Messages : %5d reported, %5d suppressed",
-             state.num.messages,
-             state.num.messages_suppressed);
+    lst_line("Warnings : %5d reported, %5d suppressed", state.num.warnings, state.num.warnings_suppressed);
+    lst_line("Messages : %5d reported, %5d suppressed", state.num.messages, state.num.messages_suppressed);
     lst_line(NULL);
     putc('\f', state.lst.f);
 
@@ -856,52 +850,61 @@ lst_data:
 static void
 cod_symbol_table(void)
 {
-  int i;
-  struct symbol **lst, **ps, *s;
+  const symbol_t **lst;
+  size_t           sym_count;
 
-  ps = lst = GP_Malloc(state.stGlobal->count * sizeof(struct symbol *));
+  sym_count = sym_get_symbol_count(state.stGlobal);
 
-  for (i = 0; i < HASH_SIZE; i++) {
-    for (s = state.stGlobal->hash_table[i]; s != NULL; s = s->next) {
-      if (s != NULL) {
-        *ps++ = s;
-      }
-    }
+  if (sym_count == 0) {
+    return;
   }
 
-  assert(ps == &lst[state.stGlobal->count]);
+  lst = sym_clone_symbol_array(state.stGlobal, sym_compare_fn);
+  assert(lst != NULL);
 
-  qsort(lst, state.stGlobal->count, sizeof(struct symbol *), symbol_compare);
-
-  cod_write_symbols(lst, state.stGlobal->count);
-
+  cod_write_symbols(lst, sym_count);
   free(lst);
 }
 
 /* append the symbol table to the .lst file */
-struct lst_symbol_s {
-  const struct symbol *sym;
+typedef struct {
+  const symbol_t *sym;
   enum lst_sym_type_e {
     LST_SYMBOL,
     LST_DEFINE,
     LST_MACRO
   } type;
-};
+} lst_symbol_t;
+
+#ifdef HAVE_STRVERSCMP
 
 static int
-lst_symbol_compare(const void *p0, const void *p1)
+_lst_symbol_verscmp(const void *p0, const void *p1)
 {
-  return strcmp(((const struct lst_symbol_s *)p0)->sym->name,
-                ((const struct lst_symbol_s *)p1)->sym->name);
+  return strverscmp(sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
+                    sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
 }
+
+#endif
+
+static int
+_lst_symbol_cmp(const void *p0, const void *p1)
+{
+  return strcmp(sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
+                sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
+}
+
 
 void
 lst_symbol_table(void)
 {
-  int i;
-  struct lst_symbol_s *lst, *ps;
-  struct symbol *s;
-  int count = state.stGlobal->count + state.stDefines->count + state.stMacros->count;
+  const symbol_t **clone;
+  size_t           sym_count;
+  lst_symbol_t    *lst;
+  lst_symbol_t    *ps;
+  size_t           count;
+  size_t           i;
+
   state.lst.lst_state = LST_IN_SYMTAB;
 
   lst_line("SYMBOL TABLE");
@@ -910,39 +913,70 @@ lst_symbol_table(void)
 
   cod_symbol_table();
 
-  ps = lst = GP_Malloc(count * sizeof(struct lst_symbol_s));
+  count = sym_get_symbol_count(state.stGlobal) + sym_get_symbol_count(state.stDefines) +
+	  sym_get_symbol_count(state.stMacros);
+  if (count == 0) {
+    return;
+  }
 
-  for (i = 0; i < HASH_SIZE; i++) {
-    for (s = state.stGlobal->hash_table[i]; s != NULL; s = s->next) {
-      ps->sym = s;
+  ps = lst = GP_Malloc(count * sizeof(lst_symbol_t));
+
+  clone = sym_clone_symbol_array(state.stGlobal, NULL);
+  if (clone != NULL) {
+    sym_count = sym_get_symbol_count(state.stGlobal);
+    for (i = 0; i < sym_count; i++) {
+      ps->sym  = clone[i];
       ps->type = LST_SYMBOL;
       ++ps;
     }
+
+    free(clone);
   }
 
-  for (i = 0; i < HASH_SIZE; i++) {
-    for (s = state.stDefines->hash_table[i]; s != NULL; s = s->next) {
-      ps->sym = s;
+  clone = sym_clone_symbol_array(state.stDefines, NULL);
+  if (clone != NULL) {
+    sym_count = sym_get_symbol_count(state.stDefines);
+    for (i = 0; i < sym_count; i++) {
+      ps->sym  = clone[i];
       ps->type = LST_DEFINE;
       ++ps;
     }
+
+    free(clone);
   }
 
-  for (i = 0; i < HASH_SIZE; i++) {
-    for (s = state.stMacros->hash_table[i]; s != NULL; s = s->next) {
-      ps->sym = s;
+  clone = sym_clone_symbol_array(state.stMacros, NULL);
+  if (clone != NULL) {
+    sym_count = sym_get_symbol_count(state.stMacros);
+    for (i = 0; i < sym_count; i++) {
+      ps->sym  = clone[i];
       ps->type = LST_MACRO;
       ++ps;
     }
+
+    free(clone);
   }
 
   assert(ps == &lst[count]);
 
-  qsort(lst, count, sizeof(struct lst_symbol_s), lst_symbol_compare);
+#ifdef HAVE_STRVERSCMP
+
+  if (!state.mpasm_compatible) {
+    qsort(lst, count, sizeof(lst_symbol_t), _lst_symbol_verscmp);
+  }
+  else {
+    qsort(lst, count, sizeof(lst_symbol_t), _lst_symbol_cmp);
+  }
+
+#else
+
+  qsort(lst, count, sizeof(lst_symbol_t), _lst_symbol_cmp);
+
+#endif
 
   for (i = 0; i < count; i++) {
-    const void *p = get_symbol_annotation(lst[i].sym);
-    const char *name = get_symbol_name(lst[i].sym);
+    const char *name = sym_get_symbol_name(lst[i].sym);
+    const void *p    = sym_get_symbol_annotation(lst[i].sym);
 
     switch (lst[i].type) {
     case LST_SYMBOL:

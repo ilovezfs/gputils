@@ -23,13 +23,13 @@ Boston, MA 02111-1307, USA.  */
 #define __COD_H__
 
 /* line types for cod_lst_line */
-#define COD_FIRST_LST_LINE  1
-#define COD_NORMAL_LST_LINE 2
-#define COD_LAST_LST_LINE   3
+#define COD_FIRST_LST_LINE      1
+#define COD_NORMAL_LST_LINE     2
+#define COD_LAST_LST_LINE       3
 
-void cod_init(void);
-void cod_close_file(void);
-void cod_lst_line(int line_type);
-void cod_write_symbols(struct symbol **,int);
+extern void cod_init(void);
+extern void cod_close_file(void);
+extern void cod_lst_line(int line_type);
+extern void cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols);
 
 #endif

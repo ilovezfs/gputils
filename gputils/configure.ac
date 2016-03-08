@@ -19,6 +19,7 @@ GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
 GPUTILS_HTMLDOC_PATH=${GPUTILS_HTMLDOC_PATH:-"\$(datadir)/doc/gputils-\$(PACKAGE_VERSION)/html"}
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
+MPLABX_PATH_DEFAULT="/opt/microchip/mplabx/v3.25"
 MAKE_SUBDIRS="libgputils libiberty gpasm gplink gputils header lkr doc man"
 
 # Check for additional parameters
@@ -37,9 +38,9 @@ AC_ARG_ENABLE(html-doc,
 
 AC_ARG_WITH(mplabx-path,
   AC_HELP_STRING([--with-mplabx-path=DIR],
-                 [location of MPLAB-X (default=/opt/microchip/mplabx/v3.25)]),
+                 [location of MPLAB-X (default=${MPLABX_PATH_DEFAULT})]),
   [DEFAULT_MPLABX_PATH="$withval"],
-  [DEFAULT_MPLABX_PATH="/opt/microchip/mplabx/v3.25"])
+  [DEFAULT_MPLABX_PATH="${MPLABX_PATH_DEFAULT}"])
 
 # Checks for programs.
 AC_PROG_AWK
@@ -71,9 +72,89 @@ AC_CHECK_DECLS([asprintf, basename, getopt, vasprintf])
 AC_C_CONST
 AC_TYPE_SIZE_T 
 AC_STRUCT_TM
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(long long)
+
+type_name()
+{
+  if expr "$ac_cv_sizeof_char" '==' "$1" >/dev/null; then
+    echo "char"
+    exit
+  fi
+  if expr "$ac_cv_sizeof_short" '==' "$1" >/dev/null; then
+    echo "short"
+    exit
+  fi
+  if expr "$ac_cv_sizeof_int" '==' "$1" >/dev/null; then
+    echo "int"
+    exit
+  fi
+  if expr "$ac_cv_sizeof_long" '==' "$1" >/dev/null; then
+    echo "long"
+    exit
+  fi
+  if expr "$ac_cv_sizeof_long_long" '==' "$1" >/dev/null; then
+    echo "long long"
+    exit
+  fi
+  echo "long"
+}
+
+type_size()
+{
+  case "$1" in
+    char)      __ac_tmp=$ac_cv_sizeof_char ;;
+    short)     __ac_tmp=$ac_cv_sizeof_short ;;
+    int)       __ac_tmp=$ac_cv_sizeof_int ;;
+    long)      __ac_tmp=$ac_cv_sizeof_long ;;
+    long_long) __ac_tmp=$ac_cv_sizeof_long_long ;;
+    *)         __ac_tmp=$ac_cv_sizeof_int ;;
+  esac
+  expr $__ac_tmp '*' 8
+}
+
+AC_MSG_CHECKING(type name for int8_t)
+TYPE_INT8=`type_name 1`
+AC_MSG_RESULT($TYPE_INT8)
+
+AC_MSG_CHECKING(type name for int16_t)
+TYPE_INT16=`type_name 2`
+AC_MSG_RESULT($TYPE_INT16)
+
+AC_MSG_CHECKING(type name for int32_t)
+TYPE_INT32=`type_name 4`
+AC_MSG_RESULT($TYPE_INT32)
+
+AC_MSG_CHECKING(type name for int64_t)
+TYPE_INT64=`type_name 8`
+AC_MSG_RESULT($TYPE_INT64)
+
+AC_DEFINE_UNQUOTED(TYPE_INT8,  [$TYPE_INT8],  [int8_t])
+AC_DEFINE_UNQUOTED(TYPE_INT16, [$TYPE_INT16], [int16_t])
+AC_DEFINE_UNQUOTED(TYPE_INT32, [$TYPE_INT32], [int32_t])
+AC_DEFINE_UNQUOTED(TYPE_INT64, [$TYPE_INT64], [int64_t])
+
+NATIVE_WORD_SIZE=`type_size long`
+AC_DEFINE_UNQUOTED(NATIVE_WORD_SIZE, [$NATIVE_WORD_SIZE], [Native word size.])
 
 # Checks for library functions.
 AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp strndup realpath])
+
+AC_MSG_CHECKING(for strverscmp)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [#define _GNU_SOURCE
+#include <string.h>],
+    [(void)strverscmp((void *)0, (void *)0);])], [HAVE_STRVERSCMP=yes], [HAVE_STRVERSCMP=no])
+
+if test "x$HAVE_STRVERSCMP" = "xyes"; then
+  AC_DEFINE(HAVE_STRVERSCMP, 1, [Define to 1 if you have the 'strverscmp' function.])
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
 
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=

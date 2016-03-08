@@ -1,3 +1,20 @@
+2016-03-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure.ac, configure, configure.h.in, gpasm/cod.c,
+    gpasm/cod.h, gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c,
+    gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/lst.c, gpasm/macro.c,
+    gpasm/macro.h, gpasm/parse.y, gpasm/ppparse.y, gpasm/preprocess.c,
+    gpasm/processor.c, gpasm/scan.l, gpasm/util.c, gplink/cod.c,
+    gplink/cod.h, gplink/gplink.c, gplink/gplink.h.in, gplink/parse.y,
+    gplink/script.c, gputils/gplib.c, gputils/gpstrip.c,
+    gputils/gpstrip.h.in, include/stdhdr.h, libgputils/gparchive.c,
+    libgputils/gparchive.h, libgputils/gpcofflink.c,
+    libgputils/gpcofflink.h, libgputils/gpsymbol.c,
+    libgputils/gpsymbol.h, libgputils/libgputils.h:
+    A new symbol table handling which is operates faster.
+
+    gputils/gpdasm.h.in, gputils/gplib.h.in, gputils/gpvo.h.in:
+    Code formatting.
+
 2016-03-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure.ac, configure, doc/gputils.lyx:
     The version changed to 1.4.3 .

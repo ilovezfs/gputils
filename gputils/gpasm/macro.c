@@ -37,14 +37,14 @@ void setup_macro(struct macro_head *h, int arity, const struct pnode *parms)
 {
   if (enforce_arity(arity, list_length(h->parms))) {
     /* push table for the marco parms */
-    state.stMacroParams = push_symbol_table(state.stMacroParams, state.case_insensitive);
+    state.stMacroParams = sym_push_table(state.stMacroParams, state.case_insensitive);
 
     /* Now add the macro's declared parameter list to the new
        defines table. */
     if (arity > 0) {
       const struct pnode *pFrom, *pFromH;
       const struct pnode *pTo, *pToH;
-      struct symbol *sym;
+      symbol_t *sym;
 
       pTo = parms;
 
@@ -54,8 +54,8 @@ void setup_macro(struct macro_head *h, int arity, const struct pnode *parms)
         assert(pFromH->tag == PTAG_SYMBOL);
         assert(pToH->tag == PTAG_SYMBOL);
 
-        sym = add_symbol(state.stMacroParams, pFromH->value.symbol);
-        annotate_symbol(sym, mk_list(mk_string(GP_Strdup(pToH->value.symbol)), NULL));
+        sym = sym_add_symbol(state.stMacroParams, pFromH->value.symbol);
+        sym_annotate_symbol(sym, mk_list(mk_string(GP_Strdup(pToH->value.symbol)), NULL));
         pTo = TAIL(pTo);
       }
     }
@@ -72,15 +72,15 @@ void setup_macro(struct macro_head *h, int arity, const struct pnode *parms)
    are possible */
 
 struct macro_table {
-  struct symbol_table *table;
-  int line_number;            /* sanity check, better not change */
+  symbol_table_t     *table;
+  int                 line_number;      /* sanity check, better not change */
   struct macro_table *next;
 };
 
 static struct macro_table *macro_table_list = NULL;
 
 static void
-add_macro_table(struct symbol_table *table)
+add_macro_table(symbol_table_t *table)
 {
   struct macro_table *new;
 
@@ -103,13 +103,13 @@ add_macro_table(struct symbol_table *table)
   }
 }
 
-struct symbol_table *
-push_macro_symbol_table(struct symbol_table *table)
+symbol_table_t *
+push_macro_symbol_table(symbol_table_t *table)
 {
-  struct symbol_table *new = NULL;
+  symbol_table_t *new = NULL;
 
   if (state.pass == 1) {
-    new = push_symbol_table(table, state.case_insensitive);
+    new = sym_push_table(table, state.case_insensitive);
     add_macro_table(new);
   } else {
     if (macro_table_list == NULL) {
@@ -123,12 +123,12 @@ push_macro_symbol_table(struct symbol_table *table)
        a macro wasn't executed on the first pass, but it was on the second.
        Probably errors will be generated.  Forward references to local
        symbols probably won't be correct.  */
-      new = push_symbol_table(table, state.case_insensitive);
+      new = sym_push_table(table, state.case_insensitive);
       gpwarning(GPW_UNKNOWN, "Macro not executed on pass 1.");
     } else {
       assert(macro_table_list != NULL);
       new = macro_table_list->table;
-      new->prev = table;
+      sym_set_guest_table(new, table);
       macro_table_list = macro_table_list->next; /* setup for next macro */
     }
   }

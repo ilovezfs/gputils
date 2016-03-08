@@ -36,14 +36,15 @@ int yyparse(void);
 extern int yydebug;
 
 /* return the number of missing symbols */
-int
+static size_t
 count_missing(void)
 {
-  return state.symbol.missing->count;
+  return sym_get_symbol_count(state.symbol.missing);
 }
 
-void
-object_append(gp_object_type *file, char *name)
+static void
+/*object_append(gp_object_type *file, const char *name)*/
+object_append(gp_object_type *file)
 {
   /* append the entry to the list */
   if (state.object == NULL) {
@@ -71,16 +72,16 @@ object_append(gp_object_type *file, char *name)
   }
 }
 
-void
-archive_append(gp_archive_type *file, char *name)
+static void
+archive_append(gp_archive_type *file, const char *name)
 {
   struct archivelist *new;
 
   /* make the new entry */
   new = (struct archivelist *)GP_Malloc(sizeof(*new));
-  new->name = GP_Strdup(name);
+  new->name    = GP_Strdup(name);
   new->archive = file;
-  new->next = NULL;
+  new->next    = NULL;
 
   /* append the entry to the list */
   if (state.archives == NULL) {
@@ -102,45 +103,45 @@ archive_append(gp_archive_type *file, char *name)
    objects are added. */
 
 gp_boolean
-scan_index(struct symbol_table *table, gp_archive_type *archive)
+scan_index(symbol_table_t *table, gp_archive_type *archive)
 {
-  struct symbol *s;
-  struct symbol *m;
+  const symbol_t  *sym_miss;
+  const symbol_t  *sym_arch;
   gp_archive_type *member;
-  gp_object_type *object;
-  int i;
-  int num_added = 1; /* initalize to 1 so while loop can be entered */
-  const char *name;
-  char *object_name;
-  gp_boolean modified = false;
+  gp_object_type  *object;
+  size_t           i;
+  int              num_added;
+  const char      *name;
+  char            *object_name;
+  gp_boolean       modified;
 
+  num_added = 1; /* initalize to 1 so while loop can be entered */
+  modified = false;
   while (num_added != 0) {
     num_added = 0;
-    for (i = 0; i < HASH_SIZE; i++) {
-      for (s = state.symbol.missing->hash_table[i]; s; s = s->next) {
-        name = get_symbol_name(s);
-        assert(name != NULL);
-        /* Search for missing symbol name in archive symbol table. */
-        m = get_symbol(table, name);
+    for (i = 0; i < sym_get_symbol_count(state.symbol.missing); ++i) {
+      sym_miss = sym_get_symbol_with_index(state.symbol.missing, i);
+      name     = sym_get_symbol_name(sym_miss);
+      assert(name != NULL);
+      /* Search for missing symbol name in archive symbol table. */
+      sym_arch = sym_get_symbol(table, name);
 
-        if (m != NULL) {
-          /* Fetch the archive member, convert its binary data to an object
-             file, and add the object to the object list. */
-          member = get_symbol_annotation(m);
-          object_name = gp_archive_member_name(member);
-          object = gp_convert_file(object_name, &member->data);
-          object_append(object, object_name);
-          gp_link_add_symbols(state.symbol.definition,
-                              state.symbol.missing,
-                              object);
-          /* The symbol tables have been modified. Need to take another
-             pass to make sure we get everything. */
-          num_added++;
-          modified = true;
-          free(object_name);
-          /* This branch of the table has been modified. Go to the next one. */
-          break;
-        }
+      if (sym_arch != NULL) {
+        /* Fetch the archive member, convert its binary data to an object
+           file, and add the object to the object list. */
+        member = sym_get_symbol_annotation(sym_arch);
+        object_name = gp_archive_member_name(member);
+        object = gp_convert_file(object_name, &member->data);
+        /*object_append(object, object_name);*/
+        object_append(object);
+        gp_link_add_symbols(state.symbol.definition, state.symbol.missing, object);
+        /* The symbol tables have been modified. Need to take another
+           pass to make sure we get everything. */
+        num_added++;
+        modified = true;
+        free(object_name);
+        /* This branch of the table has been modified. Go to the next one. */
+        break;
       }
     }
   }
@@ -153,17 +154,17 @@ scan_archive(gp_archive_type *archive, char *name)
 {
   gp_boolean modified;
 
-  state.symbol.archive = push_symbol_table(NULL, false);
+  state.symbol.archive = sym_push_table(NULL, false);
 
   /* If necessary, build a symbol index for the archive. */
   if (gp_archive_have_index(archive) == 0) {
-    struct symbol_table *archive_tbl = NULL;
+    symbol_table_t *archive_tbl = NULL;
 
-    archive_tbl = push_symbol_table(NULL, true);
+    archive_tbl = sym_push_table(NULL, true);
     gp_archive_make_index(archive, archive_tbl);
     archive = gp_archive_add_index(archive_tbl, archive);
     gp_warning("\"%s\" is missing symbol index.", name);
-    archive_tbl = pop_symbol_table(archive_tbl);
+    archive_tbl = sym_pop_table(archive_tbl);
   }
 
   /* Read the symbol index. */
@@ -173,7 +174,7 @@ scan_archive(gp_archive_type *archive, char *name)
      found, add the object to state.objects. */
   modified = scan_index(state.symbol.archive, archive);
 
-  state.symbol.archive = pop_symbol_table(state.symbol.archive);
+  state.symbol.archive = sym_pop_table(state.symbol.archive);
 
   return modified;
 }
@@ -183,9 +184,9 @@ scan_archive(gp_archive_type *archive, char *name)
 static void
 remove_linker_symbol(char *name)
 {
-  struct symbol *sym;
+  const symbol_t *sym;
 
-  sym = get_symbol(state.symbol.missing, name);
+  sym = sym_get_symbol(state.symbol.missing, name);
   if (sym != NULL) {
     gp_link_remove_symbol(state.symbol.missing, name);
   }
@@ -200,8 +201,7 @@ add_linker_symbol(const char *name)
   gp_symbol_type *found = NULL;
 
   while (current != NULL) {
-    if ((current->name != NULL) &&
-        (strcmp(current->name, name) == 0) &&
+    if ((current->name != NULL) && (strcmp(current->name, name) == 0) &&
         (current->section_number > 0)) {
       found = current;
       break;
@@ -243,8 +243,8 @@ build_tables(void)
   gp_object_type *list = state.object;
   struct archivelist *arlist;
   gp_boolean modified;
-  int i;
-  struct symbol *s;
+  size_t i;
+  const symbol_t *sym;
   const char *name;
   gp_coffsymbol_type *var;
 
@@ -256,10 +256,10 @@ build_tables(void)
 
   /* All of the objects have been scanned. If there are remaining references
      to symbols, then the archives must contain the missing references. */
-  if (count_missing() && (state.archives != NULL)) {
+  if ((count_missing() > 0) && (state.archives != NULL)) {
     modified = false;
     arlist = state.archives;
-    while (1) {
+    while (true) {
       if (scan_archive(arlist->archive, arlist->name)) {
         modified = true;
       }
@@ -295,17 +295,14 @@ build_tables(void)
 
   /* All of the archives have been scanned. If there are still missing
      references, it is an error. */
-  if (count_missing()) {
-    for (i = 0; i < HASH_SIZE; i++) {
-      for (s = state.symbol.missing->hash_table[i]; s; s = s->next) {
-        name = get_symbol_name(s);
-        assert(name != NULL);
-        var = get_symbol_annotation(s);
-        assert(var != NULL);
-        gp_error("Missing definition for symbol \"%s\", required by \"%s\".",
-                 name,
-                 var->file->filename);
-      }
+  if (count_missing() > 0) {
+    for (i = 0; i < sym_get_symbol_count(state.symbol.missing); ++i) {
+      sym  = sym_get_symbol_with_index(state.symbol.missing, i);
+      name = sym_get_symbol_name(sym);
+      assert(name != NULL);
+      var = sym_get_symbol_annotation(sym);
+      assert(var != NULL);
+      gp_error("Missing definition for symbol \"%s\", required by \"%s\".", name, var->file->filename);
     }
     exit(1);
   }
@@ -352,7 +349,8 @@ gplink_open_coff(const char *name)
   case GP_COFF_OBJECT:
     /* read the object */
     object = gp_read_coff(file_name);
-    object_append(object, file_name);
+    /*object_append(object, file_name);*/
+    object_append(object);
     break;
 
   case GP_COFF_ARCHIVE:
@@ -457,13 +455,13 @@ init(void)
   strncpy(state.basefilename, "a", sizeof(state.basefilename));
 
   state.ifdef = NULL;
-  state.script_symbols = push_symbol_table(NULL, false);
+  state.script_symbols     = sym_push_table(NULL, false);
 
   /* The symbols are case sensitive. */
-  state.symbol.definition = push_symbol_table(NULL, false);
-  state.symbol.missing = push_symbol_table(NULL, false);
-  state.section.definition = push_symbol_table(NULL, false);
-  state.section.logical = push_symbol_table(NULL, false);
+  state.symbol.definition  = sym_push_table(NULL, false);
+  state.symbol.missing     = sym_push_table(NULL, false);
+  state.section.definition = sym_push_table(NULL, false);
+  state.section.logical    = sym_push_table(NULL, false);
 }
 
 void
@@ -484,8 +482,9 @@ parse_define(const char *optarg, void (*func)(const char* name, long value))
 {
   long value = 0;
   char *pc = strchr(optarg, '=');
-  if (pc) {
-    *pc++ = 0;
+
+  if (pc != NULL) {
+    *pc++ = '\0';
     value = strtol(pc, &pc, 10);
   }
   func(optarg, value);
@@ -537,7 +536,7 @@ show_usage(void)
 }
 
 void
-process_args( int argc, char *argv[])
+process_args(int argc, char *argv[])
 {
   int option_index;
   const char *command;
