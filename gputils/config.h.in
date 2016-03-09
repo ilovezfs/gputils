@@ -76,7 +76,7 @@
 /* Define to 1 if you have the `strnicmp' function. */
 #undef HAVE_STRNICMP
 
-/* Define to 1 if you have the 'strverscmp' function. */
+/* Define to 1 if you have the `strverscmp' function. */
 #undef HAVE_STRVERSCMP
 
 /* Define to 1 if you have the <sys/ioctl.h> header file. */

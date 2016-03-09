@@ -5651,7 +5651,7 @@ _ACEOF
 
 
 # Checks for library functions.
-for ac_func in strcasecmp strncasecmp stricmp strnicmp strndup realpath
+for ac_func in strcasecmp strncasecmp stricmp strnicmp strndup realpath strverscmp
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -5663,38 +5663,6 @@ _ACEOF
 fi
 done
 
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for strverscmp" >&5
-$as_echo_n "checking for strverscmp... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#define _GNU_SOURCE
-#include <string.h>
-int
-main ()
-{
-(void)strverscmp((void *)0, (void *)0);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  HAVE_STRVERSCMP=yes
-else
-  HAVE_STRVERSCMP=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-if test "x$HAVE_STRVERSCMP" = "xyes"; then
-
-$as_echo "#define HAVE_STRVERSCMP 1" >>confdefs.h
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
 
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=

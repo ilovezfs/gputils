@@ -1,3 +1,7 @@
+2016-03-09  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure.ac, configure, configure.h.in:
+    Improved test of strverscmp in mingw.
+
 2016-03-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure.ac, configure, configure.h.in, gpasm/cod.c,
     gpasm/cod.h, gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c,

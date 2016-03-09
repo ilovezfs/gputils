@@ -141,20 +141,7 @@ NATIVE_WORD_SIZE=`type_size long`
 AC_DEFINE_UNQUOTED(NATIVE_WORD_SIZE, [$NATIVE_WORD_SIZE], [Native word size.])
 
 # Checks for library functions.
-AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp strndup realpath])
-
-AC_MSG_CHECKING(for strverscmp)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-    [#define _GNU_SOURCE
-#include <string.h>],
-    [(void)strverscmp((void *)0, (void *)0);])], [HAVE_STRVERSCMP=yes], [HAVE_STRVERSCMP=no])
-
-if test "x$HAVE_STRVERSCMP" = "xyes"; then
-  AC_DEFINE(HAVE_STRVERSCMP, 1, [Define to 1 if you have the 'strverscmp' function.])
-  AC_MSG_RESULT(yes)
-else
-  AC_MSG_RESULT(no)
-fi
+AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp strndup realpath strverscmp])
 
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=
