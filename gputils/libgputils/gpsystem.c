@@ -146,8 +146,8 @@ gp_getl32(const unsigned char *addr)
 void 
 gp_putl16(unsigned char *addr, unsigned short data)
 {
-  addr[1] = (data >> 8) & 0xff;
   addr[0] = data & 0xff;
+  addr[1] = (data >> 8) & 0xff;
 }
 
 /*------------------------------------------------------------------------------------------------*/

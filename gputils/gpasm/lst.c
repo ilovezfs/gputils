@@ -29,6 +29,10 @@ Boston, MA 02111-1307, USA.  */
 #include "coff.h"
 #include "lst.h"
 
+#if !HAVE_DECL_STRVERSCMP
+#include "libiberty.h"
+#endif
+
 #ifdef STDC_HEADERS
 #include <stdarg.h>
 #endif
@@ -876,16 +880,12 @@ typedef struct {
   } type;
 } lst_symbol_t;
 
-#ifdef HAVE_STRVERSCMP
-
 static int
 _lst_symbol_verscmp(const void *p0, const void *p1)
 {
   return strverscmp(sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
                     sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
 }
-
-#endif
 
 static int
 _lst_symbol_cmp(const void *p0, const void *p1)
@@ -959,20 +959,12 @@ lst_symbol_table(void)
 
   assert(ps == &lst[count]);
 
-#ifdef HAVE_STRVERSCMP
-
   if (!state.mpasm_compatible) {
     qsort(lst, count, sizeof(lst_symbol_t), _lst_symbol_verscmp);
   }
   else {
     qsort(lst, count, sizeof(lst_symbol_t), _lst_symbol_cmp);
   }
-
-#else
-
-  qsort(lst, count, sizeof(lst_symbol_t), _lst_symbol_cmp);
-
-#endif
 
   for (i = 0; i < count; i++) {
     const char *name = sym_get_symbol_name(lst[i].sym);

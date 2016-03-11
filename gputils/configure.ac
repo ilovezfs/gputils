@@ -141,13 +141,14 @@ NATIVE_WORD_SIZE=`type_size long`
 AC_DEFINE_UNQUOTED(NATIVE_WORD_SIZE, [$NATIVE_WORD_SIZE], [Native word size.])
 
 # Checks for library functions.
-AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp strndup realpath strverscmp])
+AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp strndup realpath])
 
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=
 AC_CHECK_FUNC(vsnprintf, , [IBERTYOBJS="$IBERTYOBJS vasprintf.o vsnprintf.o"])
 AC_CHECK_FUNC(snprintf, , [IBERTYOBJS="$IBERTYOBJS snprintf.o"])
 AC_CHECK_FUNC(strndup, , [IBERTYOBJS="$IBERTYOBJS strndup.o"])
+AC_CHECK_FUNC(strverscmp, , [IBERTYOBJS="$IBERTYOBJS strverscmp.o"])
 
 AM_CFLAGS=
 AM_LDFLAGS=

@@ -248,7 +248,7 @@ symbol_t *sym_add_symbol(symbol_table_t *Table, const char *Name)
     }
 
     if (len == 1) {
-      /* This is different int the least from the sought element. */
+      /* This is different in the least from the sought element. */
       base = Table->symbol_array;
       idx  = current - base;
 

@@ -293,7 +293,14 @@ extern int vasprintf PARAMS ((char **, const char *, va_list))
   ATTRIBUTE_PRINTF(2,0);
 #endif
 
+#if !HAVE_DECL_STRVERSCMP
+/* Compare version strings.  */
+extern int strverscmp (const char *, const char *);
+#endif
+
+#ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) (sizeof (a) / sizeof ((a)[0]))
+#endif
 
 /* Drastically simplified alloca configurator.  If we're using GCC,
    we use __builtin_alloca; otherwise we use the C alloca.  The C

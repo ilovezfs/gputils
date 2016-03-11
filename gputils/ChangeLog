@@ -1,3 +1,12 @@
+2016-03-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure.ac, configure, configure.h.in, gpasm/lst.c,
+    include/libiberty.h, libiberty/Makefile.am, libiberty/Makefile.in,
+    libiberty/strverscmp.c:
+    Enabled use of strverscmp in mingw.
+
+  * libgputils/gpsymbol.c, libgputils/gpsymbol.h:
+    Code formatting.
+
 2016-03-09  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure.ac, configure, configure.h.in:
     Improved test of strverscmp in mingw.
