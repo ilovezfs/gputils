@@ -11,4 +11,4 @@ libiberty_a_SOURCES =\
 libiberty_a_LIBADD = $(IBERTYOBJS)
 libiberty_a_DEPENDENCIES = $(IBERTYOBJS)
 
-EXTRA_DIST = snprintf.c strndup.c vasprintf.c vsnprintf.c README
+EXTRA_DIST = snprintf.c strndup.c strverscmp.c vasprintf.c vsnprintf.c README
