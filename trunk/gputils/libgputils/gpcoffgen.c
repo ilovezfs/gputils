@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 gp_object_type *
 gp_coffgen_init(void)
 {
-  gp_object_type *object = NULL;
+  gp_object_type *object;
 
   /* allocate memory for the object file */
   object = (gp_object_type *)GP_Calloc(1, sizeof(gp_object_type));
@@ -39,18 +39,17 @@ gp_coffgen_init(void)
 }
 
 gp_section_type *
-gp_coffgen_findsection(gp_object_type *object,
-                       gp_section_type *start,
-                       const char *name)
+gp_coffgen_findsection(gp_object_type *object, gp_section_type *start, const char *name)
 {
-  gp_section_type *current = NULL;
-  gp_section_type *found = NULL;
+  gp_section_type *current;
+  gp_section_type *found;
 
   if (object == NULL) {
     return NULL;
   }
 
   current = start;
+  found   = NULL;
 
   while (current != NULL) {
     if ((current->name != NULL) && (strcmp(current->name, name) == 0)) {
@@ -66,7 +65,7 @@ gp_coffgen_findsection(gp_object_type *object,
 gp_section_type *
 gp_coffgen_newsection(const char *name, MemBlock *data)
 {
-  gp_section_type *new = NULL;
+  gp_section_type *new;
 
   /* allocate memory for the section */
   new = (gp_section_type *)GP_Calloc(1, sizeof(gp_section_type));
@@ -81,7 +80,7 @@ gp_coffgen_newsection(const char *name, MemBlock *data)
 gp_section_type *
 gp_coffgen_addsection(gp_object_type *object, const char *name, MemBlock *data)
 {
-  gp_section_type *new = NULL;
+  gp_section_type *new;
 
   if (object == NULL) {
     return NULL;
@@ -126,15 +125,18 @@ gp_coffgen_delsectionsyms(gp_object_type *object, gp_section_type *section)
 gp_section_type *
 gp_coffgen_delsection(gp_object_type *object, gp_section_type *section)
 {
-  gp_section_type *list = NULL;
-  gp_section_type *previous = NULL;
-  gp_section_type *removed = NULL;
+  gp_section_type *list;
+  gp_section_type *previous;
+  gp_section_type *removed;
 
   if (object == NULL) {
     return NULL;
   }
 
-  list = object->sections;
+  list     = object->sections;
+  previous = NULL;
+  removed  = NULL;
+
   while (list != NULL) {
     if (list == section) {
       removed = section;
@@ -176,7 +178,7 @@ gp_coffgen_delsection(gp_object_type *object, gp_section_type *section)
 gp_reloc_type *
 gp_coffgen_addreloc(gp_section_type *section)
 {
-  gp_reloc_type *new = NULL;
+  gp_reloc_type *new;
 
   /* allocate memory for the relocation */
   new = (gp_reloc_type *)GP_Calloc(1, sizeof(gp_reloc_type));
@@ -198,7 +200,7 @@ gp_coffgen_addreloc(gp_section_type *section)
 gp_linenum_type *
 gp_coffgen_addlinenum(gp_section_type *section)
 {
-  gp_linenum_type *new = NULL;
+  gp_linenum_type *new;
 
   /* allocate memory for the relocation */
   new = (gp_linenum_type *)GP_Calloc(1, sizeof(gp_linenum_type));
@@ -220,14 +222,15 @@ gp_coffgen_addlinenum(gp_section_type *section)
 gp_symbol_type *
 gp_coffgen_findsymbol(gp_object_type *object, const char *name)
 {
-  gp_symbol_type *current = NULL;
-  gp_symbol_type *found = NULL;
+  gp_symbol_type *current;
+  gp_symbol_type *found;
 
   if (object == NULL) {
     return NULL;
   }
 
   current = object->symbols;
+  found   = NULL;
 
   while (current != NULL) {
     if ((current->class != C_SECTION) && (current->name != NULL) &&
@@ -244,14 +247,15 @@ gp_coffgen_findsymbol(gp_object_type *object, const char *name)
 gp_symbol_type *
 gp_coffgen_findsectionsymbol(gp_object_type *object, const char *name)
 {
-  gp_symbol_type *current = NULL;
-  gp_symbol_type *found = NULL;
+  gp_symbol_type *current;
+  gp_symbol_type *found;
 
   if (object == NULL) {
     return NULL;
   }
 
   current = object->symbols;
+  found   = NULL;
 
   while (current != NULL) {
     if ((current->class == C_SECTION) && (current->name != NULL) &&
@@ -271,18 +275,18 @@ gp_coffgen_findsectionsymbol(gp_object_type *object, const char *name)
 gp_symbol_type *
 gp_coffgen_findsymbol_sect_val(gp_object_type *object, const char *section_name, long value)
 {
-  gp_symbol_type *current = NULL;
-  gp_symbol_type *found = NULL;
+  gp_symbol_type *current;
+  gp_symbol_type *found;
 
   if ((object == NULL) || (section_name == NULL)) {
     return NULL;
   }
 
   current = object->symbols;
+  found   = NULL;
 
   while (current != NULL) {
-    if ((current->class != C_SECTION) &&
-        (current->class != C_FILE) &&
+    if ((current->class != C_SECTION) && (current->class != C_FILE) &&
         (current->section_name != NULL) &&
         (strcmp(current->section_name, section_name) == 0) &&
         (current->value == value)) {
@@ -298,8 +302,8 @@ gp_coffgen_findsymbol_sect_val(gp_object_type *object, const char *section_name,
 gp_aux_type *
 gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol)
 {
-  gp_aux_type *new = NULL;
-  gp_aux_type *list = NULL;
+  gp_aux_type *new;
+  gp_aux_type *list;
 
   /* allocate memory for the auxiliary symbol */
   new = (gp_aux_type *)GP_Calloc(1, sizeof(gp_aux_type));
@@ -326,7 +330,7 @@ gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol)
 gp_symbol_type *
 gp_coffgen_addsymbol(gp_object_type *object)
 {
-  gp_symbol_type *new = NULL;
+  gp_symbol_type *new;
 
   /* allocate memory for the symbol */
   new = (gp_symbol_type *)GP_Calloc(1, sizeof(gp_symbol_type));
@@ -349,15 +353,18 @@ gp_coffgen_addsymbol(gp_object_type *object)
 gp_symbol_type *
 gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol)
 {
-  gp_symbol_type *list = NULL;
-  gp_symbol_type *previous = NULL;
-  gp_symbol_type *removed = NULL;
+  gp_symbol_type *list;
+  gp_symbol_type *previous;
+  gp_symbol_type *removed;
 
   if (object == NULL) {
     return NULL;
   }
 
-  list = object->symbols;
+  list     = object->symbols;
+  previous = NULL;
+  removed  = NULL;
+
   while (list != NULL) {
     if (list == symbol) {
       removed = symbol;
@@ -401,9 +408,10 @@ gp_boolean
 gp_coffgen_has_reloc(gp_object_type *object, gp_symbol_type *symbol)
 {
   gp_section_type *section;
-  gp_reloc_type *relocation;
+  gp_reloc_type   *relocation;
 
   section = object->sections;
+
   while (section != NULL) {
     relocation = section->relocations;
     while (relocation != NULL) {
@@ -455,8 +463,8 @@ gp_coffgen_is_absolute(gp_symbol_type *symbol)
 gp_section_type *
 gp_coffgen_blocksec(unsigned int number)
 {
-  gp_section_type *new = NULL;
-  unsigned int i;
+  gp_section_type *new;
+  unsigned int     i;
 
   if (number == 0) {
     return NULL;
@@ -485,8 +493,8 @@ gp_coffgen_blocksec(unsigned int number)
 gp_reloc_type *
 gp_coffgen_blockrel(unsigned int number)
 {
-  gp_reloc_type *new = NULL;
-  unsigned int i;
+  gp_reloc_type *new;
+  unsigned int   i;
 
   if (number == 0) {
     return NULL;
@@ -514,8 +522,8 @@ gp_coffgen_blockrel(unsigned int number)
 gp_linenum_type *
 gp_coffgen_blockline(unsigned int number)
 {
-  gp_linenum_type *new = NULL;
-  unsigned int i;
+  gp_linenum_type *new;
+  unsigned int     i;
 
   if (number == 0) {
     return NULL;
@@ -544,8 +552,8 @@ gp_coffgen_blockline(unsigned int number)
 gp_symbol_type *
 gp_coffgen_blocksym(unsigned int number)
 {
-  gp_symbol_type *new = NULL;
-  unsigned int i;
+  gp_symbol_type *new;
+  unsigned int    i;
 
   if (number == 0) {
     return NULL;
@@ -575,8 +583,8 @@ gp_coffgen_blocksym(unsigned int number)
 gp_aux_type *
 gp_coffgen_blockaux(unsigned int number)
 {
-  gp_aux_type *new = NULL;
-  unsigned int i;
+  gp_aux_type  *new;
+  unsigned int  i;
 
   if (number == 0) {
     return NULL;
@@ -600,12 +608,12 @@ gp_coffgen_blockaux(unsigned int number)
   return new;
 }
 
-int
+void
 gp_coffgen_free_section(gp_section_type *section)
 {
-  gp_reloc_type *relocation;
+  gp_reloc_type   *relocation;
   gp_linenum_type *line_number;
-  gp_reloc_type *old_relocation;
+  gp_reloc_type   *old_relocation;
   gp_linenum_type *old_line_number;
 
   i_memory_free(section->data);
@@ -626,8 +634,6 @@ gp_coffgen_free_section(gp_section_type *section)
 
   free(section->name);
   free(section);
-
-  return 0;
 }
 
 int
@@ -635,10 +641,16 @@ gp_coffgen_free_symbol(gp_symbol_type *symbol)
 {
   gp_aux_type *aux;
   gp_aux_type *old_aux;
-  int num_auxsym = symbol->num_auxsym;
+  int          num_auxsym;
+
+  if (symbol == NULL) {
+    return 0;
+  }
 
   /* free the auxilary symbols */
-  aux = symbol->aux_list;
+  aux        = symbol->aux_list;
+  num_auxsym = symbol->num_auxsym;
+
   while (aux != NULL) {
     old_aux = aux;
     aux = aux->next;
@@ -655,9 +667,9 @@ int
 gp_coffgen_free(gp_object_type *object)
 {
   gp_section_type *section;
-  gp_symbol_type *symbol;
+  gp_symbol_type  *symbol;
   gp_section_type *old_section;
-  gp_symbol_type *old_symbol;
+  gp_symbol_type  *old_symbol;
 
   if (object == NULL) {
     return 1;

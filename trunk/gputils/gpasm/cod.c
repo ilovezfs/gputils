@@ -50,12 +50,10 @@ init_dir_block(void)
                  state.codfilename, COD_DIR_DATE - COD_DIR_SOURCE);
   gp_cod_date(&dir->dir[COD_DIR_DATE], COD_DIR_TIME - COD_DIR_DATE);
   gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_VERSION - COD_DIR_TIME);
-  gp_cod_strncpy(&dir->dir[COD_DIR_VERSION],
-                 VERSION, COD_DIR_COMPILER - COD_DIR_VERSION);
+  gp_cod_strncpy(&dir->dir[COD_DIR_VERSION], VERSION, COD_DIR_COMPILER - COD_DIR_VERSION);
   gp_cod_strncpy(&dir->dir[COD_DIR_COMPILER],
                  "gpasm", COD_DIR_NOTICE - COD_DIR_COMPILER);
-  gp_cod_strncpy(&dir->dir[COD_DIR_NOTICE],
-                 GPUTILS_COPYRIGHT_STRING,
+  gp_cod_strncpy(&dir->dir[COD_DIR_NOTICE], GPUTILS_COPYRIGHT_STRING,
                  COD_DIR_SYMTAB - COD_DIR_NOTICE);
 
   /* The address is always two shorts or 4 bytes long. */
@@ -71,8 +69,7 @@ void
 cod_init(void)
 {
   if (state.codfile != OUT_NAMED) {
-    snprintf(state.codfilename, sizeof(state.codfilename),
-             "%s.cod", state.basefilename);
+    snprintf(state.codfilename, sizeof(state.codfilename), "%s.cod", state.basefilename);
   }
 
   if (state.codfile == OUT_SUPPRESS) {
@@ -102,9 +99,9 @@ cod_init(void)
 static void
 write_file_block(void)
 {
-  BlockList *fb = NULL;
-  int id_number = 0;
-  const struct file_context *fc;
+  const file_context_t *fc;
+  BlockList            *fb;
+  int                   id_number;
 
   if (state.files == NULL) {
     return;
@@ -113,6 +110,8 @@ write_file_block(void)
   /* Find the head of the file list: */
 
   fc = state.files;
+  id_number = 0;
+
   while ((fc->prev != NULL) && (id_number++ < 1000)) {
     fc = fc->prev;
   }
@@ -122,6 +121,7 @@ write_file_block(void)
     assert(0);
   }
 
+  fb = NULL;
   id_number = 0;
 
   while (fc != NULL) {
@@ -175,12 +175,13 @@ cod_lst_line(int line_type)
 {
 #define COD_LST_FIRST_LINE  7
   static DirBlockInfo *dbi = NULL;
-  static int _64k_base = 0;
+  static int           _64k_base = 0;
 
-  unsigned char smod_flag;
-  BlockList *lb;
-  int first_time;
-  int address, high_address;
+  unsigned char  smod_flag;
+  BlockList     *lb;
+  gp_boolean     first_time;
+  int            address;
+  int            high_address;
 
   if (!state.cod.enabled) {
     return;
@@ -241,11 +242,12 @@ cod_lst_line(int line_type)
 void
 cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 {
-  size_t i;
-  int len, type;
-  const struct variable *var;
-  const char *name;
-  BlockList *sb = NULL;
+  size_t            i;
+  int               len;
+  int               type;
+  const variable_t *var;
+  const char       *name;
+  BlockList        *sb;
 
   if ((symbol_list == NULL) || (num_symbols == 0)) {
     return;
@@ -255,6 +257,7 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
     return;
   }
 
+  sb = NULL;
   for (i = 0; i < num_symbols; i++) {
     name = sym_get_symbol_name(symbol_list[i]);
     var  = sym_get_symbol_annotation(symbol_list[i]);
@@ -328,17 +331,23 @@ static void
 cod_write_code(void)
 {
   static DirBlockInfo *dbi = NULL;
-  static int _64k_base = 0;
+  static int           _64k_base = 0;
 
-  const MemBlock *m = state.i_memory;
-  int mem_base, i;
-  int start_address = 0, used_flag = 0;
-  BlockList *rb = NULL;
+  const MemBlock *m;
+  int             i;
+  int             mem_base;
+  int             start_address;
+  gp_boolean      used_flag;
+  BlockList      *rb;
+  int             high_addr;
+  unsigned short  insn;
 
+  m             = state.i_memory;
+  start_address = 0;
+  used_flag     = false;
+  rb            = NULL;
   while (m != NULL) {
-    int high_addr;
-
-    mem_base = m->base << I_MEM_BITS;
+    mem_base  = m->base << I_MEM_BITS;
     high_addr = (mem_base >> 16) & 0xffff;
 
     if ((dbi == NULL) || (high_addr != _64k_base)) {
@@ -347,21 +356,19 @@ cod_write_code(void)
     }
 
     for (i = mem_base; (i - mem_base) <= MAX_I_MEM; i += 2) {
-      unsigned short insn;
-
       if (((i - mem_base) < MAX_I_MEM) &&
           state.device.class->i_memory_get(state.i_memory, i, &insn, NULL, NULL)) {
         cod_emit_opcode(dbi, i, insn);
 
-        if (used_flag == 0) {
-          /* Save the start address in a range of opcodes */
+        if (!used_flag) {
+          /* Save the start address in a range of opcodes. */
           start_address = i;
-          used_flag = 1;
+          used_flag = true;
         }
       } else {
         /* No code at address i, but we need to check if this is the
            first empty address after a range of address. */
-        if (used_flag == 1) {
+        if (used_flag) {
           rb = gp_blocks_get_last_or_new(&dbi->rng);
 
           if ((rb == NULL) || ((dbi->rng.offset + COD_MAPENTRY_SIZE) >= COD_BLOCK_SIZE)) {
@@ -377,7 +384,7 @@ cod_write_code(void)
           gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_START], start_address);
           gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_LAST], i - 1);
 
-          used_flag = 0;
+          used_flag = false;
 
           dbi->rng.offset += COD_MAPENTRY_SIZE;
         }

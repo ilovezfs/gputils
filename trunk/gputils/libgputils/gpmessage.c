@@ -61,7 +61,7 @@ void
 gp_warning(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ];
+  char    buffer[BUFSIZ];
 
   if (gp_message_disable) {
     return;
@@ -84,7 +84,7 @@ void
 gp_message(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ];
+  char    buffer[BUFSIZ];
 
   if (gp_message_disable) {
     return;
@@ -107,7 +107,7 @@ void
 gp_debug(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ];
+  char    buffer[BUFSIZ];
 
   if (gp_debug_disable) {
     return;

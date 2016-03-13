@@ -63,11 +63,11 @@ gp_archive_member_name(const gp_archive_type *archive)
 void
 gp_archive_list_members(const gp_archive_type *archive)
 {
-  char name[256];
-  char *end;
-  int date;
-  time_t time;
-  int size;
+  char    name[256];
+  char   *end;
+  int     date;
+  time_t  time;
+  int     size;
 
   /* If present, skip the symbol index. */
   if (gp_archive_have_index(archive)) {

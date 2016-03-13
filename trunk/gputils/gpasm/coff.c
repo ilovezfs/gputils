@@ -142,8 +142,8 @@ _new_config_section(const char *name, int addr, int flags, MemBlock *data, gp_bo
 static void
 _create_config_sections(void)
 {
-  struct conf_mem_block_s *conf_sec_mem;
-  gp_linenum_type *linenum;
+  conf_mem_block_t *conf_sec_mem;
+  gp_linenum_type  *linenum;
 
   for (conf_sec_mem = state.conf_sec_mem; conf_sec_mem != NULL; conf_sec_mem = conf_sec_mem->next) {
     char section_name[BUFSIZ];

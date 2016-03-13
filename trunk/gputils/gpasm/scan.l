@@ -318,7 +318,7 @@ processor                {
 ^{IDENT}:?               {
                            int has_collon = 0;
                            symbol_t *sym;
-                           struct macro_head *h;
+                           macro_head_t *h;
 
                            if (yytext[strlen(yytext) - 1] == ':') {
                              yytext[strlen(yytext) - 1] = '\0';
@@ -641,7 +641,7 @@ a'{STR_QCHAR}'           {
 %%
 
 static void
-search_paths(struct source_context *new, const char *name)
+search_paths(source_context_t *new, const char *name)
 {
   char tryname[PATH_MAX + 1];
   int i;
@@ -661,7 +661,7 @@ void
 open_src(const char *name, gp_boolean isinclude)
 {
   extern FILE *yyin;
-  struct source_context *new = GP_Calloc(1, sizeof(struct source_context));
+  source_context_t *new = GP_Calloc(1, sizeof(source_context_t));
 
   if (state.src != NULL) {
     state.src->yybuf = YY_CURRENT_BUFFER;
@@ -733,9 +733,9 @@ open_src(const char *name, gp_boolean isinclude)
 }
 
 void
-execute_macro(struct macro_head *h, gp_boolean is_while)
+execute_macro(macro_head_t *h, gp_boolean is_while)
 {
-  struct source_context *new = GP_Calloc(1, sizeof(struct source_context));
+  source_context_t *new = GP_Calloc(1, sizeof(source_context_t));
 
   assert(state.src != NULL);
   state.src->yybuf = YY_CURRENT_BUFFER;
@@ -763,7 +763,7 @@ execute_macro(struct macro_head *h, gp_boolean is_while)
 void
 repeat_while(void)
 {
-  struct macro_head *h;
+  macro_head_t *h;
 
   h = state.src->mac_head;
 
@@ -778,7 +778,7 @@ repeat_while(void)
 void
 close_file(void)
 {
-  struct source_context *old = state.src;
+  source_context_t *old = state.src;
 
   if (IN_FILE_EXPANSION) {
     if (state.src->f != NULL) {
@@ -819,8 +819,8 @@ close_file(void)
 void
 execute_exitm(void)
 {
-  struct amode *upper;
-  struct amode *old;
+  amode_t *upper;
+  amode_t *old;
 
   /* The macro is ended early, so return the stack to its previous state. */
   upper = state.src->prev->astack;

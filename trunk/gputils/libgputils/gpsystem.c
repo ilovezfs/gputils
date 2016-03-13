@@ -98,7 +98,7 @@ void
 gp_fputvar(const void *data_, int number, FILE *fp)
 {
   const unsigned char *data = (const unsigned char *)data_;
-  int i;
+  int                  i;
   
   for (i = 0; i < number; i++) {
     fputc(data[i], fp);
@@ -194,7 +194,7 @@ gp_putb32(unsigned char *addr, unsigned long data)
 void
 gp_date_string(char *buffer, size_t sizeof_buffer)
 {
-  time_t now;
+  time_t           now;
   const struct tm *now_tm;
 
   time(&now);
@@ -318,7 +318,7 @@ gp_strndup(const char *String, size_t Length, const char *File, size_t Line, con
 char *
 gp_lower_case(const char *name)
 {
-  char ch;
+  char  ch;
   char *new;
   char *ptr;
 
@@ -337,7 +337,7 @@ gp_lower_case(const char *name)
 char *
 gp_upper_case(const char *name)
 {
-  char ch;
+  char  ch;
   char *new;
   char *ptr;
 
@@ -483,9 +483,9 @@ gp_absolute_path(char *file_name)
      GetFullPathName is available. */ 
 
   #define FILE_BUFFER_SIZE 512
-  char file_buffer[FILE_BUFFER_SIZE];
+  char  file_buffer[FILE_BUFFER_SIZE];
   char *file_ptr;
-  int num_chars;
+  int   num_chars;
 
   num_chars = GetFullPathName(file_name, FILE_BUFFER_SIZE, file_buffer, &file_ptr);
   if (num_chars == 0) {
@@ -526,8 +526,8 @@ gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int op
                          const char *opt_string, int opt_char, const char *command)
 {
   const struct option *opt;
-  int i;
-  char cmd[8];
+  int                  i;
+  char                 cmd[8];
 
   if (opt_index < 0) {
     /* This is likely a short option. */

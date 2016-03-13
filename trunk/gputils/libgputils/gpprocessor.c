@@ -957,18 +957,21 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class0, proc_class
 #define SPACE_BETWEEN   2       /* number of chars between columns */
 #define FAVORITE        1       /* there are 3 names to choose from */
 
-  int i;
-  int length;
-  int column_width;
-  int columns = COLUMNS;
-  int num;
-  const char *name;
-  gp_boolean newline = false;
+  int             i;
+  int             length;
+  int             column_width;
+  int             columns;
+  int             num;
+  const char     *name;
+  gp_boolean      newline;
 #ifdef TIOCGWINSZ
-  struct winsize ws;
+  struct winsize  ws;
 #endif
 
   column_width = 0;
+  columns      = COLUMNS;
+  newline      = false;
+
   for (i = 0; i < NUM_PICS; i++) {
     if (!list_all && (pics[i].class != class0) && (pics[i].class != class1) && (pics[i].class != class2)) {
       continue;
@@ -1033,7 +1036,7 @@ void
 gp_processor_invoke_custom_lister(proc_class_t class0, proc_class_t class1, proc_class_t class2,
                                   void (*custom_lister)(pic_processor_t))
 {
-  int i;
+  int             i;
   pic_processor_t proc;
 
   for (i = 0; i < NUM_PICS; i++) {
@@ -1053,7 +1056,8 @@ gp_processor_invoke_custom_lister(proc_class_t class0, proc_class_t class1, proc
 pic_processor_t
 gp_find_processor(const char *name)
 {
-  int i, j;
+  int i;
+  int j;
 
   for (i = 0; i < NUM_PICS; i++) {
     for (j = 0; (j < MAX_NAMES) && (pics[i].names[j] != NULL); j++) {
@@ -1151,16 +1155,14 @@ pic_processor_t
 gp_processor_coff_proc(unsigned long coff_type)
 {
   int i;
-  pic_processor_t processor = NULL;
 
   for (i = 0; i < NUM_PICS; i++) {
     if (pics[i].coff_type == coff_type) {
-      processor = &pics[i];
-      break;
+      return &pics[i];
     }
   }
 
-  return processor;
+  return NULL;
 }
 
 const char *

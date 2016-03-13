@@ -87,8 +87,9 @@ gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, i
 const gp_cfg_directive_t *
 gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Dname,
                       unsigned int *Out_config_addr, unsigned short *Out_def_value) {
-  unsigned int i, j;
-  const gp_cfg_addr_t *addr;
+  unsigned int              i;
+  unsigned int              j;
+  const gp_cfg_addr_t      *addr;
   const gp_cfg_directive_t *dir;
 
   for (i = Device->address_count, addr = Device->addresses; i; ++addr, --i) {
@@ -117,9 +118,13 @@ gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Dname,
 void
 gp_cfg_brief_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits, int Word_digits,
                     unsigned int Pic18J) {
-  unsigned int i, j, word_mask;
-  unsigned int mask, def_value, xinst_mask;
-  const gp_cfg_addr_t *addr;
+  unsigned int              i;
+  unsigned int              j;
+  unsigned int              word_mask;
+  unsigned int              mask;
+  unsigned int              def_value;
+  unsigned int              xinst_mask;
+  const gp_cfg_addr_t      *addr;
   const gp_cfg_directive_t *dir;
 
   word_mask = ((UINT_MAX << (Word_digits * 4)) & UINT_MAX) ^ UINT_MAX;
@@ -159,12 +164,18 @@ gp_cfg_brief_device(const gp_cfg_device_t *Device, const char *Head, int Addr_di
 void
 gp_cfg_full_list_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
                         int Word_digits) {
-  unsigned int headlen, i, j, k, len, maxlen;
-  unsigned int mask, def_value;
-  const gp_cfg_addr_t *addr;
-  const gp_cfg_directive_t *dir;
-  const gp_cfg_option_t **opt;
-  const char *txt;
+  unsigned int               headlen;
+  unsigned int               i;
+  unsigned int               j;
+  unsigned int               k;
+  unsigned int               len;
+  unsigned int               maxlen;
+  unsigned int               mask;
+  unsigned int               def_value;
+  const gp_cfg_addr_t       *addr;
+  const gp_cfg_directive_t  *dir;
+  const gp_cfg_option_t    **opt;
+  const char                *txt;
 
   headlen = strlen(Head);
 
@@ -233,7 +244,7 @@ gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option) {
 
 const gp_cfg_addr_t *
 gp_cfg_find_config(const gp_cfg_device_t *Device, unsigned int Address) {
-  unsigned int i;
+  unsigned int         i;
   const gp_cfg_addr_t *addr;
 
   for (i = Device->address_count, addr = Device->addresses; i; ++addr, --i) {
@@ -262,12 +273,15 @@ gp_cfg_get_default(const gp_cfg_device_t *Device, unsigned int Address) {
 unsigned int
 gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, unsigned int Value,
                         gp_cfg_addr_hit_t *Hit) {
-  unsigned int i, j, count;
-  const gp_cfg_addr_t *addr;
-  const gp_cfg_directive_t *dir;
-  const gp_cfg_option_t **opt;
-  unsigned int val;
-  unsigned int max, len;
+  unsigned int               i;
+  unsigned int               j;
+  unsigned int               count;
+  const gp_cfg_addr_t       *addr;
+  const gp_cfg_directive_t  *dir;
+  const gp_cfg_option_t    **opt;
+  unsigned int               val;
+  unsigned int               max;
+  unsigned int               len;
 
   if ((addr = gp_cfg_find_config(Device, Address)) == NULL) {
     return 0;

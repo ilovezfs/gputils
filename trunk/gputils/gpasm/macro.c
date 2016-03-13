@@ -33,8 +33,14 @@ Boston, MA 02111-1307, USA.  */
 
 /* Create a new defines table and place the macro parms in it. */
 
-void setup_macro(struct macro_head *h, int arity, const struct pnode *parms)
+void setup_macro(macro_head_t *h, int arity, const pnode_t *parms)
 {
+  const pnode_t *pFrom;
+  const pnode_t *pFromH;
+  const pnode_t *pTo;
+  const pnode_t *pToH;
+  symbol_t      *sym;
+
   if (enforce_arity(arity, list_length(h->parms))) {
     /* push table for the marco parms */
     state.stMacroParams = sym_push_table(state.stMacroParams, state.case_insensitive);
@@ -42,10 +48,6 @@ void setup_macro(struct macro_head *h, int arity, const struct pnode *parms)
     /* Now add the macro's declared parameter list to the new
        defines table. */
     if (arity > 0) {
-      const struct pnode *pFrom, *pFromH;
-      const struct pnode *pTo, *pToH;
-      symbol_t *sym;
-
       pTo = parms;
 
       for (pFrom = h->parms; pFrom != NULL; pFrom = TAIL(pFrom)) {
@@ -137,7 +139,7 @@ push_macro_symbol_table(symbol_table_t *table)
 }
 
 void
-list_macro(struct macro_body *p)
+list_macro(macro_body_t *p)
 {
   unsigned int old_line_number = state.src->line_number;
 

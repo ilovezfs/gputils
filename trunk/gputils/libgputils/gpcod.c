@@ -38,9 +38,8 @@ gp_cod_strncpy(unsigned char *dest, const char *src, int max_len)
 void
 gp_cod_date(unsigned char *buffer, size_t sizeof_buffer)
 {
-  #define TEMP_SIZE 32
-  char temp[TEMP_SIZE];
-  time_t now;
+  char       temp[32];
+  time_t     now;
   struct tm *now_tm;
 
   static const char mon_name[12][4] = {
@@ -50,10 +49,7 @@ gp_cod_date(unsigned char *buffer, size_t sizeof_buffer)
 
   time(&now);
   now_tm = localtime(&now);
-  snprintf(temp, TEMP_SIZE,
-           "%02d%3s%02d",
-           now_tm->tm_mday,
-           &mon_name[now_tm->tm_mon][0],
+  snprintf(temp, sizeof(temp), "%02d%3s%02d", now_tm->tm_mday, &mon_name[now_tm->tm_mon][0],
            now_tm->tm_year % 100);
 
   memcpy(buffer, temp, sizeof_buffer);
@@ -62,9 +58,9 @@ gp_cod_date(unsigned char *buffer, size_t sizeof_buffer)
 void
 gp_cod_time(unsigned char *buffer, size_t sizeof_buffer)
 {
-  time_t now;
+  time_t     now;
   struct tm *now_tm;
-  int value;
+  int        value;
 
   time(&now);
   now_tm = localtime(&now);
@@ -88,7 +84,7 @@ gp_cod_create(Block *b)
 BlockList *
 gp_blocks_new(void)
 {
-  return GP_Calloc(1, sizeof(BlockList));
+  return (BlockList *)GP_Calloc(1, sizeof(BlockList));
 }
 
 BlockList *
@@ -149,8 +145,8 @@ void
 gp_blocks_enumerate_directory(DirBlockInfo *main_dir)
 {
   DirBlockInfo *dbi;
-  unsigned int block_num = 0;
-  unsigned int i;
+  unsigned int  block_num = 0;
+  unsigned int  i;
 
   /* enumerate directory blocks */
   for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
@@ -211,7 +207,7 @@ void
 gp_blocks_write_directory(FILE *f, DirBlockInfo *main_dir)
 {
   DirBlockInfo *dbi;
-  unsigned int i;
+  unsigned int  i;
 
   /* write directory blocks */
   for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
@@ -282,7 +278,7 @@ gp_blocks_free_directory(DirBlockInfo *main_dir)
 {
   DirBlockInfo *dbi = main_dir;
   DirBlockInfo *next;
-  unsigned int i;
+  unsigned int  i;
 
   while (dbi != NULL) {
     /* free code blocks */

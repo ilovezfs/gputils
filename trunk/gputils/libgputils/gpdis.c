@@ -140,10 +140,10 @@ GPUTILS_GCC_DIAG_TOP(switch)
 int
 gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor_t processor)
 {
-  proc_class_t class;
-  unsigned short opcode;
+  proc_class_t       class;
+  unsigned short     opcode;
   const struct insn *instruction;
-  int num_words;
+  int                num_words;
 
   class = processor->class;
 
@@ -205,23 +205,23 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
                            gpdasm_fstate_t *fstate)
 {
   proc_class_t class;
-  int page_mask;
-  int prog_max_org;
-  int value;
-  int src_page;
-  int dst_org;
-  unsigned short opcode;
+  int                page_mask;
+  int                prog_max_org;
+  int                value;
+  int                src_page;
+  int                dst_org;
+  unsigned short     opcode;
   const struct insn *instruction;
-  enum common_insn icode;
-  int num_words;
-  unsigned short file1;
-  unsigned short file2;
-  unsigned int tmp;
-  int dest_byte_addr;
-  unsigned int type;
-  int wreg;
-  int pclath;
-  int pclath_valid;
+  enum common_insn   icode;
+  int                num_words;
+  unsigned short     file1;
+  unsigned short     file2;
+  unsigned int       tmp;
+  int                dest_byte_addr;
+  unsigned int       type;
+  int                wreg;
+  int                pclath;
+  int                pclath_valid;
 
   class = processor->class;
 
@@ -734,10 +734,10 @@ GPUTILS_GCC_DIAG_ON(switch)
 static void
 pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
                int file, int bit_number, void (*user_data_finder)(MemArg *)) {
-  proc_class_t class;
-  MemArgList args;
+  proc_class_t         class;
+  MemArgList           args;
   const gp_register_t *reg1;
-  unsigned int bmask;
+  unsigned int         bmask;
 
   class = processor->class;
 
@@ -797,10 +797,10 @@ pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_proce
 static void
 pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
                int file, int bit_number, void (*user_data_finder)(MemArg *)) {
-  proc_class_t class;
-  MemArgList args;
+  proc_class_t         class;
+  MemArgList           args;
   const gp_register_t *reg1;
-  unsigned int bmask;
+  unsigned int         bmask;
 
   class = processor->class;
 
@@ -851,8 +851,8 @@ pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_proce
 static void
 pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
                int file, int bit_number, void (*user_data_finder)(MemArg *)) {
-  proc_class_t class;
-  MemArgList args;
+  proc_class_t         class;
+  MemArgList           args;
   const gp_register_t *reg1;
 
   class = processor->class;
@@ -901,10 +901,10 @@ pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_proce
 static int
 pic16e_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
                 int file, int bit_number, gp_boolean ram_acc, void (*user_data_finder)(MemArg *)) {
-  proc_class_t class;
-  MemArgList args;
+  proc_class_t         class;
+  MemArgList           args;
   const gp_register_t *reg1;
-  int reg_addr;
+  int                  reg_addr;
 
   class = processor->class;
 
@@ -966,17 +966,17 @@ int
 gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t processor,
                               gpdasm_fstate_t *fstate, void (*user_data_finder)(MemArg *))
 {
-  proc_class_t class;
-  unsigned short opcode;
+  proc_class_t       class;
+  unsigned short     opcode;
   const struct insn *instruction;
-  enum common_insn icode;
-  int num_words;
-  unsigned short file1;
-  unsigned short file2;
-  unsigned int tmp;
-  gp_boolean ram_acc;
-  int addr;
-  MemArgList args;
+  enum common_insn   icode;
+  int                num_words;
+  unsigned short     file1;
+  unsigned short     file2;
+  unsigned int       tmp;
+  gp_boolean         ram_acc;
+  int                addr;
+  MemArgList         args;
 
   class = processor->class;
 
@@ -1684,9 +1684,9 @@ GPUTILS_GCC_DIAG_ON(switch)
 static int
 print_word(char *buffer, size_t buffer_length, size_t current_length,
            unsigned short opcode, int behavior) {
-  int l;
+  int    l;
   size_t length;
-  char bytes[2];
+  char   bytes[2];
 
   l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%04x",
                TABULATOR_SIZE, "dw", (unsigned int)opcode);
@@ -1746,11 +1746,11 @@ gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int 
                          char *buffer, size_t buffer_length, size_t current_length)
 {
   const struct insn *instruction;
-  enum common_insn icode;
-  unsigned short opcode;
-  unsigned char bytes[2];
-  int l;
-  size_t length;
+  enum common_insn   icode;
+  unsigned short     opcode;
+  unsigned char      bytes[2];
+  int                l;
+  size_t             length;
 
   length = current_length;
 
@@ -1765,7 +1765,7 @@ gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int 
 
     if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
       l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%02x, 0x%02x",
-                 TABULATOR_SIZE, "db", bytes[0], bytes[1]);
+                   TABULATOR_SIZE, "db", bytes[0], bytes[1]);
 
       if (l <= 0) {
         return;
@@ -1821,22 +1821,22 @@ int
 gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
                int prog_mem_size, int behavior, char *buffer, size_t buffer_length, size_t current_length)
 {
-  int value;
-  unsigned short opcode = 0;
+  int                value;
+  unsigned short     opcode = 0;
   const struct insn *instruction = NULL;
-  enum common_insn icode;
-  int prog_max_org;
-  unsigned int type;
-  const char *dest_name;
-  int org;
-  int num_words = 1;
-  unsigned short file1;
-  unsigned short file2;
-  unsigned int tmp;
-  unsigned int ram_acc;
-  MemArgList args;
-  int addr_digits;
-  size_t length;
+  enum common_insn   icode;
+  int                prog_max_org;
+  unsigned int       type;
+  const char        *dest_name;
+  int                org;
+  int                num_words = 1;
+  unsigned short     file1;
+  unsigned short     file2;
+  unsigned int       tmp;
+  unsigned int       ram_acc;
+  MemArgList         args;
+  int                addr_digits;
+  size_t             length;
 
   length = current_length;
 

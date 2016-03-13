@@ -30,9 +30,9 @@ enum mode_flags_e {
   HMODE_SWAP  /* swap bytes for INHX16 format */
 };
 
-static int sum;
-static char *newline;
-static FILE *hex;
+static int       sum;
+static char     *newline;
+static FILE     *hex;
 static MemBlock *memory;
 
 static void
@@ -157,7 +157,9 @@ static void
 write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_mask)
 {
   MemBlock *m = memory;
-  int i, j, maximum;
+  int       i;
+  int       j;
+  int       maximum;
 
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
@@ -216,9 +218,9 @@ write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_m
   last_line();
 }
 
-int
+gp_boolean
 writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
-         int numerrors, int dos_newlines, unsigned int core_mask)
+         int numerrors, gp_boolean dos_newlines, unsigned int core_mask)
 {
   char hexfilename[BUFSIZ];
   char lowhex[BUFSIZ];
@@ -234,11 +236,11 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
   snprintf(highhex, sizeof(highhex), "%s.hxh", basefilename);
 
   if (numerrors > 0) {
-    /* Remove the hex files (if any) */
+    /* Remove the hex files (if any). */
     unlink(hexfilename);
     unlink(lowhex);
     unlink(highhex);
-    return 0;
+    return false;
   }
 
   /* No error: overwrite the hex file */
@@ -248,18 +250,18 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
 
     if (hex == NULL) {
       perror(lowhex);
-      exit(1);
+      return false;
     }
 
     write_i_mem(hex_format, HMODE_LOW, core_mask);
     fclose(hex);
 
-    /* Write the high memory */
+    /* Write the high memory. */
     hex = fopen(highhex, "wt");
 
     if (hex == NULL) {
       perror(highhex);
-      exit(1);
+      return false;
     }
 
     write_i_mem(hex_format, HMODE_HIGH, core_mask);
@@ -270,7 +272,7 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
 
     if (hex == NULL) {
       perror(hexfilename);
-      exit(1);
+      return false;
     }
 
     write_i_mem(hex_format, HMODE_SWAP, core_mask);
@@ -281,30 +283,30 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
 
     if (hex == NULL) {
       perror(hexfilename);
-      exit(1);
+      return false;
     }
 
     write_i_mem(hex_format, HMODE_ALL, core_mask);
     fclose(hex);
   }
 
-  return 0;
+  return true;
 }
 
 /* scan the memory to see if it exceeds 32kB limit on INHX8M limit */
-int
+gp_boolean
 check_writehex(MemBlock *m, enum formats hex_format)
 {
-  int error = 0;
+  gp_boolean ok = true;
 
   if (hex_format != INHX32) {
     while (m != NULL) {
       if (m->base > 0) {
-        error = 1;
+        ok = false;
       }
       m = m->next;
     }
   }
 
-  return error;
+  return ok;
 }

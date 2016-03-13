@@ -85,25 +85,25 @@ enum gpasm_modes {
   MODE_RELOCATABLE
 };
 
-struct range_pair {
+typedef struct range_pair {
   long               start;
   long               end;
   struct range_pair *next;
-};
+} range_pair_t;
 
-struct src_line_s {
+typedef struct src_line {
   char   *line;                         /* Source line. */
   size_t  size;                         /* Source line allocated size. */
-};
+} src_line_t;
 
-struct conf_mem_block_s {
-  int                      addr;
-  MemBlock                *m;
-  gp_boolean               new_config;
-  gp_symbol_type          *file_symbol;
-  unsigned int             line_number;
-  struct conf_mem_block_s *next;
-};
+typedef struct conf_mem_block {
+  int                    addr;
+  MemBlock              *m;
+  gp_boolean             new_config;
+  gp_symbol_type        *file_symbol;
+  unsigned int           line_number;
+  struct conf_mem_block *next;
+} conf_mem_block_t;
 
 extern struct gpasm_state {
   enum gpasm_modes  mode;
@@ -132,16 +132,16 @@ extern struct gpasm_state {
   } cmd_line;
 
   int pass;                             /* 1 or 2 */
-  unsigned int       byte_addr;         /* Current code-generation point. */
-  gp_boolean         dos_newlines;      /* Use DOS newlines in hex file. */
-  gp_boolean         memory_dump;       /* Dump instruction memory to standard output. */
-  gp_boolean         found_config;      /* Config directive in source code. */
-  gp_boolean         found_devid;       /* Config directive in source code. */
-  gp_boolean         found_idlocs;      /* Idlocs directive in source code. */
-  gp_boolean         found_end;         /* End directive in source code. */
-  unsigned int       maxram;            /* Highest legal data memory location. */
-  long               maxrom;            /* Highest legal program memory location. */
-  struct range_pair *badrom;
+  unsigned int  byte_addr;              /* Current code-generation point. */
+  gp_boolean    dos_newlines;           /* Use DOS newlines in hex file. */
+  gp_boolean    memory_dump;            /* Dump instruction memory to standard output. */
+  gp_boolean    found_config;           /* Config directive in source code. */
+  gp_boolean    found_devid;            /* Config directive in source code. */
+  gp_boolean    found_idlocs;           /* Idlocs directive in source code. */
+  gp_boolean    found_end;              /* End directive in source code. */
+  unsigned int  maxram;                 /* Highest legal data memory location. */
+  long          maxrom;                 /* Highest legal program memory location. */
+  range_pair_t *badrom;
 
   enum outfile
     codfile,                            /* Symbol output file control. */
@@ -178,9 +178,9 @@ extern struct gpasm_state {
     *stMacroParams,                     /* Macro #defines (stDefines is base). */
     *stMacros;                          /* Macros */
 
-  MemBlock                *i_memory;    /* Instruction memory linked list. */
-  MemBlock                *c_memory;    /* Configuration memory linked list. */
-  struct conf_mem_block_s *conf_sec_mem; /* Configuration section memory linked list. */
+  MemBlock         *i_memory;           /* Instruction memory linked list. */
+  MemBlock         *c_memory;           /* Configuration memory linked list. */
+  conf_mem_block_t *conf_sec_mem;       /* Configuration section memory linked list. */
 
   char *srcfilename,                    /* Source (.asm) file name. */
     basefilename[BUFSIZ],               /* Basename for generating hex,list,symbol filenames. */
@@ -258,10 +258,10 @@ extern struct gpasm_state {
   } lst;
 
   struct {                              /* Preprocessor emit state: */
-    char              *preprocfilename; /*   preprocessor output file name */
-    FILE              *f;               /*   preprocessor file pointer */
-    gp_boolean         do_emit;         /*   emit current preprocessed asm line */
-    struct src_line_s  curr_src_line;   /*  current preprocessed source line */
+    char       *preprocfilename;        /*   preprocessor output file name */
+    FILE       *f;                      /*   preprocessor file pointer */
+    gp_boolean  do_emit;                /*   emit current preprocessed asm line */
+    src_line_t  curr_src_line;          /*  current preprocessed source line */
   } preproc;
 
   struct {                              /* Object file state: */
@@ -304,7 +304,7 @@ enum globalLife {
   LFT_PERMANENT
 };
 
-struct variable {
+typedef struct variable {
   int                value;
   int                coff_num;
   int                coff_section_num;
@@ -312,13 +312,13 @@ struct variable {
   enum gpasmValTypes previous_type;     /* Can change from static to global. */
   enum globalLife    lifetime;
   gp_boolean         isProcDependent;   /* True if this a processor constant. */
-};
+} variable_t;
 
 /************************************************************************/
 
 /* Parse node: created by the parser, interpreted by the 'backend' */
 
-struct pnode {
+typedef struct pnode {
   enum pnode_tag {
     PTAG_CONSTANT,
     PTAG_OFFSET,
@@ -352,7 +352,7 @@ struct pnode {
 
     char *string;
   } value;
-};
+} pnode_t;
 
 /************************************************************************/
 
@@ -360,13 +360,13 @@ struct pnode {
                  opened.  Used to create the list of project files
                  that can be found in the .cod file.  */
 
-struct file_context {
+typedef struct file_context {
   char                *name;            /* file name */
   unsigned int         id;              /* Unique identifier. */
   enum file_types      ft;              /* allowed file types */
   struct file_context *prev;            /* Previous in list pointer. */
   struct file_context *next;            /* Next in list pointer. */
-};
+} file_context_t;
 
 enum src_types {
   SRC_UNKNOWN,
@@ -375,7 +375,7 @@ enum src_types {
   SRC_WHILE
 };
 
-struct source_context {
+typedef struct source_context {
   char                   *name;
   enum src_types          type;
   FILE                   *f;
@@ -385,12 +385,12 @@ struct source_context {
   unsigned int            line_number;
   unsigned int            loop_number;      /* Loop number for while loops. */
   gp_symbol_type         *file_symbol;
-  struct file_context    *fc;               /* Position in the file context stack. */
+  file_context_t         *fc;               /* Position in the file context stack. */
   struct amode           *astack;           /* Stack of amodes when a macro was called. */
   gp_boolean              last_char_is_nl;  /* If the last read character is a newline. */
-  struct src_line_s       curr_src_line;    /* Current source line. */
+  src_line_t              curr_src_line;    /* Current source line. */
   struct source_context  *prev;
-};
+} source_context_t;
 
 void yyerror(const char *s);
 
@@ -400,10 +400,10 @@ gp_boolean find_hv_macro(const char *String, const char **Start, const char **En
 int gpasm_magic(const char *);
 const char *convert_escape_chars(const char *ps, int *value);
 char *convert_escaped_char(char *str, char c);
-void coerce_str1(struct pnode *exp);
-gpasmVal do_or_append_insn(const char *op, struct pnode *parms);
+void coerce_str1(pnode_t *exp);
+gpasmVal do_or_append_insn(const char *op, pnode_t *parms);
 void set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type, gp_boolean procDependent);
-struct variable *get_global_constant(const char *Name);
+variable_t *get_global_constant(const char *Name);
 void purge_temp_symbols(symbol_table_t *Table);
 void purge_processor_const_symbols(symbol_table_t *Table);
 void select_errorlevel(int level);
@@ -411,7 +411,7 @@ void select_strictlevel(int level);
 void select_expand(const char *expand);
 void select_hexformat(const char *format_name);
 void select_radix(const char *name);
-struct file_context *add_file(unsigned int type, const char *name);
+file_context_t *add_file(unsigned int type, const char *name);
 void free_files(void);
 void macro_append(void);
 void hex_init(void);
@@ -420,32 +420,32 @@ void hex_init(void);
 void add_path(const char *path);
 
 /* parse.y */
-struct pnode *mk_constant(int value);
-struct pnode *mk_offset(struct pnode *p);
-struct pnode *mk_symbol(char *value);
-struct pnode *mk_string(char *value);
-struct pnode *mk_list(struct pnode *head, struct pnode *tail);
-struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1);
-struct pnode *mk_1op(int op, struct pnode *p0);
+pnode_t *mk_constant(int value);
+pnode_t *mk_offset(pnode_t *p);
+pnode_t *mk_symbol(char *value);
+pnode_t *mk_string(char *value);
+pnode_t *mk_list(pnode_t *head, pnode_t *tail);
+pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1);
+pnode_t *mk_1op(int op, pnode_t *p0);
 
 /************************************************************************/
 
-struct macro_head {
-  int                pass;              /* Pass in which macro was defined: 1 or 2 */
-  struct pnode      *parms;
-  struct macro_body *body;
-  gp_boolean         defined;           /* 1 macro has been defined so calls are valid */
-  char              *src_name;
-  unsigned int       line_number;
-  gp_symbol_type    *file_symbol;
-};
-
-struct macro_body {
+typedef struct macro_body {
   char              *src_line;          /* Original source line - for listing. */
   struct macro_body *next;              /* Next line in listing. */
-};
+} macro_body_t;
 
-struct amode {
+typedef struct macro_head {
+  int             pass;                 /* Pass in which macro was defined: 1 or 2 */
+  pnode_t        *parms;
+  macro_body_t   *body;
+  gp_boolean      defined;              /* 1 macro has been defined so calls are valid */
+  char           *src_name;
+  unsigned int    line_number;
+  gp_symbol_type *file_symbol;
+} macro_head_t;
+
+typedef struct amode {
   enum {
     IN_THEN,
     IN_ELIF,
@@ -456,6 +456,6 @@ struct amode {
   gp_boolean    before_else_enabled;    /* This true if before else branch was an another enabled branch. */
   gp_boolean    upper_enabled;
   struct amode *upper;
-};
+} amode_t;
 
 #endif

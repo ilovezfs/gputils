@@ -49,9 +49,9 @@ static const char *processor_name = NULL;
 static gp_cfg_addr_pack_t addr_pack = { 0, };
 
 static struct {
-  gp_boolean is_print;
+  gp_boolean   is_print;
   unsigned int number;
-  int words[PIC16E_IDLOCS_SIZE];
+  int          words[PIC16E_IDLOCS_SIZE];
 } idlocs_pack = { 0, 0, { -1, } };
 
 static gp_boolean prev_empty_line = false;
@@ -197,9 +197,9 @@ static void
 ux_print(gp_boolean newline, const char *format, ...)
 {
   va_list(ap);
-  char buffer[BUFSIZ];
+  char        buffer[BUFSIZ];
   const char *bptr;
-  size_t len;
+  size_t      len;
 
   va_start(ap, format);
   len = (size_t)vsnprintf(buffer, sizeof(buffer), format, ap);
@@ -284,11 +284,10 @@ write_header(void)
 static void
 write_core_sfr_list(void)
 {
-  int i;
+  int               i;
   const core_sfr_t *table;
 
-  if (state.format || (state.class->core_sfr_table == NULL) ||
-      (state.class->core_sfr_number == 0)) {
+  if (state.format || (state.class->core_sfr_table == NULL) || (state.class->core_sfr_number == 0)) {
     return;
   }
 
@@ -335,7 +334,7 @@ static void
 write_org(int org, int addr_digits, const char *title, const char *Address_name, int offset)
 {
   size_t length;
-  char buffer[BUFSIZ];
+  char   buffer[BUFSIZ];
 
   if (!state.format) {
     ux_print(true, "");
@@ -369,11 +368,12 @@ write_org(int org, int addr_digits, const char *title, const char *Address_name,
 static void
 mark_false_addresses(MemBlock *memory)
 {
-  MemBlock *m;
-  int i, maximum;
-  int org;
-  int insn_size;
-  int num_words;
+  MemBlock      *m;
+  int            i;
+  int            maximum;
+  int            org;
+  int            insn_size;
+  int            num_words;
   unsigned short data;
 
   m = memory;
@@ -413,40 +413,41 @@ mark_false_addresses(MemBlock *memory)
 static void
 recognize_labels_and_spec_words(MemBlock *memory)
 {
-  MemBlock *m;
-  int i, maximum, index;
-  int org;
-  int offset;
-  int insn_size;
-  int num_words;
-  unsigned char byte;
-  unsigned short data;
-  const vector_t *vector;
-  gpdasm_fstate_t fstate;
+  MemBlock              *m;
+  int                    i;
+  int                    maximum;
+  int                    index;
+  int                    org;
+  int                    offset;
+  int                    insn_size;
+  int                    num_words;
+  unsigned char          byte;
+  unsigned short         data;
+  const vector_t        *vector;
+  gpdasm_fstate_t        fstate;
   const gp_cfg_device_t *dev;
-  gp_cfg_addr_hit_t *hit;
-  unsigned int max_width;
-  unsigned int type;
-  lset_symbol_t *sym;
+  gp_cfg_addr_hit_t     *hit;
+  unsigned int           max_width;
+  unsigned int           type;
+  lset_symbol_t         *sym;
 
   if (state.show_config) {
     dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
     if (dev == NULL) {
-      fprintf(stderr, "Warning: The %s processor has no entries in the config db.",
-              state.processor->names[2]);
+      fprintf(stderr, "Warning: The %s processor has no entries in the config db.", state.processor->names[2]);
     }
   }
   else {
     dev = NULL;
   }
 
-  m = memory;
-  fstate.wreg = 0;
-  fstate.pclath = 0;
-  fstate.pclath_valid = 0xff;
-  addr_pack.hit_count = 0;
-  max_width = 0;
-  idlocs_pack.number = 0;
+  m                    = memory;
+  fstate.wreg          = 0;
+  fstate.pclath        = 0;
+  fstate.pclath_valid  = 0xff;
+  addr_pack.hit_count  = 0;
+  max_width            = 0;
+  idlocs_pack.number   = 0;
   idlocs_pack.is_print = true;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
@@ -613,23 +614,24 @@ user_data_finder(MemArg *Argument)
 static void
 recognize_registers(MemBlock *memory)
 {
-  MemBlock *m;
-  int i, maximum;
-  int org;
-  int insn_size;
-  int num_words;
-  unsigned short data;
-  gpdasm_fstate_t fstate;
+  MemBlock        *m;
+  int              i;
+  int              maximum;
+  int              org;
+  int              insn_size;
+  int              num_words;
+  unsigned short   data;
+  gpdasm_fstate_t  fstate;
 
   if (state.class == PROC_CLASS_SX) {
     return;
   }
 
-  m = memory;
-  fstate.wreg = 0;
-  fstate.bank = 0;
-  fstate.bank_valid = 0xff;
-  fstate.proc_regs = state.proc_regs;
+  m                   = memory;
+  fstate.wreg         = 0;
+  fstate.bank         = 0;
+  fstate.bank_valid   = 0xff;
+  fstate.proc_regs    = state.proc_regs;
   fstate.bsr_boundary = gp_processor_bsr_boundary(state.processor);
   fstate.need_sfr_equ = false;
   while (m != NULL) {
@@ -651,8 +653,7 @@ recognize_registers(MemBlock *memory)
       }
       else {
         if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
-          num_words = gp_disassemble_find_registers(m, i, state.processor,
-                                                    &fstate, user_data_finder);
+          num_words = gp_disassemble_find_registers(m, i, state.processor, &fstate, user_data_finder);
           insn_size = (num_words != 1) ? 4 : 2;
         }
       }
@@ -671,14 +672,15 @@ recognize_registers(MemBlock *memory)
 static void
 denominate_labels(MemBlock *memory)
 {
-  MemBlock *m;
-  int i, maximum;
-  unsigned int type;
-  unsigned int func_idx;
-  unsigned int label_idx;
-  char buffer[BUFSIZ];
+  MemBlock     *m;
+  int           i;
+  int           maximum;
+  unsigned int  type;
+  unsigned int  func_idx;
+  unsigned int  label_idx;
+  char          buffer[BUFSIZ];
 
-  m = memory;
+  m         = memory;
   func_idx  = 0;
   label_idx = 0;
   while (m != NULL) {
@@ -711,7 +713,7 @@ denominate_labels(MemBlock *memory)
 static size_t
 byte_exclamation(char *buffer, size_t buffer_length, size_t current_length, unsigned char byte)
 {
-  int l;
+  int    l;
   size_t length;
 
   l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%02x",
@@ -736,7 +738,8 @@ static void
 show_config(void)
 {
   gp_cfg_addr_hit_t *hit;
-  unsigned int m, n;
+  unsigned int       m;
+  unsigned int       n;
 
   if (addr_pack.hit_count == 0) {
     return;
@@ -758,10 +761,13 @@ show_config(void)
 static void
 show_idlocs(void)
 {
-  unsigned int i, j;
-  int word;
-  gp_boolean prev_exist, act_exist, aligned;
-  char buffer[PIC16E_IDLOCS_SIZE * 2];
+  unsigned int i;
+  unsigned int j;
+  int          word;
+  gp_boolean   prev_exist;
+  gp_boolean   act_exist;
+  gp_boolean   aligned;
+  char         buffer[PIC16E_IDLOCS_SIZE * 2];
 
   if (idlocs_pack.number == 0) {
     return;
@@ -883,14 +889,13 @@ static gp_boolean need_section_print(const lset_section_t *Section)
 static void
 list_user_labels(int Addr_digits)
 {
-  unsigned int i;
+  unsigned int          i;
   const lset_section_t *sect;
-  const lset_symbol_t *sym;
-  size_t length;
-  char buffer[BUFSIZ];
+  const lset_symbol_t  *sym;
+  size_t                length;
+  char                  buffer[BUFSIZ];
 
-  if (((sect = state.lset_root.sections[SECT_SPEC_DATA]) != NULL) &&
-      (sect->symbol_table != NULL)) {
+  if (((sect = state.lset_root.sections[SECT_SPEC_DATA]) != NULL) && (sect->symbol_table != NULL)) {
     if (need_section_print(sect)) {
       printf("\n;%s\n; DATA address definitions\n\n", border);
       for (i = 0; i < sect->symbol_number; ++i) {
@@ -901,8 +906,7 @@ list_user_labels(int Addr_digits)
                             USER_LABEL_ALIGN, sym->name, Addr_digits, sym->start);
 
           if (sym->attr & CSYM_END) {
-            gp_exclamation(buffer, sizeof(buffer), length, "; size: %li bytes",
-                           sym->end - sym->start + 1);
+            gp_exclamation(buffer, sizeof(buffer), length, "; size: %li bytes", sym->end - sym->start + 1);
           }
 
           ux_print(true, "%s", buffer);
@@ -911,8 +915,7 @@ list_user_labels(int Addr_digits)
     }
   }
 
-  if (((sect = state.lset_root.sections[SECT_SPEC_EEDATA]) != NULL) &&
-      (sect->symbol_table != NULL)) {
+  if (((sect = state.lset_root.sections[SECT_SPEC_EEDATA]) != NULL) && (sect->symbol_table != NULL)) {
     if (need_section_print(sect)) {
       ux_print(true, "\n"
                      ";%s\n"
@@ -925,8 +928,7 @@ list_user_labels(int Addr_digits)
                             USER_LABEL_ALIGN, sym->name, Addr_digits, sym->start);
 
           if (sym->attr & CSYM_END) {
-            gp_exclamation(buffer, sizeof(buffer), length, "; size: %li bytes",
-                           sym->end - sym->start + 1);
+            gp_exclamation(buffer, sizeof(buffer), length, "; size: %li bytes", sym->end - sym->start + 1);
           }
 
           ux_print(true, "%s", buffer);
@@ -953,13 +955,13 @@ add_constant(lset_section_t *Section, const char *Name, long Start, unsigned int
 static void
 load_processor_constants(void)
 {
-  pic_processor_t processor;
-  lset_section_t *sect;
-  const int *pair;
-  int addr;
-  const vector_t *vec;
-  unsigned int num;
-  char buf[BUFSIZ];
+  pic_processor_t  processor;
+  lset_section_t  *sect;
+  const int       *pair;
+  int              addr;
+  const vector_t  *vec;
+  unsigned int     num;
+  char             buf[BUFSIZ];
 
   processor = state.processor;
 
@@ -1056,24 +1058,25 @@ load_processor_constants(void)
 static void
 dasm(MemBlock *memory)
 {
-  MemBlock *m;
-  int i, maximum;
-  int org;
-  int offset;
-  int insn_size;
-  int last_loc;
-  int num_words;
-  int behavior;
-  int bsr_boundary;
-  unsigned short data;
-  unsigned char byte;
-  unsigned int type;
-  const char *label_name;
-  int addr_digits;
-  int word_digits;
-  size_t length;
+  MemBlock            *m;
+  int                  i;
+  int                  maximum;
+  int                  org;
+  int                  offset;
+  int                  insn_size;
+  int                  last_loc;
+  int                  num_words;
+  int                  behavior;
+  int                  bsr_boundary;
+  unsigned short       data;
+  unsigned char        byte;
+  unsigned int         type;
+  const char          *label_name;
+  int                  addr_digits;
+  int                  word_digits;
+  size_t               length;
   const lset_symbol_t *sym;
-  char buffer[BUFSIZ];
+  char                 buffer[BUFSIZ];
 
   if (state.show_names && ((state.class == PROC_CLASS_PIC12)   ||
                            (state.class == PROC_CLASS_PIC12E)  ||
@@ -1458,17 +1461,17 @@ show_usage(void)
 
 int main(int argc, char *argv[])
 {
-  int option_index;
+  int         option_index;
   const char *command;
-  int c;
-  gp_boolean strict_options = false;
-  gp_boolean print_hex_info = false;
-  gp_boolean memory_dump    = false;
-  gp_boolean strict         = false;
-  gp_boolean usage          = false;
+  int         c;
+  gp_boolean  strict_options  = false;
+  gp_boolean  print_hex_info  = false;
+  gp_boolean  memory_dump     = false;
+  gp_boolean  strict          = false;
+  gp_boolean  usage           = false;
   const char *filename        = NULL;
   const char *label_list_name = NULL;
-  const int *pair;
+  const int  *pair;
 
   gp_init();
 

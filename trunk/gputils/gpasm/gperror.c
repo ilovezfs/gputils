@@ -111,10 +111,10 @@ typedef enum {
 static void
 verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
 {
-  va_list                      ap0;
-  const char                  *type;
-  const char                  *gap;
-  const struct source_context *src = state.src;
+  va_list                 ap0;
+  const char             *type;
+  const char             *gap;
+  const source_context_t *src = state.src;
 
   if ((src != NULL) && state.macro_dereference) {
     while ((src != NULL) && (src->type == SRC_MACRO)) {
@@ -172,9 +172,9 @@ verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
 static void
 err(err_type_t err_type, unsigned int code, const char *message)
 {
-  const char                  *type;
-  const char                  *gap;
-  const struct source_context *src = state.src;
+  const char             *type;
+  const char             *gap;
+  const source_context_t *src = state.src;
 
   if ((src != NULL) && state.macro_dereference) {
     while ((src != NULL) && (src->type == SRC_MACRO)) {
