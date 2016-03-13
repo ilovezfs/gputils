@@ -38,8 +38,8 @@ static int
 reg_cmp(const void *P1, const void *P2) {
   const gp_register_t **r1 = (const gp_register_t **)P1;
   const gp_register_t **r2 = (const gp_register_t **)P2;
-  unsigned int a1 = (*r1)->address;
-  unsigned int a2 = (*r2)->address;
+  unsigned int          a1 = (*r1)->address;
+  unsigned int          a2 = (*r2)->address;
 
   if (a1 > a2) {
     return 1;
@@ -57,8 +57,8 @@ reg_cmp(const void *P1, const void *P2) {
 static int bit_cmp(const void *P1, const void *P2) {
   const gp_bit_t *r1 = (const gp_bit_t *)P1;
   const gp_bit_t *r2 = (const gp_bit_t *)P2;
-  unsigned int a1 = r1->address;
-  unsigned int a2 = r2->address;
+  unsigned int    a1 = r1->address;
+  unsigned int    a2 = r2->address;
 
   if (a1 > a2) {
     return 1;
@@ -91,7 +91,7 @@ gp_register_find_mcu(const gp_register_table_t *Table, int Table_size, const cha
 const gp_register_t *
 gp_register_find_reg(const gp_register_table_t *Mcu, unsigned int Address) {
   gp_register_t reg;
-  const gp_register_t *rptr = &reg;
+  const gp_register_t  *rptr = &reg;
   const gp_register_t **ret;
 
   if (Mcu == NULL) {

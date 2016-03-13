@@ -71,7 +71,7 @@ exp:
     symbol_t *sym;
 
     if ((sym = sym_get_symbol(state.stTop, $1)) != NULL) {
-      struct variable *var = sym_get_symbol_annotation(sym);
+      variable_t *var = sym_get_symbol_annotation(sym);
       assert(var != NULL);
       $$ = var->value;
     }

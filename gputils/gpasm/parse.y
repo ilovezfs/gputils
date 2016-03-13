@@ -118,58 +118,58 @@ int yylex(void);
 
 /* Some simple functions for building parse trees */
 
-static struct pnode *mk_pnode(enum pnode_tag tag)
+static pnode_t *mk_pnode(enum pnode_tag tag)
 {
-  struct pnode *new = (struct pnode *)GP_Malloc(sizeof(struct pnode));
+  pnode_t *new = (pnode_t *)GP_Malloc(sizeof(pnode_t));
 
   new->tag = tag;
   return new;
 }
 
-struct pnode *mk_constant(int value)
+pnode_t *mk_constant(int value)
 {
-  struct pnode *new = mk_pnode(PTAG_CONSTANT);
+  pnode_t *new = mk_pnode(PTAG_CONSTANT);
 
   new->value.constant = value;
   return new;
 }
 
-struct pnode *mk_offset(struct pnode *p)
+pnode_t *mk_offset(pnode_t *p)
 {
-  struct pnode *new = mk_pnode(PTAG_OFFSET);
+  pnode_t *new = mk_pnode(PTAG_OFFSET);
 
   new->value.offset = p;
   return new;
 }
 
-struct pnode *mk_symbol(char *value)
+pnode_t *mk_symbol(char *value)
 {
-  struct pnode *new = mk_pnode(PTAG_SYMBOL);
+  pnode_t *new = mk_pnode(PTAG_SYMBOL);
 
   new->value.symbol = value;
   return new;
 }
 
-struct pnode *mk_string(char *value)
+pnode_t *mk_string(char *value)
 {
-  struct pnode *new = mk_pnode(PTAG_STRING);
+  pnode_t *new = mk_pnode(PTAG_STRING);
 
   new->value.string = value;
   return new;
 }
 
-struct pnode *mk_list(struct pnode *head, struct pnode *tail)
+pnode_t *mk_list(pnode_t *head, pnode_t *tail)
 {
-  struct pnode *new = mk_pnode(PTAG_LIST);
+  pnode_t *new = mk_pnode(PTAG_LIST);
 
   new->value.list.head = head;
   new->value.list.tail = tail;
   return new;
 }
 
-struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
+pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1)
 {
-  struct pnode *new = mk_pnode(PTAG_BINOP);
+  pnode_t *new = mk_pnode(PTAG_BINOP);
 
   new->value.binop.op = op;
   new->value.binop.p0 = p0;
@@ -177,9 +177,9 @@ struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
   return new;
 }
 
-struct pnode *mk_1op(int op, struct pnode *p0)
+pnode_t *mk_1op(int op, pnode_t *p0)
 {
-  struct pnode *new = mk_pnode(PTAG_UNOP);
+  pnode_t *new = mk_pnode(PTAG_UNOP);
 
   new->value.unop.op = op;
   new->value.unop.p0 = p0;
@@ -189,7 +189,7 @@ struct pnode *mk_1op(int op, struct pnode *p0)
 /************************************************************************/
 /* shared functions */
 
-gpasmVal set_label(const char *label, struct pnode *parms)
+gpasmVal set_label(const char *label, pnode_t *parms)
 {
   gpasmVal value = 0;
 
@@ -323,7 +323,7 @@ void yyerror(const char *message)
 %union {
   gpasmVal i;
   char *s;
-  struct pnode *p;
+  pnode_t *p;
 }
 
 %token <s> LABEL
@@ -444,7 +444,7 @@ program:
 line:
         LABEL assign_equal_ops expr '\n'
         {
-          struct pnode *parms;
+          pnode_t *parms;
           int exp_result;
 
           exp_result = do_insn("set", mk_list($3, NULL));
@@ -454,7 +454,7 @@ line:
         |
         LABEL '=' expr '\n'
         {
-          struct pnode *parms;
+          pnode_t *parms;
 
           /* implements i = 6 + 1 */
           parms = mk_list($3, NULL);
@@ -463,7 +463,7 @@ line:
         |
         LABEL DECREMENT '\n'
         {
-          struct pnode *parms;
+          pnode_t *parms;
 
           /* implements i-- */
           parms = mk_list(mk_1op(DECREMENT, mk_symbol($1)), NULL);
@@ -472,7 +472,7 @@ line:
         |
         LABEL INCREMENT '\n'
         {
-          struct pnode *parms;
+          pnode_t *parms;
 
           /* implements i++ */
           parms = mk_list(mk_1op(INCREMENT, mk_symbol($1)), NULL);
@@ -494,8 +494,8 @@ line:
 
             if (state.mac_head != NULL) {
               /* This is a macro definition. Set it up. */
-              symbol_t *mac;
-              struct macro_head *h = NULL;
+              symbol_t     *mac;
+              macro_head_t *h = NULL;
 
               mac = sym_get_symbol(state.stMacros, $1);
               if (mac != NULL) {
@@ -588,7 +588,7 @@ line:
               }
 
               if (state.astack != NULL) {
-                struct amode *old;
+                amode_t *old;
 
                 while (state.astack != NULL) {
                   old = state.astack;

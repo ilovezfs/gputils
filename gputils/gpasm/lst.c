@@ -973,16 +973,16 @@ lst_symbol_table(void)
     switch (lst[i].type) {
     case LST_SYMBOL:
       /* symbol */
-      lst_line("%-32s  %08X", name, (p != NULL) ? ((const struct variable *)p)->value : 0);
+      lst_line("%-32s  %08X", name, (p != NULL) ? ((const variable_t *)p)->value : 0);
       break;
 
     case LST_DEFINE:
       /* define */
       if (p != NULL) {
-        assert(((const struct pnode *)p)->tag == PTAG_LIST);
-        assert(HEAD((const struct pnode *)p)->tag == PTAG_STRING);
+        assert(((const pnode_t *)p)->tag == PTAG_LIST);
+        assert(HEAD((const pnode_t *)p)->tag == PTAG_STRING);
       }
-      lst_line("%-32s  %s", name, (p != NULL) ? HEAD((const struct pnode *)p)->value.string : "");
+      lst_line("%-32s  %s", name, (p != NULL) ? HEAD((const pnode_t *)p)->value.string : "");
       break;
 
     case LST_MACRO:

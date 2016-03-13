@@ -31,11 +31,13 @@ Boston, MA 02111-1307, USA.  */
 static int
 _gp_coffgen_addstring(const char *name, unsigned char *table)
 {
-  int nbytes;
-  int offset;
-  size_t sizeof_name = strlen(name) + 1;
+  int    nbytes;
+  int    offset;
+  size_t sizeof_name;
 
   assert(name != NULL);
+
+  sizeof_name = strlen(name) + 1;
 
   /* read the number of bytes in the string table */
   offset = nbytes = gp_getl32(&table[0]);
@@ -207,8 +209,7 @@ _gp_coffgen_write_linenum(const gp_section_type *section, int org_to_byte_shift,
 
 /* write the auxiliary symbols */
 static void
-_gp_coffgen_write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp,
-                             int isnew)
+_gp_coffgen_write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp, gp_boolean isnew)
 {
   unsigned int offset;
 
@@ -221,7 +222,13 @@ _gp_coffgen_write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE 
       gp_fputl32(offset, fp);
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
-      if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
+
+      if (isnew) {
+        gp_fputl32(0, fp);
+      }
+      else {
+        gp_fputl16(0, fp);
+      }
       break;
 
     case AUX_FILE:
@@ -231,7 +238,13 @@ _gp_coffgen_write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE 
       gp_fputl32(aux->_aux_symbol._aux_file.line_number, fp);
       fputc(aux->_aux_symbol._aux_file.flags, fp);
       gp_fputvar("\0\0\0\0\0\0", 7, fp);
-      if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
+
+      if (isnew) {
+        gp_fputl32(0, fp);
+      }
+      else {
+        gp_fputl16(0, fp);
+      }
       break;
 
     case AUX_IDENT:
@@ -241,7 +254,13 @@ _gp_coffgen_write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE 
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
-      if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
+
+      if (isnew) {
+        gp_fputl32(0, fp);
+      }
+      else {
+        gp_fputl16(0, fp);
+      }
       break;
 
     case AUX_SCN:
@@ -251,7 +270,13 @@ _gp_coffgen_write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE 
       gp_fputl16(aux->_aux_symbol._aux_scn.nlineno, fp);
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
-      if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
+
+      if (isnew) {
+        gp_fputl32(0, fp);
+      }
+      else {
+        gp_fputl16(0, fp);
+      }
       break;
 
     default:
@@ -326,15 +351,17 @@ _has_data(const gp_section_type *section)
 static int
 _gp_updateptr(gp_object_type *object)
 {
-  int loc = 0;
-  gp_section_type *section = NULL;
-  gp_symbol_type *symbol = NULL;
-  int section_number = 1;
-  int symbol_number = 0;
+  int              loc;
+  gp_section_type *section;
+  gp_symbol_type  *symbol;
+  int              section_number;
+  int              symbol_number;
 
   loc = ((object->isnew) ?
          (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2 + (SEC_HDR_SIZ_v2 * object->num_sections)) :
          (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ_v1 * object->num_sections)));
+
+  section_number = 1;
 
   /* update the data pointers in the section headers */
   section = object->sections;
@@ -378,7 +405,8 @@ _gp_updateptr(gp_object_type *object)
   object->symbol_ptr = loc;
 
   /* update the symbol numbers */
-  symbol = object->symbols;
+  symbol_number = 0;
+  symbol        = object->symbols;
   while (symbol != NULL) {
     symbol->number = symbol_number;
     symbol_number += 1 + symbol->num_auxsym;
@@ -392,9 +420,9 @@ _gp_updateptr(gp_object_type *object)
 int
 gp_write_coff(gp_object_type *object, int numerrors)
 {
-  FILE *coff;
-  gp_section_type *section = NULL;
-  unsigned char table[MAX_STRING_TABLE]; /* string table */
+  FILE            *coff;
+  gp_section_type *section;
+  unsigned char    table[MAX_STRING_TABLE]; /* string table */
 
   if (numerrors > 0) {
     unlink(object->filename);
@@ -417,12 +445,10 @@ gp_write_coff(gp_object_type *object, int numerrors)
   _gp_coffgen_write_filehdr(object, coff);
   _gp_coffgen_write_opthdr(object, coff);
 
-  section = object->sections;
-
   /* write section headers */
+  section = object->sections;
   while (section != NULL) {
-    _gp_coffgen_write_scnhdr(section, object->class->org_to_byte_shift,
-                             &table[0], coff);
+    _gp_coffgen_write_scnhdr(section, object->class->org_to_byte_shift, &table[0], coff);
     section = section->next;
   }
 
@@ -473,7 +499,7 @@ gp_is_absolute_object(const gp_object_type *object)
 {
   gp_section_type *section;
 
-  for (section = object->sections; section; section = section->next) {
+  for (section = object->sections; section != NULL; section = section->next) {
     if ((section->num_reloc != 0) || !(section->flags & STYP_ABS)) {
       return false;
     }

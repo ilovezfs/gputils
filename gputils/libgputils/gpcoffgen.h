@@ -53,7 +53,7 @@ gp_linenum_type *gp_coffgen_blockline(unsigned int number);
 gp_symbol_type *gp_coffgen_blocksym(unsigned int number);
 gp_aux_type *gp_coffgen_blockaux(unsigned int number);
 
-int gp_coffgen_free_section(gp_section_type *section);
+void gp_coffgen_free_section(gp_section_type *section);
 int gp_coffgen_free_symbol(gp_symbol_type *symbol);
 int gp_coffgen_free(gp_object_type *object);
 int gp_coffgen_free(gp_object_type *object);

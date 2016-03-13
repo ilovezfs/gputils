@@ -58,8 +58,8 @@ gp_coff_type
 gp_identify_coff_file(const char *filename)
 {
   FILE *file;
-  char magic[SARMAG + 1];
-  int n;
+  char  magic[SARMAG + 1];
+  int   n;
 
   if ((file = fopen(filename, "rb")) == NULL) {
     return GP_COFF_SYS_ERR;
@@ -91,10 +91,10 @@ gp_identify_coff_file(const char *filename)
 gp_binary_type *
 gp_read_file(const char *filename)
 {
-  FILE *infile;
+  FILE           *infile;
   gp_binary_type *file;
-  struct stat statbuf;
-  int n;
+  struct stat     statbuf;
+  int             n;
 
   infile = fopen(filename, "rb");
   if (infile == NULL) {
@@ -139,7 +139,7 @@ static int
 _read_file_header(gp_object_type *object, const unsigned char *file, gp_binary_type *data)
 {
   gp_boolean isnew = false;
-  int opt_hdr;
+  int        opt_hdr;
 
   if (check_getl16(&file[0], data) == MICROCHIP_MAGIC_v2) {
     isnew = true;
@@ -171,8 +171,11 @@ static void
 _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_type *data)
 {
   unsigned short optmagic;
-  unsigned long vstamp, proc_code, rom_width, ram_width;
-  size_t offset = 0;
+  unsigned long  vstamp;
+  unsigned long  proc_code;
+  unsigned long  rom_width;
+  unsigned long  ram_width;
+  size_t         offset = 0;
 
   optmagic = check_getl16(&file[0], data);
 
@@ -248,7 +251,7 @@ static void
 _read_section_header(gp_object_type *object, gp_section_type *section,
                      const unsigned char *file, const char *string_table, gp_binary_type *data)
 {
-  char buffer[9];
+  char         buffer[9];
   unsigned int offset;
 
   if (check_getl32(&file[0], data) == 0) {
@@ -331,15 +334,16 @@ _read_lineno(gp_object_type *object, int org_to_byte_shift, gp_linenum_type *lin
 static void
 _read_sections(gp_object_type *object, const unsigned char *file, gp_binary_type *data)
 {
-  int i, j;
+  int                  i;
+  int                  j;
   const unsigned char *section_ptr;
-  const char *string_table;
+  const char          *string_table;
   const unsigned char *loc;
-  gp_section_type *current = NULL;
-  gp_reloc_type *current_reloc = NULL;
-  gp_linenum_type *current_linenum = NULL;
-  unsigned int number;
-  int org;
+  gp_section_type     *current = NULL;
+  gp_reloc_type       *current_reloc = NULL;
+  gp_linenum_type     *current_linenum = NULL;
+  unsigned int         number;
+  int                  org;
 
   /* move to the start of the section headers */
   section_ptr = file + (object->isnew ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2) :
@@ -415,7 +419,7 @@ _read_sections(gp_object_type *object, const unsigned char *file, gp_binary_type
 struct lazy_linking_s {
   union {
     gp_symbol_type *symbol;
-    gp_aux_type *aux;
+    gp_aux_type    *aux;
   } read;
   struct lazy_linking_s *next;
 };
@@ -481,9 +485,9 @@ static void
 _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const unsigned char *file,
              const char *string_table, struct lazy_linking_s *lazy_linking, gp_binary_type *data)
 {
-  char buffer[9];
-  unsigned int offset;
-  size_t file_off = 0;
+  char                   buffer[9];
+  unsigned int           offset;
+  size_t                 file_off = 0;
   struct lazy_linking_s *current_lazy;
 
   if (check_getl32(&file[0], data) == 0) {
@@ -548,17 +552,18 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const unsign
 static void
 _read_symtbl(gp_object_type *object, const unsigned char *file, gp_binary_type *data)
 {
-  int i;
-  int j;
-  int number = object->num_symbols;
-  int num_auxsym;
-  int aux_type;
-  gp_symbol_type *current = NULL;
-  gp_aux_type *current_aux = NULL;
-  const char *string_table;
+  int                   i;
+  int                   j;
+  int                   number;
+  int                   num_auxsym;
+  int                   aux_type;
+  gp_symbol_type        *current;
+  gp_aux_type           *current_aux;
+  const char            *string_table;
   struct lazy_linking_s *lazy_linking;
-  const char *section_name = NULL;
+  const char            *section_name;
 
+  number = object->num_symbols;
   if (number > 0) {
     /* create a block of symbols */
     object->symbols = gp_coffgen_blocksym(number);
@@ -627,9 +632,9 @@ _read_symtbl(gp_object_type *object, const unsigned char *file, gp_binary_type *
 static void
 _clean_symtbl(gp_object_type *object)
 {
-  gp_symbol_type *current = NULL;
-  gp_symbol_type *next_symbol = NULL;
-  /* gp_symbol_type *old_symbol = NULL; */
+  gp_symbol_type *current;
+  gp_symbol_type *next_symbol;
+  /* gp_symbol_type *old_symbol; */
   unsigned int i;
 
   current = object->symbols;

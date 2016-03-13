@@ -27,7 +27,7 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "coff.h"
 
-static struct file_context *last = NULL;
+static file_context_t *last = NULL;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -87,8 +87,8 @@ int
 stringtolong(const char *string, int radix)
 {
   char *endptr;
-  int value;
-  char ch;
+  int   value;
+  char  ch;
 
   value = _strtoi(string, &endptr, radix);
   if ((endptr == NULL) || ((ch = *endptr) != '\0')) {
@@ -385,12 +385,13 @@ convert_escape_chars(const char *ps, int *value)
  * character literal. coerce_str1 converts a string-type pnode to a
  * constant-type pnode in-place. */
 void
-coerce_str1(struct pnode *exp)
+coerce_str1(pnode_t *exp)
 {
-  if ((exp != NULL) && (exp->tag == PTAG_STRING)) {
-    int value;
+  int         value;
+  const char *pc;
 
-    const char *pc = convert_escape_chars(exp->value.string, &value);
+  if ((exp != NULL) && (exp->tag == PTAG_STRING)) {
+    pc = convert_escape_chars(exp->value.string, &value);
 
     if (*pc == '\0') {
       /* castable string, make the conversion */
@@ -406,8 +407,8 @@ void
 set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type,
            gp_boolean procDependent)
 {
-  symbol_t        *sym;
-  struct variable *var;
+  symbol_t   *sym;
+  variable_t *var;
 
   /* Search the entire stack (i.e. include macro's local symbol tables) for the symbol.
      If not found, then add it to the global symbol table.  */
@@ -450,10 +451,10 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
      * TSD - the following embarrassing piece of code is a hack
      *       to fix a problem when global variables are changed
      *       during the expansion of a macro. Macros are expanded
-     *       by running through them twice. if you have a statement
+     *       by running through them twice. If you have a statement
      *       like:
      *       some_var set some_var + 1
-     *       then this is incremented twice! So the if statement
+     *       Then this is incremented twice! So the if statement
      *       makes sure that the value is assigned on the second
      *       pass only in the macro. Jeez this really sucks....
      */
@@ -477,11 +478,11 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct variable *
+variable_t *
 get_global_constant(const char *Name)
 {
-  const symbol_t  *sym;
-  struct variable *var;
+  const symbol_t *sym;
+  variable_t     *var;
 
   if (((sym = sym_get_symbol(state.stGlobal, Name)) != NULL) &&
       ((var = sym_get_symbol_annotation(sym)) != NULL) &&
@@ -496,9 +497,9 @@ get_global_constant(const char *Name)
 
 void
 purge_temp_symbols(symbol_table_t *Table) {
-  size_t           i;
-  symbol_t        *sym;
-  struct variable *var;
+  size_t      i;
+  symbol_t   *sym;
+  variable_t *var;
 
   if (Table == NULL) {
     return;
@@ -508,7 +509,7 @@ purge_temp_symbols(symbol_table_t *Table) {
     sym = sym_get_symbol_with_index(Table, i);
     assert(sym != NULL);
 
-    var = (struct variable *)sym_get_symbol_annotation(sym);
+    var = (variable_t *)sym_get_symbol_annotation(sym);
 
     if ((var != NULL) && (var->lifetime == LFT_TEMPORARY)) {
       sym_remove_symbol_with_index(Table, i);
@@ -525,9 +526,9 @@ purge_temp_symbols(symbol_table_t *Table) {
 
 void
 purge_processor_const_symbols(symbol_table_t *Table) {
-  size_t           i;
-  symbol_t        *sym;
-  struct variable *var;
+  size_t      i;
+  symbol_t   *sym;
+  variable_t *var;
 
   if (Table == NULL) {
     return;
@@ -537,7 +538,7 @@ purge_processor_const_symbols(symbol_table_t *Table) {
     sym = sym_get_symbol_with_index(Table, i);
     assert(sym != NULL);
 
-    var = (struct variable *)sym_get_symbol_annotation(sym);
+    var = (variable_t *)sym_get_symbol_annotation(sym);
 
     if ((var != NULL) && (var->lifetime == LFT_PERMANENT) && (var->type == GVT_CONSTANT) &&
         var->isProcDependent) {
@@ -700,7 +701,7 @@ select_radix(const char *radix_name)
 void
 macro_append(void)
 {
-  struct macro_body *body = GP_Malloc(sizeof(*body));
+  macro_body_t *body = GP_Malloc(sizeof(*body));
 
   body->src_line = NULL;
 
@@ -713,7 +714,7 @@ macro_append(void)
 /*------------------------------------------------------------------------------------------------*/
 
 gpasmVal
-do_or_append_insn(const char *op, struct pnode *parms)
+do_or_append_insn(const char *op, pnode_t *parms)
 {
   if (IN_MACRO_WHILE_DEFINITION) {
     if (strcasecmp(op, "endm") == 0) {
@@ -742,7 +743,7 @@ do_or_append_insn(const char *op, struct pnode *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 /*static void
-print_pnode(const struct pnode *p)
+print_pnode(const pnode_t *p)
 {
   if (p == NULL) {
     printf("Null\n");
@@ -780,7 +781,7 @@ print_pnode(const struct pnode *p)
 }
 
 static void
-print_macro_node(const struct macro_body *mac)
+print_macro_node(const macro_body_t *mac)
 {
   if (mac->src_line != NULL) {
     printf(" src_line = %s\n", mac->src_line);
@@ -788,9 +789,9 @@ print_macro_node(const struct macro_body *mac)
 }
 
 static void
-print_macro_body(const struct macro_body *mac)
+print_macro_body(const macro_body_t *mac)
 {
-  const struct macro_body *mb = mac;
+  const macro_body_t *mb = mac;
 
   printf("{\n");
   while(mb != NULL) {
@@ -804,12 +805,12 @@ print_macro_body(const struct macro_body *mac)
 
 /* add_file: Add a file of type 'type' to the file_context stack. */
 
-struct file_context *
+file_context_t *
 add_file(unsigned int type, const char *name)
 {
   static unsigned int file_id = 0;
 
-  struct file_context *new;
+  file_context_t *new;
 
   /* First check to make sure this file is not already in the list. */
 
@@ -848,10 +849,10 @@ add_file(unsigned int type, const char *name)
 void
 free_files(void)
 {
-  struct file_context *old;
+  file_context_t *old;
 
   while (last != NULL) {
-    old = last;
+    old  = last;
     last = old->prev;
     free(old->name);
     free(old);
@@ -869,13 +870,14 @@ hex_init(void)
     return;
   }
 
-  if (check_writehex(state.i_memory, state.hex_format)) {
+  if (!check_writehex(state.i_memory, state.hex_format)) {
     gpverror(GPE_IHEX, NULL);
     writehex(state.basefilename, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
   } else if (state.device.class != NULL) {
-    if (writehex(state.basefilename, state.i_memory, state.hex_format, state.num.errors,
+    if (!writehex(state.basefilename, state.i_memory, state.hex_format, state.num.errors,
                  state.dos_newlines, state.device.class->core_mask)) {
       gperror(GPE_UNKNOWN, "Error generating hex file.");
+      exit(1);
     }
   } else {
     /* Won't have anything to write, just remove any old files. */

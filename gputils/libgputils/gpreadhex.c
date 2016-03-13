@@ -24,9 +24,9 @@ Boston, MA 02111-1307, USA.  */
 
 #define LINESIZ 520
 
-static char linebuf[LINESIZ];
+static char  linebuf[LINESIZ];
 static char *linept;
-static int checksum;
+static int   checksum;
 static FILE *infile;
 
 /* Converts a single ASCII character into a number. */
@@ -80,11 +80,15 @@ swapword(unsigned int input)
 struct hex_data *
 readhex(const char *filename, MemBlock *m)
 {
-  struct hex_data *info = GP_Malloc(sizeof(*info));
-  unsigned int length, address, type, data;
-  int i;
-  unsigned int page = 0;
+  struct hex_data *info;
+  unsigned int     length;
+  unsigned int     address;
+  unsigned int     type;
+  unsigned int     data;
+  int              i;
+  unsigned int     page;
 
+  info = GP_Malloc(sizeof(*info));
   info->hex_format = INHX8M;
   info->size = 0;
   info->error = 0;

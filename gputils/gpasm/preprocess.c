@@ -43,17 +43,18 @@ Boston, MA 02111-1307, USA.  */
 
 typedef gp_boolean (*substitute_func_t)(char *buf, int begin, int *end, int *n, int max_size, int level);
 
-static struct pnode *param_list = NULL;
+static pnode_t *param_list = NULL;
+
 struct arg_list_s {
-  const char *str;
+  const char        *str;
   struct arg_list_s *next;
 } *arg_list = NULL, *arg_list_tail = NULL;
 
 static const char *
-check_defines(char *symbol, int symlen, struct pnode **param_list_p)
+check_defines(char *symbol, int symlen, pnode_t **param_list_p)
 {
-  symbol_t *sym;
-  struct pnode *p;
+  symbol_t   *sym;
+  pnode_t    *p;
   const char *subst = NULL;
 
   *param_list_p = NULL;
@@ -63,7 +64,7 @@ check_defines(char *symbol, int symlen, struct pnode **param_list_p)
     p = sym_get_symbol_annotation(sym);
 
     if (p != NULL) {
-      struct pnode *p2 = HEAD(p);
+      pnode_t *p2 = HEAD(p);
 
       assert(p->tag == PTAG_LIST);
       assert(p2->tag == PTAG_STRING);
@@ -145,9 +146,10 @@ free_arg_list(void)
 static gp_boolean
 substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
-  int mlen = *end - begin;
   struct arg_list_s *argp = arg_list;
-  struct pnode *parp = param_list;
+  pnode_t           *parp = param_list;
+  int                mlen = *end - begin;
+  int                len;
 
   assert(mlen > 0);
 
@@ -156,7 +158,7 @@ substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, in
     assert(HEAD(parp)->tag == PTAG_SYMBOL);
     if (strncmp(&buf[begin], HEAD(parp)->value.symbol, mlen) == 0) {
       /* substitute */
-      int len = strlen(argp->str);
+      len = strlen(argp->str);
 
       DBG_printf("@@@substituting parameter %*.*s with %s\n", mlen, mlen, &buf[begin], argp->str);
 
@@ -181,9 +183,18 @@ static gp_boolean preprocess(char *buf, int begin, int *end, int *n, int max_siz
 static gp_boolean
 substitute_define(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
-  int mlen = *end - begin;
+  int         mlen = *end - begin;
   const char *sub;
-  int size;
+  int         size;
+  int         n_params;
+  gp_boolean  bracket;
+  int         n_args;
+  int         start1;
+  int         end1;
+  int         state;
+  gp_boolean  prev_esc;
+  int         brackdepth;
+  int         len;
 
   if (mlen <= 0) {
     /* nothing to substitute */
@@ -191,13 +202,13 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
   }
 
   if ((sub = check_defines(&buf[begin], mlen, &param_list)) != NULL) {
-    int n_params = list_length(param_list);
+    n_params = list_length(param_list);
 
     DBG_printf("define %*.*s has %d parameters\n", mlen, mlen, &buf[begin], n_params);
     if (n_params != 0) {
       /* has parameters: collect arguments */
-      gp_boolean bracket = false;
-      int n_args = 0;
+      bracket = false;
+      n_args = 0;
 
       skip_spaces(buf, end);
       if (buf[*end] == '(') {
@@ -206,11 +217,9 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
       }
 
       for (; ; ) {
-        int start1;
-        int end1;
-        int state = 0;
-        gp_boolean prev_esc = false;
-        int brackdepth = 0;
+        state = 0;
+        prev_esc = false;
+        brackdepth = 0;
 
         skip_spaces(buf, end);
         start1 = *end;
@@ -275,7 +284,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
             }
 
             if (n_args == n_params) {
-              int len = strlen(sub);
+              len = strlen(sub);
 
               /* substitute define parameters */
               if ((*n + len - mlen) >= max_size) {
@@ -376,14 +385,17 @@ no_process_iden(const char *iden, int len)
 static gp_boolean
 preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func_t substitute, int level)
 {
-  int start = -1;
-  int state = 0;                   /* '"': in double quotes; '\'': in single quotes; ';': in comment */
-  gp_boolean prev_esc = false;     /* true: prev char was escape */
-  int in_hv = 0;                   /* in #v */
-  gp_boolean number_start = false; /* true: possible start of a x'nnn' formatted number */
-  gp_boolean substituted = false;  /* if there was a substitution in the preprocess run */
-  int i;
-  int size;
+  int        start = -1;
+  int        state = 0;             /* '"': in double quotes; '\'': in single quotes; ';': in comment */
+  gp_boolean prev_esc = false;      /* true: prev char was escape */
+  int        in_hv = 0;             /* in #v */
+  gp_boolean number_start = false;  /* true: possible start of a x'nnn' formatted number */
+  gp_boolean substituted = false;   /* if there was a substitution in the preprocess run */
+  int        i;
+  int        c;
+  int        size;
+  int        end1;
+  int        prev_n;
 
   if (level >= PREPROC_MAX_DEPTH) {
     gpverror(GPE_STRCPLX, NULL);
@@ -394,7 +406,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func
   DBG_printf("---Preprocessing %*.*s\n", size, size, &buf[begin]);
 
   for (i = begin; i < *end; ++i) {
-    int c = buf[i];
+    c = buf[i];
 
     if (state == 0) {
       if (c == '#') {
@@ -407,8 +419,8 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func
         if (start != -1) {
           if (start < (i - 2)) {
             /* preprocess the identifier before #v */
-            int end1 = i - 2;
-            int prev_n = *n;
+            end1 = i - 2;
+            prev_n = *n;
 
             size = end1 - start;
             DBG_printf("@1@Preprocessing identifier: %*.*s\n", size, size, &buf[start]);
@@ -448,7 +460,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func
           }
 
           if ((c != '\'') || !number_start) {
-            int prev_n = *n;
+            prev_n = *n;
 
             size = i - start;
             DBG_printf("@2@Preprocessing identifier: %*.*s\n", size, size, &buf[start]);
@@ -502,16 +514,16 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func
 static gp_boolean
 preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
 {
-  char res_buf[11];
+  char       res_buf[11];
   gp_boolean substituted = false;
-  int size;
+  int        size;
+  int        res_len;
+  int        prev_n;
 
   size = *end - begin;
   DBG_printf("---preprocess_hv: %*.*s\n", size, size, &buf[begin]);
 
   while (begin < *end) {
-    int res_len;
-
     size = *end - begin;
     DBG_printf("***Parsing chunk: %*.*s\n", size, size, &buf[begin]);
     if (ppparse_chunk(buf, begin, *end)) {
@@ -524,7 +536,7 @@ preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
         return false;
       }
       else {
-        int prev_n = *n;
+        prev_n = *n;
 
         DBG_printf ("@@@Subtituting %*.*s ", ppcol_end - ppcol_begin, ppcol_end - ppcol_begin, &buf[ppcol_begin]);
 
@@ -548,17 +560,19 @@ preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
 static void
 preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
 {
-  int start = -1;
-  int state = 0;            /* '"': in double quotes; '\'': in single quotes; ';': in comment; '(' in #v argument */
-  gp_boolean prev_esc = 0;  /* true: prev char was escape */
-  int in_hv = 0;            /* in #v */
-  int hv_parenth = 0;       /* #v parenthesis nesting depth */
-  int i;
+  int        start = -1;
+  int        state = 0;         /* '"': in double quotes; '\'': in single quotes; ';': in comment; '(' in #v argument */
+  gp_boolean prev_esc = false;  /* true: prev char was escape */
+  int        in_hv = 0;         /* in #v */
+  int        hv_parenth = 0;    /* #v parenthesis nesting depth */
+  int        i;
+  int        c;
+  int        prev_n;
 
   DBG_printf("---preprocess_hv_params: %*.*s\n", *end, *end, buf);
 
   for (i = begin; i < *end; ++i) {
-    int c = buf[i];
+    c = buf[i];
 
     if (state == '(') {
       if (in_hv == '(') {
@@ -571,7 +585,7 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
       }
       else if (c == ')') {
         if (--hv_parenth <= 0) {
-          int prev_n = *n;
+          prev_n = *n;
 
           preprocess_hv_params(buf, start, &i, n, max_size);
           preprocess(buf, start, &i, n, max_size, substitute_define, 0);
@@ -635,13 +649,14 @@ static const char *
 check_macro_params(char *symbol, int symlen)
 {
   const symbol_t *sym;
-  const struct pnode *p;
-  const char *subst = NULL;
+  const pnode_t  *p;
+  const pnode_t  *p2;
+  const char     *subst = NULL;
 
   if ((sym = sym_get_symbol_len(state.stMacroParams, symbol, symlen)) != NULL) {
     p = sym_get_symbol_annotation(sym);
     if (p != NULL) {
-      const struct pnode *p2 = HEAD(p);
+      p2 = HEAD(p);
 
       assert(p->tag == PTAG_LIST);
       assert(p2->tag == PTAG_STRING);
@@ -667,7 +682,7 @@ check_macro_params(char *symbol, int symlen)
 static gp_boolean
 substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
-  int mlen = *end - begin;
+  int         mlen = *end - begin;
   const char *sub;
 
   if (mlen <= 0) {
@@ -693,7 +708,7 @@ substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int
 }
 
 static void
-set_source_line(const char *line, int len, struct src_line_s *src_line)
+set_source_line(const char *line, int len, src_line_t *src_line)
 {
   if (src_line->line == 0) {
     src_line->size = 128;
@@ -724,7 +739,7 @@ set_source_line(const char *line, int len, struct src_line_s *src_line)
 static inline gp_boolean
 in_macro_expansion(void)
 {
-  const struct source_context *p;
+  const source_context_t *p;
 
   for (p = state.src; p != NULL; p = p->prev) {
     if (p->type == SRC_MACRO) {
@@ -739,7 +754,7 @@ void
 preprocess_line(char *buf, int *n, int max_size)
 {
   gp_boolean res;
-  int end = *n;
+  int        end = *n;
 
   if (IN_MACRO_WHILE_DEFINITION) {
     /* don't preprocess source line if in macro definition */

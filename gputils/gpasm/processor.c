@@ -28,6 +28,8 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "gperror.h"
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 make_bank_constants(pic_processor_t Proc, int Num_of_banks)
 {
@@ -65,6 +67,8 @@ make_bank_constants(pic_processor_t Proc, int Num_of_banks)
     bank_addr += bank_size;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 make_page_constants(pic_processor_t Proc, int Num_of_pages)
@@ -104,18 +108,24 @@ make_page_constants(pic_processor_t Proc, int Num_of_pages)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 select_processor(const char *name)
 {
-  pic_processor_t  found;
-  proc_class_t     class;
-  const int       *pair;
-  const vector_t  *vec;
-  unsigned int     num;
-  int              addr;
-  int              num_of_banks;
-  int              num_of_pages;
-  char             buf[BUFSIZ];
+  pic_processor_t    found;
+  proc_class_t       class;
+  const int         *pair;
+  const vector_t    *vec;
+  unsigned int       num;
+  int                addr;
+  int                num_of_banks;
+  int                num_of_pages;
+  char               buf[BUFSIZ];
+  int                badrom_idx;
+  long               start;
+  long               end;
+  range_pair_t      *new_pair;
 
   if (state.cmd_line.processor) {
     gpvwarning(GPW_CMDLINE_PROC, NULL);
@@ -123,8 +133,6 @@ select_processor(const char *name)
     found = gp_find_processor(name);
 
     if (found != NULL) {
-      int badrom_idx;
-
       if (state.processor == NULL) {
         /* If in extended mode: Check if processor supports extended instruction set. */
         if (state.extended_pic16e && !(found->pic16e_flags & PIC16E_FLAG_HAVE_EXTINST)) {
@@ -138,14 +146,11 @@ select_processor(const char *name)
         state.badrom = NULL;
 
         for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx += 2) {
-          long start;
-          long end;
-
           start = found->badrom[badrom_idx];
           end   = found->badrom[badrom_idx + 1];
 
           if ((start >= 0) && (end >= 0)) {
-            struct range_pair *new_pair = GP_Malloc(sizeof(struct range_pair));
+            new_pair = GP_Malloc(sizeof(range_pair_t));
 
             new_pair->start = start;
             new_pair->end   = end;
@@ -162,8 +167,7 @@ select_processor(const char *name)
           num_of_banks = gp_processor_num_banks(found);
           num_of_pages = gp_processor_num_pages(found);
 
-          if ((class == PROC_CLASS_GENERIC) || (class == PROC_CLASS_PIC12) ||
-              (class == PROC_CLASS_PIC12E)) {
+          if ((class == PROC_CLASS_GENERIC) || (class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E)) {
             if (class == PROC_CLASS_PIC12E) {
               set_global("__ENHANCED", 1,                     LFT_PERMANENT, GVT_CONSTANT, true);
             }

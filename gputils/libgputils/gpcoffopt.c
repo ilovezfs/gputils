@@ -52,9 +52,9 @@ void
 gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
 {
   gp_section_type *section;
-  gp_reloc_type *relocation;
+  gp_reloc_type   *relocation;
   gp_section_type *rel_sect;
-  gp_boolean section_removed = false;
+  gp_boolean       section_removed = false;
 
   gp_debug("Removing dead sections pass %i.", pass);
 

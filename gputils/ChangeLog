@@ -1,3 +1,7 @@
+2016-03-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/*, gputils/*, libgputils/*:
+    Code formatting.
+
 2016-03-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure.ac, configure, configure.h.in, gpasm/lst.c,
     include/libiberty.h, libiberty/Makefile.am, libiberty/Makefile.in,
