@@ -482,34 +482,38 @@ gp_cofflink_merge_sections(gp_object_type *object)
 /* copy data from idata section to the ROM section */
 
 static void
-_copy_rom_section(gp_object_type *object, gp_section_type *idata, gp_section_type *rom)
+_copy_rom_section(const gp_object_type *object, const gp_section_type *idata, gp_section_type *rom)
 {
-  int         from;
-  int         to;
-  int         last;
-  const char *section_name;
-  const char *symbol_name;
+  proc_class_t    class;
+  int             from;
+  int             stop;
+  int             to;
+  const char     *section_name;
+  const char     *symbol_name;
+  unsigned char   data;
+  unsigned short  insn_retlw;
 
-  to = rom->address;
-  last = idata->address + idata->size;
-  if (object->class->rom_width == 8) {
-    for (from = idata->address; from < last; ++from, ++to) {
-      unsigned char data;
+  class = object->class;
+  from  = idata->address;
+  stop  = from + idata->size;
+  to    = rom->address;
 
+  if (class->rom_width == 8) {
+    /* PIC16E */
+    for ( ; from < stop; ++from, ++to) {
       if (b_memory_get(idata->data, from, &data, &section_name, &symbol_name)) {
         b_memory_put(rom->data, to, data, section_name, symbol_name);
       }
     }
   }
   else {
+    /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
     /* select "retlw" instruction */
-    unsigned short insn = gp_processor_retlw(object->class);
+    insn_retlw = gp_processor_retlw(class);
 
-    for (from = idata->address; from < last; from++, to += 2) {
-      unsigned char data;
-
+    for ( ; from < stop; ++from, to += 2) {
       if (b_memory_get(idata->data, from, &data, &section_name, &symbol_name)) {
-        object->class->i_memory_put(rom->data, to, insn | data, section_name, symbol_name);
+        class->i_memory_put(rom->data, to, insn_retlw | data, section_name, symbol_name);
       }
     }
   }
@@ -536,9 +540,11 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
 
   /* create the new section */
   name = _create_i_section_name(section->name);
-  new = gp_coffgen_newsection(name, NULL);
+  new  = gp_coffgen_newsection(name, NULL);
   free(name);
+
   if (object->class->rom_width == 8) {
+    /* PIC16E */
     new->size = section->size;
     /* force the section size to be an even number of bytes */
     if (section->size & 1) {
@@ -547,6 +553,7 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
     }
   }
   else {
+    /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
     new->size = section->size << 1;
   }
   new->flags = STYP_DATA_ROM;
@@ -566,30 +573,30 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
   object->num_sections++;
 }
 
-/* write a word into four bytes of memory (not PIC16E) */
+/* write a word (16 bit) into four bytes of memory (non PIC16E) */
 
 static void
-_write_table_data(const struct proc_class *class, gp_section_type *section, int address, int insn,
-                  int data, const char *symbol_name)
+_write_table_u16(const proc_class_t class, const gp_section_type *section, int address, int insn,
+                 int data, const char *symbol_name)
 {
   class->i_memory_put(section->data, address,     insn | (data & 0xff), section->name, symbol_name);
   class->i_memory_put(section->data, address + 2, insn | (data >> 8),   section->name, symbol_name);
 }
 
-/* write a long into four bytes of memory (PIC16E) */
+/* write a long (32 bit) into four bytes of memory (PIC16E) */
 
 static void
-_write_table_long(const struct proc_class *class, gp_section_type *section, int address, int data,
-                  const char *symbol_name)
+_write_table_u32(const proc_class_t class, const gp_section_type *section, int address, int data,
+                 const char *symbol_name)
 {
   class->i_memory_put(section->data, address,     data & 0xffff, section->name, symbol_name);
   class->i_memory_put(section->data, address + 2, data >> 16,    section->name, symbol_name);
 }
 
-/* read a word from four bytes of memory (not PIC16E) */
+/* read a word from four bytes of memory (non PIC16E) */
 
 static unsigned short
-_read_table_data(const struct proc_class *class, gp_section_type *section, int address)
+_read_table_u16(const proc_class_t class, const gp_section_type *section, int address)
 {
   unsigned short data[2];
 
@@ -631,32 +638,36 @@ void
 gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit)
 {
   gp_section_type *section;
+  proc_class_t     class;
   gp_section_type *new;
-  int              count;
+  int              count_sections;
   int              byte_count;
   int              i;
-  int              insn;
+  int              insn_retlw;
   gp_symbol_type  *symbol;
 
-  section = object->sections;
-  count = 0;
+  count_sections = 0;
+  section        = object->sections;
   while (section != NULL) {
     if (section->flags & STYP_DATA) {
       _create_rom_section(object, section);
-      count++;
+      count_sections++;
     }
     section = section->next;
   }
 
-  if ((count > 0) || force_cinit) {
-    new = gp_coffgen_addsection(object, ".cinit", NULL);
+  if ((count_sections > 0) || force_cinit) {
+    class = object->class;
+    new   = gp_coffgen_addsection(object, ".cinit", NULL);
     new->flags = STYP_DATA_ROM;
 
-    byte_count = 2 + count * 12;
-    if (object->class->rom_width != 8) {
+    byte_count = 2 + count_sections * 12;
+    if (class->rom_width != 8) {
+      /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
       /* retlw is used so 16-bit count is stored in 4 bytes not 2 */
       byte_count += 2;
     }
+
     new->size = byte_count;
 
     /* load the table with data */
@@ -664,12 +675,14 @@ gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit)
       b_memory_put(new->data, i, 0, ".cinit", "table");
     }
 
-    if (object->class->rom_width == 8) {
-      object->class->i_memory_put(new->data, 0, count, ".cinit", "table_size");
+    if (class->rom_width == 8) {
+      /* PIC16E */
+      class->i_memory_put(new->data, 0, count_sections, ".cinit", "table_size");
     }
     else {
-      insn = gp_processor_retlw(object->class);
-      _write_table_data(object->class, new, 0, insn, count, "table_size");
+      /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+      insn_retlw = gp_processor_retlw(class);
+      _write_table_u16(class, new, 0, insn_retlw, count_sections, "table_size");
     }
 
     /* update the section pointer in _cinit */
@@ -690,76 +703,85 @@ gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit)
 void
 gp_add_cinit_section(gp_object_type *object)
 {
-  gp_section_type *section;
-  gp_section_type *new = NULL;
-  gp_section_type *prog_section = NULL;
-  int              insn;
-  int              count;
-  int              base_address;
-  unsigned short   number;
+  gp_section_type       *section;
+  proc_class_t           class;
+  const gp_section_type *new;
+  const gp_section_type *prog_section;
+  int                    insn_retlw;
+  int                    count_sections;
+  int                    base_address;
+  char                  *prog_name;
+  unsigned short         number;
 
   new = gp_coffgen_findsection(object, object->sections, ".cinit");
 
   if (new != NULL) {
     /* scan through the sections to determine the addresses */
-    count = 0;
+    count_sections = 0;
     base_address = new->address;
+    class = object->class;
 
-    if (object->class->rom_width == 8) {
+    if (class->rom_width == 8) {
+      /* PIC16E */
       base_address += 2;
-      insn = 0;
+      insn_retlw = 0;
     }
     else {
+      /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
       base_address += 4;
-      insn = gp_processor_retlw(object->class);
+      insn_retlw = gp_processor_retlw(class);
     }
 
     section = object->sections;
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
         /* locate the rom table */
-        char *prog_name = _create_i_section_name(section->name);
-
+        prog_name    = _create_i_section_name(section->name);
         prog_section = gp_coffgen_findsection(object, object->sections, prog_name);
         free(prog_name);
 
-        if (object->class->rom_width == 8) {
-          /* write program memory address */
-          _write_table_long(object->class, new, base_address,
-                            gp_processor_byte_to_org(object->class, prog_section->address), "prog_mem_addr");
+        if (class->rom_width == 8) {
+          /* PIC16E */
+          /* Write program memory address (from: source address of data in CODE space). */
+          _write_table_u32(class, new, base_address,
+                           gp_processor_byte_to_org(class, prog_section->address), "prog_mem_addr");
 
-          /* write data memory address */
-          _write_table_long(object->class, new, base_address + 4, section->address, "data_mem_addr");
+          /* Write data memory address (to: destination address of values in DATA space). */
+          _write_table_u32(class, new, base_address + 4, section->address, "data_mem_addr");
 
-          /* write the table size */
-          _write_table_long(object->class, new, base_address + 8, section->size, "table_size");
+          /* Write the table size (size: number of bytes to copy from CODE to DATA). */
+          _write_table_u32(class, new, base_address + 8, section->size, "table_size");
         }
         else {
-          /* write program memory address */
-          _write_table_data(object->class, new, base_address, insn,
-                            gp_processor_byte_to_org(object->class, prog_section->address), "prog_mem_addr");
+          /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+          /* Write program memory address (from: source address of data in CODE space). */
+          _write_table_u16(class, new, base_address, insn_retlw,
+                           gp_processor_byte_to_org(class, prog_section->address), "prog_mem_addr");
 
-          /* write data memory address */
-          _write_table_data(object->class, new, base_address + 4, insn, section->address, "data_mem_addr");
+          /* Write data memory address (to: destination address of values in DATA space). */
+          _write_table_u16(class, new, base_address + 4, insn_retlw, section->address, "data_mem_addr");
 
-          /* write the table size */
-          _write_table_data(object->class, new, base_address + 8, insn, section->size, "table_size");
+          /* Write the table size (size: number of bytes to copy from CODE to DATA). */
+          _write_table_u16(class, new, base_address + 8, insn_retlw, section->size, "table_size");
         }
 
-        count++;
+        count_sections++;
         base_address += 12;
-      }
+      } /* if (section->flags & STYP_DATA) */
+
       section = section->next;
-    }
+    } /* while (section != NULL) */
 
     /* make sure the section count matches */
-    if (object->class->rom_width == 8) {
-      object->class->i_memory_get(new->data, new->address, &number, NULL, NULL);
+    if (class->rom_width == 8) {
+      /* PIC16E */
+      class->i_memory_get(new->data, new->address, &number, NULL, NULL);
     }
     else {
-      number = _read_table_data(object->class, new, new->address);
+      /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+      number = _read_table_u16(class, new, new->address);
     }
-    assert(number == count);
+    assert(number == count_sections);
   }
 }
 
@@ -1187,8 +1209,7 @@ gp_cofflink_reloc_cinit(gp_object_type *object, MemBlock *m, int org_to_byte_shi
   smallest_address = (unsigned int)(-1);
   sym_list = sym_clone_symbol_array(sections, _sect_addr_cmp);
 
-  /* search the section definitions for the smallest block of memory that
-     the section will fit in */
+  /* Search the section definitions for the smallest block of memory that the section will fit in. */
 
   sym_count = sym_get_symbol_count(sections);
   for (i = 0; i < sym_count; ++i) {

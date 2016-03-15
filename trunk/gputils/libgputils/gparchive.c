@@ -445,13 +445,17 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
     return NULL;
   }
 
+  sym_count = sym_get_symbol_count(Table);
+  if (sym_count == 0) {
+    return Archive;
+  }
+
   /* Get a sorted list. */
   lst = sym_clone_symbol_array(Table, sym_compare_fn);
   assert(lst != NULL);
 
   /* determine the symbol index size */
   index_size = AR_INDEX_NUMBER_SIZ;
-  sym_count = sym_get_symbol_count(Table);
   for (i = 0; i < sym_count; i++) {
     sym_name    = sym_get_symbol_name(lst[i]);
     index_size += strlen(sym_name) + 1 + AR_INDEX_OFFSET_SIZ;
