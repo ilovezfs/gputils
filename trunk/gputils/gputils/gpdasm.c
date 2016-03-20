@@ -1080,6 +1080,7 @@ dasm(MemBlock *memory)
 
   if (state.show_names && ((state.class == PROC_CLASS_PIC12)   ||
                            (state.class == PROC_CLASS_PIC12E)  ||
+                           (state.class == PROC_CLASS_PIC12I)  ||
                            (state.class == PROC_CLASS_SX)      ||
                            (state.class == PROC_CLASS_PIC14)   ||
                            (state.class == PROC_CLASS_PIC14E)  ||

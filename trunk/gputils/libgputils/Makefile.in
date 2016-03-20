@@ -112,8 +112,8 @@ am_libgputils_a_OBJECTS = gparchive.$(OBJEXT) gpcfg.$(OBJEXT) \
 	gphash.$(OBJEXT) gpmemory.$(OBJEXT) gpmessage.$(OBJEXT) \
 	gpopcode.$(OBJEXT) gpprocessor.$(OBJEXT) gpreadhex.$(OBJEXT) \
 	gpreadobj.$(OBJEXT) gpreg-table.$(OBJEXT) gpregister.$(OBJEXT) \
-	gpsymbol.$(OBJEXT) gpsystem.$(OBJEXT) gpwritehex.$(OBJEXT) \
-	gpwriteobj.$(OBJEXT)
+	gpsym.$(OBJEXT) gpsymbol.$(OBJEXT) gpsystem.$(OBJEXT) \
+	gpwritehex.$(OBJEXT) gpwriteobj.$(OBJEXT)
 libgputils_a_OBJECTS = $(am_libgputils_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -313,6 +313,7 @@ libgputils_a_SOURCES = \
 	gpreadobj.c \
 	gpreg-table.c \
 	gpregister.c \
+	gpsym.c \
 	gpsymbol.c \
 	gpsystem.c \
 	gpwritehex.c \
@@ -333,6 +334,7 @@ libgputils_a_SOURCES = \
 	gpreadhex.h \
 	gpreadobj.h \
 	gpregister.h \
+	gpsym.h \
 	gpsymbol.h \
 	gpsystem.h \
 	gptypes.h \
@@ -405,6 +407,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpreadobj.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpreg-table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpregister.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpsym.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpsymbol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpsystem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpwritehex.Po@am__quote@

@@ -1,7 +1,6 @@
+/* Symbol table support
 
-/* Fowler-Noll-Vo hash making header file.
-
-   Copyright (C) 2014 Molnar Karoly
+   Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -23,17 +22,12 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPHASH_H__
 #define __GPHASH_H__
 
-#define FNV1A32_INIT			0x811C9DC5UL
-#define FNV1A32_PRIME			0x01000193UL
+extern void gp_hash_init(hash128_t *Hash);
 
-unsigned int gp_fnv1a_hash(const void *Ptr, unsigned int Size, unsigned int Hash);
+extern void gp_hash_mem(hash128_t *Hash, const void *Array, size_t Length);
 
-unsigned int gp_fnv1a_hash_str(const char *String, unsigned int Hash);
+extern void gp_hash_str_len(hash128_t *Hash, const char *String, size_t Length, gp_boolean Case_insensitive);
 
-unsigned int gp_fnv1a_hash_symbol(const gp_symbol_type *Symbol);
-
-gp_hash_type *gp_make_hash_table(gp_object_type *Object);
-
-const gp_symbol_type *gp_find_symbol_hash_table(const gp_object_type *Object, const char *Section_name, gp_symvalue_t Symbol_value);
+extern void gp_hash_str(hash128_t *Hash, const char *String, gp_boolean Case_insensitive);
 
 #endif /* __GPHASH_H__ */

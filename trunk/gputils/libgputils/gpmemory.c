@@ -171,7 +171,7 @@ i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
 gp_boolean
 b_memory_is_used(MemBlock *m, unsigned int address)
 {
-  unsigned int block  = (address >> I_MEM_BITS) & 0xffff;
+  unsigned int block = (address >> I_MEM_BITS) & 0xffff;
 
   do
   {

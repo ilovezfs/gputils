@@ -42,11 +42,11 @@ gp_symbol_type *gp_coffgen_findsymbol_sect_val(gp_object_type *object, const cha
 gp_aux_type *gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol);
 gp_symbol_type *gp_coffgen_addsymbol(gp_object_type *object);
 gp_symbol_type *gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol);
-gp_boolean gp_coffgen_has_reloc(gp_object_type *object, gp_symbol_type *symbol);
-gp_boolean gp_coffgen_is_global(gp_symbol_type *symbol);
-gp_boolean gp_coffgen_is_external(gp_symbol_type *symbol);
-gp_boolean gp_coffgen_is_debug(gp_symbol_type *symbol);
-gp_boolean gp_coffgen_is_absolute(gp_symbol_type *symbol);
+gp_boolean gp_coffgen_has_reloc(const gp_object_type *Object, const gp_symbol_type *Symbol);
+gp_boolean gp_coffgen_is_global(const gp_symbol_type *Symbol);
+gp_boolean gp_coffgen_is_external(const gp_symbol_type *Symbol);
+gp_boolean gp_coffgen_is_debug(const gp_symbol_type *Symbol);
+gp_boolean gp_coffgen_is_absolute(const gp_symbol_type *Symbol);
 gp_section_type *gp_coffgen_blocksec(unsigned int number);
 gp_reloc_type *gp_coffgen_blockrel(unsigned int number);
 gp_linenum_type *gp_coffgen_blockline(unsigned int number);

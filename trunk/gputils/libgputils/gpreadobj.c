@@ -284,11 +284,11 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
   section->flags      = check_getl32(&file[36], data);
   section->data       = (section->data_ptr) ? i_memory_create() : NULL;
 
-  section->relocations = NULL;
-  section->relocations_tail = NULL;
-  section->line_numbers = NULL;
+  section->relocations       = NULL;
+  section->relocations_tail  = NULL;
+  section->line_numbers      = NULL;
   section->line_numbers_tail = NULL;
-  section->is_used = false;
+  section->is_used           = false;
 
   if (section->flags & (STYP_TEXT | STYP_DATA_ROM)) {
     section->address = gp_processor_org_to_byte(object->class, section->address);

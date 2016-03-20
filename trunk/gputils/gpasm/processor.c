@@ -167,8 +167,9 @@ select_processor(const char *name)
           num_of_banks = gp_processor_num_banks(found);
           num_of_pages = gp_processor_num_pages(found);
 
-          if ((class == PROC_CLASS_GENERIC) || (class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E)) {
-            if (class == PROC_CLASS_PIC12E) {
+          if ((class == PROC_CLASS_GENERIC) || (class == PROC_CLASS_PIC12) ||
+              (class == PROC_CLASS_PIC12E)  || (class == PROC_CLASS_PIC12I)) {
+            if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
               set_global("__ENHANCED", 1,                     LFT_PERMANENT, GVT_CONSTANT, true);
             }
 

@@ -368,7 +368,7 @@ print_reloc(unsigned short type, unsigned short current_value)
 
   switch (type) {
   case RELOCT_CALL:
-    if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) ||
+    if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
         (class == PROC_CLASS_SX)    || (class == PROC_CLASS_PIC16E)) {
       ASSERT(0 == (current_value & 0xff));
       return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
@@ -385,7 +385,7 @@ print_reloc(unsigned short type, unsigned short current_value)
     break;
 
   case RELOCT_GOTO:
-    if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) ||
+    if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
         (class == PROC_CLASS_SX)) {
       ASSERT(0 == (current_value & MASK_PIC12_GOTO));
       return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
@@ -463,7 +463,7 @@ print_reloc(unsigned short type, unsigned short current_value)
     if (class == PROC_CLASS_SX) {
       ASSERT((current_value & 0x0007) == 0);
       return lst_printf("%03X?? ", (current_value >> 4) & 0x000f);
-    } else if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E)) {
+    } else if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
       ASSERT(0 == (current_value & MASK_PIC12_FILE));
     } else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
       ASSERT(0 == (current_value & MASK_PIC14_FILE));
@@ -518,7 +518,7 @@ print_reloc(unsigned short type, unsigned short current_value)
     break;
 
   case RELOCT_MOVLB:
-    if (class == PROC_CLASS_PIC12E) {
+    if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
       ASSERT(0 == (current_value & MASK_PIC12E_BANK));
       return lst_printf("%03X? ", (current_value >> 4) & 0x0fff);
     } else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {

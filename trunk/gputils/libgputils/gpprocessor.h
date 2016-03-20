@@ -262,6 +262,7 @@ extern const struct proc_class proc_class_eeprom16;  /* 16 bit EEPROM */
 extern const struct proc_class proc_class_generic;   /* 12 bit device */
 extern const struct proc_class proc_class_pic12;     /* 12 bit devices */
 extern const struct proc_class proc_class_pic12e;    /* extended 12 bit devices */
+extern const struct proc_class proc_class_pic12i;    /* extended 12 bit devices */
 extern const struct proc_class proc_class_sx;        /* 12 bit devices */
 extern const struct proc_class proc_class_pic14;     /* 14 bit devices */
 extern const struct proc_class proc_class_pic14e;    /* enhanced 14 bit devices */
@@ -274,6 +275,7 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define PROC_CLASS_GENERIC  (&proc_class_generic)
 #define PROC_CLASS_PIC12    (&proc_class_pic12)
 #define PROC_CLASS_PIC12E   (&proc_class_pic12e)
+#define PROC_CLASS_PIC12I   (&proc_class_pic12i)
 #define PROC_CLASS_SX       (&proc_class_sx)
 #define PROC_CLASS_PIC14    (&proc_class_pic14)
 #define PROC_CLASS_PIC14E   (&proc_class_pic14e)
@@ -285,6 +287,7 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define IS_EEPROM16         (state.device.class == PROC_CLASS_EEPROM16)
 #define IS_PIC12_CORE       (state.device.class == PROC_CLASS_PIC12)
 #define IS_PIC12E_CORE      (state.device.class == PROC_CLASS_PIC12E)
+#define IS_PIC12I_CORE      (state.device.class == PROC_CLASS_PIC12I)
 #define IS_SX_CORE          (state.device.class == PROC_CLASS_SX)
 #define IS_PIC14_CORE       (state.device.class == PROC_CLASS_PIC14)
 #define IS_PIC14E_CORE      (state.device.class == PROC_CLASS_PIC14E)
@@ -307,7 +310,7 @@ struct px {
   int num_banks;
   /* These bank bits exists in the reality. */
   int bank_bits;
-  /* The bounds of common (access) RAM, if exist in the PIC12, PIC12E, PIC14 and PIC14E families. */
+  /* The bounds of common (access) RAM, if exist in the PIC12, PIC12E, PIC12I, PIC14, PIC14E and PIC14EX families. */
   int common_ram_addrs[2];
   int common_ram_max;
   /* The bounds of linear RAM in the PIC14E family. */
@@ -320,7 +323,7 @@ struct px {
   int idlocs_addrs[2];
   int config_addrs[2];
   int eeprom_addrs[2];
-  /* This is an OR mask for the PIC12, PIC12E, PIC14 and PIC14E families. PIC12x: 0x0FF0, PIC14x: 0x3F80 */
+  /* This is an OR mask for the PIC12, PIC12E, PIC12I, PIC14, PIC14E and PIC14EX families. PIC12x: 0x0FF0, PIC14x: 0x3F80 */
   int idlocs_mask;
   /* Use the gpdasm. */
   const char *header;

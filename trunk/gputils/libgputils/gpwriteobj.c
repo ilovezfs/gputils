@@ -147,12 +147,11 @@ _gp_coffgen_write_scnhdr(const gp_section_type *section, int org_to_byte_shift,
 
 /* write the section data */
 static void
-_gp_coffgen_write_data(proc_class_t class,
-                       const gp_section_type *section,
-                       FILE *fp)
+_gp_coffgen_write_data(proc_class_t class, const gp_section_type *section, FILE *fp)
 {
-  unsigned int org;
-  unsigned int last;
+  unsigned int  org;
+  unsigned int  last;
+  unsigned char b;
 
   org = section->shadow_address;
   last = org + section->size;
@@ -163,8 +162,6 @@ _gp_coffgen_write_data(proc_class_t class,
 #endif
 
   for ( ; org < last; org++) {
-    unsigned char b;
-
     b_memory_assert_get(section->data, org, &b, NULL, NULL);
     fputc(b, fp);
   }
@@ -327,7 +324,6 @@ _gp_coffgen_write_symbols(const gp_object_type *object, unsigned char *table, FI
 gp_boolean
 _has_data(const gp_section_type *section)
 {
-
   if (section->size == 0) {
     return false;
   }
@@ -348,7 +344,7 @@ _has_data(const gp_section_type *section)
 }
 
 /* update all the coff pointers */
-static int
+static void
 _gp_updateptr(gp_object_type *object)
 {
   int              loc;
@@ -357,9 +353,8 @@ _gp_updateptr(gp_object_type *object)
   int              section_number;
   int              symbol_number;
 
-  loc = ((object->isnew) ?
-         (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2 + (SEC_HDR_SIZ_v2 * object->num_sections)) :
-         (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ_v1 * object->num_sections)));
+  loc = (object->isnew) ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2 + (SEC_HDR_SIZ_v2 * object->num_sections)) :
+                          (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ_v1 * object->num_sections));
 
   section_number = 1;
 
@@ -412,12 +407,10 @@ _gp_updateptr(gp_object_type *object)
     symbol_number += 1 + symbol->num_auxsym;
     symbol = symbol->next;
   }
-
-  return 0;
 }
 
 /* write the coff file */
-int
+gp_boolean
 gp_write_coff(gp_object_type *object, int numerrors)
 {
   FILE            *coff;
@@ -426,13 +419,13 @@ gp_write_coff(gp_object_type *object, int numerrors)
 
   if (numerrors > 0) {
     unlink(object->filename);
-    return 0;
+    return false;
   }
 
   coff = fopen(object->filename, "wb");
   if (coff == NULL) {
     perror(object->filename);
-    exit(1);
+    return false;
   }
 
   /* update file pointers in the coff */
@@ -488,8 +481,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   fwrite(&table[0], 1, gp_getl32(&table[0]), coff);
 
   fclose(coff);
-
-  return 0;
+  return true;
 }
 
 /* check if the object is absolute: all sections are absolute and there

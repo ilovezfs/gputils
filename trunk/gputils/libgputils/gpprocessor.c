@@ -200,8 +200,8 @@ static struct px pics[] = {
   { PROC_CLASS_PIC12    , "__16F505"      , { "pic16f505"      , "p16f505"        , "16f505"          }, 0xF505,  2,    4, 0x0060, { 0x08, 0x0F },    -1, {     -1,     -1 }, 0x007F, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x000400, 0x000403 }, { 0x000FFF, 0x000FFF }, {       -1,       -1 }, 0x0FF0, "p16f505.inc"      , "16f505_g.lkr"      , 0 },
   { PROC_CLASS_PIC12    , "__16F506"      , { "pic16f506"      , "p16f506"        , "16f506"          }, 0xF506,  2,    4, 0x0060, { 0x0D, 0x0F },    -1, {     -1,     -1 }, 0x007F, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x000400, 0x000403 }, { 0x000FFF, 0x000FFF }, {       -1,       -1 }, 0x0FF0, "p16f506.inc"      , "16f506_g.lkr"      , 0 },
   { PROC_CLASS_PIC12    , "__16F526"      , { "pic16f526"      , "p16f526"        , "16f526"          }, 0xF526,  2,    4, 0x0060, { 0x0D, 0x0F },    -1, {     -1,     -1 }, 0x007F, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x000440, 0x000443 }, { 0x000FFF, 0x000FFF }, { 0x000400, 0x00043F }, 0x0FF0, "p16f526.inc"      , "16f526_g.lkr"      , 0 },
-  { PROC_CLASS_PIC12E   , "__16F527"      , { "pic16f527"      , "p16f527"        , "16f527"          }, 0xF527,  2,    4, 0x0060, { 0x0C, 0x0F },    -1, {     -1,     -1 }, 0x007F, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x000440, 0x000443 }, { 0x000FFF, 0x000FFF }, { 0x000400, 0x00043F }, 0x0FF0, "p16f527.inc"      , "16f527_g.lkr"      , 0 },
-  { PROC_CLASS_PIC12E   , "__16F570"      , { "pic16f570"      , "p16f570"        , "16f570"          }, 0xF570,  4,    8, 0x00E0, { 0x0C, 0x0F },    -1, {     -1,     -1 }, 0x00FF, 0x0007FF, 0x000800, {       -1,       -1 }, { 0x000840, 0x000843 }, { 0x000FFF, 0x000FFF }, { 0x000800, 0x00083F }, 0x0FF0, "p16f570.inc"      , "16f570_g.lkr"      , 0 },
+  { PROC_CLASS_PIC12I   , "__16F527"      , { "pic16f527"      , "p16f527"        , "16f527"          }, 0xF527,  2,    4, 0x0060, { 0x0C, 0x0F },    -1, {     -1,     -1 }, 0x007F, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x000440, 0x000443 }, { 0x000FFF, 0x000FFF }, { 0x000400, 0x00043F }, 0x0FF0, "p16f527.inc"      , "16f527_g.lkr"      , 0 },
+  { PROC_CLASS_PIC12I   , "__16F570"      , { "pic16f570"      , "p16f570"        , "16f570"          }, 0xF570,  4,    8, 0x00E0, { 0x0C, 0x0F },    -1, {     -1,     -1 }, 0x00FF, 0x0007FF, 0x000800, {       -1,       -1 }, { 0x000840, 0x000843 }, { 0x000FFF, 0x000FFF }, { 0x000800, 0x00083F }, 0x0FF0, "p16f570.inc"      , "16f570_g.lkr"      , 0 },
   { PROC_CLASS_PIC14    , "__16F610"      , { "pic16f610"      , "p16f610"        , "16f610"          }, 0xF610,  1,    2, 0x0080, { 0x70, 0x7F },    -1, {     -1,     -1 }, 0x00FF, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, {       -1,       -1 }, 0x3F80, "p16f610.inc"      , "16f610_g.lkr"      , 0 },
   { PROC_CLASS_PIC14    , "__16F616"      , { "pic16f616"      , "p16f616"        , "16f616"          }, 0xF616,  1,    2, 0x0080, { 0x70, 0x7F },    -1, {     -1,     -1 }, 0x00FF, 0x0007FF, 0x000800, {       -1,       -1 }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, {       -1,       -1 }, 0x3F80, "p16f616.inc"      , "16f616_g.lkr"      , 0 },
   { PROC_CLASS_PIC14    , "__16F627"      , { "pic16f627"      , "p16f627"        , "16f627"          }, 0x6627,  1,    4, 0x0180, { 0x70, 0x7F },    -1, {     -1,     -1 }, 0x01FF, 0x00217F, 0x000400, { 0x000400, 0x0020FF }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, { 0x002100, 0x00217F }, 0x3F80, "p16f627.inc"      , "16f627_g.lkr"      , 0 },
@@ -1094,6 +1094,9 @@ gp_processor_class_to_str(proc_class_t class)
   else if (class == PROC_CLASS_PIC12E) {
     return "PIC12E";
   }
+  else if (class == PROC_CLASS_PIC12I) {
+    return "PIC12I";
+  }
   else if (class == PROC_CLASS_SX) {
     return "SX";
   }
@@ -1304,6 +1307,7 @@ gp_processor_is_common_ram_addr(pic_processor_t processor, int address)
   if ((processor->class != PROC_CLASS_GENERIC) &&
       (processor->class != PROC_CLASS_PIC12) &&
       (processor->class != PROC_CLASS_PIC12E) &&
+      (processor->class != PROC_CLASS_PIC12I) &&
       (processor->class != PROC_CLASS_SX) &&
       (processor->class != PROC_CLASS_PIC14) &&
       (processor->class != PROC_CLASS_PIC14E) &&
@@ -2516,6 +2520,11 @@ static const vector_t vector_table_sx[] = {
   { 0x000, "vector_int" }
 };
 
+static const vector_t vector_table_pic12i[] = {
+  { 0x000, "vector_reset" },
+  { 0x004, "vector_int" }
+};
+
 static const core_sfr_t core_sfr_table_pic14[] = {
   { 0x000, "INDF"   },
   { 0x002, "PCL"    },
@@ -2843,6 +2852,50 @@ const struct proc_class proc_class_pic12e = {
   TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   vector_table_pic12,                   /* vector_table */
   TABLE_SIZE(vector_table_pic12),       /* vector_number */
+  id_location_pic12,                    /* id_location */
+  gp_processor_check_bank_pic12e,       /* check_bank */
+  gp_processor_set_bank_pic12e,         /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_ibank */
+  gp_processor_set_xbank_unsupported,   /* set_ibank */
+  gp_processor_check_page_pic12,        /* check_page */
+  gp_processor_set_page_pic12,          /* set_page */
+  gp_processor_page_addr_pic12,         /* page_addr */
+  gp_processor_page_bits_to_addr_pic12, /* page_bits_to_addr */
+  reloc_call_pic12,                     /* reloc_call */
+  reloc_goto_pic12,                     /* reloc_goto */
+  reloc_f_pic12,                        /* reloc_f */
+  reloc_tris_pic12e,                    /* reloc_tris */
+  reloc_unsupported,                    /* reloc_movlb */
+  reloc_bra_unsupported,                /* reloc_bra */
+  reloc_high_generic,                   /* reloc_high */
+  op_12c5xx,                            /* instructions */
+  &num_op_12c5xx,                       /* num_instructions */
+  find_insn_pic12e,                     /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  NULL,                                 /* patch_strict */
+};
+
+const struct proc_class proc_class_pic12i = {
+  PIC12_INSN_RETLW,                     /* retlw */
+  12,                                   /* rom_width */
+  PIC12_PAGE_SIZE,                      /* page_size */
+  PIC12_BANK_SIZE,                      /* bank_size */
+  PIC12_BANK_SHIFT,                     /* bank_bits_shift */
+  PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
+  1,                                    /* org_to_byte_shift */
+  PIC12_PC_MASK,                        /* pc_mask */
+  ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
+  ~(PIC12_BANK_SIZE - 1),               /* bank_mask */
+  PIC12_CORE_MASK,                      /* core_mask */
+  (1 << 12) - 1,                        /* config_mask */
+  3,                                    /* addr_digits */
+  3,                                    /* word_digits */
+  3,                                    /* config_digits */
+  core_sfr_table_pic12,                 /* core_sfr_table */
+  TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
+  vector_table_pic12i,                  /* vector_table */
+  TABLE_SIZE(vector_table_pic12i),      /* vector_number */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12e,       /* check_bank */
   gp_processor_set_bank_pic12e,         /* set_bank */

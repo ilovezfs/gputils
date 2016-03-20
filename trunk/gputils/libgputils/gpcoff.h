@@ -556,7 +556,7 @@ typedef struct gp_symbol_type
 
 typedef struct gp_hash
 {
-  unsigned int hash;
+  hash128_t             hash;
   const gp_symbol_type *symbol;
 } gp_hash_type;
 

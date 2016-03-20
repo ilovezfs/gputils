@@ -1,3 +1,59 @@
+2016-03-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/coff.c:
+    Removed exit() function.
+
+  * gpasm/directive.c, gpasm/gpasm.c, gpasm/lst.c, gpasm/processor.c,
+    gputils/gpdasm.c, libgputils/gpdis.c libgputils/gpprocessor.c,
+    libgputils/gpprocessor.h:
+    Added PIC12I class.
+
+  * gpasm/util.c:
+    Code formatting.
+
+  * gplink/gplink.c, gputils/gplib.c:
+    Added exit() function.
+
+  * gputils/gpstrip.c:
+    Inverted the return value of gp_write_coff() function.
+    Code formatting.
+
+  * libgputils/Makefile.am, libgputils/Makefile.in:
+    Added gpsym.c and gpsym.h.
+
+  * libgputils/gparchive.c, libgputils/gparchive.h:
+    Changed the return type of the gp_archive_extract_member() and
+    gp_archive_write() functions. Removed the exit() function.
+    Code formatting.
+
+  * libgputils/gpcoff.h, libgputils/gptypes.h:
+    New type: hash128_t
+
+  * libgputils/gpcoffgen.c, libgputils/gpcoffgen.h:
+    More use the const modifier.
+
+  * libgputils/gpcofflink.c:
+    Inverted the return value of gp_link_add_symbols() function.
+    Code formatting.
+
+  * libgputils/gpcofflink.h:
+    Use the extern modifier.
+
+  * libgputils/gphash.c, libgputils/gphash.h, libgputils/gpsymbol.c,
+    libgputils/gpsymbol.h:
+    Use the hash128_t type.
+
+  * libgputils/gpmemory.c, libgputils/gpmessage.c, libgputils/gpreadobj.c:
+    Code formatting.
+
+  * libgputils/gpsym.c, libgputils/gpsym.h:
+    Instead of gphash.c and gphash.h.
+
+  * libgputils/gpwriteobj.c, libgputils/gpwriteobj.h:
+    Changed the return type: _gp_updateptr() and gp_write_coff()
+
+  * libgputils/libgputils.h:
+    Added the gpsym.h.
+
 2016-03-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gparchive.c:
     bugfix

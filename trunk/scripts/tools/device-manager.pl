@@ -115,12 +115,13 @@ use constant PROC_CLASS_EEPROM16 =>  1;
 use constant PROC_CLASS_GENERIC  =>  2;
 use constant PROC_CLASS_PIC12    =>  3;
 use constant PROC_CLASS_PIC12E   =>  4;
-use constant PROC_CLASS_PIC14    =>  5;
-use constant PROC_CLASS_PIC14E   =>  6;
-use constant PROC_CLASS_PIC14EX  =>  7;
-use constant PROC_CLASS_PIC16    =>  8;
-use constant PROC_CLASS_PIC16E   =>  9;
-use constant PROC_CLASS_SX       => 10;
+use constant PROC_CLASS_PIC12I   =>  5;
+use constant PROC_CLASS_PIC14    =>  6;
+use constant PROC_CLASS_PIC14E   =>  7;
+use constant PROC_CLASS_PIC14EX  =>  8;
+use constant PROC_CLASS_PIC16    =>  9;
+use constant PROC_CLASS_PIC16E   => 10;
+use constant PROC_CLASS_SX       => 11;
 
 use constant PIC12_BANK_SHIFT => 5;
 use constant PIC12_BANK_SIZE  => 2 ** PIC12_BANK_SHIFT;
@@ -204,6 +205,24 @@ my %class_features_p12 =
 my %class_features_p12e =
   (
   CLASS         => PROC_CLASS_PIC12E,
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => 512,
+  WORD_SIZE     => 12,
+  CONF_SIZE     => 12,
+  CONF_MASK     => 0x0FFF,
+  EE_START      => -1,
+  BANK_MAX      => 8,
+  BANK_SIZE     => PIC12_BANK_SIZE,
+  BANK_MASK     => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC12_BANK_SHIFT,
+  IDLOCS_MASK   => 0x0FF0,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1
+  );
+
+my %class_features_p12i =
+  (
+  CLASS         => PROC_CLASS_PIC12I,
   ENHANCED      => TRUE,
   PAGE_SIZE     => 512,
   WORD_SIZE     => 12,
@@ -334,6 +353,7 @@ my @classnames =
   'PROC_CLASS_GENERIC',
   'PROC_CLASS_PIC12',
   'PROC_CLASS_PIC12E',
+  'PROC_CLASS_PIC12I',
   'PROC_CLASS_PIC14',
   'PROC_CLASS_PIC14E',
   'PROC_CLASS_PIC14EX',
@@ -349,6 +369,7 @@ my @class_features_list =
   \%class_features_generic,     # PROC_CLASS_GENERIC
   \%class_features_p12,         # PROC_CLASS_PIC12
   \%class_features_p12e,        # PROC_CLASS_PIC12E
+  \%class_features_p12i,        # PROC_CLASS_PIC12I
   \%class_features_p14,         # PROC_CLASS_PIC14
   \%class_features_p14e,        # PROC_CLASS_PIC14E
   \%class_features_p14ex,       # PROC_CLASS_PIC14EX
@@ -364,6 +385,7 @@ my %class_features_by_gputils =
   'PROC_CLASS_GENERIC'  => \%class_features_generic,
   'PROC_CLASS_PIC12'    => \%class_features_p12,
   'PROC_CLASS_PIC12E'   => \%class_features_p12e,
+  'PROC_CLASS_PIC12I'   => \%class_features_p12i,
   'PROC_CLASS_PIC14'    => \%class_features_p14,
   'PROC_CLASS_PIC14E'   => \%class_features_p14e,
   'PROC_CLASS_PIC14EX'  => \%class_features_p14ex,
@@ -378,8 +400,8 @@ my %class_features_by_mpasmx =
   'EEPROM16' => \%class_features_eeprom16,
   'generic'  => \%class_features_generic,
   '16c5x'    => \%class_features_p12,
-  '16c5ie'   => \%class_features_p12e,
   '16c5xe'   => \%class_features_p12e,
+  '16c5ie'   => \%class_features_p12i,
   '16xxxx'   => \%class_features_p14,
   '16Exxx'   => \%class_features_p14e,
   '16EXxx'   => \%class_features_p14ex,

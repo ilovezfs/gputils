@@ -72,7 +72,7 @@ gp_link_remove_symbol(symbol_table_t *table, char *name)
    tables. NOTE: The missing symbol table is optional. This feature is
    not used for generating symbol indexes for archives. */
 
-int
+gp_boolean
 gp_link_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_object_type *object)
 {
   gp_symbol_type     *symbol;
@@ -80,7 +80,7 @@ gp_link_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_obje
   gp_coffsymbol_type *var;
 
   if ((definition == NULL) || (object == NULL)) {
-    return 1;
+    return false;
   }
 
   /* The gp_convert_file() function has read it the elements of the "object". */
@@ -125,7 +125,7 @@ gp_link_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_obje
     symbol = symbol->next;
   }
 
-  return 0;
+  return true;
 }
 
 /* Combine all sections and symbols from all objects into one object file. */
@@ -388,8 +388,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
         exit(1);
       }
 
-      gp_debug("  merging section \"%s\" with section \"%s\"",
-               first->name, second->name);
+      gp_debug("  merging section \"%s\" with section \"%s\"", first->name, second->name);
 
       /* Update the addresses in the relocation table. */
       relocation = second->relocations;
@@ -476,7 +475,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
     first = first->next;
   }
 
-  gp_make_hash_table(object);
+  gp_symbol_make_hash_table(object);
 }
 
 /* copy data from idata section to the ROM section */
@@ -507,7 +506,7 @@ _copy_rom_section(const gp_object_type *object, const gp_section_type *idata, gp
     }
   }
   else {
-    /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+    /* PIC12, PIC12E, PIC12I, SX, PIC14, PIC14E, PIC14EX, PIC16 */
     /* select "retlw" instruction */
     insn_retlw = gp_processor_retlw(class);
 
@@ -522,8 +521,8 @@ _copy_rom_section(const gp_object_type *object, const gp_section_type *idata, gp
 static char *_create_i_section_name(const char *name)
 {
   /* create the new section */
-  size_t len = strlen(name);
-  char *name_i = GP_Malloc(len + 3);
+  size_t  len = strlen(name);
+  char   *name_i = GP_Malloc(len + 3);
 
   memcpy(name_i, name, len);
   memcpy(name_i + len, "_i", 3);
@@ -553,7 +552,7 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
     }
   }
   else {
-    /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+    /* PIC12, PIC12E, PIC12I, SX, PIC14, PIC14E, PIC14EX, PIC16 */
     new->size = section->size << 1;
   }
   new->flags = STYP_DATA_ROM;
@@ -663,7 +662,7 @@ gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit)
 
     byte_count = 2 + count_sections * 12;
     if (class->rom_width != 8) {
-      /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+      /* PIC12, PIC12E, PIC12I, SX, PIC14, PIC14E, PIC14EX, PIC16 */
       /* retlw is used so 16-bit count is stored in 4 bytes not 2 */
       byte_count += 2;
     }
@@ -680,7 +679,7 @@ gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit)
       class->i_memory_put(new->data, 0, count_sections, ".cinit", "table_size");
     }
     else {
-      /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+      /* PIC12, PIC12E, PIC12I, SX, PIC14, PIC14E, PIC14EX, PIC16 */
       insn_retlw = gp_processor_retlw(class);
       _write_table_u16(class, new, 0, insn_retlw, count_sections, "table_size");
     }
@@ -727,7 +726,7 @@ gp_add_cinit_section(gp_object_type *object)
       insn_retlw = 0;
     }
     else {
-      /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+      /* PIC12, PIC12E, PIC12I, SX, PIC14, PIC14E, PIC14EX, PIC16 */
       base_address += 4;
       insn_retlw = gp_processor_retlw(class);
     }
@@ -753,7 +752,7 @@ gp_add_cinit_section(gp_object_type *object)
           _write_table_u32(class, new, base_address + 8, section->size, "table_size");
         }
         else {
-          /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+          /* PIC12, PIC12E, PIC12I, SX, PIC14, PIC14E, PIC14EX, PIC16 */
           /* Write program memory address (from: source address of data in CODE space). */
           _write_table_u16(class, new, base_address, insn_retlw,
                            gp_processor_byte_to_org(class, prog_section->address), "prog_mem_addr");
@@ -778,7 +777,7 @@ gp_add_cinit_section(gp_object_type *object)
       class->i_memory_get(new->data, new->address, &number, NULL, NULL);
     }
     else {
-      /* PIC12, PIC12E, SX, PIC14, PIC14E, PIC14EX, PIC16 */
+      /* PIC12, PIC12E, PIC12I, SX, PIC14, PIC14E, PIC14EX, PIC16 */
       number = _read_table_u16(class, new, new->address);
     }
     assert(number == count_sections);
@@ -812,7 +811,7 @@ _set_used(gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsigned i
   for ( ; size; address++, size--) {
     if (b_memory_get(m, address, &data, &old_section_name, &old_symbol_name)) {
       if ((old_section_name != NULL) && (section_name != NULL)) {
-        symbol = gp_find_symbol_hash_table(object, section_name, address);
+        symbol = gp_symbol_find_hash_table(object, section_name, address);
         symbol_name = (symbol != NULL) ? symbol->name : NULL;
         gp_error("More %s sections use same address: %#x -- \"%s/%s\", \"%s/%s\"",
                  type, gp_byte_to_org(org_to_byte_shift, address),
@@ -824,7 +823,7 @@ _set_used(gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsigned i
       return;
     }
     else {
-      symbol = gp_find_symbol_hash_table(object, section_name, address);
+      symbol = gp_symbol_find_hash_table(object, section_name, address);
       symbol_name = (symbol != NULL) ? symbol->name : NULL;
       b_memory_put(m, address, 0, section_name, symbol_name);
     }
@@ -933,20 +932,19 @@ _search_memory(MemBlock *m, int org_to_byte_shift,
                unsigned int *block_address, unsigned int *block_size,
                gp_boolean stop_at_first)
 {
-  unsigned int address;
-  unsigned int current_address = 0;
-  unsigned int current_size = 0;
-  gp_boolean   mem_used;
-  gp_boolean   in_block = false;
-  gp_boolean   end_block = false;
-  gp_boolean   success = false;
+  unsigned int  address;
+  unsigned int  current_address = 0;
+  unsigned int  current_size = 0;
+  gp_boolean    mem_used;
+  gp_boolean    in_block = false;
+  gp_boolean    end_block = false;
+  gp_boolean    success = false;
+  unsigned char b;
 
   /* set the size to max value */
   *block_size = (unsigned int)(-1);
 
   for (address = start; address <= stop; address++) {
-    unsigned char b;
-
     mem_used = b_memory_get(m, address, &b, NULL, NULL);
 
     if (address == stop) {
@@ -1419,13 +1417,11 @@ next_pass:
     else if (gp_relocate_to_shared && first_time && (type == SECT_DATABANK)) {
       first_time = false;
       type = SECT_SHAREBANK;
-      gp_warning("Relocation of section \"%s\" failed, relocating to a shared memory location.",
-                 current->name);
+      gp_warning("Relocation of section \"%s\" failed, relocating to a shared memory location.", current->name);
       goto next_pass;
     }
     else if (!type_avail) {
-      gp_error("Linker script has no definition that matches the type of section \"%s\".",
-               current->name);
+      gp_error("Linker script has no definition that matches the type of section \"%s\".", current->name);
       return;
     }
     else {
@@ -1555,8 +1551,7 @@ check_relative(gp_section_type *section, int org, int argument, int range)
 {
   /* If the branch is too far then issue a warning */
   if ((argument > range) || (argument < -(range + 1))) {
-    gp_warning("Relative branch out of range in at %#x of section \"%s\".",
-               org, section->name);
+    gp_warning("Relative branch out of range in at %#x of section \"%s\".", org, section->name);
   }
 }
 
@@ -1812,6 +1807,7 @@ gp_cofflink_make_memory(gp_object_type *object)
   unsigned int     stop;
   const char      *section_name;
   const char      *symbol_name;
+  unsigned char    byte;
 
   m = i_memory_create();
   section = object->sections;
@@ -1819,18 +1815,17 @@ gp_cofflink_make_memory(gp_object_type *object)
   while (section != NULL) {
     if (section->flags & (STYP_TEXT | STYP_DATA_ROM)) {
       addr = section->address;
-
       stop = addr + section->size;
       gp_debug("   make memory: section \"%s\" (0x%06X - 0x%06X)", section->name, addr, stop - 1);
 
       for ( ; addr < stop; addr++) {
-        unsigned char byte;
         /* fetch the current contents of the memory */
         b_memory_assert_get(section->data, addr, &byte, &section_name, &symbol_name);
 
         if ((object->class == PROC_CLASS_PIC12)  || (object->class == PROC_CLASS_PIC12E) ||
-            (object->class == PROC_CLASS_SX)     || (object->class == PROC_CLASS_PIC14)  ||
-            (object->class == PROC_CLASS_PIC14E) || (object->class == PROC_CLASS_PIC14EX)) {
+            (object->class == PROC_CLASS_PIC12I) || (object->class == PROC_CLASS_SX)     ||
+            (object->class == PROC_CLASS_PIC14)  || (object->class == PROC_CLASS_PIC14E) ||
+            (object->class == PROC_CLASS_PIC14EX)) {
           org = gp_processor_byte_to_org(object->class, addr);
 
           if (gp_processor_is_idlocs_org(object->processor, org) >= 0) {

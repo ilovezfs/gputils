@@ -684,7 +684,8 @@ _class_lit11:
 
     case INSN_CLASS_IMPLICIT:
       /* PIC12x  (clrw, clrwdt, nop, option, return, sleep)
-         PIC12E  (retfie, return)
+         PIC12E  return
+         PIC12I  (retfie, return)
          SX      (iread, movmw, movwm, reti, retiw, retp, return)
          PIC14x  (clrw, clrwdt, halt, nop, option, retfie, return, sleep)
          PIC14E  (brw, callw, reset)
@@ -1008,7 +1009,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
 
   switch (instruction->class) {
     case INSN_CLASS_LIT3:
-      /* PIC12E movlb */
+      /* PIC12E, PIC12I movlb */
       fstate->bank = opcode & PIC12E_BMSK_BANK;
       fstate->bank_valid = PIC12E_BMSK_BANK;
       break;
@@ -1952,7 +1953,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
     /*@@@@@@@@@@@@@@@@@@@@@@@@*/
 
     case INSN_CLASS_LIT3:
-      /* PIC12E movlb */
+      /* PIC12E, PIC12I movlb */
       PRINT_ARG1_N(1, opcode & PIC12E_BMSK_BANK);
       break;
 
@@ -2815,7 +2816,8 @@ _insn_class_pf:
 
     case INSN_CLASS_IMPLICIT:
       /* PIC12x  (clrw, clrwdt, nop, option, return, sleep)
-         PIC12E  (retfie, return)
+         PIC12E  return
+         PIC12I  (retfie, return)
          SX      (iread, movmw, movwm, reti, retiw, retp, return)
          PIC14x  (clrw, clrwdt, halt, nop, option, retfie, return, sleep)
          PIC14E  (brw, callw, reset)

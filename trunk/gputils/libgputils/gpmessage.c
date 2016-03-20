@@ -38,7 +38,7 @@ void
 gp_error(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ];
+  char    buffer[BUFSIZ];
 
   if (gp_message_disable) {
     return;
@@ -51,7 +51,7 @@ gp_error(const char *format, ...)
   }
 
   va_start(args, format);
-  vsnprintf(buffer, sizeof (buffer), format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   printf("error: %s\n", buffer);
@@ -74,7 +74,7 @@ gp_warning(const char *format, ...)
   }
 
   va_start(args, format);
-  vsnprintf(buffer, sizeof (buffer), format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   printf("warning: %s\n", buffer);
@@ -97,7 +97,7 @@ gp_message(const char *format, ...)
   }
 
   va_start(args, format);
-  vsnprintf(buffer, sizeof (buffer), format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   printf("message: %s\n", buffer);
@@ -118,7 +118,7 @@ gp_debug(const char *format, ...)
   }
 
   va_start(args, format);
-  vsnprintf(buffer, sizeof (buffer), format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   printf("debug: %s\n", buffer);

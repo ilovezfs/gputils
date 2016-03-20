@@ -405,7 +405,7 @@ gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol)
 /* Determine if any relocation uses the symbol. */
 
 gp_boolean
-gp_coffgen_has_reloc(gp_object_type *object, gp_symbol_type *symbol)
+gp_coffgen_has_reloc(const gp_object_type *object, const gp_symbol_type *symbol)
 {
   gp_section_type *section;
   gp_reloc_type   *relocation;
@@ -429,33 +429,33 @@ gp_coffgen_has_reloc(gp_object_type *object, gp_symbol_type *symbol)
 /* Determine if the symbol is global */
 
 gp_boolean
-gp_coffgen_is_global(gp_symbol_type *symbol)
+gp_coffgen_is_global(const gp_symbol_type *Symbol)
 {
-  return ((symbol->class == C_EXT) && (symbol->section_number == N_SCNUM)) ? true : false;
+  return (((Symbol->class == C_EXT) && (Symbol->section_number == N_SCNUM)) ? true : false);
 }
 
 /* Determine if the symbol is external */
 
 gp_boolean
-gp_coffgen_is_external(gp_symbol_type *symbol)
+gp_coffgen_is_external(const gp_symbol_type *Symbol)
 {
-  return ((symbol->class == C_EXT) && (symbol->section_number == N_UNDEF)) ? true : false;
+  return (((Symbol->class == C_EXT) && (Symbol->section_number == N_UNDEF)) ? true : false);
 }
 
 /* Determine if the symbol is debug */
 
 gp_boolean
-gp_coffgen_is_debug(gp_symbol_type *symbol)
+gp_coffgen_is_debug(const gp_symbol_type *Symbol)
 {
-  return (symbol->class == N_DEBUG) ? true : false;
+  return ((Symbol->class == N_DEBUG) ? true : false);
 }
 
 /* Determine if the symbol is absolute */
 
 gp_boolean
-gp_coffgen_is_absolute(gp_symbol_type *symbol)
+gp_coffgen_is_absolute(const gp_symbol_type *Symbol)
 {
-  return (symbol->class == N_ABS) ? true : false;
+  return ((Symbol->class == N_ABS) ? true : false);
 }
 
 /* allocate a block of section */

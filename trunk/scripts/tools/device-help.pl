@@ -30,7 +30,7 @@
     of the PIC MCU-s. The data reads from the 8bit_device.info called file of MPLAB-X.
     On Linux is usually located on this path:
 
-                /opt/microchip/mplabx/v3.20/mpasmx/8bit_device.info
+                /opt/microchip/mplabx/v3.25/mpasmx/8bit_device.info
 
     Of course for the program it is necessary to the gputils source from the svn.
 
@@ -55,7 +55,7 @@ my $PROGRAM = 'device-help.pl';
 my $verbose = 0;
 
 my $gputils_url = 'gputils.sourceforge.net';
-my $mplabx_url  = 'www.microchip.com/pagehandler/en-us/family/mplabx';
+my $mplabx_url  = 'https://www.microchip.com/mplab/mplab-x-ide';
 
 my $gputils_path  = "$ENV{HOME}/svn_snapshots/gputils/gputils";
 my $gpprocessor_c = 'gpprocessor.c';
@@ -92,11 +92,12 @@ my $mask;
 
 use constant PROC_CLASS_PIC12   => 0;
 use constant PROC_CLASS_PIC12E  => 1;
-use constant PROC_CLASS_PIC14   => 2;
-use constant PROC_CLASS_PIC14E  => 3;
-use constant PROC_CLASS_PIC14EX => 4;
-use constant PROC_CLASS_PIC16   => 5;
-use constant PROC_CLASS_PIC16E  => 6;
+use constant PROC_CLASS_PIC12I  => 2;
+use constant PROC_CLASS_PIC14   => 3;
+use constant PROC_CLASS_PIC14E  => 4;
+use constant PROC_CLASS_PIC14EX => 5;
+use constant PROC_CLASS_PIC16   => 6;
+use constant PROC_CLASS_PIC16E  => 7;
 
 use constant PIC12_BANK_SHIFT  => 5;
 use constant PIC12_BANK_SIZE   => 2 ** PIC12_BANK_SHIFT;
@@ -130,6 +131,28 @@ my %class_features_p12 =
 my %class_features_p12e =
   (
   CLASS         => PROC_CLASS_PIC12E,
+  NAME          => '12 bit enhanced MCU',
+  CSS_CLASS     => 'mcuAttrP12E',
+  CSS_BGRND     => '#FFB4FF',
+  ENHANCED      => TRUE,
+  PAGE_SIZE     => 512,
+  WORD_SIZE     => 12,
+  CONF_SIZE     => 12,
+  EE_START      => 0,
+  BANK_MAX      => 8,
+  BANK_SIZE     => PIC12_BANK_SIZE,
+  BANK_MASK     => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT    => PIC12_BANK_SHIFT,
+  ACC_SPLIT_MIN => -1,
+  ACC_SPLIT_MAX => -1,
+  CORE_SFRS     => [
+                   0x00, 0x02, 0x03, 0x04
+                   ]
+  );
+
+my %class_features_p12i =
+  (
+  CLASS         => PROC_CLASS_PIC12I,
   NAME          => '12 bit enhanced MCU',
   CSS_CLASS     => 'mcuAttrP12E',
   CSS_BGRND     => '#FFB4FF',
@@ -270,6 +293,7 @@ my @class_features_list =
   (
   \%class_features_p12,         # PROC_CLASS_PIC12
   \%class_features_p12e,        # PROC_CLASS_PIC12E
+  \%class_features_p12i,        # PROC_CLASS_PIC12I
   \%class_features_p14,         # PROC_CLASS_PIC14
   \%class_features_p14e,        # PROC_CLASS_PIC14E
   \%class_features_p14ex,       # PROC_CLASS_PIC14EX
@@ -280,8 +304,8 @@ my @class_features_list =
 my %class_features_by_mpasmx =
   (
   '16c5x'  => \%class_features_p12,
-  '16c5ie' => \%class_features_p12e,
   '16c5xe' => \%class_features_p12e,
+  '16c5ie' => \%class_features_p12i,
   '16xxxx' => \%class_features_p14,
   '16Exxx' => \%class_features_p14e,
   '16EXxx' => \%class_features_p14ex,
@@ -318,6 +342,9 @@ my $pic12_mcu_number = 0;
 
 my %pic12e_common_SFRs;
 my $pic12e_mcu_number = 0;
+
+my %pic12i_common_SFRs;
+my $pic12i_mcu_number = 0;
 
 my %pic14_common_SFRs;
 my $pic14_mcu_number = 0;
@@ -619,11 +646,12 @@ my @primary_menu =
 
 #use constant COMMON_SFR_MENU_P12   => 0;
 #use constant COMMON_SFR_MENU_P12E  => 1;
-#use constant COMMON_SFR_MENU_P14   => 2;
-#use constant COMMON_SFR_MENU_P14E  => 3;
-#use constant COMMON_SFR_MENU_P14EX => 4;
-#use constant COMMON_SFR_MENU_P16   => 5;
-#use constant COMMON_SFR_MENU_P16E  => 6;
+#use constant COMMON_SFR_MENU_P12I  => 2;
+#use constant COMMON_SFR_MENU_P14   => 3;
+#use constant COMMON_SFR_MENU_P14E  => 4;
+#use constant COMMON_SFR_MENU_P14EX => 5;
+#use constant COMMON_SFR_MENU_P16   => 6;
+#use constant COMMON_SFR_MENU_P16E  => 7;
 
 my @common_sfr_menu =
   (
@@ -645,6 +673,16 @@ my @common_sfr_menu =
     PARAM0 => \%pic12e_common_SFRs,
     PARAM1 => \$pic12e_mcu_number,
     CLASS  => PROC_CLASS_PIC12E
+    },
+
+    {                                   # PROC_CLASS_P12I
+    HREF   => "pic12i_$common_tag.html",
+    NAME   => 'PIC12I',
+    HEAD   => 'PIC12I Common SFRs',
+    PFUNC  => \&print_common_sfr_lists,
+    PARAM0 => \%pic12i_common_SFRs,
+    PARAM1 => \$pic12i_mcu_number,
+    CLASS  => PROC_CLASS_PIC12I
     },
 
     {                                   # PROC_CLASS_P14
@@ -2252,7 +2290,7 @@ sub print_source_info($)
                      "  <a href=\"https://sourceforge.net/p/gputils/code/HEAD/tree/trunk/scripts/tools/device-help.pl\"><em>$PROGRAM</em></a>",
                      "  program ($time) from the <em>" . basename($dev_info_path) . "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the",
                      "  $href1 (rev: svn $href2). The <em>mpasmx</em>",
-                     "  is included in the <a href=\"http://$mplabx_url\">MPLAB X</a>.",
+                     "  is included in the <a href=\"$mplabx_url\">MPLAB X</a>.",
                      "</p>");
   aOutl($Align, '</div>');
   }
@@ -2402,7 +2440,8 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_ENH)
         {
-        if ($mcu_class == PROC_CLASS_PIC12E || $mcu_class == PROC_CLASS_PIC14E)
+        if (($mcu_class == PROC_CLASS_PIC12E) || ($mcu_class == PROC_CLASS_PIC12I) ||
+            ($mcu_class == PROC_CLASS_PIC14E) || ($mcu_class == PROC_CLASS_PIC14EX))
           {
           aOutl ($Align + 6, '<tr>');
           aOutml($Align + 8, $td_href, $td_wsize, $td_csize, $td_sh_href);
@@ -2609,6 +2648,7 @@ sub make_sfr_common_lists()
 
   $pic12_mcu_number   = 0;
   $pic12e_mcu_number  = 0;
+  $pic12i_mcu_number  = 0;
   $pic14_mcu_number   = 0;
   $pic14e_mcu_number  = 0;
   $pic14ex_mcu_number = 0;
