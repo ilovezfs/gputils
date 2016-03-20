@@ -239,11 +239,11 @@ static struct option longopts[] =
 
 int main(int argc, char *argv[])
 {
-  int option_index;
+  int         option_index;
   const char *command;
-  int c;
-  gp_boolean strict_options = false;
-  gp_boolean usage          = false;
+  int         c;
+  gp_boolean  strict_options = false;
+  gp_boolean  usage          = false;
 
   gp_init();
 
@@ -398,7 +398,7 @@ int main(int argc, char *argv[])
     
       if (gp_num_errors == 0) {
         /* no errors have occured so write the file */
-        if (gp_write_coff(state.object, 0)) {
+        if (!gp_write_coff(state.object, 0)) {
           gp_error("system error while writing object file");
         }
       } else if (state.output_file) {

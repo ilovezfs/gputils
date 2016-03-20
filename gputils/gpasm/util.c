@@ -841,8 +841,7 @@ add_file(unsigned int type, const char *name)
   return new;
 }
 
-/* free_files: free memory allocated to the file_context stack
- */
+/* free_files: free memory allocated to the file_context stack */
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -875,7 +874,7 @@ hex_init(void)
     writehex(state.basefilename, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
   } else if (state.device.class != NULL) {
     if (!writehex(state.basefilename, state.i_memory, state.hex_format, state.num.errors,
-                 state.dos_newlines, state.device.class->core_mask)) {
+                  state.dos_newlines, state.device.class->core_mask)) {
       gperror(GPE_UNKNOWN, "Error generating hex file.");
       exit(1);
     }

@@ -62,11 +62,12 @@ my $time_str;
 
 use constant PROC_CLASS_PIC12   => 0;
 use constant PROC_CLASS_PIC12E  => 1;
-use constant PROC_CLASS_PIC14   => 2;
-use constant PROC_CLASS_PIC14E  => 3;
-use constant PROC_CLASS_PIC14EX => 4;
-use constant PROC_CLASS_PIC16   => 5;
-use constant PROC_CLASS_PIC16E  => 6;
+use constant PROC_CLASS_PIC12I  => 2;
+use constant PROC_CLASS_PIC14   => 3;
+use constant PROC_CLASS_PIC14E  => 4;
+use constant PROC_CLASS_PIC14EX => 5;
+use constant PROC_CLASS_PIC16   => 6;
+use constant PROC_CLASS_PIC16E  => 7;
 
 my %class_features_p12 =
   (
@@ -79,6 +80,14 @@ my %class_features_p12 =
 my %class_features_p12e =
   (
   CLASS      => PROC_CLASS_PIC12E,
+  NAME       => '12 bit enhanced MCU',
+  DIR_DIGITS => 3,
+  ENHANCED   => TRUE
+  );
+
+my %class_features_p12i =
+  (
+  CLASS      => PROC_CLASS_PIC12I,
   NAME       => '12 bit enhanced MCU',
   DIR_DIGITS => 3,
   ENHANCED   => TRUE
@@ -127,8 +136,8 @@ my %class_features_p16e =
 my %class_features_by_mpasmx =
   (
   '16c5x'  => \%class_features_p12,
-  '16c5ie' => \%class_features_p12e,
   '16c5xe' => \%class_features_p12e,
+  '16c5ie' => \%class_features_p12i,
   '16xxxx' => \%class_features_p14,
   '16Exxx' => \%class_features_p14e,
   '16EXxx' => \%class_features_p14ex,
@@ -140,6 +149,7 @@ my @mcu_classes =
   (
   \%class_features_p12,
   \%class_features_p12e,
+  \%class_features_p12i,
   \%class_features_p14,
   \%class_features_p14e,
   \%class_features_p14ex,

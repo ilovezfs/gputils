@@ -22,11 +22,28 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPTYPES_H__
 #define __GPTYPES_H__
 
+#include "stdhdr.h"
+
 typedef enum {
   false = (0 == 1),
   true  = (0 == 0)
 } gp_boolean;
 
 typedef long    gp_symvalue_t;
+
+typedef struct __attribute__ ((packed))
+{
+  union __attribute__ ((packed))
+  {
+    uint32_t u32[2];
+    uint64_t u64;
+  } low;
+
+  union __attribute__ ((packed))
+  {
+    uint32_t u32[2];
+    uint64_t u64;
+  } high;
+} hash128_t;
 
 #endif

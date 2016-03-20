@@ -665,7 +665,7 @@ do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
       else if (num_reloc != 1) {
         gpverror(GPE_UNRESOLVABLE, "\"%s\"", name);
       }
-      else if (IS_PIC12E_CORE) {
+      else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
         reloc_evaluate(p, RELOCT_MOVLB);
         emit(PIC12E_INSN_MOVLB, name);
       }
@@ -1399,7 +1399,7 @@ do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
     /* The gpasm compatible mode valid all PIC devices. */
     if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE) &&
         (!IS_PIC14_CORE) && (!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE) &&
-        (!IS_PIC12_CORE) && (!IS_PIC12E_CORE)) {
+        (!IS_PIC12_CORE) && (!IS_PIC12E_CORE) && (!IS_PIC12I_CORE)) {
       snprintf(buf, sizeof(buf),
                "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive.",
                state.processor->names[2]);
@@ -4808,7 +4808,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         break;
 
       case INSN_CLASS_LIT3:
-        /* PIC12E movlb */
+        /* PIC12E, PIC12I movlb */
         if (state.processor == NULL) {
           gpverror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
           return 0;
@@ -6255,7 +6255,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
       case INSN_CLASS_IMPLICIT:
         /* PIC12x  (clrw, clrwdt, nop, option, return, sleep)
-           PIC12E  (retfie, return)
+           PIC12E  return
+           PIC12I  (retfie, return)
            SX      (iread, movmw, movwm, reti, retiw, retp, return)
            PIC14x  (clrw, clrwdt, halt, nop, option, retfie, return, sleep)
            PIC14E  (brw, callw, reset)
@@ -6748,31 +6749,28 @@ opcode_init(int stage)
         sym_remove_symbol(state.stBuiltin, "mullw");
       }
       /* Special case, some instructions not available on 16f5x devices. */
-      else if ((strcmp(name, "pic16f54") == 0) ||
-               (strcmp(name, "pic16f57") == 0) ||
+      else if ((strcmp(name, "pic16f54") == 0) || (strcmp(name, "pic16f57") == 0) ||
                (strcmp(name, "pic16f59") == 0)) {
         sym_remove_symbol(state.stBuiltin, "addlw");
         sym_remove_symbol(state.stBuiltin, "sublw");
         sym_remove_symbol(state.stBuiltin, "return");
         sym_remove_symbol(state.stBuiltin, "retfie");
       }
-      else if ((strcmp(name, "sx48bd") == 0) ||
-               (strcmp(name, "sx52bd") == 0)) {
+      else if ((strcmp(name, "sx48bd") == 0) || (strcmp(name, "sx52bd") == 0)) {
         symbol_t *mode_sym = sym_get_symbol(state.stBuiltin, "mode");
 
         if (mode_sym != NULL) {
           sym_annotate_symbol(mode_sym, (void *)&op_sx_mode);
         }
       }
-      else if (IS_PIC12E_CORE) {
+      else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
         sym_remove_symbol(state.stBuiltin, "return");
         for (i = 0; i < num_op_16c5xx_enh; i++) {
           sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16c5xx_enh[i].name),
                           (void *)&op_16c5xx_enh[i]);
         }
 
-        if ((strcmp(name, "pic12f529t39a") == 0) ||
-            (strcmp(name, "pic12f529t48a") == 0)) {
+        if ((strcmp(name, "pic12f529t39a") == 0) || (strcmp(name, "pic12f529t48a") == 0)) {
           sym_remove_symbol(state.stBuiltin, "retfie");
           sym_remove_symbol(state.stBuiltin, "return");
         }

@@ -215,8 +215,9 @@ coff_close_file(void)
     return;
   }
 
-  if (gp_write_coff(state.obj.object, (state.num.errors + gp_num_errors)) == 1) {
+  if (!gp_write_coff(state.obj.object, (state.num.errors + gp_num_errors))) {
     gperror(GPE_UNKNOWN, "system error while writing object file");
+    exit(1);
   }
 
   gp_coffgen_free(state.obj.object);

@@ -686,6 +686,7 @@ process_args(int argc, char *argv[])
         case 0x12:
           list_options.class0 = PROC_CLASS_PIC12;
           list_options.class1 = PROC_CLASS_PIC12E;
+          list_options.class2 = PROC_CLASS_PIC12I;
           break;
 
         case 0x12C:
@@ -694,6 +695,7 @@ process_args(int argc, char *argv[])
 
         case 0x12E:
           list_options.class0 = PROC_CLASS_PIC12E;
+          list_options.class1 = PROC_CLASS_PIC12I;
           break;
 
         case 0x14:
@@ -789,6 +791,7 @@ process_args(int argc, char *argv[])
         case 0x12:
           list_options.class0 = PROC_CLASS_PIC12;
           list_options.class1 = PROC_CLASS_PIC12E;
+          list_options.class2 = PROC_CLASS_PIC12I;
           break;
 
         case 0x12C:
@@ -797,6 +800,7 @@ process_args(int argc, char *argv[])
 
         case 0x12E:
           list_options.class0 = PROC_CLASS_PIC12E;
+          list_options.class1 = PROC_CLASS_PIC12I;
           break;
 
         case 0x14:

@@ -31,7 +31,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gpmemory.h"
 #include "gpopcode.h"
 #include "gpprocessor.h"
-#include "gpsymbol.h"
+#include "gpsym.h"
 #include "gpdis.h"
 #include "gpwritehex.h"
 #include "gpreadhex.h"
@@ -50,5 +50,6 @@ Boston, MA 02111-1307, USA.  */
 
 #include "gphash.h"
 #include "gpregister.h"
+#include "gpsymbol.h"
 
 #endif

@@ -177,8 +177,9 @@ int main(int argc, char *argv[])
       break;
     }
 
-    if (usage)
+    if (usage) {
       break;
+    }
   }
 
   if (optind < argc) {
@@ -203,9 +204,7 @@ int main(int argc, char *argv[])
   }
 
   /* User did not provide object names */
-  if ((state.mode != AR_LIST) &&
-      (state.mode != AR_SYMBOLS) &&
-      (state.numobjects == 0)) {
+  if ((state.mode != AR_LIST) && (state.mode != AR_SYMBOLS) && (state.numobjects == 0)) {
     usage = true;
   }
 
@@ -229,13 +228,13 @@ int main(int argc, char *argv[])
   case AR_CREATE:
   case AR_REPLACE:
     while (i < state.numobjects) {
-      if ((gp_identify_coff_file(state.objectname[i]) != GP_COFF_OBJECT_V2) &&
-          (gp_identify_coff_file(state.objectname[i]) != GP_COFF_OBJECT)) {
+      gp_coff_type type = gp_identify_coff_file(state.objectname[i]);
+
+      if ((type != GP_COFF_OBJECT_V2) && (type != GP_COFF_OBJECT)) {
         gp_error("\"%s\" is not a valid object file", state.objectname[i]);
         break;
       } else {
-        state.archive = gp_archive_add_member(state.archive,
-                                              state.objectname[i],
+        state.archive = gp_archive_add_member(state.archive, state.objectname[i],
                                               object_name(state.objectname[i]));
       }
       i++;
@@ -254,8 +253,7 @@ int main(int argc, char *argv[])
         gp_error("object \"%s\" not found", state.objectname[i]);
         break;
       } else {
-        state.archive = gp_archive_delete_member(state.archive,
-                                                 state.objectname[i]);
+        state.archive = gp_archive_delete_member(state.archive, state.objectname[i]);
       }
       i++;
     }
@@ -273,8 +271,9 @@ int main(int argc, char *argv[])
         gp_error("object \"%s\" not found", state.objectname[i]);
         break;
       } else {
-        if (gp_archive_extract_member(state.archive, state.objectname[i])) {
+        if (!gp_archive_extract_member(state.archive, state.objectname[i])) {
           gp_error("can't write file \"%s\"", state.objectname[i]);
+          exit(1);
           break;
         }
       }
@@ -315,8 +314,9 @@ int main(int argc, char *argv[])
 
   /* write the new or modified archive */
   if (update_archive && (gp_num_errors == 0)) {
-    if (gp_archive_write(state.archive, state.filename)) {
+    if (!gp_archive_write(state.archive, state.filename)) {
       gp_error("can't write the new archive file");
+      exit(1);
     }
   }
 

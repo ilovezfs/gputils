@@ -1,8 +1,7 @@
-/* Symbol table support
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
-   James Bowman
 
-   Copyright (C) 2016 Molnar Karoly
+/* GP Symbol table support.
+
+   Copyright (C) 2014-2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -24,465 +23,147 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-#define HASH32_INIT0			0x811CA7F5ul
-#define HASH32_INIT1			0xA9E47333ul
-#define HASH32_INIT2			0x210F61E7ul
-#define HASH32_INIT3			0x510E3743ul
-
-#define HASH32_PRIME0			0x01041943ul
-#define HASH32_PRIME1			0x01015469ul
-#define HASH32_PRIME2			0x0103E49Dul
-#define HASH32_PRIME3			0x01023FD3ul
-
-#define HASH_TABLE_SIZE_MIN             5
-
-struct symbol {
-  const char *name;
-  void       *annotation;
-  uint64_t    hash[2];
-};
-
-struct symbol_table {
-  symbol_table_t  *prev;
-  symbol_t       **symbol_array;
-  size_t           symbol_array_size;
-  size_t           count;
-  gp_boolean       case_insensitive;
-};
-
 /*------------------------------------------------------------------------------------------------*/
 
-static void _hash_str_len(uint64_t Hash[2], const char *String, size_t Length, gp_boolean Case_insensitive)
+static int
+_hash_sort_cmp(const void *P0, const void *P1)
 {
-  const uint8_t *str;
-  uint32_t       ch;
-  uint32_t       h0;
-  uint32_t       h1;
-  uint32_t       h2;
-  uint32_t       h3;
+  const gp_hash_type *h0 = (const gp_hash_type *)P0;
+  const gp_hash_type *h1 = (const gp_hash_type *)P1;
+  const char         *s0;
+  const char         *s1;
 
-  if ((String == NULL) || (Length == 0)) {
-    return;
+  if (h0->hash.high.u64 < h1->hash.high.u64) {
+    return -1;
   }
-
-  str = (const uint8_t *)String;
-  h0  = HASH32_INIT0;
-  h1  = HASH32_INIT1;
-  h2  = HASH32_INIT2;
-  h3  = HASH32_INIT3;
-
-  while ((Length > 0) && ((ch = *str) != '\0')) {
-    if (Case_insensitive && isupper(ch)) {
-      ch = _tolower(ch);
+  else if (h0->hash.high.u64 > h1->hash.high.u64) {
+    return 1;
+  }
+  else {
+    if (h0->hash.low.u64 < h1->hash.low.u64) {
+      return -1;
     }
-
-    h0 ^= ch;
-    h0 *= HASH32_PRIME0;
-    h1 ^= ch;
-    h1 *= HASH32_PRIME1;
-    h2 ^= ch;
-    h2 *= HASH32_PRIME2;
-    h3 ^= ch;
-    h3 *= HASH32_PRIME3;
-    ++str;
-    --Length;
-  }
-
-  Hash[0] = ((uint64_t)h0 << 32) | (uint64_t)h1;
-  Hash[1] = ((uint64_t)h2 << 32) | (uint64_t)h3;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-static void _hash_str(uint64_t Hash[2], const char *String, gp_boolean Case_insensitive)
-{
-  _hash_str_len(Hash, String, (size_t)(-1), Case_insensitive);
-}
-
-//--------------------------------------------------------------------------------------------------
-
-static symbol_t *_make_symbol(const char *String, uint64_t Hash[2])
-{
-  symbol_t *sym;
-
-  if (String == NULL) {
-    return NULL;
-  }
-
-  sym             = GP_Malloc(sizeof(symbol_t));
-  sym->name       = GP_Strdup(String);
-  sym->hash[0]    = Hash[0];
-  sym->hash[1]    = Hash[1];
-  sym->annotation = NULL;
-  return sym;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-static symbol_t *_get_symbol_from_table(symbol_table_t *Table, uint64_t Hash[2])
-{
-  symbol_t **base;
-  symbol_t **current;
-  size_t     mid;
-  size_t     len;
-
-  assert(Table != NULL);
-
-  if ((Table->symbol_array == NULL) || (Table->count == 0)) {
-    return NULL;
-  }
-
-  base = Table->symbol_array;
-  len  = Table->count;
-  do {
-    mid     = len >> 1;
-    current = &base[mid];
-
-    if ((Hash[0] == (*current)->hash[0]) && (Hash[1] == (*current)->hash[1])) {
-      /* Found the symbol. */
-      return *current;
-    }
-
-    if (len == 1) {
-      /* This is different int the least from the sought element. */
-      break;
-    }
-    else if ((Hash[0] < (*current)->hash[0]) ||
-	     ((Hash[0] == (*current)->hash[0]) && (Hash[1] < (*current)->hash[1]))) {
-      len = mid;
+    else if (h0->hash.low.u64 > h1->hash.low.u64) {
+      return 1;
     }
     else {
-      len  -= mid;
-      base  = current;
-    }
-  }
-  while (len > 0);
+      s0 = (h0->symbol != NULL) ? h0->symbol->name : NULL;
+      s1 = (h1->symbol != NULL) ? h1->symbol->name : NULL;
 
-  return NULL;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-symbol_table_t *sym_push_table(symbol_table_t *Table, gp_boolean Case_insensitive)
-{
-  symbol_table_t *new_table;
-
-  new_table = GP_Calloc(1, sizeof(symbol_table_t));
-  new_table->prev             = Table;
-  new_table->case_insensitive = Case_insensitive;
-  return new_table;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-symbol_table_t *sym_pop_table(symbol_table_t *Table)
-{
-  return Table->prev;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void sym_set_guest_table(symbol_table_t *Table_host, symbol_table_t *Table_guest)
-{
-  assert(Table_host != NULL);
-
-  Table_host->prev = Table_guest;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-symbol_table_t *sym_get_guest_table(symbol_table_t *Table)
-{
-  assert(Table != NULL);
-
-  return Table->prev;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-symbol_t *sym_add_symbol(symbol_table_t *Table, const char *Name)
-{
-  symbol_t **base;
-  symbol_t **current;
-  size_t     mid;
-  size_t     idx;
-  size_t     len;
-  uint64_t   hash[2];
-  symbol_t  *sym;
-
-  assert(Table != NULL);
-  assert(Name != NULL);
-  assert(Table->count <= UINT32_MAX);
-
-  if (Table->symbol_array == NULL) {
-    Table->symbol_array      = (symbol_t **)GP_Malloc(HASH_TABLE_SIZE_MIN * sizeof(symbol_t *));
-    Table->symbol_array_size = HASH_TABLE_SIZE_MIN;
-    Table->count             = 0;
-  }
-  else if (Table->count >= Table->symbol_array_size) {
-    /* Doubles the size of the table. */
-    len = Table->symbol_array_size * 2;
-    Table->symbol_array      = (symbol_t **)GP_Realloc(Table->symbol_array, len * sizeof(symbol_t *));
-    Table->symbol_array_size = len;
-  }
-
-  _hash_str(hash, Name, Table->case_insensitive);
-
-  if (Table->count == 0) {
-    /* Empty the table. */
-    sym = _make_symbol(Name, hash);
-    Table->symbol_array[0] = sym;
-    Table->count           = 1;
-    return sym;
-  }
-
-  base = Table->symbol_array;
-  len  = Table->count;
-  do {
-    mid     = len >> 1;
-    current = &base[mid];
-
-    if ((hash[0] == (*current)->hash[0]) && (hash[1] == (*current)->hash[1])) {
-      /* Found the symbol. */
-      return *current;
-    }
-
-    if (len == 1) {
-      /* This is different in the least from the sought element. */
-      base = Table->symbol_array;
-      idx  = current - base;
-
-      if ((hash[0] > (*current)->hash[0]) ||
-          ((hash[0] == (*current)->hash[0]) && (hash[1] > (*current)->hash[1]))) {
-	/* The new element is greather than this. */
-        ++idx;
+      if ((s0 == NULL) && (s1 == NULL)) {
+        return 0;
       }
-
-      len = (Table->count - idx) * sizeof(symbol_t *);
-      if (len > 0) {
-	/* The new element will not be the end of the table. */
-        memmove(&base[idx + 1], &base[idx], len);
+      else if ((s0 != NULL) && (s1 != NULL)) {
+        return strcmp(s0, s1);
       }
-
-      sym = _make_symbol(Name, hash);
-      base[idx] = sym;
-      ++Table->count;
-      return sym;
+      else if (s0 != NULL) {
+        return 1;
+      }
+      else {
+        return -1;
+      }
     }
-    else if ((hash[0] < (*current)->hash[0]) ||
-	     ((hash[0] == (*current)->hash[0]) && (hash[1] < (*current)->hash[1]))) {
-      len = mid;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static int
+_hash_find_cmp(const void *P0, const void *P1)
+{
+  const gp_hash_type *h0 = (const gp_hash_type *)P0;
+  const gp_hash_type *h1 = (const gp_hash_type *)P1;
+
+  if (h0->hash.high.u64 < h1->hash.high.u64) {
+    return -1;
+  }
+  else if (h0->hash.high.u64 > h1->hash.high.u64) {
+    return 1;
+  }
+  else {
+    if (h0->hash.low.u64 < h1->hash.low.u64) {
+      return -1;
+    }
+    else if (h0->hash.low.u64 > h1->hash.low.u64) {
+      return 1;
     }
     else {
-      len  -= mid;
-      base  = current;
+      return 0;
     }
   }
-  while (len > 0);
-
-  return NULL;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_boolean sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index)
+gp_hash_type *
+gp_symbol_make_hash_table(gp_object_type *Object)
 {
-  symbol_t **base;
-  symbol_t  *sym;
-  size_t     len;
+  gp_symbol_type *current;
+  gp_hash_type   *table;
+  gp_hash_type   *tp;
+  unsigned int    num_symbols;
+  hash128_t      *h;
 
-  assert(Table != NULL);
-
-  if ((Table->symbol_array == NULL) || (Table->count == 0)) {
-    return false;
-  }
-
-  if (Index >= Table->count) {
-    return false;
-  }
-
-  len  = (Table->count - Index - 1) * sizeof(symbol_t *);
-  base = Table->symbol_array;
-  sym  = base[Index];
-
-  if (len > 0) {
-    memmove(&base[Index], &base[Index + 1], len);
-  }
-
-  --Table->count;
-
-  if (sym->name != NULL) {
-    free((void *)sym->name);
-  }
-
-  free(sym);
-  return true;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* FIXME: sym_remove_symbol does not search all of the symbol tables in the stack.
-Maybe this is ok, but it seems wrong. */
-
-gp_boolean sym_remove_symbol(symbol_table_t *Table, const char *Name)
-{
-  symbol_t **base;
-  symbol_t **current;
-  size_t     mid;
-  size_t     len;
-  uint64_t   hash[2];
-
-  assert(Table != NULL);
-  assert(Name != NULL);
-
-  if ((Table->symbol_array == NULL) || (Table->count == 0)) {
-    return false;
-  }
-
-  _hash_str(hash, Name, Table->case_insensitive);
-  base = Table->symbol_array;
-  len  = Table->count;
-  do {
-    mid     = len >> 1;
-    current = &base[mid];
-
-    if ((hash[0] == (*current)->hash[0]) && (hash[1] == (*current)->hash[1])) {
-      /* Found the symbol. */
-      return sym_remove_symbol_with_index(Table, current - Table->symbol_array);
-    }
-
-    if (len == 1) {
-      /* This is different int the least from the sought element. */
-      return false;
-    }
-    else if ((hash[0] < (*current)->hash[0]) ||
-	     ((hash[0] == (*current)->hash[0]) && (hash[1] < (*current)->hash[1]))) {
-      len = mid;
-    }
-    else {
-      len  -= mid;
-      base  = current;
-    }
-  }
-  while (len > 0);
-
-  return false;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-size_t sym_get_symbol_count(const symbol_table_t *Table)
-{
-  return Table->count;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-symbol_t *sym_get_symbol(symbol_table_t *Table, const char *Name)
-{
-  symbol_t *sym;
-  uint64_t  hash[2];
-
-  assert(Name != NULL);
-
-  while (Table != NULL) {
-    _hash_str(hash, Name, Table->case_insensitive);
-    sym = _get_symbol_from_table(Table, hash);
-    if (sym != NULL) {
-      return sym;
-    }
-
-    /* If sym is still NULL, we didn't match. Try the prev table on the stack. */
-    Table = Table->prev;
-  }
-
-  return NULL;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-symbol_t *sym_get_symbol_len(symbol_table_t *Table, const char *Name, size_t Len)
-{
-  symbol_t *sym;
-  uint64_t  hash[2];
-
-  assert(Name != NULL);
-
-  while (Table != NULL) {
-    _hash_str_len(hash, Name, Len, Table->case_insensitive);
-    sym = _get_symbol_from_table(Table, hash);
-    if (sym != NULL) {
-      return sym;
-    }
-
-    /* If sym is still NULL, we didn't match. Try the prev table on the stack. */
-    Table = Table->prev;
-  }
-
-  return NULL;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-symbol_t *sym_get_symbol_with_index(symbol_table_t *Table, size_t Index)
-{
-  assert(Table != NULL);
-  assert(Index < Table->count);
-
-  return Table->symbol_array[Index];
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-const symbol_t **sym_clone_symbol_array(const symbol_table_t *Table, symbol_compare_t Cmp)
-{
-  size_t           size;
-  const symbol_t **symbol_array;
-
-  assert(Table != NULL);
-
-  if (Table->count == 0) {
+  if (Object == NULL) {
     return NULL;
   }
 
-  size = Table->count * sizeof(symbol_t *);
-  symbol_array = (const symbol_t **)GP_Malloc(size);
-  memcpy(symbol_array, Table->symbol_array, size);
-
-  if (Cmp != NULL) {
-    qsort(symbol_array, Table->count, sizeof(symbol_t *), Cmp);
+  current = Object->symbols;
+  num_symbols = 0;
+  while (current != NULL) {
+    if ((current->class != C_FILE)    && (current->class != C_EOF) &&
+        (current->class != C_SECTION) && (current->section_name != NULL)) {
+      ++num_symbols;
+    }
+    current = current->next;
   }
 
-  return symbol_array;
+  table = (gp_hash_type *)GP_Calloc(num_symbols, sizeof(gp_hash_type));
+
+  Object->symbol_hashtable      = table;
+  Object->symbol_hashtable_size = num_symbols;
+
+  tp      = table;
+  current = Object->symbols;
+  while (current != NULL) {
+    if ((current->class != C_FILE)    && (current->class != C_EOF) &&
+        (current->class != C_SECTION) && (current->section_name != NULL)) {
+      h = &tp->hash;
+      gp_hash_init(h);
+      gp_hash_str(h, current->section_name, false);
+      gp_hash_mem(h, &current->value, sizeof(current->value));
+      tp->symbol = current;
+      ++tp;
+    }
+    current = current->next;
+  }
+
+  qsort(table, num_symbols, sizeof(gp_hash_type), _hash_sort_cmp);
+  return table;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-void sym_annotate_symbol(symbol_t *Sym, void *Value)
+const gp_symbol_type *
+gp_symbol_find_hash_table(const gp_object_type *Object, const char *Section_name, gp_symvalue_t Symbol_value)
 {
-  Sym->annotation = Value;
-}
+  gp_hash_type  gp_hash;
+  gp_hash_type *ret;
 
-/*------------------------------------------------------------------------------------------------*/
+  if ((Object == NULL) || (Section_name == NULL)) {
+    return NULL;
+  }
 
-const char *sym_get_symbol_name(const symbol_t *Sym)
-{
-  return Sym->name;
-}
+  if ((Object->symbol_hashtable == NULL) || (Object->symbol_hashtable_size == 0)) {
+    return NULL;
+  }
 
-/*------------------------------------------------------------------------------------------------*/
+  gp_hash_init(&gp_hash.hash);
+  gp_hash_str(&gp_hash.hash, Section_name, false);
+  gp_hash_mem(&gp_hash.hash, &Symbol_value, sizeof(Symbol_value));
 
-void *sym_get_symbol_annotation(const symbol_t *Sym)
-{
-  return Sym->annotation;
-}
+  ret = (gp_hash_type *)bsearch(&gp_hash, Object->symbol_hashtable, Object->symbol_hashtable_size,
+                                sizeof(gp_hash_type), _hash_find_cmp);
 
-/*------------------------------------------------------------------------------------------------*/
-
-int sym_compare_fn(const void *P0, const void *P1)
-{
-  const symbol_t *sym0 = *(const symbol_t **)P0;
-  const symbol_t *sym1 = *(const symbol_t **)P1;
-
-  return strcmp(sym0->name, sym1->name);
+  return ((ret != NULL) ? ret->symbol : NULL);
 }
