@@ -25,7 +25,8 @@ Boston, MA 02111-1307, USA.  */
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-mcu_cmp(const void *P1, const void *P2) {
+_mcu_cmp(const void *P1, const void *P2)
+{
   const gp_register_table_t *t1 = (const gp_register_table_t *)P1;
   const gp_register_table_t *t2 = (const gp_register_table_t *)P2;
 
@@ -35,7 +36,8 @@ mcu_cmp(const void *P1, const void *P2) {
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-reg_cmp(const void *P1, const void *P2) {
+_reg_cmp(const void *P1, const void *P2)
+{
   const gp_register_t **r1 = (const gp_register_t **)P1;
   const gp_register_t **r2 = (const gp_register_t **)P2;
   unsigned int          a1 = (*r1)->address;
@@ -54,7 +56,9 @@ reg_cmp(const void *P1, const void *P2) {
 
 /*------------------------------------------------------------------------------------------------*/
 
-static int bit_cmp(const void *P1, const void *P2) {
+static int
+_bit_cmp(const void *P1, const void *P2)
+{
   const gp_bit_t *r1 = (const gp_bit_t *)P1;
   const gp_bit_t *r2 = (const gp_bit_t *)P2;
   unsigned int    a1 = r1->address;
@@ -74,7 +78,8 @@ static int bit_cmp(const void *P1, const void *P2) {
 /*------------------------------------------------------------------------------------------------*/
 
 const gp_register_table_t *
-gp_register_find_mcu(const gp_register_table_t *Table, int Table_size, const char *McuName) {
+gp_register_find_mcu(const gp_register_table_t *Table, int Table_size, const char *McuName)
+{
   gp_register_table_t mcu;
 
   if ((Table == NULL) || (McuName == NULL)) {
@@ -83,14 +88,15 @@ gp_register_find_mcu(const gp_register_table_t *Table, int Table_size, const cha
 
   mcu.name = McuName;
   return (const gp_register_table_t *)bsearch(&mcu, Table, Table_size, sizeof(gp_register_table_t),
-                                              mcu_cmp);
+                                              _mcu_cmp);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 const gp_register_t *
-gp_register_find_reg(const gp_register_table_t *Mcu, unsigned int Address) {
-  gp_register_t reg;
+gp_register_find_reg(const gp_register_table_t *Mcu, unsigned int Address)
+{
+  gp_register_t         reg;
   const gp_register_t  *rptr = &reg;
   const gp_register_t **ret;
 
@@ -100,14 +106,15 @@ gp_register_find_reg(const gp_register_table_t *Mcu, unsigned int Address) {
 
   reg.address = Address;
   ret = (const gp_register_t **)bsearch(&rptr, Mcu->registers, Mcu->register_number,
-                                        sizeof(gp_register_t *), reg_cmp);
+                                        sizeof(gp_register_t *), _reg_cmp);
   return ((ret != NULL) ? *ret : NULL);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 const char *
-gp_register_find_reg_name(const gp_register_table_t *Mcu, unsigned int Address) {
+gp_register_find_reg_name(const gp_register_table_t *Mcu, unsigned int Address)
+{
   const gp_register_t *ret;
 
   ret = gp_register_find_reg(Mcu, Address);
@@ -117,7 +124,8 @@ gp_register_find_reg_name(const gp_register_table_t *Mcu, unsigned int Address) 
 /*------------------------------------------------------------------------------------------------*/
 
 const gp_bit_t *
-gp_register_find_bit(const gp_register_t *Reg, unsigned int Address) {
+gp_register_find_bit(const gp_register_t *Reg, unsigned int Address)
+{
   gp_bit_t bit;
 
   if (Reg == NULL) {
@@ -125,13 +133,14 @@ gp_register_find_bit(const gp_register_t *Reg, unsigned int Address) {
   }
 
   bit.address = Address;
-  return (const gp_bit_t *)bsearch(&bit, Reg->bits, Reg->bit_number, sizeof(gp_bit_t), bit_cmp);
+  return (const gp_bit_t *)bsearch(&bit, Reg->bits, Reg->bit_number, sizeof(gp_bit_t), _bit_cmp);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 const char *
-gp_register_find_bit_name(const gp_register_t *Reg, unsigned int Address) {
+gp_register_find_bit_name(const gp_register_t *Reg, unsigned int Address)
+{
   const gp_bit_t *ret;
 
   ret = gp_register_find_bit(Reg, Address);

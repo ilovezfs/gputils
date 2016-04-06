@@ -39,9 +39,9 @@ Boston, MA 02111-1307, USA.  */
 extern int yyparse(void);
 
 struct gpdasm_state state = {
-  .processor = NULL,                /* processor type */
-  .class     = PROC_CLASS_GENERIC,  /* 12 bit device */
-  .format    = 1,                   /* output format */
+  NULL,                 /* processor type */
+  PROC_CLASS_GENERIC,   /* 12 bit device */
+  1,                    /* output format */
 };
 
 static const char *processor_name = NULL;

@@ -49,7 +49,7 @@ gp_coffopt_remove_weak(gp_object_type *object)
 /* Remove any relocatable section that doesn't have a symbol pointed to by a relocation. */
 
 void
-gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
+gp_coffopt_remove_dead_sections(gp_object_type *object, int pass, gp_boolean enable_cinit_warns)
 {
   gp_section_type *section;
   gp_reloc_type   *relocation;
@@ -78,7 +78,9 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
         }
       }
       else {
-        gp_warning("Relocation symbol %s has no section.", relocation->symbol->name);
+        if (enable_cinit_warns || (strcmp(relocation->symbol->name, "_cinit") != 0)) {
+          gp_warning("Relocation symbol %s has no section.", relocation->symbol->name);
+        }
       }
       relocation = relocation->next;
     }
@@ -100,6 +102,6 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
 
   if (section_removed) {
     /* take another pass */
-    gp_coffopt_remove_dead_sections(object, ++pass);
+    gp_coffopt_remove_dead_sections(object, ++pass, enable_cinit_warns);
   }
 }
