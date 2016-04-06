@@ -303,6 +303,8 @@ check_writehex(MemBlock *m, enum formats hex_format)
     while (m != NULL) {
       if (m->base > 0) {
         ok = false;
+        /* Superfluous to watch the further blocks. */
+        break;
       }
       m = m->next;
     }

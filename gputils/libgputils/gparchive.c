@@ -176,8 +176,8 @@ gp_archive_add_member(gp_archive_type *archive, const char *filename, const char
   newmember = (gp_archive_type *)GP_Malloc(sizeof(*newmember));
   newmember->next = NULL;
 
-  /* Point the archive member file to the object file.  The object is never
-     freed, so this is ok.  It will be cleaned up later */
+  /* Point the archive member file to the object file. The object is never
+     freed, so this is ok. It will be cleaned up later. */
   newmember->data = *newobject;
 
   /* fill in the archive header */
@@ -190,10 +190,10 @@ gp_archive_add_member(gp_archive_type *archive, const char *filename, const char
   snprintf(size, sizeof(size), "%lil", newobject->size);
 
   /* FIXME: These functions overwrite the ' ' that the header is filled with. */
-  strncpy(newmember->header.ar_name, &name[0], sizeof(newmember->header.ar_name));
-  strncpy(newmember->header.ar_date, &date[0], sizeof(newmember->header.ar_date));
-  strncpy(newmember->header.ar_size, &size[0], sizeof(newmember->header.ar_size));
-  strncpy(newmember->header.ar_fmag, ARMAG,    sizeof(newmember->header.ar_fmag));
+  strncpy(newmember->header.ar_name, name,  sizeof(newmember->header.ar_name));
+  strncpy(newmember->header.ar_date, date,  sizeof(newmember->header.ar_date));
+  strncpy(newmember->header.ar_size, size,  sizeof(newmember->header.ar_size));
+  strncpy(newmember->header.ar_fmag, ARMAG, sizeof(newmember->header.ar_fmag));
 
   oldmember = gp_archive_find_member(archive, objectname);
 

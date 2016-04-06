@@ -1,3 +1,8 @@
+2016-03-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/cfg-import.pl, tools/device-help.pl,
+	  tools/device-manager.pl:
+	  Added the PIC12I subtype.
+
 2016-02-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-help.pl:
 	  Updated based on the mplabx-3.25.

@@ -1,3 +1,23 @@
+2016-04-06  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure.ac, configure:
+    Changed from AC_PREREQ(2.59) to AC_PREREQ(2.60).
+    Changed Mplabx default path from "/opt/microchip/mplabx/v3.25"
+    to "/opt/microchip/mplabx/v3.26".
+
+  * doc/gputils.lyx, gplink/gplink.c, libgputils/gpcoffopt.c,
+    libgputils/gpcoffopt.h:
+    New commandline options: -C, --disable-cinit-warnings
+
+  * gputils/gpdasm.c, gputils/gplib.c, libgputils/gpsystem.c:
+    Fixed a gcc warning.
+
+  * libgputils/gpwritehex.c:
+    Minor simplification.
+
+  * libgputils/gparchive.c, libgputils/gpcofflink.c, libgputils/gpdis.c,
+    libgputils/gpregister.c, libgputils/gpsym.c:
+    Code formatting.
+
 2016-03-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/coff.c:
     Removed exit() function.

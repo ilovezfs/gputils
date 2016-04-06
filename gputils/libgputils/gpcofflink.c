@@ -811,7 +811,7 @@ _set_used(gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsigned i
   for ( ; size; address++, size--) {
     if (b_memory_get(m, address, &data, &old_section_name, &old_symbol_name)) {
       if ((old_section_name != NULL) && (section_name != NULL)) {
-        symbol = gp_symbol_find_hash_table(object, section_name, address);
+        symbol      = gp_symbol_find_hash_table(object, section_name, address);
         symbol_name = (symbol != NULL) ? symbol->name : NULL;
         gp_error("More %s sections use same address: %#x -- \"%s/%s\", \"%s/%s\"",
                  type, gp_byte_to_org(org_to_byte_shift, address),
@@ -823,7 +823,7 @@ _set_used(gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsigned i
       return;
     }
     else {
-      symbol = gp_symbol_find_hash_table(object, section_name, address);
+      symbol      = gp_symbol_find_hash_table(object, section_name, address);
       symbol_name = (symbol != NULL) ? symbol->name : NULL;
       b_memory_put(m, address, 0, section_name, symbol_name);
     }

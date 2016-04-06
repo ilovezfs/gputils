@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.60)
 AC_INIT([gputils],[1.4.3], [<URL:http://gputils.sourceforge.net/>])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
@@ -12,17 +12,17 @@ AM_MAINTAINER_MODE
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 
-# Defaults
+# Defaults.
 GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
 GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
 GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
 GPUTILS_HTMLDOC_PATH=${GPUTILS_HTMLDOC_PATH:-"\$(datadir)/doc/gputils-\$(PACKAGE_VERSION)/html"}
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
-MPLABX_PATH_DEFAULT="/opt/microchip/mplabx/v3.25"
+MPLABX_PATH_DEFAULT="/opt/microchip/mplabx/v3.26"
 MAKE_SUBDIRS="libgputils libiberty gpasm gplink gputils header lkr doc man"
 
-# Check for additional parameters
+# Check for additional parameters.
 AC_ARG_ENABLE(debug,
   [  --enable-debug          enable gputils debug features],
   [enable_gputils_debug=yes])
@@ -54,7 +54,7 @@ if test "${2%.*}" != "2.5" && test "${2##*.}" -ge 4; then
 fi
 AC_PROG_INSTALL
 
-# append the host alias to the tools for cross compiling
+# Append the host alias to the tools for cross compiling.
 AC_CHECK_TOOL(RANLIB, ranlib, :)
 AC_CHECK_TOOL(AR, ar, :)
 
@@ -153,7 +153,7 @@ AC_CHECK_FUNC(strverscmp, , [IBERTYOBJS="$IBERTYOBJS strverscmp.o"])
 AM_CFLAGS=
 AM_LDFLAGS=
 
-# Options for the system on which the package will run
+# Options for the system on which the package will run.
 case "${host}" in
   *cygwin* )
     if test "x$GCC" = "xyes"; then
@@ -195,28 +195,28 @@ AC_DEFINE_UNQUOTED(GPUTILS_VERSION_STR, "$PACKAGE_VERSION", [gputils version str
 AM_GPUTILS_SVN_VERSION="\$(shell \$(top_srcdir)/get_cl_revision.sh \$(top_srcdir)/ChangeLog)"
 CFLAGS="-DGPUTILS_SVN_VERSION=\$(AM_GPUTILS_SVN_VERSION)"
 
-# Host filesystem options
+# Host filesystem options.
 case "${host}" in
   *mingw* | *-pc-os2_emx | *-pc-os2-emx | *djgpp* )
     AC_DEFINE(HAVE_DOS_BASED_FILE_SYSTEM, 1, 
-      [Define if your host uses a DOS based file system. ])
+      [Define if your host uses a DOS based file system.])
     ;;
 esac
 
-# Process the options
+# Process the options.
 if test x$enable_gputils_debug = xyes; then
   AC_DEFINE(GPUTILS_DEBUG, 1,
-    [Define if you want to enable GPUTILS debug features. ])
+    [Define if you want to enable GPUTILS debug features.])
 fi
 
 if test x$enable_gputils_path = xyes; then
   AC_DEFINE(USE_DEFAULT_PATHS, 1,
-    [Define if you want to add default search paths. ])
+    [Define if you want to add default search paths.])
 fi
 
 LDFLAGS=
 
-# Substitute configuration variables
+# Substitute configuration variables.
 AC_SUBST(ENABLE_HTML_DOC)
 AC_SUBST(DEFAULT_MPLABX_PATH)
 AC_SUBST(AM_GPUTILS_SVN_VERSION)
@@ -233,7 +233,7 @@ AC_SUBST(LIBGPUTILS)
 AC_SUBST(LIBIBERTY)
 AC_SUBST(MAKE_SUBDIRS)
 
-# Generate Makefiles
+# Generate Makefiles.
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  doc/html-help/Makefile

@@ -29,11 +29,12 @@ Boston, MA 02111-1307, USA.  */
 #include "map.h"
 #include "script.h"
 
-struct gplink_state state;
-static int processor_mismatch_warning = 1;
-
-int yyparse(void);
+extern int yyparse(void);
 extern int yydebug;
+
+struct gplink_state state;
+static gp_boolean   processor_mismatch_warning;
+static gp_boolean   enable_cinit_wanings;
 
 /* return the number of missing symbols */
 static size_t
@@ -62,7 +63,7 @@ object_append(gp_object_type *file)
 
     if (file->class != state.class) {
       gp_error("Processor family mismatch in \"%s\".", file->filename);
-    } else if ((processor_mismatch_warning != 0) && (file->processor != state.processor)) {
+    } else if ((processor_mismatch_warning) && (file->processor != state.processor)) {
       gp_warning("Processor mismatch in \"%s\".", file->filename);
     }
   }
@@ -201,8 +202,7 @@ add_linker_symbol(const char *name)
   gp_symbol_type *found = NULL;
 
   while (current != NULL) {
-    if ((current->name != NULL) && (strcmp(current->name, name) == 0) &&
-        (current->section_number > 0)) {
+    if ((current->name != NULL) && (strcmp(current->name, name) == 0) && (current->section_number > 0)) {
       found = current;
       break;
     }
@@ -390,12 +390,13 @@ set_optimize_level(void)
     /* fall through */
   case 0:
     break;
+
   default:
     gp_error("Invalid optimization level: %i", state.optimize.level);
   }
 }
 
-#define GET_OPTIONS "a:cdf:hI:lmo:O:qrs:t:u:vw"
+#define GET_OPTIONS "a:cCdf:hI:lmo:O:qrs:t:u:vw"
 
 enum {
   OPT_MPLINK_COMPATIBLE = 0x100,
@@ -404,26 +405,27 @@ enum {
 
 static struct option longopts[] =
 {
-  { "hex-format",         required_argument, NULL, 'a' },
-  { "object",             no_argument,       NULL, 'c' },
-  { "debug",              no_argument,       NULL, 'd' },
-  { "fill",               required_argument, NULL, 'f' },
-  { "help",               no_argument,       NULL, 'h' },
-  { "include",            required_argument, NULL, 'I' },
-  { "no-list",            no_argument,       NULL, 'l' },
-  { "map",                no_argument,       NULL, 'm' },
-  { "output",             required_argument, NULL, 'o' },
-  { "optimize",           required_argument, NULL, 'O' },
-  { "quiet",              no_argument,       NULL, 'q' },
-  { "use-shared",         no_argument,       NULL, 'r' },
-  { "script",             required_argument, NULL, 's' },
-  { "stack",              required_argument, NULL, 't' },
-  { "strict-options",     no_argument,       NULL, OPT_STRICT_OPTIONS },
-  { "macro",              required_argument, NULL, 'u' },
-  { "version",            no_argument,       NULL, 'v' },
-  { "processor-mismatch", no_argument,       NULL, 'w' },
-  { "mplink-compatible",  no_argument,       NULL, OPT_MPLINK_COMPATIBLE },
-  { NULL,                 no_argument,       NULL, '\0'}
+  { "hex-format",            required_argument, NULL, 'a' },
+  { "object",                no_argument,       NULL, 'c' },
+  { "disable-cinit-warning", no_argument,       NULL, 'C' },
+  { "debug",                 no_argument,       NULL, 'd' },
+  { "fill",                  required_argument, NULL, 'f' },
+  { "help",                  no_argument,       NULL, 'h' },
+  { "include",               required_argument, NULL, 'I' },
+  { "no-list",               no_argument,       NULL, 'l' },
+  { "map",                   no_argument,       NULL, 'm' },
+  { "output",                required_argument, NULL, 'o' },
+  { "optimize",              required_argument, NULL, 'O' },
+  { "quiet",                 no_argument,       NULL, 'q' },
+  { "use-shared",            no_argument,       NULL, 'r' },
+  { "script",                required_argument, NULL, 's' },
+  { "stack",                 required_argument, NULL, 't' },
+  { "strict-options",        no_argument,       NULL, OPT_STRICT_OPTIONS },
+  { "macro",                 required_argument, NULL, 'u' },
+  { "version",               no_argument,       NULL, 'v' },
+  { "processor-mismatch",    no_argument,       NULL, 'w' },
+  { "mplink-compatible",     no_argument,       NULL, OPT_MPLINK_COMPATIBLE },
+  { NULL,                    no_argument,       NULL, '\0'}
 };
 
 void
@@ -433,23 +435,23 @@ init(void)
 
   /* initialize */
   gp_date_string(state.startdate, sizeof(state.startdate));
-  state.hex_format = INHX32;
-  state.numpaths = 0;
-  state.processor = NULL;
+  state.hex_format     = INHX32;
+  state.numpaths       = 0;
+  state.processor      = NULL;
   state.optimize.level = 1;
-  state.codfile = OUT_NORMAL;
-  state.hexfile = OUT_NORMAL;
-  state.lstfile = OUT_NORMAL;
-  state.mapfile = OUT_SUPPRESS;
-  state.objfile = OUT_SUPPRESS;
-  state.fill_enable = false;
-  state.fill_value = 0;
-  state.has_stack = false;
-  state.stack_size = 0;
-  state.has_idata = false;
-  state.srcfilenames = NULL;
-  state.object  = NULL;
-  state.archives = NULL;
+  state.codfile        = OUT_NORMAL;
+  state.hexfile        = OUT_NORMAL;
+  state.lstfile        = OUT_NORMAL;
+  state.mapfile        = OUT_SUPPRESS;
+  state.objfile        = OUT_SUPPRESS;
+  state.fill_enable    = false;
+  state.fill_value     = 0;
+  state.has_stack      = false;
+  state.stack_size     = 0;
+  state.has_idata      = false;
+  state.srcfilenames   = NULL;
+  state.object         = NULL;
+  state.archives       = NULL;
 
   /* set default output filename to be a.o, a.hex, a.cod, a.map */
   strncpy(state.basefilename, "a", sizeof(state.basefilename));
@@ -480,7 +482,7 @@ gplink_add_path(const char *path)
 static void
 parse_define(const char *optarg, void (*func)(const char* name, long value))
 {
-  long value = 0;
+  long  value = 0;
   char *pc = strchr(optarg, '=');
 
   if (pc != NULL) {
@@ -497,6 +499,8 @@ show_usage(void)
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
   printf("  -c, --object                   Output executable object file.\n");
+  printf("  -C, --disable-cinit-warnings   Disable this warnings of _cinit section with -O2 option:\n"
+         "                                   \"Relocation symbol _cinit has no section.\"\n");
   printf("  -d, --debug                    Output debug messages.\n");
   printf("  -f VALUE, --fill VALUE         Fill unused program memory with value.\n");
   printf("  -h, --help                     Show this usage message.\n");
@@ -511,7 +515,7 @@ show_usage(void)
   printf("  -s FILE, --script FILE         Linker script.\n");
   printf("  -t SIZE, --stack SIZE          Create a stack section.\n");
   printf("      --strict-options           If this is set, then an option may not be parameter\n"
-         "                                 of an another option. For example: -s --quiet\n");
+         "                                   of an another option. For example: -s --quiet\n");
   printf("  -u, --macro symbol[=value]     Add macro value for script.\n");
   printf("  -v, --version                  Show version.\n");
   printf("  -w, --processor-mismatch       Disable \"processor mismatch\" warning.\n");
@@ -538,12 +542,17 @@ show_usage(void)
 void
 process_args(int argc, char *argv[])
 {
-  int option_index;
+  int         option_index;
+  int         c;
   const char *command;
-  int c;
-  gp_boolean strict_options = false;
-  gp_boolean usage          = false;
-  char *pc;
+  gp_boolean  strict_options;
+  gp_boolean  usage;
+  char       *pc;
+
+  strict_options             = false;
+  usage                      = false;
+  enable_cinit_wanings       = true;
+  processor_mismatch_warning = true;
 
   /* Scan through the options for the --strict-options flag. */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
@@ -598,6 +607,10 @@ process_args(int argc, char *argv[])
 
     case 'c':
       state.objfile = OUT_NORMAL;
+      break;
+
+    case 'C':
+      enable_cinit_wanings = false;
       break;
 
     case 'd':
@@ -694,7 +707,7 @@ process_args(int argc, char *argv[])
       break;
 
     case 'w':
-      processor_mismatch_warning = 0;
+      processor_mismatch_warning = false;
       break;
 
     case OPT_MPLINK_COMPATIBLE:
@@ -842,7 +855,7 @@ linker(void)
   gp_cofflink_clean_table(state.object, state.symbol.definition);
 
   if (state.optimize.dead_sections) {
-    gp_coffopt_remove_dead_sections(state.object, 0);
+    gp_coffopt_remove_dead_sections(state.object, 0, enable_cinit_wanings);
   }
 
   /* combine overlay sections */

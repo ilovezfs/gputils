@@ -23,6 +23,6 @@ Boston, MA 02111-1307, USA.  */
 #define __GPCOFFOPT_H__
 
 void gp_coffopt_remove_weak(gp_object_type *object);
-void gp_coffopt_remove_dead_sections(gp_object_type *object, int pass);
+void gp_coffopt_remove_dead_sections(gp_object_type *object, int pass, gp_boolean enable_cinit_warns);
 
 #endif

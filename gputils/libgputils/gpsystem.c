@@ -225,7 +225,7 @@ gp_malloc(size_t Size, const char *File, size_t Line, const char *Func)
   }
 
   if ((m = malloc(Size)) == NULL) {
-    fprintf(stderr, "%s() -- Could not allocate %zu bytes of memory. {%s.LINE-%zu, %s()}\n",
+    fprintf(stderr, "%s() -- Could not allocate %lu bytes of memory. {%s.LINE-%lu, %s()}\n",
             __func__, Size, File, Line, Func);
     exit(1);
   }
@@ -245,7 +245,7 @@ gp_calloc(size_t Nmemb, size_t Size, const char *File, size_t Line, const char *
   }
 
   if ((m = calloc(Nmemb, Size)) == NULL) {
-    fprintf(stderr, "%s() -- Could not allocate %zu bytes of memory. {%s.LINE-%zu, %s()}\n",
+    fprintf(stderr, "%s() -- Could not allocate %lu bytes of memory. {%s.LINE-%lu, %s()}\n",
             __func__, Nmemb * Size, File, Line, Func);
     exit(1);
   }
@@ -265,7 +265,7 @@ gp_realloc(void *Mem, size_t Size, const char *File, size_t Line, const char *Fu
   }
 
   if ((m = realloc(Mem, Size)) == NULL) {
-    fprintf(stderr, "%s() -- Could not reallocate %zu bytes of memory. {%s.LINE-%zu, %s()}\n",
+    fprintf(stderr, "%s() -- Could not reallocate %lu bytes of memory. {%s.LINE-%lu, %s()}\n",
             __func__, Size, File, Line, Func);
     exit(1);
   }
@@ -285,7 +285,7 @@ gp_strdup(const char *String, const char *File, size_t Line, const char *Func)
   }
 
   if ((s = strdup(String)) == NULL) {
-    fprintf(stderr, "%s(\"%s\") -- Could not allocate string {%s.LINE-%zu, %s()}, error: %s.\n",
+    fprintf(stderr, "%s(\"%s\") -- Could not allocate string {%s.LINE-%lu, %s()}, error: %s.\n",
             __func__, String, File, Line, Func, strerror(errno));
     exit(1);
   }
@@ -305,7 +305,7 @@ gp_strndup(const char *String, size_t Length, const char *File, size_t Line, con
   }
 
   if ((s = strndup(String, Length)) == NULL) {
-    fprintf(stderr, "%s(\"%s\", %zu) -- Could not allocate string {%s.LINE-%zu, %s()}, error: %s.\n",
+    fprintf(stderr, "%s(\"%s\", %lu) -- Could not allocate string {%s.LINE-%lu, %s()}, error: %s.\n",
             __func__, String, Length, File, Line, Func, strerror(errno));
     exit(1);
   }

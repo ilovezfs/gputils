@@ -2875,7 +2875,6 @@ _insn_class_pf:
           PRINT_ARG3_N_N_N(1, tmp, 1, inc, 2, file1);
         }
 
-
         if (behavior & GPDIS_SHOW_EXCLAMATION) {
           gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
         }
