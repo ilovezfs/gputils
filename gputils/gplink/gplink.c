@@ -405,27 +405,27 @@ enum {
 
 static struct option longopts[] =
 {
-  { "hex-format",            required_argument, NULL, 'a' },
-  { "object",                no_argument,       NULL, 'c' },
-  { "disable-cinit-warning", no_argument,       NULL, 'C' },
-  { "debug",                 no_argument,       NULL, 'd' },
-  { "fill",                  required_argument, NULL, 'f' },
-  { "help",                  no_argument,       NULL, 'h' },
-  { "include",               required_argument, NULL, 'I' },
-  { "no-list",               no_argument,       NULL, 'l' },
-  { "map",                   no_argument,       NULL, 'm' },
-  { "output",                required_argument, NULL, 'o' },
-  { "optimize",              required_argument, NULL, 'O' },
-  { "quiet",                 no_argument,       NULL, 'q' },
-  { "use-shared",            no_argument,       NULL, 'r' },
-  { "script",                required_argument, NULL, 's' },
-  { "stack",                 required_argument, NULL, 't' },
-  { "strict-options",        no_argument,       NULL, OPT_STRICT_OPTIONS },
-  { "macro",                 required_argument, NULL, 'u' },
-  { "version",               no_argument,       NULL, 'v' },
-  { "processor-mismatch",    no_argument,       NULL, 'w' },
-  { "mplink-compatible",     no_argument,       NULL, OPT_MPLINK_COMPATIBLE },
-  { NULL,                    no_argument,       NULL, '\0'}
+  { "hex-format",         required_argument, NULL, 'a' },
+  { "object",             no_argument,       NULL, 'c' },
+  { "no-cinit-warnings",  no_argument,       NULL, 'C' },
+  { "debug",              no_argument,       NULL, 'd' },
+  { "fill",               required_argument, NULL, 'f' },
+  { "help",               no_argument,       NULL, 'h' },
+  { "include",            required_argument, NULL, 'I' },
+  { "no-list",            no_argument,       NULL, 'l' },
+  { "map",                no_argument,       NULL, 'm' },
+  { "output",             required_argument, NULL, 'o' },
+  { "optimize",           required_argument, NULL, 'O' },
+  { "quiet",              no_argument,       NULL, 'q' },
+  { "use-shared",         no_argument,       NULL, 'r' },
+  { "script",             required_argument, NULL, 's' },
+  { "stack",              required_argument, NULL, 't' },
+  { "strict-options",     no_argument,       NULL, OPT_STRICT_OPTIONS },
+  { "macro",              required_argument, NULL, 'u' },
+  { "version",            no_argument,       NULL, 'v' },
+  { "processor-mismatch", no_argument,       NULL, 'w' },
+  { "mplink-compatible",  no_argument,       NULL, OPT_MPLINK_COMPATIBLE },
+  { NULL,                 no_argument,       NULL, '\0'}
 };
 
 void
@@ -499,7 +499,7 @@ show_usage(void)
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
   printf("  -c, --object                   Output executable object file.\n");
-  printf("  -C, --disable-cinit-warnings   Disable this warnings of _cinit section with -O2 option:\n"
+  printf("  -C, --no-cinit-warnings        Disable this warnings of _cinit section with -O2 option:\n"
          "                                   \"Relocation symbol _cinit has no section.\"\n");
   printf("  -d, --debug                    Output debug messages.\n");
   printf("  -f VALUE, --fill VALUE         Fill unused program memory with value.\n");
@@ -919,12 +919,24 @@ linker(void)
 
   gp_cofflink_update_table(state.object, state.class->org_to_byte_shift);
 
+/* START OF DEBUG CODE LINES */
+//fprintf(stderr, "%s() -- gp_cofflink_fill_pages()\n", __func__);
+/* END OF DEBUG CODE LINES */
   gp_cofflink_fill_pages(state.object, program, state.section.definition);
 
+/* START OF DEBUG CODE LINES */
+//fprintf(stderr, "%s() -- i_memory_free()\n", __func__);
+/* END OF DEBUG CODE LINES */
   i_memory_free(data);
+/* START OF DEBUG CODE LINES */
+//fprintf(stderr, "%s() -- i_memory_free()\n", __func__);
+/* END OF DEBUG CODE LINES */
   i_memory_free(program);
 
   /* patch raw data with the relocated symbol values */
+/* START OF DEBUG CODE LINES */
+//fprintf(stderr, "%s() -- gp_cofflink_patch()\n", __func__);
+/* END OF DEBUG CODE LINES */
   gp_cofflink_patch(state.object);
 
   /* modify the executable object data */
@@ -933,6 +945,9 @@ linker(void)
 
   if (state.objfile == OUT_NORMAL) {
     /* write the executable object in memory */
+/* START OF DEBUG CODE LINES */
+//fprintf(stderr, "%s() -- gp_write_coff()\n", __func__);
+/* END OF DEBUG CODE LINES */
     if (!gp_write_coff(state.object, gp_num_errors)) {
       gp_error("Error while writing object file.");
       exit(1);
