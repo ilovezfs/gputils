@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Apr 06, 2016
+Apr 10, 2016
 \end_layout
 
 \begin_layout Standard
@@ -12699,7 +12699,7 @@ Output an executable object
 \begin_inset Text
 
 \begin_layout Plain Layout
---disable-cinit-warnings
+--no-cinit-warnings
 \end_layout
 
 \end_inset

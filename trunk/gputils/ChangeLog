@@ -1,3 +1,8 @@
+2016-04-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gplink/gplink.c:
+    Renamed commandline option from "--disable-cinit-warnings" to
+    "--no-cinit-warnings".
+
 2016-04-06  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure.ac, configure:
     Changed from AC_PREREQ(2.59) to AC_PREREQ(2.60).
