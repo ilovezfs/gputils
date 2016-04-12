@@ -1,5 +1,10 @@
 2016-04-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c:
+    Fixed a Microchip bug case of pic16(l)f18326, pic16(l)f18346.
+    Thanks to Matthias Lang for the report.
+
+2016-04-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpprocessor.c:
     Fixed bug: "#288 maxrom settings for 16F1786/16F1787"
 
 2016-04-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
