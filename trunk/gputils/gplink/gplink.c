@@ -323,12 +323,12 @@ gplink_open_coff(const char *name)
   strncpy(file_name, name, sizeof(file_name));
 
   coff = fopen(file_name, "rb");
-  if ((coff == NULL) && (strchr(file_name, PATH_CHAR) == 0)) {
-    /* If no "/" in name, try searching include pathes. */
+  if ((coff == NULL) && (strchr(file_name, PATH_SEPARATOR_CHAR) == 0)) {
+    /* If no PATH_SEPARATOR_CHAR in name, try searching include pathes. */
     int i;
 
     for (i = 0; i < state.numpaths; i++) {
-      snprintf(file_name, sizeof(file_name), "%s" COPY_CHAR "%s", state.paths[i], name);
+      snprintf(file_name, sizeof(file_name), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
       coff = fopen(file_name, "rb");
 
       if (coff != NULL) {
@@ -809,7 +809,7 @@ linker(void)
       return EXIT_FAILURE;
     }
 
-    snprintf(file_name, sizeof(file_name), "%s" COPY_CHAR "%s", gp_lkr_path, script_name);
+    snprintf(file_name, sizeof(file_name), "%s" PATH_SEPARATOR_STR "%s", gp_lkr_path, script_name);
     gp_message("Using default linker script \"%s\".", file_name);
     open_src(file_name, false);
     yyparse();
@@ -919,24 +919,12 @@ linker(void)
 
   gp_cofflink_update_table(state.object, state.class->org_to_byte_shift);
 
-/* START OF DEBUG CODE LINES */
-//fprintf(stderr, "%s() -- gp_cofflink_fill_pages()\n", __func__);
-/* END OF DEBUG CODE LINES */
   gp_cofflink_fill_pages(state.object, program, state.section.definition);
 
-/* START OF DEBUG CODE LINES */
-//fprintf(stderr, "%s() -- i_memory_free()\n", __func__);
-/* END OF DEBUG CODE LINES */
   i_memory_free(data);
-/* START OF DEBUG CODE LINES */
-//fprintf(stderr, "%s() -- i_memory_free()\n", __func__);
-/* END OF DEBUG CODE LINES */
   i_memory_free(program);
 
   /* patch raw data with the relocated symbol values */
-/* START OF DEBUG CODE LINES */
-//fprintf(stderr, "%s() -- gp_cofflink_patch()\n", __func__);
-/* END OF DEBUG CODE LINES */
   gp_cofflink_patch(state.object);
 
   /* modify the executable object data */
@@ -945,9 +933,6 @@ linker(void)
 
   if (state.objfile == OUT_NORMAL) {
     /* write the executable object in memory */
-/* START OF DEBUG CODE LINES */
-//fprintf(stderr, "%s() -- gp_write_coff()\n", __func__);
-/* END OF DEBUG CODE LINES */
     if (!gp_write_coff(state.object, gp_num_errors)) {
       gp_error("Error while writing object file.");
       exit(1);

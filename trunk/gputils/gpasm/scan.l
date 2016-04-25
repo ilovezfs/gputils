@@ -647,7 +647,7 @@ search_paths(source_context_t *new, const char *name)
   int i;
 
   for (i = 0; i < state.path_num; i++) {
-    snprintf(tryname, sizeof(tryname), "%s" COPY_CHAR "%s", state.paths[i], name);
+    snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
     new->f = fopen(tryname, "rt");
 
     if (new->f != NULL) {
@@ -672,8 +672,8 @@ open_src(const char *name, gp_boolean isinclude)
   if (new->f != NULL) {
     new->name = GP_Strdup(name);
   }
-  else if (isinclude && (strchr(name, PATH_CHAR) == 0)) {
-    /* If include file and no PATH_CHAR in name, try searching include path. */
+  else if (isinclude && (strchr(name, PATH_SEPARATOR_CHAR) == 0)) {
+    /* If include file and no PATH_SEPARATOR_CHAR in name, try searching include path. */
     search_paths(new, name);
 
     if (new->f == NULL) {

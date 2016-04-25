@@ -50,14 +50,14 @@ object_name(char *file_name)
 
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
   for (name = file_name + strlen(file_name) - 1; name >= file_name; --name) {
-    if ((*name == UNIX_PATH_CHAR) || (*name == PATH_CHAR)) {
+    if ((*name == UNIX_PATH_CHAR) || (*name == PATH_SEPARATOR_CHAR)) {
       return ++name;
     }
   }
 
   return file_name;
 #else
-  name = strrchr(file_name, PATH_CHAR);
+  name = strrchr(file_name, PATH_SEPARATOR_CHAR);
   if (name != NULL) {
     return ++name;
   } else {
@@ -71,7 +71,7 @@ has_path(const char *file_name)
 {
   char *name;
 
-  name = strrchr(file_name, PATH_CHAR);
+  name = strrchr(file_name, PATH_SEPARATOR_CHAR);
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
   if (name != NULL) {
     name = strrchr(file_name, UNIX_PATH_CHAR);

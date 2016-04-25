@@ -2292,7 +2292,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
           if (behavior & GPDIS_SHOW_ALL_BRANCH) {
             PRINT_ARG2_N_N(addr_digits, org, 1, tmp);
           }
-          if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+          else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
             /* The target address exist. */
             if (dest_name != NULL) {
               PRINT_ARG2_S_N(dest_name, 0, 1, tmp);
@@ -2964,7 +2964,7 @@ gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_b
   }
   else if (size == 2) {
     char dasmbuf[512];
-    int num_words;
+    int  num_words;
 
     num_words = gp_disassemble(m, byte_address, class, bsr_boundary, prog_mem_size, behavior,
                                dasmbuf, sizeof(dasmbuf), 0);
@@ -2977,7 +2977,8 @@ gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_b
       return (2 * num_words);
     }
   }
-
-  return (2 * gp_disassemble(m, byte_address, class, bsr_boundary, prog_mem_size, behavior,
-                             buffer, buffer_length, 0));
+  else {
+    return (2 * gp_disassemble(m, byte_address, class, bsr_boundary, prog_mem_size, behavior,
+                               buffer, buffer_length, 0));
+  }
 }
