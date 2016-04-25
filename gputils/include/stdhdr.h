@@ -89,8 +89,8 @@ Boston, MA 02111-1307, USA.  */
 #endif
 
 #ifndef EXIT_SUCCESS
-  #define EXIT_SUCCESS 0
-  #define EXIT_FAILURE 1
+  #define EXIT_SUCCESS          0
+  #define EXIT_FAILURE          1
 #endif
 
 #ifdef HAVE_UNISTD_H
@@ -107,7 +107,7 @@ Boston, MA 02111-1307, USA.  */
 
 #ifndef HAVE_STRCASECMP
   #ifdef HAVE_STRICMP
-    #define strcasecmp stricmp
+    #define strcasecmp          stricmp
   #endif
 #endif
 
@@ -128,12 +128,12 @@ char *strndup(const char *s, size_t n);
 #include <limits.h>
 
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-  #define UNIX_PATH_CHAR '/'
-  #define PATH_CHAR '\\'
-  #define COPY_CHAR "\\"
+  #define UNIX_PATH_CHAR        '/'
+  #define PATH_SEPARATOR_CHAR   '\\'
+  #define PATH_SEPARATOR_STR    "\\"
 #else
-  #define PATH_CHAR '/'
-  #define COPY_CHAR "/"
+  #define PATH_SEPARATOR_CHAR   '/'
+  #define PATH_SEPARATOR_STR    "/"
 #endif
 
 #define GPUTILS_COPYRIGHT_STRING "Copyright (c) 1998-2016 gputils project"

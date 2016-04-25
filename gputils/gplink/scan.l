@@ -197,13 +197,13 @@ void open_src(const char *name, gp_boolean isinclude)
   if (new->f != NULL) {
     new->name = GP_Strdup(name);
   }
-  else if(isinclude && (strchr(name, PATH_CHAR) == 0)) {
-    /* If include file and no "/" in name, try searching include path */
+  else if(isinclude && (strchr(name, PATH_SEPARATOR_CHAR) == 0)) {
+    /* If include file and no PATH_SEPARATOR_CHAR in name, try searching include path. */
     char tryname[BUFSIZ];
     int i;
 
     for (i = 0; i < state.numpaths; i++) {
-      snprintf(tryname, sizeof(tryname), "%s" COPY_CHAR "%s", state.paths[i], name);
+      snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
       new->f = fopen(tryname, "rt");
 
       if (new->f != NULL) {

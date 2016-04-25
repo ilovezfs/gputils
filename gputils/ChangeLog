@@ -1,3 +1,15 @@
+2016-04-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpdis.c:
+    Bugfix: "if" --> "else if"
+
+  * include/stdhdr.h, gpasm/scan.l, gplink/gplink.c, gplink/lst.c,
+    gplink/scan.l, gputils/gplib.c:
+    Renamed PATH_CHAR to PATH_SEPARATOR_CHAR and COPY_CHAR to
+    PATH_SEPARATOR_STR.
+
+    gplink/lst.c:
+    Code formatting.
+
 2016-04-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c:
     Fixed a Microchip bug case of pic16(l)f18326, pic16(l)f18346.
