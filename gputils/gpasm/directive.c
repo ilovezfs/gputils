@@ -45,11 +45,11 @@ extern pnode_t *mk_constant(int value);
 
 static gp_boolean prev_btfsx = false;
 
-static unsigned short
-checkwrite(unsigned short value)
+static uint16_t
+checkwrite(uint16_t value)
 {
-  unsigned short insn;
-  int            org;
+  uint16_t insn;
+  int      org;
 
   if (state.mode == MODE_RELOCATABLE) {
     if (state.obj.section == NULL) {
@@ -103,7 +103,7 @@ checkwrite(unsigned short value)
 
     if (state.num.errors == 0) {
       if (is_config && (state.device.class->config_mask <= 0xFF)) {
-        unsigned char byte;
+        uint8_t byte;
 
         if (b_memory_get(state.i_memory, state.byte_addr, &byte, NULL, NULL)) {
           gpverror(GPE_ADDROVR, NULL, org);
@@ -158,7 +158,7 @@ check_processor_select(const char *Name)
 /* Write a word into the memory image at the current location. */
 
 static void
-emit(unsigned short value, const char *name)
+emit(uint16_t value, const char *name)
 {
   /* only write the program data to memory on the second pass */
   if (state.pass == 2) {
@@ -170,7 +170,7 @@ emit(unsigned short value, const char *name)
 }
 
 static void
-emit_byte(unsigned short value, const char *name)
+emit_byte(uint16_t value, const char *name)
 {
   if (state.pass == 2) {
     if ((state.mode == MODE_RELOCATABLE) && (state.obj.section == NULL)) {
@@ -178,8 +178,8 @@ emit_byte(unsigned short value, const char *name)
     }
 
     if (!IS_RAM_ORG) {
-      unsigned char byte;
-      int org;
+      uint8_t byte;
+      int     org;
 
       if (IS_PIC16_CORE && (state.byte_addr > 0x1ffff)) {
         gpverror(GPE_ADDROVF, "Address{%#x} > 0x1ffff", state.byte_addr);
@@ -189,7 +189,7 @@ emit_byte(unsigned short value, const char *name)
       }
 
       if (value > state.device.class->core_mask) {
-        unsigned short v = value & state.device.class->core_mask;
+        uint16_t v = value & state.device.class->core_mask;
 
         gpvwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", value, value, v, v);
         value = v;
@@ -221,7 +221,7 @@ emit_byte(unsigned short value, const char *name)
       }
     }
 
-    b_memory_put(state.i_memory, state.byte_addr, (unsigned char)value, name, NULL);
+    b_memory_put(state.i_memory, state.byte_addr, (uint8_t)value, name, NULL);
   }
   ++state.byte_addr;
 }
@@ -268,7 +268,7 @@ emit_data(pnode_t *L, int char_shift, const char *name)
   const char     *pc;
   unsigned int    begin_org;
   int             value;
-  unsigned short  v;
+  uint16_t        v;
   int             n;
 
   for (begin_org = state.byte_addr; L != NULL; L = TAIL(L)) {
@@ -384,8 +384,7 @@ macro_parm_unique(pnode_t *M, pnode_t *L)
     if (STRCMP(M->value.symbol, HEAD(L)->value.symbol) == 0) {
       char buf[BUFSIZ];
 
-      snprintf(buf, sizeof(buf), "Duplicate macro parameter (%s).",
-               HEAD(L)->value.symbol);
+      snprintf(buf, sizeof(buf), "Duplicate macro parameter (%s).", HEAD(L)->value.symbol);
       gperror(GPE_UNKNOWN, buf);
       return false;
     }
@@ -436,7 +435,7 @@ do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_addr  = 0;
       state.obj.new_sect_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY;
       break;
 
@@ -444,7 +443,7 @@ do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
       /* new absolute section */
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = maybe_evaluate(p);
+      state.obj.new_sect_addr  = maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_ACCESS | STYP_ABS | STYP_BSS | STYP_OVERLAY;
       break;
 
@@ -722,7 +721,7 @@ do_code(gpasmVal r, const char *name, int arity, pnode_t *parms)
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = 0;
+      state.obj.new_sect_addr  = 0;
       state.obj.new_sect_flags = STYP_TEXT;
       break;
 
@@ -730,7 +729,7 @@ do_code(gpasmVal r, const char *name, int arity, pnode_t *parms)
       /* new absolute section */
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
+      state.obj.new_sect_addr  = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
       state.obj.new_sect_flags = STYP_TEXT | STYP_ABS;
       break;
 
@@ -767,7 +766,7 @@ do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
       case 0:
         /* new relocatable section */
         gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
-        state.obj.new_sect_addr = 0;
+        state.obj.new_sect_addr  = 0;
         state.obj.new_sect_flags = STYP_TEXT | STYP_BPACK;
         break;
 
@@ -775,7 +774,7 @@ do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
         /* new absolute section */
         p = HEAD(parms);
         gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
-        state.obj.new_sect_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
+        state.obj.new_sect_addr  = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
         state.obj.new_sect_flags = STYP_TEXT | STYP_ABS | STYP_BPACK;
         break;
 
@@ -921,15 +920,15 @@ get_config_mem(int ca, gp_boolean new_config)
 /* helper to write configuration data, grabbing defaults when necessary */
 static void
 config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
-                       int ca, unsigned char byte, unsigned char mask)
+                       int ca, uint8_t byte, uint8_t mask)
 {
-  unsigned char old_byte;
-  char          buf[BUFSIZ];
+  uint8_t old_byte;
+  char    buf[BUFSIZ];
 
   snprintf(buf, sizeof(buf), "CONFIG_%#x", ca);
 
   if (!b_memory_get(config_mem, ca, &old_byte, NULL, NULL)) {
-    old_byte = (unsigned char)gp_cfg_get_default(p_dev, ca);
+    old_byte = (uint8_t)gp_cfg_get_default(p_dev, ca);
   }
 
   b_memory_put(config_mem, ca, (old_byte & ~mask) | byte, buf, NULL);
@@ -937,10 +936,10 @@ config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
 
 static void
 config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
-                       int ca, unsigned char byte, unsigned char mask)
+                       int ca, uint8_t byte, uint8_t mask)
 {
-  unsigned char other_byte;
-  char          buf[BUFSIZ];
+  uint8_t other_byte;
+  char    buf[BUFSIZ];
 
   if (!b_memory_get(config_mem, ca ^ 1, &other_byte, NULL, NULL)) {
     snprintf(buf, sizeof(buf), "CONFIG_%#x", ca);
@@ -1028,8 +1027,8 @@ do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
       }
     }
     else {
-      unsigned short word;
-      char buf[BUFSIZ];
+      uint16_t word;
+      char     buf[BUFSIZ];
 
       /* Don't complain for 14 bit enhanced devices.
          Why are the config words 16 bits long in headers?? */
@@ -1070,7 +1069,7 @@ config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
    * approach here - defaults or nothing. Going to go with defaults.
    */
   for (t = 0; t < p_dev->address_count; ++addrs, ++t) {
-    unsigned char byte;
+    uint8_t byte;
 
     if (!b_memory_get(config_mem, addrs->address, &byte, NULL, NULL)) {
       config_16_set_byte_mem(config_mem, p_dev, addrs->address, addrs->def_value, 0xff);
@@ -1082,7 +1081,7 @@ config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 static gpasmVal
 do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 {
-  static unsigned char double_mask[64] = { 0, };
+  static uint8_t            double_mask[64] = { 0, };
 
   const gp_cfg_device_t    *p_dev;
   const gp_cfg_directive_t *p_dir;
@@ -1106,8 +1105,7 @@ do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   /* make sure we an find our device in the config DB */
   p_dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
   if (p_dev == NULL) {
-    gpverror(GPE_UNKNOWN,
-             "The %s processor has no entries in the config db. CONFIG cannot be used.",
+    gpverror(GPE_UNKNOWN, "The %s processor has no entries in the config db. CONFIG cannot be used.",
              state.processor->names[2]);
     return r;
   }
@@ -1142,8 +1140,7 @@ do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
         snprintf(v_buff, sizeof(v_buff), "%x", value);
       }
       else {
-        gperror(GPE_CONFIG_UNKNOWN,
-                "CONFIG can't be used in source files with a radix other than 10 or 16.");
+        gperror(GPE_CONFIG_UNKNOWN, "CONFIG can't be used in source files with a radix other than 10 or 16.");
       }
     }
     else {
@@ -1192,13 +1189,11 @@ do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
       double_mask[dm_addr] |= p_dir->mask;
     }
     else {
-      gpwarning(GPW_UNKNOWN,
-                "Double_mask in do_16_config() needs to be adjusted to account for larger config ranges.");
+      gpwarning(GPW_UNKNOWN, "Double_mask in do_16_config() needs to be adjusted to account for larger config ranges.");
     }
 
     /* Let the helper set the data. */
-    config_16_set_byte_mem(config_mem, p_dev, ca, (unsigned char)p_opt->value,
-                           (unsigned char)p_dir->mask);
+    config_16_set_byte_mem(config_mem, p_dev, ca, (uint8_t)p_opt->value, (uint8_t)p_dir->mask);
   }
 
   return r;
@@ -1208,11 +1203,11 @@ do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 
 static void
 config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
-                          int ca, unsigned short word, unsigned short mask)
+                          int ca, uint16_t word, uint16_t mask)
 {
-  int            org;
-  unsigned short old_word;
-  char           buf[BUFSIZ];
+  int      org;
+  uint16_t old_word;
+  char     buf[BUFSIZ];
 
   org = gp_processor_byte_to_org(state.device.class, ca);
   snprintf(buf, sizeof(buf), "CONFIG_%#x", org);
@@ -1232,7 +1227,7 @@ config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 {
   const gp_cfg_addr_t *addrs = p_dev->addresses;
   unsigned int         addr;
-  unsigned short       word;
+  uint16_t             word;
   int                  t;
 
   for (t = 0; t < p_dev->address_count; ++addrs, ++t) {
@@ -1249,7 +1244,7 @@ config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 static gpasmVal
 do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 {
-  static unsigned short double_mask[256] = { 0, };
+  static uint16_t           double_mask[256] = { 0, };
 
   const gp_cfg_device_t    *p_dev;
   const gp_cfg_directive_t *p_dir;
@@ -1572,8 +1567,8 @@ do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   } /* if (IS_PIC16E_CORE || (SECTION_FLAGS & STYP_DATA)) */
   else {
-    unsigned short v = 0;
-    unsigned int   n = 0;
+    uint16_t     v = 0;
+    unsigned int n = 0;
 
     while (L != NULL) {
       const char *pc = NULL;
@@ -1681,7 +1676,7 @@ do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
       }
     }
     else {
-      unsigned short v;
+      uint16_t v;
 
       v = reloc_evaluate(p, RELOCT_ALL);
       emit(v & 0xff, name);
@@ -1756,7 +1751,7 @@ do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
               gpverror(GPE_RANGE, "type{%i (%#x)} > 0xffff", eval, eval);
             }
             else {
-              new_type = true;
+              new_type  = true;
               coff_type = eval;
             }
           }
@@ -1770,7 +1765,7 @@ do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
               gpverror(GPE_RANGE, "class{%i} > 127", eval, eval);
             }
             else {
-              new_class = true;
+              new_class  = true;
               coff_class = eval;
             }
           }
@@ -1782,23 +1777,23 @@ do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
       else {
         if (enforce_simple(p)) {
           if (strcasecmp(p->value.symbol, "absolute") == 0) {
-            type = GVT_ABSOLUTE;
+            type  = GVT_ABSOLUTE;
             value = 0;
           }
           else if (strcasecmp(p->value.symbol, "debug") == 0) {
-            type = GVT_DEBUG;
+            type  = GVT_DEBUG;
             value = 0;
           }
           else if (strcasecmp(p->value.symbol, "extern") == 0) {
-            type = GVT_EXTERN;
+            type  = GVT_EXTERN;
             value = 0;
           }
           else if (strcasecmp(p->value.symbol, "global") == 0) {
-            type = GVT_GLOBAL;
+            type  = GVT_GLOBAL;
             value = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(state.device.class, state.byte_addr);
           }
           else if (strcasecmp(p->value.symbol, "static") == 0) {
-            type = GVT_STATIC;
+            type  = GVT_STATIC;
             value = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(state.device.class, state.byte_addr);
           }
           else {
@@ -2037,7 +2032,7 @@ do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
       }
     }
     else {
-      unsigned short v;
+      uint16_t v;
 
       v = reloc_evaluate(p, RELOCT_ALL);
       emit((v & 0xff) | retlw, name);
@@ -2080,7 +2075,7 @@ do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
       }
     }
     else {
-      unsigned short v;
+      uint16_t v;
 
       v = reloc_evaluate(p, RELOCT_ALL);
       emit(i->opcode | (v & 0xff), name);
@@ -2859,7 +2854,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
                  idreg, state.processor->idlocs_addrs[1]);
       }
       else {
-        unsigned char curvalue;
+        uint8_t curvalue;
 
         state.lst.line.linetype = LTY_CONFIG;
         state.lst.config_address = idreg;
@@ -2890,7 +2885,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
       }
     }
     else {
-      unsigned short word;
+      uint16_t word;
 
       state.lst.line.linetype = LTY_IDLOCS;
 
@@ -2933,7 +2928,7 @@ do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   const pnode_t *p;
   unsigned int   idreg;
-  unsigned char  curvalue;
+  uint8_t        curvalue;
   const char    *pc;
   int            value;
   int            v;
@@ -3753,7 +3748,7 @@ do_page(gpasmVal r, const char *name, int arity, pnode_t *parms)
 /* Called by both do_pagesel and do_pageselw, which have a very slight
  * difference between them */
 static gpasmVal
-_do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms, unsigned short reloc_type)
+_do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms, uint16_t reloc_type)
 {
   const pnode_t *p;
   int            page;

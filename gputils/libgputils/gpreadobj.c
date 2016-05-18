@@ -170,7 +170,7 @@ _read_file_header(gp_object_type *object, const unsigned char *file, gp_binary_t
 static void
 _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_type *data)
 {
-  unsigned short optmagic;
+  uint16_t       optmagic;
   unsigned long  vstamp;
   unsigned long  proc_code;
   unsigned long  rom_width;

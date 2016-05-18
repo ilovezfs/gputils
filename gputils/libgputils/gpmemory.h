@@ -61,8 +61,8 @@ struct proc_class;
 
 typedef struct MemArg {
   const char *arg;
-  int val;                      /* The value of the first argument. */
-  int offs;                     /* If the argument is area then this the offset of the address. */
+  int         val;              /* The value of the first argument. */
+  int         offs;             /* If the argument is area then this the offset of the address. */
 } MemArg;
 
 typedef struct MemArgList {
@@ -71,23 +71,23 @@ typedef struct MemArgList {
 } MemArgList;
 
 typedef struct MemWord {
-  unsigned int data;
-  char *section_name;
-  char *symbol_name;
-  unsigned int dest_byte_addr;
-  MemArgList args;
+  unsigned int  data;
+  char         *section_name;
+  char         *symbol_name;
+  unsigned int  dest_byte_addr;
+  MemArgList    args;
 } MemWord;
 
 typedef struct MemBlock {
-  unsigned int base;
-  MemWord *memory;
+  unsigned int     base;
+  MemWord         *memory;
   struct MemBlock *next;
 } MemBlock;
 
 MemBlock *i_memory_create(void);
 void i_memory_free(MemBlock *m);
 
-gp_boolean b_memory_get(const MemBlock *m, unsigned int byte_address, unsigned char *byte,
+gp_boolean b_memory_get(const MemBlock *m, unsigned int byte_address, uint8_t *byte,
                         const char **section_name, const char **symbol_name);
 
 #ifndef NDEBUG
@@ -102,7 +102,7 @@ gp_boolean b_memory_get(const MemBlock *m, unsigned int byte_address, unsigned c
 
 #endif
 
-void b_memory_put(MemBlock *b_memory, unsigned int byte_address, unsigned char value,
+void b_memory_put(MemBlock *b_memory, unsigned int byte_address, uint8_t value,
                   const char *section_name, const char *symbol_name);
 
 void b_memory_clear(MemBlock *b_memory, unsigned int byte_address);
@@ -113,16 +113,16 @@ struct px;
 
 void print_i_memory(const MemBlock *m, const struct px *processor);
 
-unsigned int i_memory_get_le(const MemBlock *m, unsigned int byte_addr, unsigned short *word,
+unsigned int i_memory_get_le(const MemBlock *m, unsigned int byte_addr, uint16_t *word,
                              const char **section_name, const char **symbol_name);
 
-unsigned int i_memory_get_be(const MemBlock *m, unsigned int byte_addr, unsigned short *word,
+unsigned int i_memory_get_be(const MemBlock *m, unsigned int byte_addr, uint16_t *word,
                              const char **section_name, const char **symbol_name);
 
-void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word,
+void i_memory_put_le(MemBlock *m, unsigned int byte_addr, uint16_t word,
                      const char *section_name, const char *symbol_name);
 
-void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word,
+void i_memory_put_be(MemBlock *m, unsigned int byte_addr, uint16_t word,
                      const char *section_name, const char *symbol_name);
 
 void b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes);

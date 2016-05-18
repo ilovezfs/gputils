@@ -140,10 +140,10 @@ GPUTILS_GCC_DIAG_TOP(switch)
 int
 gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor_t processor)
 {
-  proc_class_t       class;
-  unsigned short     opcode;
-  const struct insn *instruction;
-  int                num_words;
+  proc_class_t  class;
+  uint16_t      opcode;
+  const insn_t *instruction;
+  int           num_words;
 
   class = processor->class;
 
@@ -209,19 +209,19 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
   int                prog_max_org;
   int                value;
   int                src_page;
-  int                dst_org;
-  unsigned short     opcode;
-  const struct insn *instruction;
-  enum common_insn   icode;
-  int                num_words;
-  unsigned short     file1;
-  unsigned short     file2;
-  unsigned int       tmp;
-  int                dest_byte_addr;
-  unsigned int       type;
-  int                wreg;
-  int                pclath;
-  int                pclath_valid;
+  int               dst_org;
+  uint16_t          opcode;
+  const insn_t     *instruction;
+  enum common_insn  icode;
+  int               num_words;
+  uint16_t          file1;
+  uint16_t          file2;
+  unsigned int      tmp;
+  int               dest_byte_addr;
+  unsigned int      type;
+  int               wreg;
+  int               pclath;
+  int               pclath_valid;
 
   class = processor->class;
 
@@ -478,7 +478,7 @@ _class_lit11:
     case INSN_CLASS_CALL20:
       /* PIC16E call */
       {
-        unsigned short dest;
+        uint16_t dest;
 
         if ((class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL) == W_USED_ALL) &&
             ((dest & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
@@ -967,17 +967,17 @@ int
 gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t processor,
                               gpdasm_fstate_t *fstate, void (*user_data_finder)(MemArg *))
 {
-  proc_class_t       class;
-  unsigned short     opcode;
-  const struct insn *instruction;
-  enum common_insn   icode;
-  int                num_words;
-  unsigned short     file1;
-  unsigned short     file2;
-  unsigned int       tmp;
-  gp_boolean         ram_acc;
-  int                addr;
-  MemArgList         args;
+  proc_class_t      class;
+  uint16_t          opcode;
+  const insn_t     *instruction;
+  enum common_insn  icode;
+  int               num_words;
+  uint16_t          file1;
+  uint16_t          file2;
+  unsigned int      tmp;
+  gp_boolean        ram_acc;
+  int               addr;
+  MemArgList        args;
 
   class = processor->class;
 
@@ -1684,7 +1684,7 @@ GPUTILS_GCC_DIAG_ON(switch)
 
 static int
 print_word(char *buffer, size_t buffer_length, size_t current_length,
-           unsigned short opcode, int behavior) {
+           uint16_t opcode, int behavior) {
   int    l;
   size_t length;
   char   bytes[2];
@@ -1697,8 +1697,8 @@ print_word(char *buffer, size_t buffer_length, size_t current_length,
   }
 
   length = current_length + l;
-  bytes[0] = (unsigned char)(opcode & 0xFF);
-  bytes[1] = (unsigned char)((opcode >> 8) & 0xFF);
+  bytes[0] = (uint8_t)(opcode & 0xFF);
+  bytes[1] = (uint8_t)((opcode >> 8) & 0xFF);
 
   if (behavior & GPDIS_SHOW_BYTES) {
     if (isprint(opcode)) {
@@ -1715,7 +1715,7 @@ print_word(char *buffer, size_t buffer_length, size_t current_length,
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-show_word(char *buffer, size_t buffer_length, size_t current_length, const unsigned char *bytes)
+show_word(char *buffer, size_t buffer_length, size_t current_length, const uint8_t *bytes)
 {
   unsigned int v;
 
@@ -1746,12 +1746,12 @@ void
 gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int behavior,
                          char *buffer, size_t buffer_length, size_t current_length)
 {
-  const struct insn *instruction;
-  enum common_insn   icode;
-  unsigned short     opcode;
-  unsigned char      bytes[2];
-  int                l;
-  size_t             length;
+  const insn_t     *instruction;
+  enum common_insn  icode;
+  uint16_t          opcode;
+  uint8_t           bytes[2];
+  int               l;
+  size_t            length;
 
   length = current_length;
 
@@ -1761,8 +1761,8 @@ gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int 
   }
 
   if (class->i_memory_get(m, byte_address, &opcode, NULL, NULL) == W_USED_ALL) {
-    bytes[0] = (unsigned char)(opcode & 0xFF);
-    bytes[1] = (unsigned char)((opcode >> 8) & 0xFF);
+    bytes[0] = (uint8_t)(opcode & 0xFF);
+    bytes[1] = (uint8_t)((opcode >> 8) & 0xFF);
 
     if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
       l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%02x, 0x%02x",
@@ -1822,22 +1822,22 @@ int
 gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
                int prog_mem_size, int behavior, char *buffer, size_t buffer_length, size_t current_length)
 {
-  int                value;
-  unsigned short     opcode = 0;
-  const struct insn *instruction = NULL;
-  enum common_insn   icode;
-  int                prog_max_org;
-  unsigned int       type;
-  const char        *dest_name;
-  int                org;
-  int                num_words = 1;
-  unsigned short     file1;
-  unsigned short     file2;
-  unsigned int       tmp;
-  unsigned int       ram_acc;
-  MemArgList         args;
-  int                addr_digits;
-  size_t             length;
+  int               value;
+  uint16_t          opcode = 0;
+  const insn_t     *instruction = NULL;
+  enum common_insn  icode;
+  int               prog_max_org;
+  unsigned int      type;
+  const char       *dest_name;
+  int               org;
+  int               num_words = 1;
+  uint16_t          file1;
+  uint16_t          file2;
+  unsigned int      tmp;
+  unsigned int      ram_acc;
+  MemArgList        args;
+  int               addr_digits;
+  size_t            length;
 
   length = current_length;
 
@@ -2236,7 +2236,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
     case INSN_CLASS_LIT20:
       /* PIC16E goto */
       {
-        unsigned short dest;
+        uint16_t dest;
 
         if ((class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL) == W_USED_ALL) &&
             ((dest & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
@@ -2279,7 +2279,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
     case INSN_CLASS_CALL20:
       /* PIC16E call */
       {
-        unsigned short dest;
+        uint16_t dest;
 
         if ((class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL) == W_USED_ALL) &&
             ((dest & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
@@ -2323,7 +2323,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
     case INSN_CLASS_FLIT12:
       /* PIC16E lfsr */
       {
-        unsigned short k;
+        uint16_t k;
 
         if ((class->i_memory_get(m, byte_address + 2, &k, NULL, NULL) == W_USED_ALL) &&
             ((k & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
@@ -2435,7 +2435,7 @@ _insn_class_pf:
     case INSN_CLASS_SF:
       /* PIC16E movsf */
       {
-        unsigned short offset;
+        uint16_t offset;
 
         offset = opcode & 0x007f;
 
@@ -2467,7 +2467,7 @@ _insn_class_pf:
     case INSN_CLASS_SS:
       /* PIC16E movss */
       {
-        unsigned short offset2;
+        uint16_t offset2;
 
         if ((class->i_memory_get(m, byte_address + 2, &offset2, NULL, NULL) == W_USED_ALL) &&
             ((offset2 & 0xff80) == PIC16E_BMSK_SEC_INSN_WORD)) {
@@ -2932,7 +2932,7 @@ int
 gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
                     char *buffer, size_t buffer_length)
 {
-  unsigned char byte;
+  uint8_t byte;
 
   b_memory_assert_get(m, byte_address, &byte, NULL, NULL);
   snprintf(buffer, buffer_length, "%-*s0x%02x", TABULATOR_SIZE, "db", (unsigned int)byte);
@@ -2945,7 +2945,7 @@ int
 gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
                     char *buffer, size_t buffer_length)
 {
-  unsigned short word;
+  uint16_t word;
 
   class->i_memory_get(m, byte_address, &word, NULL, NULL);
   snprintf(buffer, buffer_length, "%-*s0x%04x", TABULATOR_SIZE, "dw", (unsigned int)word);

@@ -28,14 +28,14 @@ extern gp_boolean gp_decode_mnemonics;
 extern gp_boolean gp_decode_extended;
 
 typedef struct {
-  int wreg;
-  int pclath;
-  int pclath_valid;
-  int bank;
-  int bank_valid;
+  int                        wreg;
+  int                        pclath;
+  int                        pclath_valid;
+  int                        bank;
+  int                        bank_valid;
   const gp_register_table_t *proc_regs;
-  int bsr_boundary;                     /* Only case of PIC16E. */
-  gp_boolean need_sfr_equ;
+  int                        bsr_boundary;      /* Only case of PIC16E. */
+  gp_boolean                 need_sfr_equ;
 } gpdasm_fstate_t;
 
 /* Values of the "behavior". */

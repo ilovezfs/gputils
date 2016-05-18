@@ -470,7 +470,7 @@ int count_reloc(const pnode_t *p)
    [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offs>]) */
 
 static void
-add_reloc(const pnode_t *p, short offs, unsigned short type)
+add_reloc(const pnode_t *p, short offs, uint16_t type)
 {
   const symbol_t   *s;
   const variable_t *var;
@@ -656,7 +656,7 @@ same_section(const pnode_t *p)
   return true;
 }
 
-gpasmVal reloc_evaluate(const pnode_t *p, unsigned short type)
+gpasmVal reloc_evaluate(const pnode_t *p, uint16_t type)
 {
   gpasmVal r = 0;
   int      count = 0;
