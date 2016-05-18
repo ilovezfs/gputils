@@ -54,54 +54,54 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass, gp_boolean ena
   gp_section_type *section;
   gp_reloc_type   *relocation;
   gp_section_type *rel_sect;
-  gp_boolean       section_removed = false;
+  gp_boolean       section_removed;
 
-  gp_debug("Removing dead sections pass %i.", pass);
+  do {
+    section_removed = false;
+    gp_debug("Removing dead sections pass %i.", pass);
 
-  section = object->sections;
-  while (section != NULL) {
-    /* Mark all sections as unused. */
-    section->is_used = false;
-    section = section->next;
-  }
+    section = object->sections;
+    while (section != NULL) {
+      /* Mark all sections as unused. */
+      section->is_used = false;
+      section = section->next;
+    }
 
-  section = object->sections;
-  while (section != NULL) {
-    /* Mark all sections that relocations point to as used. */
+    section = object->sections;
+    while (section != NULL) {
+      /* Mark all sections that relocations point to as used. */
 /*    gp_debug("  section_name: %s", section->name);*/
-    relocation = section->relocations;
-    while (relocation != NULL) {
-      if ((rel_sect = relocation->symbol->section) != NULL) {
-        if (rel_sect != section) {
+      relocation = section->relocations;
+      while (relocation != NULL) {
+        if ((rel_sect = relocation->symbol->section) != NULL) {
+          if (rel_sect != section) {
 /*          gp_debug("    reloc_section_name: %s", rel_sect->name);*/
-          rel_sect->is_used = true;
+            rel_sect->is_used = true;
+          }
         }
-      }
-      else {
-        if (enable_cinit_warns || (strcmp(relocation->symbol->name, "_cinit") != 0)) {
-          gp_warning("Relocation symbol %s has no section.", relocation->symbol->name);
+        else {
+          if (enable_cinit_warns || (strcmp(relocation->symbol->name, "_cinit") != 0)) {
+            gp_warning("Relocation symbol %s has no section.", relocation->symbol->name);
+          }
         }
+        relocation = relocation->next;
       }
-      relocation = relocation->next;
-    }
-    section = section->next;
-  }
-
-  section = object->sections;
-  while (section != NULL) {
-    /* FIXME: Maybe don't remove if it is in protected memory. */
-    if ((!section->is_used) && ((section->flags & (STYP_ABS | STYP_DATA)) == 0)) {
-      gp_debug("Removing section \"%s\".", section->name);
-      gp_coffgen_delsectionsyms(object, section);
-      gp_coffgen_delsection(object, section);
-      section_removed = true;
+      section = section->next;
     }
 
-    section = section->next;
-  }
+    section = object->sections;
+    while (section != NULL) {
+      /* FIXME: Maybe don't remove if it is in protected memory. */
+      if ((!section->is_used) && ((section->flags & (STYP_ABS | STYP_DATA)) == 0)) {
+        gp_debug("Removing section \"%s\".", section->name);
+        gp_coffgen_delsectionsyms(object, section);
+        gp_coffgen_delsection(object, section);
+        section_removed = true;
+      }
+      section = section->next;
+    }
 
-  if (section_removed) {
     /* take another pass */
-    gp_coffopt_remove_dead_sections(object, ++pass, enable_cinit_warns);
-  }
+    ++pass;
+  } while (section_removed);
 }

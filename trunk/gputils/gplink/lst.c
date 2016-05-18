@@ -243,7 +243,7 @@ _write_source(int last_line)
           if ((org & 1) || (len < 2)) {
             /* even address or less then two byts to disassemble: disassemble one byte */
             if (len != 0) {
-              unsigned char byte;
+              uint8_t byte;
 
               b_memory_assert_get(line_section->data, org, &byte, NULL, NULL);
               gp_disassemble_byte(line_section->data, org, state.class, dasmbuf, sizeof(dasmbuf));
@@ -256,8 +256,8 @@ _write_source(int last_line)
             }
           }
           else {
-            unsigned short word;
-            int num_bytes;
+            uint16_t word;
+            int      num_bytes;
 
             state.class->i_memory_get(line_section->data, org, &word, NULL, NULL);
             num_bytes = gp_disassemble_size(line_section->data, org, state.class, 0x80,

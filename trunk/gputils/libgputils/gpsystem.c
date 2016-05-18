@@ -107,23 +107,23 @@ gp_fputvar(const void *data_, int number, FILE *fp)
 
 /*------------------------------------------------------------------------------------------------*/
 
-short 
+int16_t
 gp_getl16(const unsigned char *addr)
 {
-  short value;
+  int16_t value;
   
   value  = addr[0];
-  value |= (short)addr[1] << 8;
+  value |= (int16_t)addr[1] << 8;
   
   return value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-unsigned short 
+uint16_t
 gp_getu16(const unsigned char *addr)
 {
-  return (unsigned short)gp_getl16(addr);
+  return (uint16_t)gp_getl16(addr);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -144,7 +144,7 @@ gp_getl32(const unsigned char *addr)
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_putl16(unsigned char *addr, unsigned short data)
+gp_putl16(unsigned char *addr, uint16_t data)
 {
   addr[0] = data & 0xff;
   addr[1] = (data >> 8) & 0xff;

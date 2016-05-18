@@ -29,8 +29,8 @@ Boston, MA 02111-1307, USA.  */
 
 typedef union
 {
-  unsigned char b[2];
-  unsigned short w;
+  uint8_t  b[2];
+  uint16_t w;
 } bword_t;
 
 /************************************************************************
@@ -43,8 +43,8 @@ typedef union
 
       typedef struct MemArg {
         const char *arg;
-        int val;                      The value of the first argument.
-        int offs;                     If the argument is area then this the offset of the address.
+        int         val;              The value of the first argument.
+        int         offs;             If the argument is area then this the offset of the address.
       } MemArg;
 
       typedef struct MemArg {
@@ -53,11 +53,11 @@ typedef union
       } MemArgList;
 
       typedef struct MemWord {
-        unsigned int data;            The data byte and the attributes of.
+        unsigned int  data;           The data byte and the attributes of.
 
-        char *section_name;           During assembly or linking shows the name of section.
+        char         *section_name;   During assembly or linking shows the name of section.
 
-        char *symbol_name;            During assembly or linking shows the name of symbol.
+        char         *symbol_name;    During assembly or linking shows the name of symbol.
 	                              After disassembly shows the name of function or label.
 
         unsigned int dest_byte_addr;  After disassembly shows the target byte-address (not org) of a branch.
@@ -66,8 +66,8 @@ typedef union
       } MemWord;
 
       typedef struct MemBlock {
-        unsigned int base;
-        MemWord *memory;
+        unsigned int     base;
+        MemWord         *memory;
         struct MemBlock *next;
       } MemBlock;
 
@@ -202,7 +202,7 @@ b_memory_is_used(MemBlock *m, unsigned int address)
  *
  ************************************************************************/
 gp_boolean
-b_memory_get(const MemBlock *m, unsigned int address, unsigned char *byte,
+b_memory_get(const MemBlock *m, unsigned int address, uint8_t *byte,
              const char **section_name, const char **symbol_name)
 {
   unsigned int  block  = (address >> I_MEM_BITS) & 0xffff;
@@ -292,7 +292,7 @@ i_memory_store_symbol_name(MemWord *mw, const char *name)
  *
  ************************************************************************/
 void
-b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value,
+b_memory_put(MemBlock *i_memory, unsigned int address, uint8_t value,
 	     const char *section_name, const char *symbol_name)
 {
   unsigned int  block  = (address >> I_MEM_BITS) & 0xffff;
@@ -427,7 +427,7 @@ b_memory_used(const MemBlock *m)
  *
  ************************************************************************/
 unsigned int
-i_memory_get_le(const MemBlock *m, unsigned int byte_addr, unsigned short *word,
+i_memory_get_le(const MemBlock *m, unsigned int byte_addr, uint16_t *word,
                 const char **section_name, const char **symbol_name)
 {
   unsigned int ret;
@@ -442,7 +442,7 @@ i_memory_get_le(const MemBlock *m, unsigned int byte_addr, unsigned short *word,
 /*----------------------------------------------------------------------*/
 
 void
-i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word,
+i_memory_put_le(MemBlock *m, unsigned int byte_addr, uint16_t word,
                 const char *section_name, const char *symbol_name)
 {
   b_memory_put(m, byte_addr,     word & 0xff, section_name, symbol_name);
@@ -452,7 +452,7 @@ i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word,
 /*----------------------------------------------------------------------*/
 
 unsigned int
-i_memory_get_be(const MemBlock *m, unsigned int byte_addr, unsigned short *word,
+i_memory_get_be(const MemBlock *m, unsigned int byte_addr, uint16_t *word,
                 const char **section_name, const char **symbol_name)
 {
   unsigned int ret;
@@ -467,7 +467,7 @@ i_memory_get_be(const MemBlock *m, unsigned int byte_addr, unsigned short *word,
 /*----------------------------------------------------------------------*/
 
 void
-i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word,
+i_memory_put_be(MemBlock *m, unsigned int byte_addr, uint16_t word,
                 const char *section_name, const char *symbol_name)
 {
   b_memory_put(m, byte_addr,     word >> 8,   section_name, symbol_name);
@@ -487,7 +487,7 @@ print_i_memory(const MemBlock *m, pic_processor_t processor)
   gp_boolean    row_used;
   unsigned int  w_used;
   bword_t       data;
-  unsigned char c;
+  uint8_t       c;
 
 #define WORDS_IN_ROW 8
 

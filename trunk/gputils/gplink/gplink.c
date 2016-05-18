@@ -868,12 +868,12 @@ linker(void)
   gp_cofflink_make_idata(state.object, state.mplink_compatible);
 
   /* create memory representing target memory */
-  data = i_memory_create();
+  data    = i_memory_create();
   program = i_memory_create();
 
   /* allocate memory for absolute sections */
   gp_debug("Verifying absolute sections.");
-  gp_cofflink_reloc_abs(state.object,program, state.class->org_to_byte_shift,
+  gp_cofflink_reloc_abs(state.object, program, state.class->org_to_byte_shift,
                         STYP_TEXT | STYP_DATA_ROM);
 
   gp_cofflink_reloc_abs(state.object, data, 0,

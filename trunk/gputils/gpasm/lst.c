@@ -43,6 +43,88 @@ Boston, MA 02111-1307, USA.  */
 #define IS_EEPROM (IS_EEPROM8 || IS_EEPROM16)
 #define IS_BYTE   (IS_PIC16E_CORE || IS_EEPROM)
 
+static void
+_lst_check_page_start(void)
+{
+  if ((state.lst.linesperpage != 0) &&
+      ((state.lst.lineofpage == 0) || (state.lst.lineofpage > state.lst.linesperpage))) {
+    lst_page_start();
+  }
+}
+
+static int
+_lst_spaces(int n)
+{
+  int i = n;
+
+  _lst_check_page_start();
+  while (i--) {
+    putc(' ', state.lst.f);
+  }
+
+  return n;
+}
+
+static void
+_lst_eol(void)
+{
+  if (state.lst.f != NULL) {
+    putc('\n', state.lst.f);
+    state.lst.line_number++;
+    state.lst.lineofpage++;
+    cod_lst_line(COD_NORMAL_LST_LINE);
+  }
+}
+
+/* Print part of a line. Output must not contain newline. Needs call to lst_eol at end of line. */
+static int
+_lst_printf(const char *format, ...)
+{
+  int r = 0;
+
+  if (state.lst.f != NULL) {
+    va_list args;
+
+    _lst_check_page_start();
+    va_start(args, format);
+    r = vfprintf(state.lst.f, format, args);
+    va_end(args);
+  }
+  return r;
+}
+
+/* find relocation by address */
+static gp_reloc_type *
+_find_reloc_by_address(uint16_t address)
+{
+  gp_reloc_type *p;
+
+  for (p = state.obj.section->relocations; p != NULL; p = p->next) {
+    if (p->address == address) {
+      break;
+    }
+  }
+
+  return p;
+}
+
+/* get previous relocation type */
+static uint16_t
+_prev_reloc_type(void)
+{
+  gp_reloc_type *p;
+
+  if (state.obj.section->relocations == state.obj.section->relocations_tail) {
+    return 0;
+  }
+
+  for (p = state.obj.section->relocations;
+       (p->next != NULL) && (p->next != state.obj.section->relocations_tail); p = p->next)
+    ;
+  assert(p->next);
+  return ((p->address == p->next->address) ? p->type : 0);
+}
+
 void
 lst_throw(void)
 {
@@ -90,39 +172,6 @@ lst_page_start(void)
   lst_line(NULL);
 }
 
-static void
-lst_check_page_start(void)
-{
-  if ((state.lst.linesperpage != 0) &&
-      ((state.lst.lineofpage == 0) || (state.lst.lineofpage > state.lst.linesperpage))) {
-    lst_page_start();
-  }
-}
-
-static int
-lst_spaces(int n)
-{
-  int i = n;
-
-  lst_check_page_start();
-  while (i--) {
-    putc(' ', state.lst.f);
-  }
-
-  return n;
-}
-
-static void
-lst_eol(void)
-{
-  if (state.lst.f != NULL) {
-    putc('\n', state.lst.f);
-    state.lst.line_number++;
-    state.lst.lineofpage++;
-    cod_lst_line(COD_NORMAL_LST_LINE);
-  }
-}
-
 void
 lst_line(const char *format, ...)
 {
@@ -130,12 +179,12 @@ lst_line(const char *format, ...)
     if (format != NULL) {
       va_list args;
 
-      lst_check_page_start();
+      _lst_check_page_start();
       va_start(args, format);
       vfprintf(state.lst.f, format, args);
       va_end(args);
     }
-    lst_eol();
+    _lst_eol();
   }
 }
 
@@ -143,29 +192,11 @@ void
 lst_err_line(const char *type, unsigned int code, const char *format, va_list args)
 {
   if (state.lst.f != NULL) {
-    lst_check_page_start();
+    _lst_check_page_start();
     fprintf(state.lst.f, "%s[%03d]%s: ", type, code, (strcmp(type, "Error") == 0) ? "  " : "");
     vfprintf(state.lst.f, format, args);
-    lst_eol();
+    _lst_eol();
   }
-}
-
-/* Print part of a line. Output must not contain newline. Needs call
-   to lst_eol at end of line. */
-static int
-lst_printf(const char *format, ...)
-{
-  int r = 0;
-
-  if (state.lst.f != NULL) {
-    va_list args;
-
-    lst_check_page_start();
-    va_start(args, format);
-    r = vfprintf(state.lst.f, format, args);
-    va_end(args);
-  }
-  return r;
 }
 
 void
@@ -247,22 +278,22 @@ lst_memory_map(MemBlock *m)
       if (row_used) {
         if ((state.device.class != NULL) && state.show_full_addr && IS_PIC16E_CORE) {
           /* Gpasm mode: Print all address digits. */
-          lst_printf("%0*X :", state.device.class->addr_digits, (i + base));
+          _lst_printf("%0*X :", state.device.class->addr_digits, (i + base));
         }
         else {
           /* MPASM(X) compatible: Print only lower 4 address digits. */
-          lst_printf("%04X :", (i + base) & 0xffff);
+          _lst_printf("%04X :", (i + base) & 0xffff);
         }
 
         for (j = 0; j < num_per_line; j++) {
           if ((j % num_per_block) == 0) {
-            lst_printf(" ");
+            _lst_printf(" ");
           }
-          lst_printf(MEM_IS_USED(m, i + j) ? "X" : "-");
+          _lst_printf(MEM_IS_USED(m, i + j) ? "X" : "-");
         }
 
-        lst_eol();
-        lst_check_page_start();
+        _lst_eol();
+        _lst_check_page_start();
       }
     }
 
@@ -317,39 +348,7 @@ lst_close(void)
   }
 }
 
-/* find relocation by address */
-static gp_reloc_type *
-find_reloc_by_address(unsigned short address)
-{
-  gp_reloc_type *p;
-
-  for (p = state.obj.section->relocations; p != NULL; p = p->next) {
-    if (p->address == address) {
-      break;
-    }
-  }
-
-  return p;
-}
-
-/* get previous relocation type */
-static unsigned short
-prev_reloc_type(void)
-{
-  gp_reloc_type *p;
-
-  if (state.obj.section->relocations == state.obj.section->relocations_tail) {
-    return 0;
-  }
-
-  for (p = state.obj.section->relocations;
-       (p->next != NULL) && (p->next != state.obj.section->relocations_tail); p = p->next)
-    ;
-  assert(p->next);
-  return ((p->address == p->next->address) ? p->type : 0);
-}
-
-/* print word value with undefined nibbles repleced by "?" */
+/* print word value with undefined nibbles replaced by "?" */
 /* enable assertions
  * #define DO_ASSERT */
 /* disable assertions */
@@ -362,7 +361,7 @@ prev_reloc_type(void)
 #endif
 
 static int
-print_reloc(unsigned short type, unsigned short current_value)
+_print_reloc(uint16_t type, uint16_t current_value)
 {
   proc_class_t class = state.device.class;
 
@@ -371,13 +370,13 @@ print_reloc(unsigned short type, unsigned short current_value)
     if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
         (class == PROC_CLASS_SX)    || (class == PROC_CLASS_PIC16E)) {
       ASSERT(0 == (current_value & 0xff));
-      return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
       ASSERT(0 == (current_value & MASK_PIC14_BRANCH));
-      return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
+      return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     } else if (class == PROC_CLASS_PIC16) {
       ASSERT(0 == (current_value & MASK_PIC16_BRANCH));
-      return lst_printf("???? ");
+      return _lst_printf("???? ");
     } else {
       ASSERT(0);
       return 0;
@@ -388,16 +387,16 @@ print_reloc(unsigned short type, unsigned short current_value)
     if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
         (class == PROC_CLASS_SX)) {
       ASSERT(0 == (current_value & MASK_PIC12_GOTO));
-      return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
+      return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     } else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
       ASSERT(0 == (current_value & MASK_PIC14_BRANCH));
-      return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
+      return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     } else if (class == PROC_CLASS_PIC16) {
       ASSERT(0 == (current_value & MASK_PIC16_BRANCH));
-      return lst_printf("???? ");
+      return _lst_printf("???? ");
     } else if (class == PROC_CLASS_PIC16E) {
       ASSERT(0 == (current_value & 0xff));
-      return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else {
       ASSERT(0);
       return 0;
@@ -412,7 +411,7 @@ print_reloc(unsigned short type, unsigned short current_value)
      * TODO: This should be solved in DB directive handling function
      * do_db(), file directive.c.
      * ASSERT(0 == (current_value & 0xff)); */
-    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_HIGH:
@@ -420,39 +419,39 @@ print_reloc(unsigned short type, unsigned short current_value)
   case RELOCT_UPPER:
   case RELOCT_CONDBRA:
     ASSERT(0 == (current_value & 0xff));
-    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_P:
     {
       char buf[5] = "????";
 
-      if (RELOCT_F != prev_reloc_type()) {
+      if (RELOCT_F != _prev_reloc_type()) {
         sprintf(&buf[2], "%02X", current_value & 0x00ff);
       }
       ASSERT(0 == (current_value & 0x1f00));
-      return lst_printf("%s ", buf);
+      return _lst_printf("%s ", buf);
     }
     break;
 
   case RELOCT_BANKSEL:
     /* TODO: to be implemented */
-    return lst_printf("???? ");
+    return _lst_printf("???? ");
     break;
 
   case RELOCT_ALL:
-    return lst_printf("???? ");
+    return _lst_printf("???? ");
     break;
 
   case RELOCT_IBANKSEL:
     if (class == PROC_CLASS_PIC14) {
       ASSERT(0 == (current_value & 0x0f00));  /* 1383 or 1783 */
-      return lst_printf("1?83 ");
+      return _lst_printf("1?83 ");
     } else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      return lst_printf("???? ");
+      return _lst_printf("???? ");
     } else if (class == PROC_CLASS_PIC16) {
       ASSERT(0 == (current_value & 0x00ff));
-      return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else {
       ASSERT(0);
       return 0;
@@ -462,7 +461,7 @@ print_reloc(unsigned short type, unsigned short current_value)
   case RELOCT_F:
     if (class == PROC_CLASS_SX) {
       ASSERT((current_value & 0x0007) == 0);
-      return lst_printf("%03X?? ", (current_value >> 4) & 0x000f);
+      return _lst_printf("%03X?? ", (current_value >> 4) & 0x000f);
     } else if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
       ASSERT(0 == (current_value & MASK_PIC12_FILE));
     } else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
@@ -473,22 +472,22 @@ print_reloc(unsigned short type, unsigned short current_value)
       ASSERT(0);
       return 0;
     }
-    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_TRIS_3BIT:
     ASSERT(0 == (current_value & 0x0007));
-    return lst_printf("%03X? ", (current_value >> 4) & 0x000f);
+    return _lst_printf("%03X? ", (current_value >> 4) & 0x000f);
     break;
 
   case RELOCT_TRIS:
     ASSERT(0 == (current_value & 0x001f));
-    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_MOVLR:
     ASSERT(0 == (current_value & 0x00f0));
-    return lst_printf("%02X?%01X ", (current_value >> 8) & 0xff, current_value & 0x000f);
+    return _lst_printf("%02X?%01X ", (current_value >> 8) & 0xff, current_value & 0x000f);
     break;
 
   case RELOCT_GOTO2:
@@ -498,11 +497,11 @@ print_reloc(unsigned short type, unsigned short current_value)
     /* removed assertion since it fails during sdcc pic16 library
      * compilation: do_insn, case INSN_CLASS_FF
      * ASSERT(0 == (current_value & 0x0fff)); */
-    return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
+    return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     break;
 
   case RELOCT_LFSR1:
-    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_BRA:
@@ -514,19 +513,19 @@ print_reloc(unsigned short type, unsigned short current_value)
       ASSERT(0);
       return 0;
     }
-    return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
+    return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     break;
 
   case RELOCT_MOVLB:
     if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
       ASSERT(0 == (current_value & MASK_PIC12E_BANK));
-      return lst_printf("%03X? ", (current_value >> 4) & 0x0fff);
+      return _lst_printf("%03X? ", (current_value >> 4) & 0x0fff);
     } else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
       ASSERT(0 == (current_value & MASK_PIC14E_BANK));
-      return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
       ASSERT(0 == (current_value & MASK_PIC16E_BANK));
-      return lst_printf("%03X? ", (current_value >> 4) & 0x0fff);
+      return _lst_printf("%03X? ", (current_value >> 4) & 0x0fff);
     } else {
       ASSERT(0);
       return 0;
@@ -540,13 +539,13 @@ print_reloc(unsigned short type, unsigned short current_value)
       ASSERT(0);
       return 0;
     }
-    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_PAGESEL_WREG:
   case RELOCT_PAGESEL_BITS:
     /* TODO: to be implemented */
-    return lst_printf("???? ");
+    return _lst_printf("???? ");
     break;
 
   case RELOCT_PAGESEL_MOVLP:
@@ -556,7 +555,7 @@ print_reloc(unsigned short type, unsigned short current_value)
       ASSERT(0);
       return 0;
     }
-    return lst_printf("31?? ", (current_value >> 16) & 0xff);
+    return _lst_printf("31?? ", (current_value >> 16) & 0xff);
     break;
 
   /* unimplemented relocations */
@@ -575,19 +574,18 @@ print_reloc(unsigned short type, unsigned short current_value)
 }
 
 static unsigned int
-lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr,
-         unsigned int bytes_emitted, unsigned short reloc_type)
+_lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr, unsigned int bytes_emitted, uint16_t reloc_type)
 {
-  unsigned char emit_byte;
-  unsigned short emit_word;
-  int lst_bytes = 0;
+  uint8_t    emit_byte;
+  uint16_t   emit_word;
+  int        lst_bytes = 0;
   gp_boolean is_eeprom_area = (gp_processor_is_eeprom_byte_addr(state.processor, byte_addr) >= 0) ? true : false;
 
   /* When in a idata or byte packed section or eeprom area, print byte by byte. */
   if (IS_EEPROM8 || is_eeprom_area || (state.obj.new_sect_flags & (STYP_DATA | STYP_BPACK))) {
     while ((bytes_emitted > lst_bytes) && ((pos + 3) <= LST_LINENUM_POS)) {
       b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
-      pos += lst_printf("%02X ", emit_byte);
+      pos += _lst_printf("%02X ", emit_byte);
       ++byte_addr;
       ++lst_bytes;
     }
@@ -596,7 +594,7 @@ lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr,
     /* list first byte on odd address */
     if (bytes_emitted && (byte_addr & 1)) {
       b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
-      pos += lst_printf("%02X ", emit_byte);
+      pos += _lst_printf("%02X ", emit_byte);
       ++byte_addr;
       ++lst_bytes;
     }
@@ -606,12 +604,12 @@ lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr,
 
       /* Display '?' for undefined bytes if it is a relocatable code. */
       if (reloc_type != 0) {
-        int n = print_reloc(reloc_type, emit_word);
+        int n = _print_reloc(reloc_type, emit_word);
 
-        pos += (n == 0) ? lst_printf("%04X ", emit_word) : n;
+        pos += (n == 0) ? _lst_printf("%04X ", emit_word) : n;
       }
       else {
-        pos += lst_printf("%04X ", emit_word);
+        pos += _lst_printf("%04X ", emit_word);
       }
 
       byte_addr += 2;
@@ -620,14 +618,14 @@ lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr,
 
     if (((bytes_emitted - lst_bytes) == 1) && ((pos + 3) <= LST_LINENUM_POS)) {
       b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
-      pos += lst_printf("%02X ", emit_byte);
+      pos += _lst_printf("%02X ", emit_byte);
       ++byte_addr;
       ++lst_bytes;
     }
   }
 
   /* append appropriate spacing */
-  lst_spaces(LST_LINENUM_POS - pos);
+  _lst_spaces(LST_LINENUM_POS - pos);
 
   return lst_bytes;
 }
@@ -635,16 +633,16 @@ lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr,
 void
 lst_format_line(const char *src_line, int value)
 {
-  unsigned int emitted = 0;
-  unsigned int emitted_lines = 0;
-  unsigned int byte_addr = 0;
-  unsigned int bytes_emitted = 0;
-  unsigned int lst_bytes;
-  const char *addr_fmt = IS_PIC16E_CORE ? "%06X " : (IS_EEPROM ? "%04X " : "%04X   ");
+  unsigned int  emitted = 0;
+  unsigned int  emitted_lines = 0;
+  unsigned int  byte_addr = 0;
+  unsigned int  bytes_emitted = 0;
+  unsigned int  lst_bytes;
+  const char   *addr_fmt = IS_PIC16E_CORE ? "%06X " : (IS_EEPROM ? "%04X " : "%04X   ");
 #define ADDR_LEN 7
-  unsigned int pos = 0;
-  unsigned short reloc_type;
-  MemBlock *m = state.i_memory;
+  unsigned int  pos = 0;
+  uint16_t      reloc_type;
+  MemBlock     *m = state.i_memory;
 
   assert(src_line != NULL);
 
@@ -652,7 +650,7 @@ lst_format_line(const char *src_line, int value)
       (state.obj.new_sect_flags & STYP_TEXT) && (state.obj.section->relocations_tail != NULL)) {
       if ((state.obj.section->address + state.obj.section->relocations_tail->address) > state.lst.line.was_byte_addr) {
         /* already passed it, go back to the history */
-        gp_reloc_type *p = find_reloc_by_address(state.lst.line.was_byte_addr);
+        gp_reloc_type *p = _find_reloc_by_address(state.lst.line.was_byte_addr);
         reloc_type = (p != NULL) ? p->type : 0;
       }
       else if ((state.obj.section->address + state.obj.section->relocations_tail->address) == state.lst.line.was_byte_addr) {
@@ -710,40 +708,40 @@ lst_format_line(const char *src_line, int value)
   switch (state.lst.line.linetype) {
   case LTY_EQU:
   case LTY_SET:
-    pos += lst_printf("  %08X", value);
-    lst_spaces(LST_LINENUM_POS - pos);
+    pos += _lst_printf("  %08X", value);
+    _lst_spaces(LST_LINENUM_POS - pos);
     break;
 
   case LTY_SET4:
-    pos += lst_printf("  %04X", value & 0xffff);
-    lst_spaces(LST_LINENUM_POS - pos);
+    pos += _lst_printf("  %04X", value & 0xffff);
+    _lst_spaces(LST_LINENUM_POS - pos);
     break;
 
   case LTY_ORG:
-    pos += lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.byte_addr));
-    lst_spaces(LST_LINENUM_POS - pos);
+    pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.byte_addr));
+    _lst_spaces(LST_LINENUM_POS - pos);
     break;
 
   case LTY_IDLOCS:
     /* not used for 16 bit devices, config is used */
     m = state.c_memory;
-    pos += lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.device.id_location));
-    lst_bytes = lst_data(pos, m, state.device.id_location, emitted, reloc_type);
+    pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.device.id_location));
+    lst_bytes = _lst_data(pos, m, state.device.id_location, emitted, reloc_type);
     byte_addr = state.device.id_location + lst_bytes;
     bytes_emitted = emitted - lst_bytes;
     break;
 
   case LTY_DATA:
   case LTY_RES:
-    pos += lst_printf(addr_fmt, state.lst.line.was_byte_addr);
+    pos += _lst_printf(addr_fmt, state.lst.line.was_byte_addr);
     goto lst_data;
 
   case LTY_INSN:
-    pos += lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.line.was_byte_addr));
+    pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.line.was_byte_addr));
 
 lst_data:
 
-    lst_bytes = lst_data(pos, m, state.lst.line.was_byte_addr, emitted, reloc_type);
+    lst_bytes = _lst_data(pos, m, state.lst.line.was_byte_addr, emitted, reloc_type);
     byte_addr = state.lst.line.was_byte_addr + lst_bytes;
     bytes_emitted = emitted - lst_bytes;
     break;
@@ -754,33 +752,33 @@ lst_data:
          words in the list file. */
       if (state.lst.config_address == CONFIG4L) {
         /* Special case */
-        unsigned short word;
+        uint16_t word;
 
         state.device.class->i_memory_get(state.c_memory,
                                          state.lst.config_address, &word, NULL, NULL);
-        pos += lst_printf(addr_fmt, state.lst.config_address);
-        pos += lst_printf("%04X", word);
-        lst_spaces(LST_LINENUM_POS - pos);
+        pos += _lst_printf(addr_fmt, state.lst.config_address);
+        pos += _lst_printf("%04X", word);
+        _lst_spaces(LST_LINENUM_POS - pos);
       } else if ((state.lst.config_address & 1) == 0) {
         /* if it is an even address don't print anything */
-        lst_spaces(LST_LINENUM_POS);
+        _lst_spaces(LST_LINENUM_POS);
       } else {
-        unsigned short word;
+        uint16_t word;
 
         state.device.class->i_memory_get(state.c_memory,
                                          state.lst.config_address - 1, &word, NULL, NULL);
-        pos += lst_printf(addr_fmt, state.lst.config_address - 1);
-        pos += lst_printf("%04X", word);
-        lst_spaces(LST_LINENUM_POS - pos);
+        pos += _lst_printf(addr_fmt, state.lst.config_address - 1);
+        pos += _lst_printf("%04X", word);
+        _lst_spaces(LST_LINENUM_POS - pos);
       }
     } else {
-      unsigned short word;
+      uint16_t word;
 
       state.device.class->i_memory_get(state.c_memory, state.lst.config_address, &word, NULL, NULL);
-      pos += lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor,
+      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor,
                         state.lst.config_address));
-      pos += lst_printf("%04X", word);
-      lst_spaces(LST_LINENUM_POS - pos);
+      pos += _lst_printf("%04X", word);
+      _lst_spaces(LST_LINENUM_POS - pos);
     }
     break;
 
@@ -788,14 +786,14 @@ lst_data:
   case LTY_DIR:
   case LTY_NONE:
   default:
-    lst_spaces(LST_LINENUM_POS);
+    _lst_spaces(LST_LINENUM_POS);
     break;
   }
 
   if (state.stGlobal == state.stTop) {
-    lst_printf("%05d ", state.src->line_number);
+    _lst_printf("%05d ", state.src->line_number);
   } else {
-    lst_printf("    M ");
+    _lst_printf("    M ");
   }
 
   /* Now copy source line to listing, expanding tabs as required */
@@ -810,8 +808,8 @@ lst_data:
 
         while (len--) {
           if (lst_column >= state.lst.line_width) {
-            lst_eol();
-            lst_spaces(LST_SRC_POS);
+            _lst_eol();
+            _lst_spaces(LST_SRC_POS);
             lst_column = LST_SRC_POS;
           }
           ++lst_column;
@@ -820,8 +818,8 @@ lst_data:
         }
       } else {
         if (lst_column >= state.lst.line_width) {
-          lst_eol();
-          lst_spaces(LST_SRC_POS);
+          _lst_eol();
+          _lst_spaces(LST_SRC_POS);
           lst_column = LST_SRC_POS;
         }
         ++lst_column;
@@ -835,24 +833,24 @@ lst_data:
   /* Tell the .cod file that the next line(s) has an opcode(s) */
   state.cod.emitting = emitted;
 
-  lst_eol();
+  _lst_eol();
 
   if (bytes_emitted > 0) {
     while (bytes_emitted > 0) {
       /* data left to print on separate lines */
 
-      pos = lst_spaces(ADDR_LEN);
-      lst_bytes = lst_data(pos, m, byte_addr, bytes_emitted, reloc_type);
+      pos = _lst_spaces(ADDR_LEN);
+      lst_bytes = _lst_data(pos, m, byte_addr, bytes_emitted, reloc_type);
       byte_addr += lst_bytes;
       bytes_emitted -= lst_bytes;
-      lst_eol();
+      _lst_eol();
     }
     state.cod.emitting = 0;
   }
 }
 
 static void
-cod_symbol_table(void)
+_cod_symbol_table(void)
 {
   const symbol_t **lst;
   size_t           sym_count;
@@ -911,7 +909,7 @@ lst_symbol_table(void)
   lst_line("  LABEL                             VALUE");
   lst_line(NULL);
 
-  cod_symbol_table();
+  _cod_symbol_table();
 
   count = sym_get_symbol_count(state.stGlobal) + sym_get_symbol_count(state.stDefines) +
 	  sym_get_symbol_count(state.stMacros);

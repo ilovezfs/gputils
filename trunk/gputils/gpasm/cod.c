@@ -340,7 +340,7 @@ cod_write_code(void)
   gp_boolean      used_flag;
   BlockList      *rb;
   int             high_addr;
-  unsigned short  insn;
+  uint16_t        insn;
 
   m             = state.i_memory;
   start_address = 0;

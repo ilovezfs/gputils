@@ -36,10 +36,10 @@ void gp_init(void);
 void  gp_fputl16(short data, FILE *fp);
 void  gp_fputl32(long data, FILE *fp); 
 void  gp_fputvar(const void *data, int number, FILE *fp); 
-short gp_getl16(const unsigned char *addr);
-unsigned short gp_getu16(const unsigned char *addr);
+int16_t gp_getl16(const unsigned char *addr);
+uint16_t gp_getu16(const unsigned char *addr);
 long  gp_getl32(const unsigned char *addr);
-void  gp_putl16(unsigned char *addr, unsigned short data);
+void  gp_putl16(unsigned char *addr, uint16_t data);
 void  gp_putl32(unsigned char *addr, unsigned long data);
 
 long  gp_getb32(const unsigned char *addr);

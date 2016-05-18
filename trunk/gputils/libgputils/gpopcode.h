@@ -1578,21 +1578,21 @@ struct pnode;           /* forward declaration; defined in
                          * gpasm.h for assembler and in
                          * script.h for linker */
 
-struct insn {
-  const char *name;
-  unsigned int mask;
-  unsigned int opcode;
-  enum common_insn icode;
-  enum insn_class class;
-  enum invalidate_mask inv_mask;
-  unsigned int attribs;
-  gpasmVal (*doer)(gpasmVal r, const char *name, int arity, struct pnode *parms);
-};
+typedef struct insn {
+  const char           *name;
+  unsigned int          mask;
+  unsigned int          opcode;
+  enum common_insn      icode;
+  enum insn_class       class;
+  enum invalidate_mask  inv_mask;
+  unsigned int          attribs;
+  gpasmVal            (*doer)(gpasmVal r, const char *name, int arity, struct pnode *parms);
+} insn_t;
 
-struct strict_insn {
-  const char *name;
-  unsigned int mask;
-};
+typedef struct strict_insn {
+  const char   *name;
+  unsigned int  mask;
+} strict_insn_t;
 
 #define TABLE_SIZE(X)       (sizeof(X) / sizeof((X)[0]))
 

@@ -1,3 +1,24 @@
+2016-05-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gpasm/directive.c, gpasm/evaluate.c,
+    gpasm/evaluate.h, gpasm/lst.c, gplink/lst.c,
+    libgputils/gpcofflink.c, libgputils/gpdis.c,
+    libgputils/gpmemory.c, libgputils/gpmemory.h,
+    libgputils/gpreadobj.c, libgputils/gpsystem.c,
+    libgputils/gpsystem.h:
+    Changed variabla types: "unsigned char" to "uint8_t",
+                            "unsigned short" to "uint16_t".
+
+  * gpasm/lst.c:
+    The names of static functions got '_' prefix.
+
+  * gplink/gplink.c:
+    Code formatting.
+
+  * libgputils/gpcofflink.c, libgputils/gpcoffopt.c,
+    libgputils/gpdis.c, libgputils/gpdis.h,
+    libgputils/gpmemory.h, libgputils/gpopcode.h:
+    Some places simpler and clearer the code.
+
 2016-04-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpdis.c:
     Bugfix: "if" --> "else if"

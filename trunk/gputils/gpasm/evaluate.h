@@ -22,6 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __EVALUATE_H__
 #define __EVALUATE_H__
 
+#include "stdhdr.h"
+
 gp_boolean enforce_arity(int arity, int must_be);
 gp_boolean enforce_simple(const struct pnode *p);
 int list_length(const struct pnode *L);
@@ -32,7 +34,7 @@ gpasmVal evaluate(const struct pnode *p);
 gpasmVal maybe_evaluate(const struct pnode *p);
 
 int count_reloc(const struct pnode *p);
-gpasmVal reloc_evaluate(const struct pnode *p, unsigned short type);
+gpasmVal reloc_evaluate(const struct pnode *p, uint16_t type);
 int eval_fill_number(const struct pnode *p);
 
 #endif
