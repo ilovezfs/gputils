@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Feb 01 2016
+; Build date : Mar 21 2016
 ;  MPASM PIC16F18326 processor include
 ; 
 ;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
@@ -3242,38 +3242,25 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'058C'-H'059F'
        __BADRAM  H'060C'-H'0616'
        __BADRAM  H'061D'-H'061E'
-       __BADRAM  H'0650'-H'066F'
        __BADRAM  H'068C'-H'0690'
        __BADRAM  H'069A'-H'069F'
-       __BADRAM  H'06A0'-H'06EF'
        __BADRAM  H'070C'-H'0710'
        __BADRAM  H'071A'-H'071F'
-       __BADRAM  H'0720'-H'076F'
        __BADRAM  H'078C'-H'079F'
-       __BADRAM  H'07A0'-H'07EF'
        __BADRAM  H'080C'-H'081F'
-       __BADRAM  H'0820'-H'086F'
        __BADRAM  H'088C'-H'0890'
        __BADRAM  H'0897'-H'089A'
        __BADRAM  H'089C'-H'089F'
-       __BADRAM  H'08A0'-H'08EF'
        __BADRAM  H'090C'-H'0910'
        __BADRAM  H'0917'
-       __BADRAM  H'0920'-H'096F'
        __BADRAM  H'098C'-H'099F'
-       __BADRAM  H'09A0'-H'09EF'
        __BADRAM  H'0A0C'-H'0A1F'
-       __BADRAM  H'0A20'-H'0A6F'
        __BADRAM  H'0A8C'-H'0A9F'
-       __BADRAM  H'0AA0'-H'0AEF'
        __BADRAM  H'0B0C'-H'0B1F'
-       __BADRAM  H'0B20'-H'0B6F'
        __BADRAM  H'0B8C'-H'0B9F'
-       __BADRAM  H'0BA0'-H'0BEF'
        __BADRAM  H'0C0C'-H'0C1F'
-       __BADRAM  H'0C20'-H'0C6F'
        __BADRAM  H'0C8C'-H'0C9F'
-       __BADRAM  H'0CA0'-H'0CEF'
+       __BADRAM  H'0CC0'-H'0CEF'
        __BADRAM  H'0D0C'-H'0D13'
        __BADRAM  H'0D14'-H'0D1F'
        __BADRAM  H'0D20'-H'0D6F'

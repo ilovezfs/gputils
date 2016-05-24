@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Feb 01 2016
+; Build date : Mar 21 2016
 ;  MPASM PIC18F26K40 processor include
 ; 
 ;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
@@ -2323,13 +2323,13 @@ ADPCH5           EQU  H'0005'
 
 ;----- ADCON0 Bits -----------------------------------------------------
 ADGO             EQU  H'0000'
+ADFM             EQU  H'0002'
 ADCS             EQU  H'0004'
 ADCONT           EQU  H'0006'
 ADON             EQU  H'0007'
 
 GO_ADCON0        EQU  H'0000'
 ADFM0            EQU  H'0002'
-ADFM1            EQU  H'0003'
 
 DONE             EQU  H'0000'
 
@@ -2381,7 +2381,6 @@ ADRES15          EQU  H'0007'
 
 
 ;----- ADSTAT Bits -----------------------------------------------------
-ADMACT           EQU  H'0003'
 ADMATH           EQU  H'0004'
 ADLTHR           EQU  H'0005'
 ADUTHR           EQU  H'0006'

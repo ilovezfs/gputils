@@ -1,3 +1,12 @@
+2016-05-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure.ac, configure:
+    Changed Mplabx default path from "/opt/microchip/mplabx/v3.26"
+    to "/opt/microchip/mplabx/v3.30".
+
+  * header/*, lkr/*, libgputils/gpcfg-table.c,
+    libgputils/gpreg-table.c:
+    Updated based on the mplabx-3.30.
+
 2016-05-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gpasm/directive.c, gpasm/evaluate.c,
     gpasm/evaluate.h, gpasm/lst.c, gplink/lst.c,
