@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Feb 01 2016
+; Build date : Mar 21 2016
 ;  MPASM PIC16F18856 processor include
 ; 
 ;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
@@ -6090,8 +6090,8 @@ _WDTCCS_HFINTOSC     EQU  H'0FFF'; WDT reference clock is the 31.25 kHz HFINTOSC
 _WDTCCS_SC           EQU  H'3FFF'; Software Control
 
 ;----- CONFIG4 Options --------------------------------------------------
-_WRT_ON              EQU  H'3FFC'; 0x0000 to 0x1FFF write protected
-_WRT_WRT_lower       EQU  H'3FFD'; 0x0000 to x0FFF write protected
+_WRT_ON              EQU  H'3FFC'; 0x0000 to 0x3FFF write protected
+_WRT_WRT_lower       EQU  H'3FFD'; 0x0000 to x1FFF write protected
 _WRT_WRT_upper       EQU  H'3FFE'; 0x0000 to 0x01FF write protected
 _WRT_OFF             EQU  H'3FFF'; Write protection off
 
@@ -6102,11 +6102,11 @@ _LVP_OFF             EQU  H'1FFF'; High Voltage on MCLR/Vpp must be used for pro
 _LVP_ON              EQU  H'3FFF'; Low Voltage programming enabled. MCLR/Vpp pin function is MCLR.
 
 ;----- CONFIG5 Options --------------------------------------------------
-_CP_ON               EQU  H'3FFE'; UserNVM code protection enabled
-_CP_OFF              EQU  H'3FFF'; UserNVM code protection disabled
+_CP_ON               EQU  H'3FFE'; Program Memory code protection enabled
+_CP_OFF              EQU  H'3FFF'; Program Memory code protection disabled
 
-_CPD_ON              EQU  H'3FFD'; DataNVM code protection enabled
-_CPD_OFF             EQU  H'3FFF'; DataNVM code protection disabled
+_CPD_ON              EQU  H'3FFD'; Data EEPROM code protection enabled
+_CPD_OFF             EQU  H'3FFF'; Data EEPROM code protection disabled
 
 ;----- DEVID Equates --------------------------------------------------
 _DEVID1          EQU  H'8006'
