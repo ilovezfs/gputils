@@ -309,9 +309,9 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14E   , "__16F1769"     , { "pic16f1769"     , "p16f1769"       , "16f1769"         }, 0x1769,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1769.inc"     , "16f1769_g.lkr"     , 0 },
   { PROC_CLASS_PIC14E   , "__16F1773"     , { "pic16f1773"     , "p16f1773"       , "16f1773"         }, 0x1773,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x000FFF, 0x001000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1773.inc"     , "16f1773_g.lkr"     , 0 },
   { PROC_CLASS_PIC14E   , "__16F1776"     , { "pic16f1776"     , "p16f1776"       , "16f1776"         }, 0x1776,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1776.inc"     , "16f1776_g.lkr"     , 0 },
-  { PROC_CLASS_PIC14EX  , "__16F1777"     , { "pic16f1777"     , "p16f1777"       , "16f1777"         }, 0x1777,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1777.inc"     , "16f1777_g.lkr"     , 0 },
-  { PROC_CLASS_PIC14EX  , "__16F1778"     , { "pic16f1778"     , "p16f1778"       , "16f1778"         }, 0x1778,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27CF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1778.inc"     , "16f1778_g.lkr"     , 0 },
-  { PROC_CLASS_PIC14EX  , "__16F1779"     , { "pic16f1779"     , "p16f1779"       , "16f1779"         }, 0x1779,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1779.inc"     , "16f1779_g.lkr"     , 0 },
+  { PROC_CLASS_PIC14E   , "__16F1777"     , { "pic16f1777"     , "p16f1777"       , "16f1777"         }, 0x1777,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1777.inc"     , "16f1777_g.lkr"     , 0 },
+  { PROC_CLASS_PIC14E   , "__16F1778"     , { "pic16f1778"     , "p16f1778"       , "16f1778"         }, 0x1778,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27CF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1778.inc"     , "16f1778_g.lkr"     , 0 },
+  { PROC_CLASS_PIC14E   , "__16F1779"     , { "pic16f1779"     , "p16f1779"       , "16f1779"         }, 0x1779,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1779.inc"     , "16f1779_g.lkr"     , 0 },
   { PROC_CLASS_PIC14E   , "__16F1782"     , { "pic16f1782"     , "p16f1782"       , "16f1782"         }, 0x1782,  1,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x20EF }, 0x0FFF, 0x00F0FF, 0x000800, { 0x000800, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f1782.inc"     , "16f1782_g.lkr"     , 0 },
   { PROC_CLASS_PIC14E   , "__16F1783"     , { "pic16f1783"     , "p16f1783"       , "16f1783"         }, 0x1783,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x00F0FF, 0x001000, { 0x001000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f1783.inc"     , "16f1783_g.lkr"     , 0 },
   { PROC_CLASS_PIC14E   , "__16F1784"     , { "pic16f1784"     , "p16f1784"       , "16f1784"         }, 0x1784,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x00F0FF, 0x001000, { 0x001000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f1784.inc"     , "16f1784_g.lkr"     , 0 },
@@ -347,11 +347,11 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14E   , "__16F18854"    , { "pic16f18854"    , "p16f18854"      , "16f18854"        }, 0x8854,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x00F0FF, 0x001000, { 0x001000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18854.inc"    , "16f18854_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16F18855"    , { "pic16f18855"    , "p16f18855"      , "16f18855"        }, 0x8855,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x00F0FF, 0x002000, { 0x002000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18855.inc"    , "16f18855_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16F18856"    , { "pic16f18856"    , "p16f18856"      , "16f18856"        }, 0x8856,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x00F0FF, 0x004000, { 0x004000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18856.inc"    , "16f18856_g.lkr"    , 0 },
-  { PROC_CLASS_PIC14EX  , "__16F18857"    , { "pic16f18857"    , "p16f18857"      , "16f18857"        }, 0x8857, 16,   32, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x30BF }, 0x1FFF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18857.inc"    , "16f18857_g.lkr"    , 0 },
+  { PROC_CLASS_PIC14EX  , "__16F18857"    , { "pic16f18857"    , "p16f18857"      , "16f18857"        }, 0x8857, 16,   64, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x30BF }, 0x1FFF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18857.inc"    , "16f18857_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16F18875"    , { "pic16f18875"    , "p16f18875"      , "16f18875"        }, 0x8875,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x00F0FF, 0x002000, { 0x002000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18875.inc"    , "16f18875_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16F18876"    , { "pic16f18876"    , "p16f18876"      , "16f18876"        }, 0x8876,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x00F0FF, 0x004000, { 0x004000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18876.inc"    , "16f18876_g.lkr"    , 0 },
-  { PROC_CLASS_PIC14EX  , "__16F18877"    , { "pic16f18877"    , "p16f18877"      , "16f18877"        }, 0x8877, 16,   32, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31EF }, 0x1FFF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18877.inc"    , "16f18877_g.lkr"    , 0 },
-  { PROC_CLASS_PIC14EX  , "__16F19197"    , { "pic16f19197"    , "p16f19197"      , "16f19197"        }, 0xA27E, 16,   32, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31EF }, 0x1FFF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f19197.inc"    , "16f19197_g.lkr"    , 0 },
+  { PROC_CLASS_PIC14EX  , "__16F18877"    , { "pic16f18877"    , "p16f18877"      , "16f18877"        }, 0x8877, 16,   64, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31EF }, 0x1FFF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f18877.inc"    , "16f18877_g.lkr"    , 0 },
+  { PROC_CLASS_PIC14EX  , "__16F19197"    , { "pic16f19197"    , "p16f19197"      , "16f19197"        }, 0xA27E, 16,   64, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31EF }, 0x1FFF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16f19197.inc"    , "16f19197_g.lkr"    , 0 },
   { PROC_CLASS_PIC12    , "__16HV540"     , { "pic16hv540"     , "p16hv540"       , "16hv540"         }, 0x6540,  1,    1, 0x0000, {   -1,   -1 },    -1, {     -1,     -1 }, 0x001F, 0x0001FF, 0x000200, {       -1,       -1 }, { 0x000200, 0x000203 }, { 0x000FFF, 0x000FFF }, {       -1,       -1 }, 0x0FF0, "p16hv540.inc"     , "16hv540_g.lkr"     , 0 },
   { PROC_CLASS_PIC14    , "__16HV610"     , { "pic16hv610"     , "p16hv610"       , "16hv610"         }, 0x6610,  1,    2, 0x0080, { 0x70, 0x7F },    -1, {     -1,     -1 }, 0x00FF, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, {       -1,       -1 }, 0x3F80, "p16hv610.inc"     , "16hv610_g.lkr"     , 0 },
   { PROC_CLASS_PIC14    , "__16HV616"     , { "pic16hv616"     , "p16hv616"       , "16hv616"         }, 0x6616,  1,    2, 0x0080, { 0x70, 0x7F },    -1, {     -1,     -1 }, 0x00FF, 0x0007FF, 0x000800, {       -1,       -1 }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, {       -1,       -1 }, 0x3F80, "p16hv616.inc"     , "16hv616_g.lkr"     , 0 },
@@ -442,9 +442,9 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14E   , "__16LF1769"    , { "pic16lf1769"    , "p16lf1769"      , "16lf1769"        }, 0xA769,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1769.inc"    , "16lf1769_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16LF1773"    , { "pic16lf1773"    , "p16lf1773"      , "16lf1773"        }, 0xA773,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x000FFF, 0x001000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1773.inc"    , "16lf1773_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16LF1776"    , { "pic16lf1776"    , "p16lf1776"      , "16lf1776"        }, 0xA776,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1776.inc"    , "16lf1776_g.lkr"    , 0 },
-  { PROC_CLASS_PIC14EX  , "__16LF1777"    , { "pic16lf1777"    , "p16lf1777"      , "16lf1777"        }, 0xA26D,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1777.inc"    , "16lf1777_g.lkr"    , 0 },
-  { PROC_CLASS_PIC14EX  , "__16LF1778"    , { "pic16lf1778"    , "p16lf1778"      , "16lf1778"        }, 0xA778,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27CF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1778.inc"    , "16lf1778_g.lkr"    , 0 },
-  { PROC_CLASS_PIC14EX  , "__16LF1779"    , { "pic16lf1779"    , "p16lf1779"      , "16lf1779"        }, 0xA779,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1779.inc"    , "16lf1779_g.lkr"    , 0 },
+  { PROC_CLASS_PIC14E   , "__16LF1777"    , { "pic16lf1777"    , "p16lf1777"      , "16lf1777"        }, 0xA26D,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1777.inc"    , "16lf1777_g.lkr"    , 0 },
+  { PROC_CLASS_PIC14E   , "__16LF1778"    , { "pic16lf1778"    , "p16lf1778"      , "16lf1778"        }, 0xA778,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27CF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1778.inc"    , "16lf1778_g.lkr"    , 0 },
+  { PROC_CLASS_PIC14E   , "__16LF1779"    , { "pic16lf1779"    , "p16lf1779"      , "16lf1779"        }, 0xA779,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x003FFF, 0x004000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1779.inc"    , "16lf1779_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16LF1782"    , { "pic16lf1782"    , "p16lf1782"      , "16lf1782"        }, 0xA782,  1,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x20EF }, 0x0FFF, 0x00F0FF, 0x000800, { 0x000800, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf1782.inc"    , "16lf1782_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16LF1783"    , { "pic16lf1783"    , "p16lf1783"      , "16lf1783"        }, 0xA783,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x00F0FF, 0x001000, { 0x001000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf1783.inc"    , "16lf1783_g.lkr"    , 0 },
   { PROC_CLASS_PIC14E   , "__16LF1784"    , { "pic16lf1784"    , "p16lf1784"      , "16lf1784"        }, 0xA784,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x00F0FF, 0x001000, { 0x001000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf1784.inc"    , "16lf1784_g.lkr"    , 0 },
@@ -485,10 +485,10 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14E   , "__16LF18854"   , { "pic16lf18854"   , "p16lf18854"     , "16lf18854"       }, 0xA854,  2,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x00F0FF, 0x001000, { 0x001000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18854.inc"   , "16lf18854_g.lkr"   , 0 },
   { PROC_CLASS_PIC14E   , "__16LF18855"   , { "pic16lf18855"   , "p16lf18855"     , "16lf18855"       }, 0xA855,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x00F0FF, 0x002000, { 0x002000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18855.inc"   , "16lf18855_g.lkr"   , 0 },
   { PROC_CLASS_PIC14E   , "__16LF18856"   , { "pic16lf18856"   , "p16lf18856"     , "16lf18856"       }, 0xA856,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27EF }, 0x0FFF, 0x00F0FF, 0x004000, { 0x004000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18856.inc"   , "16lf18856_g.lkr"   , 0 },
-  { PROC_CLASS_PIC14EX  , "__16LF18857"   , { "pic16lf18857"   , "p16lf18857"     , "16lf18857"       }, 0xA857, 16,   32, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31CF }, 0x1FFF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18857.inc"   , "16lf18857_g.lkr"   , 0 },
+  { PROC_CLASS_PIC14EX  , "__16LF18857"   , { "pic16lf18857"   , "p16lf18857"     , "16lf18857"       }, 0xA857, 16,   64, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x31CF }, 0x1FFF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18857.inc"   , "16lf18857_g.lkr"   , 0 },
   { PROC_CLASS_PIC14E   , "__16LF18875"   , { "pic16lf18875"   , "p16lf18875"     , "16lf18875"       }, 0xA875,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x23EF }, 0x0FFF, 0x00F0FF, 0x002000, { 0x002000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18875.inc"   , "16lf18875_g.lkr"   , 0 },
   { PROC_CLASS_PIC14E   , "__16LF18876"   , { "pic16lf18876"   , "p16lf18876"     , "16lf18876"       }, 0xA876,  8,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x27CF }, 0x0FFF, 0x00F0FF, 0x004000, { 0x004000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18876.inc"   , "16lf18876_g.lkr"   , 0 },
-  { PROC_CLASS_PIC14EX  , "__16LF18877"   , { "pic16lf18877"   , "p16lf18877"     , "16lf18877"       }, 0xA877, 16,   32, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x25EF }, 0x1FEF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18877.inc"   , "16lf18877_g.lkr"   , 0 },
+  { PROC_CLASS_PIC14EX  , "__16LF18877"   , { "pic16lf18877"   , "p16lf18877"     , "16lf18877"       }, 0xA877, 16,   64, 0x1F80, { 0x70, 0x7F },    -1, { 0x2000, 0x25EF }, 0x1FEF, 0x00F0FF, 0x008000, { 0x008000, 0x00EFFF }, { 0x008000, 0x008003 }, { 0x008007, 0x00800B }, { 0x00F000, 0x00F0FF }, 0x3F80, "p16lf18877.inc"   , "16lf18877_g.lkr"   , 0 },
   { PROC_CLASS_PIC16    , "__17C42"       , { "pic17c42"       , "p17c42"         , "17c42"           }, 0x7C42,  0,    0, 0x0300, {   -1,   -1 },    -1, {     -1,     -1 }, 0x03FF, 0x0007FF, 0x000800, {       -1,       -1 }, {       -1,       -1 }, { 0x00FE00, 0x00FE0F }, {       -1,       -1 }, 0x0000, "p17c42.inc"       , "17c42_g.lkr"       , 0 },
   { PROC_CLASS_PIC16    , "__17C42A"      , { "pic17c42a"      , "p17c42a"        , "17c42a"          }, 0x742A,  0,    0, 0x0300, {   -1,   -1 },    -1, {     -1,     -1 }, 0x031F, 0x0007FF, 0x000800, {       -1,       -1 }, {       -1,       -1 }, { 0x00FE00, 0x00FE0F }, {       -1,       -1 }, 0x0000, "p17c42a.inc"      , "17c42a_g.lkr"      , 0 },
   { PROC_CLASS_PIC16    , "__17C43"       , { "pic17c43"       , "p17c43"         , "17c43"           }, 0x7C43,  0,    0, 0x0300, {   -1,   -1 },    -1, {     -1,     -1 }, 0x031F, 0x000FFF, 0x001000, {       -1,       -1 }, {       -1,       -1 }, { 0x00FE00, 0x00FE0F }, {       -1,       -1 }, 0x0000, "p17c43.inc"       , "17c43_g.lkr"       , 0 },
@@ -1407,7 +1407,8 @@ int
 gp_processor_is_idlocs_byte_addr(pic_processor_t processor, int byte_address)
 {
   const int *idlocs;
-  int start, end;
+  int        start;
+  int        end;
 
   if ((idlocs = gp_processor_idlocs_exist(processor)) != NULL) {
     /* There is a need an address conversion. */
@@ -1459,7 +1460,8 @@ int
 gp_processor_is_config_byte_addr(pic_processor_t processor, int byte_address)
 {
   const int *config;
-  int start, end;
+  int        start;
+  int        end;
 
   if ((config = gp_processor_config_exist(processor)) != NULL) {
     /* There is a need an address conversion. */
@@ -1511,7 +1513,8 @@ int
 gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address)
 {
   const int *eeprom;
-  int start, end;
+  int        start;
+  int        end;
 
   if ((eeprom = gp_processor_eeprom_exist(processor)) != NULL) {
     /* There is a need an address conversion. */
@@ -1747,7 +1750,7 @@ gp_processor_set_page_pic12_14(int num_pages, int page, MemBlock *m, unsigned in
                                int movwf_insn, int location, int page0, int page1)
 {
   unsigned int data;
-  char buf[BUFSIZ];
+  char         buf[BUFSIZ];
 
   assert(num_pages <= 4);
 
@@ -1785,7 +1788,7 @@ gp_processor_set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned in
                                int bcf_insn, int bsf_insn, int location, int bank0, int bank1, int bank2)
 {
   unsigned int data;
-  char buf[BUFSIZ];
+  char         buf[BUFSIZ];
 
   /* 16F59 */
   assert(num_banks <= 8);
@@ -1804,20 +1807,21 @@ gp_processor_set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned in
     data = ((bank & 2) ? bsf_insn : bcf_insn) | bank1 | location;
     i_memory_put_le(m, address + 2, data, buf, NULL);
   }
+
   if (num_banks > 4) {
-    /* bank high bit */
+    /* bank upper bit */
     data = ((bank & 4) ? bsf_insn : bcf_insn) | bank2 | location;
-    i_memory_put_le(m, address + 2, data, buf, NULL);
+    i_memory_put_le(m, address + 4, data, buf, NULL);
   }
 
-  if (num_banks < 4) {
+  if (num_banks <= 2) {
     return 2;
   }
-  else if (num_banks < 8) {
+  else if (num_banks <= 4) {
     return 4;
   }
   else {
-    return 8;
+    return 6;
   }
 }
 
@@ -1922,7 +1926,7 @@ static int
 gp_processor_set_bank_pic12e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   unsigned int data;
-  char buf[BUFSIZ];
+  char         buf[BUFSIZ];
 
   bank &= PIC12E_BMSK_BANK;
   data = PIC12E_INSN_MOVLB | bank;
@@ -1984,7 +1988,7 @@ gp_processor_set_page_sx(int num_pages, int page, MemBlock *m, unsigned int addr
                          gp_boolean use_wreg)
 {
   unsigned int data;
-  char buf[BUFSIZ];
+  char         buf[BUFSIZ];
 
   if (num_pages == 1) {
     return 0;
@@ -2106,10 +2110,11 @@ reloc_tris_pic14(unsigned int address)
 static void
 patch_strict_pic14(void)
 {
-  int i, j = 0;
+  int i;
+  int j;
 
-  for (i = 0; (i < num_op_16cxx) && (j < num_op_16cxx_strict_mask); ++i) {
-    if (!strcasecmp(op_16cxx[i].name, op_16cxx_strict_mask[j].name)) {
+  for (i = 0, j = 0; (i < num_op_16cxx) && (j < num_op_16cxx_strict_mask); ++i) {
+    if (strcasecmp(op_16cxx[i].name, op_16cxx_strict_mask[j].name) == 0) {
       op_16cxx[i].mask = op_16cxx_strict_mask[j].mask;
       ++j;
     }
@@ -2124,15 +2129,14 @@ gp_processor_check_bank_pic14e(unsigned int address)
   return ((address >> PIC14_BANK_SHIFT) & PIC14E_BMSK_BANK);
 }
 
-
 static int
 gp_processor_set_bank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   unsigned int data;
-  char buf[BUFSIZ];
+  char         buf[BUFSIZ];
 
   bank &= PIC14E_BMSK_BANK;
-  data = PIC14E_INSN_MOVLB | bank;
+  data  = PIC14E_INSN_MOVLB | bank;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
   i_memory_put_le(m, address, data, buf, NULL);
@@ -2153,7 +2157,7 @@ gp_processor_set_ibank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int
    * FSR0H: 0000bbbb bllllllll */
   unsigned int mask;
   unsigned int bit;
-  char buf[BUFSIZ];
+  char         buf[BUFSIZ];
 
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
@@ -2192,7 +2196,7 @@ gp_processor_set_page_pic14e(int num_pages, int page, MemBlock *m, unsigned int 
                              gp_boolean use_wreg)
 {
   unsigned int data;
-  char buf[BUFSIZ];
+  char         buf[BUFSIZ];
 
   if (num_pages == 1) {
     return 0;
@@ -2219,7 +2223,7 @@ gp_processor_set_page_pic14e(int num_pages, int page, MemBlock *m, unsigned int 
 static int
 reloc_movlb_pic14e(unsigned int address)
 {
-  return ((address >> 7) & 0xff);
+  return ((address >> PIC14_BANK_SHIFT) & 0xff);
 }
 
 static int
@@ -2228,8 +2232,7 @@ reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org
   int offset = value - (byte_org / 2) - 1;
 
   if ((offset > 0xff) || (offset < -0x100)) {
-    gp_warning("Relative branch out of range in at %#x of section \"%s\".",
-               byte_org << 1, section->name);
+    gp_warning("Relative branch out of range in at %#x of section \"%s\".", byte_org << 1, section->name);
   }
   return (offset & PIC14E_BMSK_RBRA9);
 }
@@ -2259,17 +2262,57 @@ find_insn_pic14e(proc_class_t cls, unsigned int opcode)
   return NULL;
 }
 
+/* PIC14EX */
+
+static int
+gp_processor_check_bank_pic14ex(unsigned int address)
+{
+  return ((address >> PIC14_BANK_SHIFT) & PIC14EX_BMSK_BANK);
+}
+
+static int
+gp_processor_set_bank_pic14ex(int num_banks, int bank, MemBlock *m, unsigned int address)
+{
+  unsigned int data;
+  char         buf[BUFSIZ];
+
+  bank &= PIC14EX_BMSK_BANK;
+  data  = PIC14EX_INSN_MOVLB | bank;
+  snprintf(buf, sizeof(buf), "bank_%i", bank);
+
+  i_memory_put_le(m, address, data, buf, NULL);
+  return 2;
+}
+
+static const struct insn *
+find_insn_pic14ex(proc_class_t cls, unsigned int opcode)
+{
+  int i;
+  /* might be from the enhanced instruction set */
+  for (i = 0; i < num_op_16cxx_enhx; i++) {
+    if ((op_16cxx_enhx[i].mask & opcode) == op_16cxx_enhx[i].opcode) {
+      return &op_16cxx_enhx[i];
+    }
+  }
+  for (i = 0; i < num_op_16cxx; i++) {
+    if ((op_16cxx[i].mask & opcode) == op_16cxx[i].opcode) {
+      return &op_16cxx[i];
+    }
+  }
+  return NULL;
+}
+
 /* PIC16 */
 
 static int
 gp_processor_check_bank_pic16(unsigned int address)
 {
   if ((address & 0xff) < 0x20) {
-    return (address >> 8) & PIC16_BMSK_BANK;
+    return (address >> PIC16_BANK_SHIFT) & PIC16_BMSK_BANK;
   }
   else {
     /* 0x200 turns MOVLB to MOVLR for setting GPR RAM bank in set_bank. */
-    return (0x200 + ((address >> 8) & PIC16_BMSK_BANK));
+    return (0x200 + ((address >> PIC16_BANK_SHIFT) & PIC16_BMSK_BANK));
   }
 }
 
@@ -2309,7 +2352,7 @@ gp_processor_set_page_pic16(int num_pages, int page, MemBlock *m, unsigned int a
                             gp_boolean use_wreg)
 {
   unsigned int data;
-  char buf[BUFSIZ];
+  char         buf[BUFSIZ];
 
   page &= PIC16_BMSK_PAGE;
   snprintf(buf, sizeof(buf), "page_%02x", page);
@@ -2398,10 +2441,11 @@ reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org
   return (offset & PIC16E_BMSK_RBRA11);
 }
 
-static const struct insn *
+static const insn_t *
 find_insn_pic16e(proc_class_t cls, unsigned int opcode)
 {
   int i;
+
   if (gp_decode_mnemonics) {
     for (i = 0; i < num_op_18cxx_sp; i++) {
       if ((op_18cxx_sp[i].mask & opcode) == op_18cxx_sp[i].opcode) {
@@ -2409,11 +2453,13 @@ find_insn_pic16e(proc_class_t cls, unsigned int opcode)
       }
     }
   }
+
   for (i = 0; i < num_op_18cxx; i++) {
     if ((op_18cxx[i].mask & opcode) == op_18cxx[i].opcode) {
       return &op_18cxx[i];
     }
   }
+
   if (gp_decode_extended) {
     /* might be from the extended instruction set */
     for (i = 0; i < num_op_18cxx_ext; i++) {
@@ -2422,6 +2468,7 @@ find_insn_pic16e(proc_class_t cls, unsigned int opcode)
       }
     }
   }
+
   return NULL;
 }
 
@@ -2430,8 +2477,8 @@ core_sfr_cmp(const void *P0, const void *P1)
 {
   const core_sfr_t *s0 = (const core_sfr_t *)P0;
   const core_sfr_t *s1 = (const core_sfr_t *)P1;
-  unsigned int address0 = s0->address;
-  unsigned int address1 = s1->address;
+  unsigned int      address0 = s0->address;
+  unsigned int      address1 = s1->address;
 
   if (address0 < address1) {
     return -1;
@@ -2472,8 +2519,8 @@ vector_cmp(const void *P0, const void *P1)
 {
   const vector_t *v0 = (const vector_t *)P0;
   const vector_t *v1 = (const vector_t *)P1;
-  unsigned int address0 = v0->address;
-  unsigned int address1 = v1->address;
+  unsigned int    address0 = v0->address;
+  unsigned int    address1 = v1->address;
 
   if (address0 < address1) {
     return -1;
@@ -3079,8 +3126,8 @@ const struct proc_class proc_class_pic14ex = {
   vector_table_pic14,                   /* vector_table */
   TABLE_SIZE(vector_table_pic14),       /* vector_number */
   id_location_pic14,                    /* id_location */
-  gp_processor_check_bank_pic14e,       /* check_bank */
-  gp_processor_set_bank_pic14e,         /* set_bank */
+  gp_processor_check_bank_pic14ex,      /* check_bank */
+  gp_processor_set_bank_pic14ex,        /* set_bank */
   gp_processor_check_ibank_pic14e,      /* check_ibank */
   gp_processor_set_ibank_pic14e,        /* set_ibank */
   gp_processor_check_page_pic14e,       /* check_page */
@@ -3096,7 +3143,7 @@ const struct proc_class proc_class_pic14ex = {
   reloc_high_pic14e,                    /* reloc_high */
   op_16cxx,                             /* instructions */
   &num_op_16cxx,                        /* num_instructions */
-  find_insn_pic14e,                     /* find_insn */
+  find_insn_pic14ex,                    /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
   patch_strict_pic14,                   /* patch_strict */

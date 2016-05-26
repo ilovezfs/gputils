@@ -44,7 +44,7 @@ _gp_coffgen_addstring(const char *name, unsigned char *table)
 
   /* check the length against the max string table size */
   nbytes += sizeof_name;
-  assert(!(nbytes > MAX_STRING_TABLE));
+  assert(nbytes <= MAX_STRING_TABLE);
 
   /* copy the string to the table */
   memcpy(&table[offset], name, sizeof_name);
@@ -106,7 +106,7 @@ _gp_coffgen_write_opthdr(const gp_object_type *object, FILE *fp)
   unsigned long coff_type = gp_processor_coff_type(object->processor);
 
   /* make sure we catch unfinished processors */
-  assert(coff_type);
+  assert(coff_type != 0);
 
   /* write the data to file */
   gp_fputl16(object->isnew ? OPTMAGIC_v2 : OPTMAGIC_v1, fp);
@@ -147,21 +147,21 @@ _gp_coffgen_write_scnhdr(const gp_section_type *section, int org_to_byte_shift,
 
 /* write the section data */
 static void
-_gp_coffgen_write_data(proc_class_t class, const gp_section_type *section, FILE *fp)
+_gp_coffgen_write_data(pic_processor_t processor, const gp_section_type *section, FILE *fp)
 {
-  unsigned int  org;
-  unsigned int  last;
-  unsigned char b;
+  unsigned int org;
+  unsigned int end;
+  uint8_t      b;
 
   org = section->shadow_address;
-  last = org + section->size;
+  end = org + section->size;
 
 #ifdef GPUTILS_DEBUG
-  printf("section \"%s\"\nsize= %i\ndata:\n", section->name, section->size);
-  print_i_memory(section->data, class);
+  printf("section \"%s\"\nsize= %li\ndata:\n", section->name, section->size);
+  print_i_memory(section->data, processor);
 #endif
 
-  for ( ; org < last; org++) {
+  for ( ; org < end; org++) {
     b_memory_assert_get(section->data, org, &b, NULL, NULL);
     fputc(b, fp);
   }
@@ -414,6 +414,7 @@ gp_boolean
 gp_write_coff(gp_object_type *object, int numerrors)
 {
   FILE            *coff;
+  unsigned int     org_to_byte_shift;
   gp_section_type *section;
   unsigned char    table[MAX_STRING_TABLE]; /* string table */
 
@@ -428,6 +429,8 @@ gp_write_coff(gp_object_type *object, int numerrors)
     return false;
   }
 
+  org_to_byte_shift = object->class->org_to_byte_shift;
+
   /* update file pointers in the coff */
   _gp_updateptr(object);
 
@@ -441,7 +444,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   /* write section headers */
   section = object->sections;
   while (section != NULL) {
-    _gp_coffgen_write_scnhdr(section, object->class->org_to_byte_shift, &table[0], coff);
+    _gp_coffgen_write_scnhdr(section, org_to_byte_shift, &table[0], coff);
     section = section->next;
   }
 
@@ -449,7 +452,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   section = object->sections;
   while (section != NULL) {
     if (_has_data(section)) {
-      _gp_coffgen_write_data(object->class, section, coff);
+      _gp_coffgen_write_data(object->processor, section, coff);
     }
     section = section->next;
   }
@@ -467,7 +470,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   section = object->sections;
   while (section != NULL) {
     if (section->num_lineno != 0) {
-      _gp_coffgen_write_linenum(section, object->class->org_to_byte_shift, coff);
+      _gp_coffgen_write_linenum(section, org_to_byte_shift, coff);
     }
     section = section->next;
   }

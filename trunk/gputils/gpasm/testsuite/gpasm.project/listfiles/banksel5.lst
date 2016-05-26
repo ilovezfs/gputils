@@ -1,0 +1,314 @@
+MPASM 5.67                 /TMP/BANKSEL5.ASM   5-25-2016  21:29:08         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         processor 16f18877
+                      00002 
+  00000020            00003 reg0    equ     0x0020
+  000000A0            00004 reg1    equ     0x00A0
+  00000120            00005 reg2    equ     0x0120
+  000001A0            00006 reg3    equ     0x01A0
+  00000220            00007 reg4    equ     0x0220
+  000002A0            00008 reg5    equ     0x02A0
+  00000320            00009 reg6    equ     0x0320
+  000003A0            00010 reg7    equ     0x03A0
+  00000420            00011 reg8    equ     0x0420
+  000004A0            00012 reg9    equ     0x04A0
+  00000520            00013 reg10   equ     0x0520
+  000005A0            00014 reg11   equ     0x05A0
+  00000620            00015 reg12   equ     0x0620
+  00000C20            00016 reg13   equ     0x0C20
+  00000CA0            00017 reg14   equ     0x0CA0
+  00000D20            00018 reg15   equ     0x0D20
+  00000DA0            00019 reg16   equ     0x0DA0
+  00000E20            00020 reg17   equ     0x0E20
+  00000EA0            00021 reg18   equ     0x0EA0
+  00000F20            00022 reg19   equ     0x0F20
+  00000FA0            00023 reg20   equ     0x0FA0
+  00001020            00024 reg21   equ     0x1020
+  000010A0            00025 reg22   equ     0x10A0
+  00001120            00026 reg23   equ     0x1120
+  000011A0            00027 reg24   equ     0x11A0
+  00001220            00028 reg25   equ     0x1220
+  000012A0            00029 reg26   equ     0x12A0
+  00001320            00030 reg27   equ     0x1320
+  000013A0            00031 reg28   equ     0x13A0
+  00001420            00032 reg29   equ     0x1420
+  000014A0            00033 reg30   equ     0x14A0
+  00001520            00034 reg31   equ     0x1520
+  000015A0            00035 reg32   equ     0x15A0
+  00001620            00036 reg33   equ     0x1620
+  000016A0            00037 reg34   equ     0x16A0
+  00001720            00038 reg35   equ     0x1720
+  000017A0            00039 reg36   equ     0x17A0
+  00001820            00040 reg37   equ     0x1820
+  000018A0            00041 reg38   equ     0x18A0
+  00001920            00042 reg39   equ     0x1920
+  00001E20            00043 reg40   equ     0x1E20
+  00001F20            00044 reg41   equ     0x1F20
+                      00045 
+0000                  00046         org 0
+                      00047   
+0000   0140           00048         banksel reg0
+0001   00A0           00049         movwf   reg0
+                      00050 
+0002   0141           00051         banksel reg1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0003   00A0           00052         movwf   reg1
+MPASM 5.67                 /TMP/BANKSEL5.ASM   5-25-2016  21:29:08         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00053 
+0004   0142           00054         banksel reg2
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0005   00A0           00055         movwf   reg2
+                      00056 
+0006   0143           00057         banksel reg3
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0007   00A0           00058         movwf   reg3
+                      00059 
+0008   0144           00060         banksel reg4
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0009   00A0           00061         movwf   reg4
+                      00062 
+000A   0145           00063         banksel reg5
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000B   00A0           00064         movwf   reg5
+                      00065 
+000C   0146           00066         banksel reg6
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000D   00A0           00067         movwf   reg6
+                      00068 
+000E   0147           00069         banksel reg7
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000F   00A0           00070         movwf   reg7
+                      00071 
+0010   0148           00072         banksel reg8
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0011   00A0           00073         movwf   reg8
+                      00074 
+0012   0149           00075         banksel reg9
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0013   00A0           00076         movwf   reg9
+                      00077 
+0014   014A           00078         banksel reg10
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0015   00A0           00079         movwf   reg10
+                      00080 
+0016   014B           00081         banksel reg11
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0017   00A0           00082         movwf   reg11
+                      00083 
+0018   014C           00084         banksel reg12
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0019   00A0           00085         movwf   reg12
+                      00086 
+001A   0158           00087         banksel reg13
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001B   00A0           00088         movwf   reg13
+                      00089 
+001C   0159           00090         banksel reg14
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001D   00A0           00091         movwf   reg14
+                      00092 
+MPASM 5.67                 /TMP/BANKSEL5.ASM   5-25-2016  21:29:08         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001E   015A           00093         banksel reg15
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001F   00A0           00094         movwf   reg15
+                      00095 
+0020   015B           00096         banksel reg16
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0021   00A0           00097         movwf   reg16
+                      00098 
+0022   015C           00099         banksel reg17
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0023   00A0           00100         movwf   reg17
+                      00101 
+0024   015D           00102         banksel reg18
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0025   00A0           00103         movwf   reg18
+                      00104 
+0026   015E           00105         banksel reg19
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0027   00A0           00106         movwf   reg19
+                      00107 
+0028   015F           00108         banksel reg20
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0029   00A0           00109         movwf   reg20
+                      00110 
+002A   0160           00111         banksel reg21
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002B   00A0           00112         movwf   reg21
+                      00113 
+002C   0161           00114         banksel reg22
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002D   00A0           00115         movwf   reg22
+                      00116 
+002E   0162           00117         banksel reg23
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002F   00A0           00118         movwf   reg23
+                      00119 
+0030   0163           00120         banksel reg24
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0031   00A0           00121         movwf   reg24
+                      00122 
+0032   0164           00123         banksel reg25
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0033   00A0           00124         movwf   reg25
+                      00125 
+0034   0165           00126         banksel reg26
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0035   00A0           00127         movwf   reg26
+                      00128 
+0036   0166           00129         banksel reg27
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0037   00A0           00130         movwf   reg27
+                      00131 
+0038   0167           00132         banksel reg28
+MPASM 5.67                 /TMP/BANKSEL5.ASM   5-25-2016  21:29:08         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0039   00A0           00133         movwf   reg28
+                      00134 
+003A   0168           00135         banksel reg29
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+003B   00A0           00136         movwf   reg29
+                      00137 
+003C   0169           00138         banksel reg30
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+003D   00A0           00139         movwf   reg30
+                      00140 
+003E   016A           00141         banksel reg31
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+003F   00A0           00142         movwf   reg31
+                      00143 
+0040   016B           00144         banksel reg32
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0041   00A0           00145         movwf   reg32
+                      00146 
+0042   016C           00147         banksel reg33
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0043   00A0           00148         movwf   reg33
+                      00149 
+0044   016D           00150         banksel reg34
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0045   00A0           00151         movwf   reg34
+                      00152 
+0046   016E           00153         banksel reg35
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0047   00A0           00154         movwf   reg35
+                      00155 
+0048   016F           00156         banksel reg36
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0049   00A0           00157         movwf   reg36
+                      00158 
+004A   0170           00159         banksel reg37
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004B   00A0           00160         movwf   reg37
+                      00161 
+004C   0171           00162         banksel reg38
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004D   00A0           00163         movwf   reg38
+                      00164 
+004E   0172           00165         banksel reg39
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004F   00A0           00166         movwf   reg39
+                      00167 
+0050   017C           00168         banksel reg40
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0051   00A0           00169         movwf   reg40
+                      00170 
+0052   017E           00171         banksel reg41
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+MPASM 5.67                 /TMP/BANKSEL5.ASM   5-25-2016  21:29:08         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0053   00A0           00172         movwf   reg41
+                      00173 
+                      00174         end
+MPASM 5.67                 /TMP/BANKSEL5.ASM   5-25-2016  21:29:08         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16F18877                        00000001
+reg0                              00000020
+reg1                              000000A0
+reg10                             00000520
+reg11                             000005A0
+reg12                             00000620
+reg13                             00000C20
+reg14                             00000CA0
+reg15                             00000D20
+reg16                             00000DA0
+reg17                             00000E20
+reg18                             00000EA0
+reg19                             00000F20
+reg2                              00000120
+reg20                             00000FA0
+reg21                             00001020
+reg22                             000010A0
+reg23                             00001120
+reg24                             000011A0
+reg25                             00001220
+reg26                             000012A0
+reg27                             00001320
+reg28                             000013A0
+reg29                             00001420
+reg3                              000001A0
+reg30                             000014A0
+reg31                             00001520
+reg32                             000015A0
+reg33                             00001620
+reg34                             000016A0
+reg35                             00001720
+reg36                             000017A0
+reg37                             00001820
+reg38                             000018A0
+reg39                             00001920
+reg4                              00000220
+reg40                             00001E20
+reg41                             00001F20
+reg5                              000002A0
+reg6                              00000320
+reg7                              000003A0
+reg8                              00000420
+reg9                              000004A0
+MPASM 5.67                 /TMP/BANKSEL5.ASM   5-25-2016  21:29:08         PAGE  7
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXX------------ ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    84
+Program Memory Words Free: 32684
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    41 reported,     0 suppressed
+
+

@@ -668,9 +668,13 @@ do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
         reloc_evaluate(p, RELOCT_MOVLB);
         emit(PIC12E_INSN_MOVLB, name);
       }
-      else if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
+      else if (IS_PIC14E_CORE) {
         reloc_evaluate(p, RELOCT_MOVLB);
         emit(PIC14E_INSN_MOVLB, name);
+      }
+      else if (IS_PIC14EX_CORE) {
+        reloc_evaluate(p, RELOCT_MOVLB);
+        emit(PIC14EX_INSN_MOVLB, name);
       }
       else if (IS_PIC16_CORE) {
         reloc_evaluate(p, RELOCT_BANKSEL);
@@ -4888,7 +4892,29 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
             /* Set the selection of RAM Banks. */
-            bank_num = r & (PIC14E_MASK_MOVLB ^ PIC14_CORE_MASK);
+            bank_num = r & PIC14E_BMSK_MOVLB;
+            set_global(GLOBAL_ACT_BANK_ADDR,
+                       gp_processor_bank_num_to_addr(state.processor, bank_num),
+                       LFT_TEMPORARY, GVT_CONSTANT, true);
+          }
+        }
+        break;
+
+      case INSN_CLASS_LITBSR_6:
+        /* PIC14EX movlb */
+        if (state.processor == NULL) {
+          gpverror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
+
+        if (enforce_arity(arity, 1)) {
+          p = HEAD(Parameters);
+          r = reloc_evaluate(p, RELOCT_MOVLB);
+          emit_check(ins->opcode, r, PIC14EX_BMSK_MOVLB, sym_name);
+
+          if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+            /* Set the selection of RAM Banks. */
+            bank_num = r & PIC14EX_BMSK_MOVLB;
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
                        LFT_TEMPORARY, GVT_CONSTANT, true);
@@ -6692,21 +6718,27 @@ opcode_init(int stage)
        * symbol table like regular instructions. */
       for (i = 0; i < num_op_18cxx_sp; i++) {
         sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_18cxx_sp[i].name),
-                        (void *)&op_18cxx_sp[i]);
+                            (void *)&op_18cxx_sp[i]);
       }
 
       if (state.extended_pic16e) {
         /* Some 18xx devices have an extended instruction set. */
         for (i = 0; i < num_op_18cxx_ext; i++) {
           sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_18cxx_ext[i].name),
-                          (void *)&op_18cxx_ext[i]);
+                              (void *)&op_18cxx_ext[i]);
         }
       }
     }
-    else if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
+    else if (IS_PIC14E_CORE) {
       for (i = 0; i < num_op_16cxx_enh; i++) {
         sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16cxx_enh[i].name),
-                        (void *)&op_16cxx_enh[i]);
+                            (void *)&op_16cxx_enh[i]);
+      }
+    }
+    else if (IS_PIC14EX_CORE) {
+      for (i = 0; i < num_op_16cxx_enhx; i++) {
+        sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16cxx_enhx[i].name),
+                            (void *)&op_16cxx_enhx[i]);
       }
     }
     break;

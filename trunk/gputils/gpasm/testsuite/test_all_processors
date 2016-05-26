@@ -33,22 +33,34 @@ TEST_LOG="`basename $0`.log"
 
 function make_asm()
 {
-  echo -e "\tinclude \"$1\"" > "$TEST_SRC"
-  echo -e "\tcode" >> "$TEST_SRC"
-  echo -e "\tnop" >> "$TEST_SRC"
-  echo -e "\tend" >> "$TEST_SRC"
+  if [ "$2" == "page" ]; then
+    echo \
+"	include \"$1\"
+	code
+	banksel	__BANK_LAST
+	pagesel	__PAGE_LAST
+	end" > "$TEST_SRC"
+  else
+    echo \
+"	include \"$1\"
+	code
+	banksel	__BANK_LAST
+	end" > "$TEST_SRC"
+  fi
 }
 
 function compile()
 {
-  local inc="${1}.inc"
-  local retval
+  local inc command ret
 
-  make_asm "$inc"
+  inc="${1}.inc"
+  make_asm "$inc" "$2"
   echo -n "Testing $1 ..."
-  $GPASMBIN -p "$1" -I "$HEADER" -c "$TEST_SRC" -o "$TEST_OBJ" >> "$TEST_LOG" 2>&1
-  retval=$?
-  if (($retval != 0)); then
+  command="\"$GPASMBIN\" -p \"$1\" -I \"$HEADER\" -c \"$TEST_SRC\" -o \"$TEST_OBJ\""
+  echo $command >> "$TEST_LOG"
+  eval $command >> "$TEST_LOG" 2>&1
+  ret=$?
+  if (($ret != 0)); then
     echo " compile failure."
     exit 1
   else
@@ -69,9 +81,12 @@ for mcu in $("$GPASMBIN" -l); do
     p10f*|p10lf*|\
     p12c*|p12f*|p12hv*|p12lf*|\
     p16c*|p16f*|p16hv*|p16lf*|\
-    p18c*|p18f*|p18lf*|\
     rf5*|rf6*)
-	compile "$mcu"
+	compile "$mcu" "page"
+	;;
+
+    p18c*|p18f*|p18lf*)
+	compile "$mcu" ""
 	;;
   esac
 done

@@ -93,7 +93,7 @@ gp_boolean b_memory_get(const MemBlock *m, unsigned int byte_address, uint8_t *b
 #ifndef NDEBUG
 
 #define b_memory_assert_get(m, byte_address, byte, section_name, symbol_name) \
-    assert(b_memory_get(m, byte_address, byte, section_name, symbol_name))
+    assert(b_memory_get(m, byte_address, byte, section_name, symbol_name) != 0)
 
 #else
 

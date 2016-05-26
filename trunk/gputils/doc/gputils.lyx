@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Apr 10, 2016
+May 26, 2016
 \end_layout
 
 \begin_layout Standard
@@ -259,7 +259,7 @@ name "sec:Supported-processors"
 \end_layout
 
 \begin_layout Standard
-The gputils currently supports most processors supported by MPLABX v3.25.
+The gputils currently supports most processors supported by MPLABX v3.30.
  This includes the following processors:
 \begin_inset Newline newline
 \end_inset
