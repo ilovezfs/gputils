@@ -1,5 +1,5 @@
 
-/* This file is generated automatically by the cfg-import.pl 2016-05-26 08:13:27 UTC. */
+/* This file is generated automatically by the cfg-import.pl 2016-05-26 10:15:09 UTC. */
 
 /*  Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
 
@@ -1477,12 +1477,12 @@ static const gp_cfg_option_t *PIC10F200_OSC[] = {
   &PIC10F200_OSC_IntRC_001
 };
 
-static const gp_cfg_option_t *PIC10F220_IOFSCS[] = {
+static const gp_cfg_option_t *PIC10F220_IOSCFS[] = {
   &PIC10F220_IOSCFS_4MHZ_000,
   &PIC10F220_IOSCFS_8MHZ_001
 };
 
-static const gp_cfg_option_t *PIC10F220_IOSCFS[] = {
+static const gp_cfg_option_t *PIC10F220_IOFSCS[] = {
   &PIC10F220_IOSCFS_4MHZ_000,
   &PIC10F220_IOSCFS_8MHZ_001
 };
@@ -5567,6 +5567,18 @@ static const gp_cfg_directive_t PIC16F18313_800A[] = {
   { "CPD", 0x0002,  2, PIC16F18313_CPD }
 };
 
+static const gp_cfg_directive_t PIC16F18854_8008[] = {
+  { "MCLRE"  , 0x0001,  2, PIC16F15354_MCLRE   },
+  { "PWRTE"  , 0x0002,  2, PIC16F15354_PWRTE   },
+  { "LPBOREN", 0x0020,  2, PIC16F15354_LPBOREN },
+  { "BOREN"  , 0x00C0,  4, PIC16F15354_BOREN   },
+  { "BORV"   , 0x0200,  2, PIC16F15354_BORV    },
+  { "ZCD"    , 0x0400,  2, PIC16F15354_ZCD     },
+  { "PPS1WAY", 0x0800,  2, PIC16F15354_PPS1WAY },
+  { "STVREN" , 0x1000,  2, PIC16F15354_STVREN  },
+  { "DEBUG"  , 0x2000,  2, PIC16F18313_DEBUG   }
+};
+
 static const gp_cfg_directive_t PIC16F18854_8009[] = {
   { "WDTCPS", 0x001F, 32, PIC16F15354_WDTCPS },
   { "WDTE"  , 0x0060,  4, PIC12F1612_WDTE    },
@@ -5583,18 +5595,6 @@ static const gp_cfg_directive_t PIC16F18854_800A[] = {
 static const gp_cfg_directive_t PIC16F18854_800B[] = {
   { "CP" , 0x0001,  2, PIC16F15354_CP  },
   { "CPD", 0x0002,  2, PIC16F18313_CPD }
-};
-
-static const gp_cfg_directive_t PIC16F18855_8008[] = {
-  { "MCLRE"  , 0x0001,  2, PIC16F15354_MCLRE   },
-  { "PWRTE"  , 0x0002,  2, PIC16F15354_PWRTE   },
-  { "LPBOREN", 0x0020,  2, PIC16F15354_LPBOREN },
-  { "BOREN"  , 0x00C0,  4, PIC16F15354_BOREN   },
-  { "BORV"   , 0x0200,  2, PIC16F15354_BORV    },
-  { "ZCD"    , 0x0400,  2, PIC16F15354_ZCD     },
-  { "PPS1WAY", 0x0800,  2, PIC16F15354_PPS1WAY },
-  { "STVREN" , 0x1000,  2, PIC16F15354_STVREN  },
-  { "DEBUG"  , 0x2000,  2, PIC16F18313_DEBUG   }
 };
 
 static const gp_cfg_directive_t PIC16F18857_8008[] = {
@@ -5616,6 +5616,18 @@ static const gp_cfg_directive_t PIC16F18875_8008[] = {
   { "BORV"   , 0x0200,  2, PIC16F15354_BORV    },
   { "ZCD"    , 0x0400,  2, PIC16F15354_ZCD     },
   { "ZCDDIS" , 0x0400,  2, PIC16F18875_ZCDDIS  },
+  { "PPS1WAY", 0x0800,  2, PIC16F15354_PPS1WAY },
+  { "STVREN" , 0x1000,  2, PIC16F15354_STVREN  },
+  { "DEBUG"  , 0x2000,  2, PIC16F18313_DEBUG   }
+};
+
+static const gp_cfg_directive_t PIC16F18876_8008[] = {
+  { "MCLRE"  , 0x0001,  2, PIC16F15354_MCLRE   },
+  { "PWRTE"  , 0x0002,  2, PIC16F15354_PWRTE   },
+  { "LPBOREN", 0x0020,  2, PIC16F15354_LPBOREN },
+  { "BOREN"  , 0x00C0,  4, PIC16F15354_BOREN   },
+  { "BORV"   , 0x0200,  2, PIC16F15354_BORV    },
+  { "ZCD"    , 0x0400,  2, PIC16F18857_ZCD     },
   { "PPS1WAY", 0x0800,  2, PIC16F15354_PPS1WAY },
   { "STVREN" , 0x1000,  2, PIC16F15354_STVREN  },
   { "DEBUG"  , 0x2000,  2, PIC16F18313_DEBUG   }
@@ -8061,15 +8073,7 @@ static const gp_cfg_addr_t PIC16F18313_addrs[] = {
 
 static const gp_cfg_addr_t PIC16F18854_addrs[] = {
   { 0x008007, 0x3FFF,  5, PIC16F15354_8007    },
-  { 0x008008, 0x3FFF,  8, PIC16F15354_8008    },
-  { 0x008009, 0x3FFF,  4, PIC16F18854_8009    },
-  { 0x00800A, 0x3FFF,  3, PIC16F18854_800A    },
-  { 0x00800B, 0x3FFF,  2, PIC16F18854_800B    }
-};
-
-static const gp_cfg_addr_t PIC16F18855_addrs[] = {
-  { 0x008007, 0x3FFF,  5, PIC16F15354_8007    },
-  { 0x008008, 0x3FFF,  9, PIC16F18855_8008    },
+  { 0x008008, 0x3FFF,  9, PIC16F18854_8008    },
   { 0x008009, 0x3FFF,  4, PIC16F18854_8009    },
   { 0x00800A, 0x3FFF,  3, PIC16F18854_800A    },
   { 0x00800B, 0x3FFF,  2, PIC16F18854_800B    }
@@ -8086,6 +8090,14 @@ static const gp_cfg_addr_t PIC16F18857_addrs[] = {
 static const gp_cfg_addr_t PIC16F18875_addrs[] = {
   { 0x008007, 0x3FFF,  5, PIC16F15354_8007    },
   { 0x008008, 0x3FFF, 10, PIC16F18875_8008    },
+  { 0x008009, 0x3FFF,  4, PIC16F18854_8009    },
+  { 0x00800A, 0x3FFF,  3, PIC16F18854_800A    },
+  { 0x00800B, 0x3FFF,  2, PIC16F18854_800B    }
+};
+
+static const gp_cfg_addr_t PIC16F18876_addrs[] = {
+  { 0x008007, 0x3FFF,  5, PIC16F15354_8007    },
+  { 0x008008, 0x3FFF,  9, PIC16F18876_8008    },
   { 0x008009, 0x3FFF,  4, PIC16F18854_8009    },
   { 0x00800A, 0x3FFF,  3, PIC16F18854_800A    },
   { 0x00800B, 0x3FFF,  2, PIC16F18854_800B    }
@@ -10490,11 +10502,11 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "PIC16F18346"    ,  4, PIC16F18313_addrs   },
   { "PIC16F1847"     ,  2, PIC12F1822_addrs    },
   { "PIC16F18854"    ,  5, PIC16F18854_addrs   },
-  { "PIC16F18855"    ,  5, PIC16F18855_addrs   },
+  { "PIC16F18855"    ,  5, PIC16F18854_addrs   },
   { "PIC16F18856"    ,  5, PIC16F18854_addrs   },
   { "PIC16F18857"    ,  5, PIC16F18857_addrs   },
   { "PIC16F18875"    ,  5, PIC16F18875_addrs   },
-  { "PIC16F18876"    ,  5, PIC16F18857_addrs   },
+  { "PIC16F18876"    ,  5, PIC16F18876_addrs   },
   { "PIC16F18877"    ,  5, PIC16F18857_addrs   },
   { "PIC16F19197"    ,  5, PIC16F19197_addrs   },
   { "PIC16F1933"     ,  2, PIC16F1933_addrs    },
@@ -10606,8 +10618,8 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "PIC16LF15355"   ,  5, PIC16F15354_addrs   },
   { "PIC16LF1554"    ,  2, PIC16LF1554_addrs   },
   { "PIC16LF1559"    ,  2, PIC16LF1554_addrs   },
-  { "PIC16LF1566"    ,  2, PIC12F1501_addrs    },
-  { "PIC16LF1567"    ,  2, PIC12F1501_addrs    },
+  { "PIC16LF1566"    ,  2, PIC16LF1554_addrs   },
+  { "PIC16LF1567"    ,  2, PIC16LF1554_addrs   },
   { "PIC16LF1574"    ,  2, PIC16F1574_addrs    },
   { "PIC16LF1575"    ,  2, PIC16F1574_addrs    },
   { "PIC16LF1578"    ,  2, PIC16F1574_addrs    },
@@ -10666,7 +10678,7 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "PIC16LF18856"   ,  5, PIC16F18854_addrs   },
   { "PIC16LF18857"   ,  5, PIC16F18857_addrs   },
   { "PIC16LF18875"   ,  5, PIC16F18875_addrs   },
-  { "PIC16LF18876"   ,  5, PIC16F18857_addrs   },
+  { "PIC16LF18876"   ,  5, PIC16F18876_addrs   },
   { "PIC16LF18877"   ,  5, PIC16F18857_addrs   },
   { "PIC16LF1902"    ,  2, PIC16LF1554_addrs   },
   { "PIC16LF1903"    ,  2, PIC16LF1554_addrs   },

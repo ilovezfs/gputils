@@ -1,4 +1,8 @@
 2016-05-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpcfg-table.c,
+    Updated with new devices based on the mplabx-3.30.
+
+2016-05-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/*, lkr/*, libgputils/gpcfg-table.c,
     libgputils/gpprocessor.c, libgputils/gpreg-table.c:
     Updated with new devices based on the mplabx-3.30.
