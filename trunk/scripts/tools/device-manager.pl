@@ -108,7 +108,8 @@ my $verbose = 0;
 my $border0 = ('-' x 70);
 my $border1 = ('=' x 60);
 
-use constant PIC_BANK_NUMBER_MAX => 32;
+use constant PIC_BANK_NUMBER_MAX   => 32;
+use constant PICEX_BANK_NUMBER_MAX => 64;
 
 use constant PROC_CLASS_EEPROM8  =>  0;
 use constant PROC_CLASS_EEPROM16 =>  1;
@@ -283,7 +284,7 @@ my %class_features_p14ex =
   CONF_SIZE     => 16,
   CONF_MASK     => 0xFFFF,
   EE_START      => 0xF000,
-  BANK_MAX      => 32,
+  BANK_MAX      => 64,
   BANK_SIZE     => PIC14_BANK_SIZE,
   BANK_MASK     => ~(PIC14_BANK_SIZE - 1),
   BANK_SHIFT    => PIC14_BANK_SHIFT,
@@ -1731,12 +1732,12 @@ sub read_lkr($$$)
       }
     }
 
-  my $in = Open($Lkr, 'read_lkr');
+  my $in   = Open($Lkr, 'read_lkr');
   my $name = basename($Lkr);
 
   $lkr_bank_mask    = $class_feature->{BANK_MASK};
   $lkr_bank_shift   = $class_feature->{BANK_SHIFT};
-  @lkr_common_banks = (({START => -1, END => -1}) x PIC_BANK_NUMBER_MAX);
+  @lkr_common_banks = (({START => -1, END => -1}) x PICEX_BANK_NUMBER_MAX);
 
   reset_preprocessor();
 
@@ -2386,9 +2387,11 @@ sub delete_mcu($)
 sub create_one_px_row($$)
   {
   my ($Row, $Full) = @_;
-  my ($i, $line);
+  my ($i, $line, $pic16);
 
   Log('Shows a px struct row.', 6);
+
+  $pic16 = (($Row->{CLASS} eq 'PROC_CLASS_PIC16') || ($Row->{CLASS} eq 'PROC_CLASS_PIC16E')) ? TRUE : FALSE;
 
   if ($Full)
     {
@@ -2407,7 +2410,7 @@ sub create_one_px_row($$)
     }
 
   $i = $Row->{NUM_BANKS};
-  $line .= sprintf((($i <= PIC_BANK_NUMBER_MAX) ? '%4u, ' : '0x%02X, '), $i);
+  $line .= sprintf((($pic16) ? '0x%02X, ' : '%4u, '), $i);
   $line .= neg_form($Row->{BANK_BITS}, 4);
   $line .= ', ';
 

@@ -1,5 +1,5 @@
 
-/* This file is generated automatically by the cfg-import.pl 2016-05-24 17:10:59 UTC. */
+/* This file is generated automatically by the cfg-import.pl 2016-05-26 08:13:27 UTC. */
 
 /*  Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
 
@@ -1477,12 +1477,12 @@ static const gp_cfg_option_t *PIC10F200_OSC[] = {
   &PIC10F200_OSC_IntRC_001
 };
 
-static const gp_cfg_option_t *PIC10F220_IOSCFS[] = {
+static const gp_cfg_option_t *PIC10F220_IOFSCS[] = {
   &PIC10F220_IOSCFS_4MHZ_000,
   &PIC10F220_IOSCFS_8MHZ_001
 };
 
-static const gp_cfg_option_t *PIC10F220_IOFSCS[] = {
+static const gp_cfg_option_t *PIC10F220_IOSCFS[] = {
   &PIC10F220_IOSCFS_4MHZ_000,
   &PIC10F220_IOSCFS_8MHZ_001
 };
