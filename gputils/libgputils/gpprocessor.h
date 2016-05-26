@@ -109,6 +109,12 @@ Boston, MA 02111-1307, USA.  */
 #define PIC14E_REG_WREG             0x09
 
 /******************************************
+        PIC14EX definitions
+******************************************/
+
+#define PIC14EX_BMSK_BANK           0x003F
+
+/******************************************
         PIC16 definitions
 ******************************************/
 
@@ -155,107 +161,105 @@ struct px;
 struct gp_section_type;
 
 typedef struct _core_sfr_ {
-  int address;
+  int         address;
   const char *name;
 } core_sfr_t;
 
 typedef struct _vector_ {
-  int address;
+  int         address;
   const char *name;
 } vector_t;
 
 struct proc_class {
   /* Instruction used in making initialization data sections. */
-  int retlw;
+  int               retlw;
   /* Value in COFF header. */
-  int rom_width;
+  int               rom_width;
   /* The page size of the program memory. */
-  int page_size;
+  int               page_size;
   /* The bank size of the RAM memory. */
-  int bank_size;
+  int               bank_size;
   /* The shift value of bank bits in a RAM address. */
-  int bank_bits_shift;
+  int               bank_bits_shift;
   /* The number of address bits inside a bank. */
-  int addr_bits_in_bank;
+  int               addr_bits_in_bank;
   /* Bits to shift assembly code address for the COFF file byte address. */
-  unsigned int org_to_byte_shift;
+  unsigned int      org_to_byte_shift;
   /* Mask of address bits for the Program Counter. */
-  unsigned int pc_mask;
+  unsigned int      pc_mask;
   /* Mask of address bits for pages. */
-  unsigned int page_mask;
+  unsigned int      page_mask;
   /* Mask of address bits for banks. */
-  unsigned int bank_mask;
+  unsigned int      bank_mask;
   /* Bitmask of bits that can be stored in the code section address. */
-  unsigned int core_mask;
+  unsigned int      core_mask;
   /* Bitmask of bits that can be stored in the config section address. */
-  unsigned int config_mask;
+  unsigned int      config_mask;
   /* Number of digits of the maximum possible flash address. */
-  int addr_digits;
+  int               addr_digits;
   /* Number of digits of the instruction word. */
-  int word_digits;
+  int               word_digits;
   /* Number of digits of the config word. */
-  int config_digits;
+  int               config_digits;
   /* These SFRs exist in each MCU which fall within into the PIC1xx family. */
   const core_sfr_t *core_sfr_table;
   /* Number of the core SFRs. */
-  unsigned int core_sfr_number;
+  unsigned int      core_sfr_number;
   /* This table contains traits of the interrupt vectors. */
-  const vector_t *vector_table;
+  const vector_t   *vector_table;
   /* Number of the interrupt vectors. */
-  unsigned int vector_number;
+  unsigned int      vector_number;
   /* Get the start address for ID location. */
-  unsigned int (*id_location)(const struct px *processor);
+  unsigned int    (*id_location)(const struct px *processor);
 
   /* Determine which bank of data memory the address is located. */
-  int (*check_bank)(unsigned int address);
+  int             (*check_bank)(unsigned int address);
 
   /* Set the bank bits, return the number of instructions required. */
-  int (*set_bank)(int num_banks, int bank, MemBlock *m,
-                  unsigned int address);
+  int             (*set_bank)(int num_banks, int bank, MemBlock *m, unsigned int address);
 
   /* Determine which ibank of data memory the address is located. */
-  int (*check_ibank)(unsigned int address);
+  int             (*check_ibank)(unsigned int address);
 
   /* Set the ibank bits, return the number of instructions required. */
-  int (*set_ibank)(int num_banks, int bank, MemBlock *m,
-                   unsigned int address);
+  int             (*set_ibank)(int num_banks, int bank, MemBlock *m, unsigned int address);
 
   /* Determine which page of program memory the address is located. */
-  int (*check_page)(unsigned int address);
+  int             (*check_page)(unsigned int address);
 
   /* Set the page bits, return the number of instructions required. */
-  int (*set_page)(int num_pages, int page, MemBlock *m,
-                  unsigned int address, gp_boolean use_wreg);
+  int             (*set_page)(int num_pages, int page, MemBlock *m, unsigned int address,
+                              gp_boolean use_wreg);
 
-  int (*page_addr)(unsigned int org);
+  int             (*page_addr)(unsigned int org);
 
-  int (*page_bits_to_addr)(unsigned int bits);
+  int             (*page_bits_to_addr)(unsigned int bits);
 
   /* These return the bits to set in instruction for given address. */
-  int (*reloc_call)(unsigned int address);
-  int (*reloc_goto)(unsigned int address);
-  int (*reloc_f)(unsigned int address);
-  int (*reloc_tris)(unsigned int address);
-  int (*reloc_movlb)(unsigned int address);
-  int (*reloc_bra)(struct gp_section_type *section, unsigned int value, unsigned int byte_org);
-  int (*reloc_high)(gp_boolean is_code, int value);
+  int             (*reloc_call)(unsigned int address);
+  int             (*reloc_goto)(unsigned int address);
+  int             (*reloc_f)(unsigned int address);
+  int             (*reloc_tris)(unsigned int address);
+  int             (*reloc_movlb)(unsigned int address);
+  int             (*reloc_bra)(struct gp_section_type *section, unsigned int value, unsigned int byte_org);
+  int             (*reloc_high)(gp_boolean is_code, int value);
 
-  const struct insn *instructions;
-  const int *num_instructions;
-  const struct insn *(*find_insn)(const struct proc_class *cls, unsigned int opcode);
+  const insn_t     *instructions;
+  const int        *num_instructions;
+  const insn_t   *(*find_insn)(const struct proc_class *cls, unsigned int opcode);
 
-  unsigned int (*i_memory_get)(const MemBlock *m, unsigned int byte_address, unsigned short *word,
-                               const char **section_name, const char **symbol_name);
+  unsigned int    (*i_memory_get)(const MemBlock *m, unsigned int byte_address, unsigned short *word,
+                                  const char **section_name, const char **symbol_name);
 
-  void (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value,
-                       const char *section_name, const char *symbol_name);
+  void            (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value,
+                                  const char *section_name, const char *symbol_name);
 
-  void (*patch_strict)(void);
+  void            (*patch_strict)(void);
 };
 
 typedef const struct proc_class *proc_class_t;
 
-#define PROC_CLASS_UNKNOWN  ((proc_class_t)0)        /* Unknown device. */
+#define PROC_CLASS_UNKNOWN          ((proc_class_t)0)   /* Unknown device. */
 
 extern const struct proc_class proc_class_eeprom8;   /* 8 bit EEPROM */
 extern const struct proc_class proc_class_eeprom16;  /* 16 bit EEPROM */
@@ -270,88 +274,88 @@ extern const struct proc_class proc_class_pic14ex;   /* enhanced 14 bit devices 
 extern const struct proc_class proc_class_pic16;     /* 16 bit devices */
 extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices */
 
-#define PROC_CLASS_EEPROM8  (&proc_class_eeprom8)
-#define PROC_CLASS_EEPROM16 (&proc_class_eeprom16)
-#define PROC_CLASS_GENERIC  (&proc_class_generic)
-#define PROC_CLASS_PIC12    (&proc_class_pic12)
-#define PROC_CLASS_PIC12E   (&proc_class_pic12e)
-#define PROC_CLASS_PIC12I   (&proc_class_pic12i)
-#define PROC_CLASS_SX       (&proc_class_sx)
-#define PROC_CLASS_PIC14    (&proc_class_pic14)
-#define PROC_CLASS_PIC14E   (&proc_class_pic14e)
-#define PROC_CLASS_PIC14EX  (&proc_class_pic14ex)
-#define PROC_CLASS_PIC16    (&proc_class_pic16)
-#define PROC_CLASS_PIC16E   (&proc_class_pic16e)
+#define PROC_CLASS_EEPROM8          (&proc_class_eeprom8)
+#define PROC_CLASS_EEPROM16         (&proc_class_eeprom16)
+#define PROC_CLASS_GENERIC          (&proc_class_generic)
+#define PROC_CLASS_PIC12            (&proc_class_pic12)
+#define PROC_CLASS_PIC12E           (&proc_class_pic12e)
+#define PROC_CLASS_PIC12I           (&proc_class_pic12i)
+#define PROC_CLASS_SX               (&proc_class_sx)
+#define PROC_CLASS_PIC14            (&proc_class_pic14)
+#define PROC_CLASS_PIC14E           (&proc_class_pic14e)
+#define PROC_CLASS_PIC14EX          (&proc_class_pic14ex)
+#define PROC_CLASS_PIC16            (&proc_class_pic16)
+#define PROC_CLASS_PIC16E           (&proc_class_pic16e)
 
-#define IS_EEPROM8          (state.device.class == PROC_CLASS_EEPROM8)
-#define IS_EEPROM16         (state.device.class == PROC_CLASS_EEPROM16)
-#define IS_PIC12_CORE       (state.device.class == PROC_CLASS_PIC12)
-#define IS_PIC12E_CORE      (state.device.class == PROC_CLASS_PIC12E)
-#define IS_PIC12I_CORE      (state.device.class == PROC_CLASS_PIC12I)
-#define IS_SX_CORE          (state.device.class == PROC_CLASS_SX)
-#define IS_PIC14_CORE       (state.device.class == PROC_CLASS_PIC14)
-#define IS_PIC14E_CORE      (state.device.class == PROC_CLASS_PIC14E)
-#define IS_PIC14EX_CORE     (state.device.class == PROC_CLASS_PIC14EX)
-#define IS_PIC16_CORE       (state.device.class == PROC_CLASS_PIC16)
-#define IS_PIC16E_CORE      (state.device.class == PROC_CLASS_PIC16E)
+#define IS_EEPROM8                  (state.device.class == PROC_CLASS_EEPROM8)
+#define IS_EEPROM16                 (state.device.class == PROC_CLASS_EEPROM16)
+#define IS_PIC12_CORE               (state.device.class == PROC_CLASS_PIC12)
+#define IS_PIC12E_CORE              (state.device.class == PROC_CLASS_PIC12E)
+#define IS_PIC12I_CORE              (state.device.class == PROC_CLASS_PIC12I)
+#define IS_SX_CORE                  (state.device.class == PROC_CLASS_SX)
+#define IS_PIC14_CORE               (state.device.class == PROC_CLASS_PIC14)
+#define IS_PIC14E_CORE              (state.device.class == PROC_CLASS_PIC14E)
+#define IS_PIC14EX_CORE             (state.device.class == PROC_CLASS_PIC14EX)
+#define IS_PIC16_CORE               (state.device.class == PROC_CLASS_PIC16)
+#define IS_PIC16E_CORE              (state.device.class == PROC_CLASS_PIC16E)
 
-#define MAX_NAMES                  3          /* Maximum number of names a processor can have. */
-#define MAX_BADROM                 (1 * 2)    /* Maximum number of BADROM ranges a processor can be initialized with. */
+#define MAX_NAMES                   3          /* Maximum number of names a processor can have. */
+#define MAX_BADROM                  (1 * 2)    /* Maximum number of BADROM ranges a processor can be initialized with. */
 
-#define PIC16E_FLAG_HAVE_EXTINST   (1 << 0)   /* The device supports the 16 bit extended instruction set. */
-#define PIC16E_FLAG_J_SUBFAMILY    (1 << 1)   /* The device member of the "J" series. (18f..J..) */
+#define PIC16E_FLAG_HAVE_EXTINST    (1 << 0)   /* The device supports the 16 bit extended instruction set. */
+#define PIC16E_FLAG_J_SUBFAMILY     (1 << 1)   /* The device member of the "J" series. (18f..J..) */
 
 struct px {
-  proc_class_t class;
-  const char *defined_as;
-  const char *names[MAX_NAMES];
-  unsigned int coff_type;
-  int num_pages;
-  int num_banks;
+  proc_class_t  class;
+  const char   *defined_as;
+  const char   *names[MAX_NAMES];
+  unsigned int  coff_type;
+  int           num_pages;
+  int           num_banks;
   /* These bank bits exists in the reality. */
-  int bank_bits;
+  int           bank_bits;
   /* The bounds of common (access) RAM, if exist in the PIC12, PIC12E, PIC12I, PIC14, PIC14E and PIC14EX families. */
-  int common_ram_addrs[2];
-  int common_ram_max;
+  int           common_ram_addrs[2];
+  int           common_ram_max;
   /* The bounds of linear RAM in the PIC14E family. */
-  int linear_ram_addrs[2];
+  int           linear_ram_addrs[2];
   /* These are in org to make it easier to fill from the datasheet. */
-  int maxram;
-  int maxrom;
-  int prog_mem_size;
-  int badrom[MAX_BADROM];
-  int idlocs_addrs[2];
-  int config_addrs[2];
-  int eeprom_addrs[2];
+  int           maxram;
+  int           maxrom;
+  int           prog_mem_size;
+  int           badrom[MAX_BADROM];
+  int           idlocs_addrs[2];
+  int           config_addrs[2];
+  int           eeprom_addrs[2];
   /* This is an OR mask for the PIC12, PIC12E, PIC12I, PIC14, PIC14E and PIC14EX families. PIC12x: 0x0FF0, PIC14x: 0x3F80 */
-  int idlocs_mask;
+  int           idlocs_mask;
   /* Use the gpdasm. */
-  const char *header;
-  const char *script;
+  const char   *header;
+  const char   *script;
   /* Used ony for the PROC_CLASS_PIC16E class. (PIC16E_FLAG_yyyyy) */
-  unsigned int pic16e_flags;
+  unsigned int  pic16e_flags;
 };
 
 typedef const struct px *pic_processor_t;
 
 /* CONFIG addresses for the 18xx parts */
-#define CONFIG1L  0x300000
-#define CONFIG1H  0x300001
-#define CONFIG2L  0x300002
-#define CONFIG2H  0x300003
-#define CONFIG3L  0x300004
-#define CONFIG3H  0x300005
-#define CONFIG4L  0x300006
-#define CONFIG4H  0x300007
-#define CONFIG5L  0x300008
-#define CONFIG5H  0x300009
-#define CONFIG6L  0x30000a
-#define CONFIG6H  0x30000b
-#define CONFIG7L  0x30000c
-#define CONFIG7H  0x30000d
+#define CONFIG1L                    0x300000
+#define CONFIG1H                    0x300001
+#define CONFIG2L                    0x300002
+#define CONFIG2H                    0x300003
+#define CONFIG3L                    0x300004
+#define CONFIG3H                    0x300005
+#define CONFIG4L                    0x300006
+#define CONFIG4H                    0x300007
+#define CONFIG5L                    0x300008
+#define CONFIG5H                    0x300009
+#define CONFIG6L                    0x30000a
+#define CONFIG6H                    0x30000b
+#define CONFIG7L                    0x30000c
+#define CONFIG7H                    0x30000d
 
-#define DEVID1    0x3ffffe
-#define DEVID2    0x3fffff
+#define DEVID1                      0x3ffffe
+#define DEVID2                      0x3fffff
 
 void gp_dump_processor_list(gp_boolean list_all, proc_class_t class0, proc_class_t class1, proc_class_t class2);
 

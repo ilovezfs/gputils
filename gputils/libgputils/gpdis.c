@@ -1041,6 +1041,14 @@ GPUTILS_GCC_DIAG_OFF(switch)
 
     /*@@@@@@@@@@@@@@@@@@@@@@@@*/
 
+    case INSN_CLASS_LITBSR_6:
+      /* PIC14EX movlb */
+      fstate->bank = opcode & PIC14EX_BMSK_BANK;
+      fstate->bank_valid = PIC14EX_BMSK_BANK;
+      break;
+
+    /*@@@@@@@@@@@@@@@@@@@@@@@@*/
+
     case INSN_CLASS_LIT8:
       /* PIC1xx (addlw, andlw, iorlw, movlw, retlw, sublw, xorlw),
          PIC16  movlb,
@@ -1983,6 +1991,13 @@ GPUTILS_GCC_DIAG_OFF(switch)
     case INSN_CLASS_LIT5:
       /* PIC14E movlb */
       PRINT_ARG1_N(2, opcode & PIC14E_BMSK_BANK);
+      break;
+
+    /*@@@@@@@@@@@@@@@@@@@@@@@@*/
+
+    case INSN_CLASS_LITBSR_6:
+      /* PIC14EX movlb */
+      PRINT_ARG1_N(2, opcode & PIC14EX_BMSK_BANK);
       break;
 
     /*@@@@@@@@@@@@@@@@@@@@@@@@*/

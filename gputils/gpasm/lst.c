@@ -520,8 +520,11 @@ _print_reloc(uint16_t type, uint16_t current_value)
     if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
       ASSERT(0 == (current_value & MASK_PIC12E_BANK));
       return _lst_printf("%03X? ", (current_value >> 4) & 0x0fff);
-    } else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+    } else if (class == PROC_CLASS_PIC14E) {
       ASSERT(0 == (current_value & MASK_PIC14E_BANK));
+      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    } else if (class == PROC_CLASS_PIC14EX) {
+      ASSERT(0 == (current_value & MASK_PIC14EX_BANK));
       return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
       ASSERT(0 == (current_value & MASK_PIC16E_BANK));

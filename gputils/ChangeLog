@@ -1,3 +1,26 @@
+2016-05-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Updated based on the mplabx-3.30.
+
+  * gpasm/testsuite/test_all_processors,
+    gpasm/testsuite/gpasm.project/asmfiles/banksel5.asm,
+    gpasm/testsuite/gpasm.project/hexfiles/banksel5.hex,
+    gpasm/testsuite/gpasm.project/listfiles/banksel5.lst,
+    gpasm/directive.c, gpasm/lst.c, libgputils/gpdis.c,
+    libgputils/gpprocessor.c:
+    bugfix
+
+  * libgputils/gpmemory.c, libgputils/gpopcode.c,
+    libgputils/gpopcode.h, libgputils/gpprocessor.c, 
+    libgputils/gpprocessor.h:
+    Code formatting.
+
+  * libgputils/gpmemory.h:
+    More understandable code.
+
+  * libgputils/gpwriteobj.c:
+    Little optimisation.
+
 2016-05-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure.ac, configure:
     Changed Mplabx default path from "/opt/microchip/mplabx/v3.26"

@@ -29,6 +29,7 @@ enum insn_class {
   INSN_CLASS_LIT4L,     /* bits 3:0 contain a 4 bit literal             */
   INSN_CLASS_LIT5,      /* bits 4:0 contain an 4 bit literal            */
   INSN_CLASS_LIT6,      /* bits 5:0 contain an 6 bit literal            */
+  INSN_CLASS_LITBSR_6,  /* bits 6:0 contain an 6 bit literal for MOVLB (14bit enhX. cores) */
   INSN_CLASS_LIT7,      /* bits 6:0 contain an 7 bit literal            */
   INSN_CLASS_LIT8,      /* bits 7:0 contain an 8 bit literal            */
   INSN_CLASS_LIT8C12,   /* bits 7:0 contain an 8 bit literal, 12 bit CALL */
@@ -625,7 +626,7 @@ enum insn_class {
                11 1111 1110 0000 */
 #define PIC14E_INSN_MOVLB       0x0020
 #define PIC14E_MASK_MOVLB       0x3FE0
-#define PIC14E_BMSK_MOVLB       (PIC14E_MASK_BRA ^ PIC14_CORE_MASK)
+#define PIC14E_BMSK_MOVLB       (PIC14E_MASK_MOVLB ^ PIC14_CORE_MASK)
 
     /* movlp : 11 0001 1kkk kkkk
                11 1111 1000 0000 */
@@ -666,6 +667,16 @@ enum insn_class {
                11 1111 0000 0000 */
 #define PIC14E_INSN_SUBWFB      0x3B00
 #define PIC14E_MASK_SUBWFB      0x3F00
+
+/******************************************
+        PIC14EX definitions
+******************************************/
+
+    /* movlb : 00 0001 01kk kkkk
+               11 1111 1100 0000 */
+#define PIC14EX_INSN_MOVLB      0x0140
+#define PIC14EX_MASK_MOVLB      0x3FC0
+#define PIC14EX_BMSK_MOVLB      (PIC14EX_MASK_MOVLB ^ PIC14_CORE_MASK)
 
 /******************************************
         PIC16 definitions
@@ -1613,6 +1624,9 @@ extern const int num_op_16cxx_strict_mask;
 
 extern const struct insn op_16cxx_enh[];
 extern const int num_op_16cxx_enh;
+
+extern const struct insn op_16cxx_enhx[];
+extern const int num_op_16cxx_enhx;
 
 extern const struct insn op_17cxx[];
 extern const int num_op_17cxx;

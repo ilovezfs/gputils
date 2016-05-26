@@ -479,15 +479,15 @@ i_memory_put_be(MemBlock *m, unsigned int byte_addr, uint16_t word,
 void
 print_i_memory(const MemBlock *m, pic_processor_t processor)
 {
-  proc_class_t  class;
-  int           base;
-  int           i;
-  int           j;
-  int           org;
-  gp_boolean    row_used;
-  unsigned int  w_used;
-  bword_t       data;
-  uint8_t       c;
+  proc_class_t class;
+  int          base;
+  int          i;
+  int          j;
+  int          org;
+  gp_boolean   row_used;
+  unsigned int w_used;
+  bword_t      data;
+  uint8_t      c;
 
 #define WORDS_IN_ROW 8
 
