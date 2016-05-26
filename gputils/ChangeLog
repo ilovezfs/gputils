@@ -1,4 +1,15 @@
 2016-05-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, header/*, lkr/*, libgputils/gpcfg-table.c,
+    libgputils/gpprocessor.c, libgputils/gpreg-table.c:
+    Updated with new devices based on the mplabx-3.30.
+
+  * header/p16(l)f18854.inc, header/p16(l)f18856.inc,
+    header/p16(l)f18876.inc, header/p16(l)f18857.inc,
+    header/p16(l)f18877.inc, header/p16lf1566.inc,
+    header/p16lf1567.inc:
+    Added the missing DEBUG config option to these MCUs.
+
+2016-05-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Updated based on the mplabx-3.30.
 

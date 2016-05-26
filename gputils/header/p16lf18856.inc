@@ -24,6 +24,16 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       26 May 2016  Added the _DEBUG_ON and _DEBUG_OFF config options.
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -6035,6 +6045,11 @@ _PPS1WAY_ON          EQU  H'3FFF'; The PPSLOCK bit can be cleared and set only o
 _STVREN_OFF          EQU  H'2FFF'; Stack Overflow or Underflow will not cause a reset
 _STVREN_ON           EQU  H'3FFF'; Stack Overflow or Underflow will cause a reset
 
+;;;; Begin: Added in gputils
+_DEBUG_ON            EQU  H'1FFF'; Background debugger enabled; ICSPCLK and ICSPDAT are dedicated to the debugger.
+_DEBUG_OFF           EQU  H'3FFF'; Background debugger disabled; ICSPCLK and ICSPDAT are general purpose I/O pins.
+
+;;;; End: Added in gputils
 ;----- CONFIG3 Options --------------------------------------------------
 _WDTCPS_WDTCPS_0     EQU  H'3FE0'; Divider ratio 1:32
 _WDTCPS_WDTCPS_1     EQU  H'3FE1'; Divider ratio 1:64
