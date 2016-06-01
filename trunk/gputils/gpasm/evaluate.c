@@ -89,7 +89,7 @@ gp_boolean can_evaluate(const pnode_t *p)
 
   case PTAG_SYMBOL:
     {
-      char buf[BUFSIZ];
+      char            buf[BUFSIZ];
       const symbol_t *s;
 
       /* '$' means current org, which we can always evaluate */

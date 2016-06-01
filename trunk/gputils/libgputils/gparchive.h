@@ -56,18 +56,17 @@ Boston, MA 02111-1307, USA.  */
 #define ARFMAG "`\012"
 
 /* archive file member header */
-struct ar_hdr
-{
+typedef struct ar_hdr {
   char ar_name[256];            /* name of this member */
   char ar_date[12];             /* file mtime */
   char ar_size[10];             /* file size, printed as decimal */
   char ar_fmag[2];              /* should contain ARFMAG */
-};
+} ar_hdr_t;
 
 #define AR_HDR_SIZ 280
 
 typedef struct gp_archive_type {
-  struct ar_hdr           header; /* archive header file */
+  ar_hdr_t                header; /* archive header file */
   gp_binary_type          data;   /* binary data */
   int                     offset; /* offset from the begining of the archive */
   struct gp_archive_type *next;   /* next file in linked list */

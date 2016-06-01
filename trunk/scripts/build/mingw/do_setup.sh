@@ -27,24 +27,24 @@
 
 if [ -n "$1" ]
 then
-  srcfilename=$1
+  srcfilename="$1"
 else
   ver=$(sed -n 's/AC_INIT(\[gputils\],[ \t]*\[\([^\]*\)\],[ \t]*\[[^\]*\])$/\1/p' ../../../gputils/configure.ac)
-  srcfilename=gputils-${ver}.tar.gz
+  srcfilename="gputils-${ver}.tar.bz2"
 fi
 
 if [ -n "$2" ]
 then
-  packager=$2
+  packager="$2"
 else
-  packager="Borut Razem"
+  packager="Molnar Karoly"
 fi
 
 if [ -n "$3" ]
 then
-  email=$3
+  email="$3"
 else
-  email=borut.razem@siol.net
+  email="molnarkaroly@users.sourceforge.net"
 fi
 
-./make-mingw --email=$email --name="$packager" --source=$srcfilename --save-temps
+./make-mingw --email=$email --name="$packager" --source="$srcfilename" --save-temps

@@ -326,7 +326,7 @@ static gpasmVal do_mode(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 /* PIC 12-bit and 14-bit "Special" instruction set. */
-const struct insn special[] = {
+const insn_t special[] = {
   { "addcf",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_addcf  },
   { "adddcf", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_adddcf },
   { "b",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_b      },
@@ -359,6 +359,6 @@ const struct insn special[] = {
 
 const int num_op_special = TABLE_SIZE(special);
 
-const struct insn op_sx_mode = { 
+const insn_t op_sx_mode = { 
   "mode", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_mode
 };

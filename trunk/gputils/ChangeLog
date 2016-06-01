@@ -1,3 +1,65 @@
+2016-06-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure.ac, configure, Makefile.in:
+    Added the dist-bzip2 target.
+
+  * gpasm/testsuite/test_all_processors:
+    Test all banksel and pagesel alternatives.
+
+  * gpasm/cod.c, gpasm/util.c, gplink/cod.c, gplink/gplink.c,
+    gplink/map.c, gputils/dump.c, libgputils/gpwritehex.c:
+    The names of static functions got '_' prefix.
+
+  * gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c,
+    gpasm/gpasm.c, gpasm/lst.c, gpasm/lst.h, gpasm/processor.c,
+    gplink/cod.c, gplink/map.c, gputils/block.c, gputils/dump.c,
+    gputils/gpdasm.h.in, libgputils/gpcfg.h, libgputils/gpcod.h,
+    libgputils/gpregister.h:
+    Code formatting.
+
+  * gpasm/macro.c, gpasm/macro.h, gpasm/parse.y:
+    Renamed these function names:
+	setup_macro --> macro_setup
+	push_macro_symbol_table --> macro_push_symbol_table
+	list_macro --> macro_list
+
+  * gplink/script.c, gplink/script.h, gplink/parse.y:
+    Renamed these function names:
+	add_path --> script_add_path
+	add_script_macro --> script_add_macro
+	get_script_macro --> script_get_macro
+	execute_command --> script_execute_command
+    Use pnode_t instead of "struct pnode".
+
+  * gpasm/special.c, gpasm/special.h, libgputils/gpopcode.c,
+    libgputils/gpopcode.h:
+    Use insn_t instead of "struct insn".
+
+  * gputils/gpdasm.c, libgputils/gpreadhex.c, libgputils/gpreadhex.h:
+    Renamed the function name:
+	readhex --> gp_readhex
+
+  * gputils/gpdasm.h.in:
+    Use hex_data_t instead of "struct hex_data".
+
+  * libgputils/gparchive.c, libgputils/gparchive.h:
+    Use ar_hdr_t instead of "struct ar_hdr".
+
+  * libgputils/gpcofflink.c, libgputils/gpwriteobj.c,
+    libgputils/gpwriteobj.h:
+    Renamed the function name:
+	_has_data --> gp_has_data
+
+  * libgputils/gpcofflink.c, libgputils/gpprocessor.c,
+    libgputils/gpprocessor.h, libgputils/gpreadobj.c,
+    libgputils/gpreadobj.h:
+    Some static function got a shorter name. Some little optimisation.
+
+  * libgputils/gpdis.c:
+    Little optimisation.
+
+  * libgputils/gpsystem.h:
+    Use gp_list_t instead of "struct gp_list".
+
 2016-05-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcfg-table.c,
     Updated with new devices based on the mplabx-3.30.

@@ -22,12 +22,12 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPREADHEX_H__
 #define __GPREADHEX_H__
 
-struct hex_data {
+typedef struct hex_data {
   enum formats hex_format;
   int          size;
-  int          error;
-};
+  gp_boolean   error;
+} hex_data_t;
 
-struct hex_data *readhex(const char *filename, MemBlock *m);
+hex_data_t *gp_readhex(const char *filename, MemBlock *m);
 
 #endif

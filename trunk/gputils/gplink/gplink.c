@@ -38,21 +38,21 @@ static gp_boolean   enable_cinit_wanings;
 
 /* return the number of missing symbols */
 static size_t
-count_missing(void)
+_count_missing(void)
 {
   return sym_get_symbol_count(state.symbol.missing);
 }
 
 static void
 /*object_append(gp_object_type *file, const char *name)*/
-object_append(gp_object_type *file)
+_object_append(gp_object_type *file)
 {
   /* append the entry to the list */
   if (state.object == NULL) {
-    state.object = file;
+    state.object    = file;
     /* store the processor type from the first object file */
     state.processor = file->processor;
-    state.class = file->class;
+    state.class     = file->class;
   } else {
     gp_object_type *list = state.object;
 
@@ -74,7 +74,7 @@ object_append(gp_object_type *file)
 }
 
 static void
-archive_append(gp_archive_type *file, const char *name)
+_archive_append(gp_archive_type *file, const char *name)
 {
   struct archivelist *new;
 
@@ -103,8 +103,8 @@ archive_append(gp_archive_type *file, const char *name)
    Stop whenever a complete pass through the archive happens and no
    objects are added. */
 
-gp_boolean
-scan_index(symbol_table_t *table, gp_archive_type *archive)
+static gp_boolean
+_scan_index(symbol_table_t *table, gp_archive_type *archive)
 {
   const symbol_t  *sym_miss;
   const symbol_t  *sym_arch;
@@ -134,7 +134,7 @@ scan_index(symbol_table_t *table, gp_archive_type *archive)
         object_name = gp_archive_member_name(member);
         object = gp_convert_file(object_name, &member->data);
         /*object_append(object, object_name);*/
-        object_append(object);
+        _object_append(object);
         gp_link_add_symbols(state.symbol.definition, state.symbol.missing, object);
         /* The symbol tables have been modified. Need to take another
            pass to make sure we get everything. */
@@ -150,8 +150,8 @@ scan_index(symbol_table_t *table, gp_archive_type *archive)
   return modified;
 }
 
-gp_boolean
-scan_archive(gp_archive_type *archive, char *name)
+static gp_boolean
+_scan_archive(gp_archive_type *archive, char *name)
 {
   gp_boolean modified;
 
@@ -173,7 +173,7 @@ scan_archive(gp_archive_type *archive, char *name)
 
   /* Scan the symbol index for symbols in the missing symbol table.  If
      found, add the object to state.objects. */
-  modified = scan_index(state.symbol.archive, archive);
+  modified = _scan_index(state.symbol.archive, archive);
 
   state.symbol.archive = sym_pop_table(state.symbol.archive);
 
@@ -183,7 +183,7 @@ scan_archive(gp_archive_type *archive, char *name)
 /* Remove a symbol the linker created from the missing table. */
 
 static void
-remove_linker_symbol(char *name)
+_remove_linker_symbol(char *name)
 {
   const symbol_t *sym;
 
@@ -196,7 +196,7 @@ remove_linker_symbol(char *name)
 /* Add a symbol the linker created to the symbol table. */
 
 static void
-add_linker_symbol(const char *name)
+_add_linker_symbol(const char *name)
 {
   gp_symbol_type *current = state.object->symbols;
   gp_symbol_type *found = NULL;
@@ -216,9 +216,9 @@ add_linker_symbol(const char *name)
 /* Search the object list for an idata section. */
 
 static void
-search_idata(void)
+_search_idata(void)
 {
-  gp_object_type *list = state.object;
+  gp_object_type  *list = state.object;
   gp_section_type *section;
 
   while (list != NULL) {
@@ -237,15 +237,15 @@ search_idata(void)
 /* Build the symbol tables. Determine which objects from the archives are
    required for linking. */
 
-void
-build_tables(void)
+static void
+_build_tables(void)
 {
-  gp_object_type *list = state.object;
+  gp_object_type     *list = state.object;
   struct archivelist *arlist;
-  gp_boolean modified;
-  size_t i;
-  const symbol_t *sym;
-  const char *name;
+  gp_boolean          modified;
+  size_t              i;
+  const symbol_t     *sym;
+  const char         *name;
   gp_coffsymbol_type *var;
 
   /* Create the object file symbol tables. */
@@ -256,14 +256,14 @@ build_tables(void)
 
   /* All of the objects have been scanned. If there are remaining references
      to symbols, then the archives must contain the missing references. */
-  if ((count_missing() > 0) && (state.archives != NULL)) {
+  if ((_count_missing() > 0) && (state.archives != NULL)) {
     modified = false;
     arlist = state.archives;
     while (true) {
-      if (scan_archive(arlist->archive, arlist->name)) {
+      if (_scan_archive(arlist->archive, arlist->name)) {
         modified = true;
       }
-      if (count_missing() == 0) {
+      if (_count_missing() == 0) {
         /* No more missing references, no need to continue. */
         break;
       } else if (arlist->next == NULL) {
@@ -282,20 +282,20 @@ build_tables(void)
     }
   }
 
-  search_idata();
+  _search_idata();
 
   if (state.has_idata) {
-    remove_linker_symbol("_cinit");
+    _remove_linker_symbol("_cinit");
   }
 
   if (state.has_stack) {
-    remove_linker_symbol("_stack");
-    remove_linker_symbol("_stack_end");
+    _remove_linker_symbol("_stack");
+    _remove_linker_symbol("_stack_end");
   }
 
   /* All of the archives have been scanned. If there are still missing
      references, it is an error. */
-  if (count_missing() > 0) {
+  if (_count_missing() > 0) {
     for (i = 0; i < sym_get_symbol_count(state.symbol.missing); ++i) {
       sym  = sym_get_symbol_with_index(state.symbol.missing, i);
       name = sym_get_symbol_name(sym);
@@ -315,10 +315,10 @@ build_tables(void)
 void
 gplink_open_coff(const char *name)
 {
-  gp_object_type *object;
+  gp_object_type  *object;
   gp_archive_type *archive;
-  FILE *coff;
-  char file_name[PATH_MAX + 1];
+  FILE            *coff;
+  char             file_name[PATH_MAX + 1];
 
   strncpy(file_name, name, sizeof(file_name));
 
@@ -350,13 +350,13 @@ gplink_open_coff(const char *name)
     /* read the object */
     object = gp_read_coff(file_name);
     /*object_append(object, file_name);*/
-    object_append(object);
+    _object_append(object);
     break;
 
   case GP_COFF_ARCHIVE:
     /* read the archive */
     archive = gp_archive_read(file_name);
-    archive_append(archive, file_name);
+    _archive_append(archive, file_name);
     break;
 
   case GP_COFF_SYS_ERR:
@@ -373,11 +373,11 @@ gplink_open_coff(const char *name)
 }
 
 static void
-set_optimize_level(void)
+_set_optimize_level(void)
 {
   /* default */
   state.optimize.dead_sections = false;
-  state.optimize.weak_symbols = false;
+  state.optimize.weak_symbols  = false;
 
   switch(state.optimize.level) {
   case 3:
@@ -428,8 +428,8 @@ static struct option longopts[] =
   { NULL,                 no_argument,       NULL, '\0'}
 };
 
-void
-init(void)
+static void
+_init(void)
 {
   gp_init();
 
@@ -480,7 +480,7 @@ gplink_add_path(const char *path)
   printf("  -z, --defsym symbol=value      Add symbol value to symbol table.\n");
 */
 static void
-parse_define(const char *optarg, void (*func)(const char* name, long value))
+_parse_define(const char *optarg, void (*func)(const char* name, long value))
 {
   long  value = 0;
   char *pc = strchr(optarg, '=');
@@ -492,8 +492,8 @@ parse_define(const char *optarg, void (*func)(const char* name, long value))
   func(optarg, value);
 }
 
-void
-show_usage(void)
+static void
+_show_usage(void)
 {
   printf("Usage: gplink [options] [objects] [libraries]\n");
   printf("Options: [defaults in brackets after descriptions]\n");
@@ -539,8 +539,8 @@ show_usage(void)
   exit(0);
 }
 
-void
-process_args(int argc, char *argv[])
+static void
+_process_args(int argc, char *argv[])
 {
   int         option_index;
   int         c;
@@ -587,7 +587,7 @@ process_args(int argc, char *argv[])
   /* reset the getopt_long index for the next call */
   optind = 1;
 
-  set_optimize_level();
+  _set_optimize_level();
 
   /* third pass through options */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
@@ -600,8 +600,7 @@ process_args(int argc, char *argv[])
       } else if (strcasecmp(optarg, "inhx32") == 0) {
         state.hex_format = INHX32;
       } else {
-        gp_error("Invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32.",
-                 optarg);
+        gp_error("Invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32.", optarg);
       }
       break;
 
@@ -673,7 +672,7 @@ process_args(int argc, char *argv[])
 
         fn = GP_Malloc(sizeof(struct srcfns));
         fn->filename = GP_Strdup(optarg);
-        fn->next = NULL;
+        fn->next     = NULL;
 
         if (state.srcfilenames == NULL) {
           state.srcfilenames = fn;
@@ -681,7 +680,7 @@ process_args(int argc, char *argv[])
         else {
           struct srcfns *p;
 
-          for (p = state.srcfilenames; p->next; p = p->next)
+          for (p = state.srcfilenames; p->next != NULL; p = p->next)
             ;
           p->next = fn;
         }
@@ -698,7 +697,7 @@ process_args(int argc, char *argv[])
       break;
 
     case 'u':
-      parse_define(optarg, add_script_macro);
+      _parse_define(optarg, script_add_macro);
       break;
 
     case 'v':
@@ -755,7 +754,7 @@ process_args(int argc, char *argv[])
   }
 
   if (usage) {
-    show_usage();
+    _show_usage();
   }
 
   /* Add the library path to the include paths list last, so that the user
@@ -774,10 +773,11 @@ process_args(int argc, char *argv[])
   }
 }
 
-gp_boolean
-linker(void)
+static gp_boolean
+_linker(void)
 {
-  MemBlock *data, *program;
+  MemBlock *data;
+  MemBlock *program;
 
   /* setup output filenames */
   snprintf(state.hexfilename, sizeof(state.hexfilename), "%s.hex", state.basefilename);
@@ -792,14 +792,14 @@ linker(void)
       open_src(p->filename, false);
       yyparse();
       p = p->next;
-    } while (NULL != p);
+    } while (p != NULL);
 #ifdef USE_DEFAULT_PATHS
   }
   else if ((state.object != NULL) && (gp_lkr_path != NULL)) {
     /* The processor is known because an object was on the command line. So
        use one of the default scripts that are distributed with gputils. */
-    char file_name[BUFSIZ];
     const char *script_name;
+    char        file_name[BUFSIZ];
 
     assert(state.processor);
     script_name = gp_processor_script(state.processor);
@@ -834,7 +834,7 @@ linker(void)
 
   /* Construct the symbol tables. Determine which archive members are
      required to resolve external references. */
-  build_tables();
+  _build_tables();
 
   /* combine all object files into one object */
   gp_cofflink_combine_objects(state.object);
@@ -842,13 +842,13 @@ linker(void)
   /* add the stack section */
   if (state.has_stack) {
     gp_cofflink_make_stack(state.object, state.stack_size);
-    add_linker_symbol("_stack");
-    add_linker_symbol("_stack_end");
+    _add_linker_symbol("_stack");
+    _add_linker_symbol("_stack_end");
   }
 
   if (state.has_idata) {
     gp_cofflink_make_cinit(state.object);
-    add_linker_symbol("_cinit");
+    _add_linker_symbol("_cinit");
   }
 
   /* clean up symbol table */
@@ -967,8 +967,8 @@ linker(void)
 int
 main(int argc, char *argv[])
 {
-  init();
-  process_args(argc, argv);
+  _init();
+  _process_args(argc, argv);
 
-  return (linker() ? EXIT_SUCCESS : EXIT_FAILURE);
+  return (_linker() ? EXIT_SUCCESS : EXIT_FAILURE);
 }

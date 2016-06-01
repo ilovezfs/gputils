@@ -31,9 +31,46 @@ Boston, MA 02111-1307, USA.  */
 #include "preprocess.h"
 #include "lst.h"
 
+/* The symbol table is pushed at each macro call.  This makes local symbols
+   possible.  Each symbol table is created once on pass 1.  On pass two the
+   old symbol table is reloaded so forward references to the local symbols
+   are possible */
+
+typedef struct macro_table {
+  symbol_table_t     *table;
+  int                 line_number;      /* sanity check, better not change */
+  struct macro_table *next;
+} macro_table_t;
+
+static struct macro_table *macro_table_list = NULL;
+
+static void
+_add_macro_table(symbol_table_t *table)
+{
+  macro_table_t *new;
+
+  new = (macro_table_t *)GP_Malloc(sizeof(*new));
+  new->table       = table;
+  new->line_number = state.src->line_number;
+  new->next        = NULL;
+
+  if (macro_table_list == NULL) {
+    macro_table_list = new;
+  } else {
+    macro_table_t *list = macro_table_list;
+
+    /* find the end of the list */
+    while (list->next != NULL) {
+      list = list->next;
+    }
+
+    list->next = new;
+  }
+}
+
 /* Create a new defines table and place the macro parms in it. */
 
-void setup_macro(macro_head_t *h, int arity, const pnode_t *parms)
+void macro_setup(macro_head_t *h, int arity, const pnode_t *parms)
 {
   const pnode_t *pFrom;
   const pnode_t *pFromH;
@@ -68,51 +105,14 @@ void setup_macro(macro_head_t *h, int arity, const pnode_t *parms)
   }
 }
 
-/* The symbol table is pushed at each macro call.  This makes local symbols
-   possible.  Each symbol table is created once on pass 1.  On pass two the
-   old symbol table is reloaded so forward references to the local symbols
-   are possible */
-
-struct macro_table {
-  symbol_table_t     *table;
-  int                 line_number;      /* sanity check, better not change */
-  struct macro_table *next;
-};
-
-static struct macro_table *macro_table_list = NULL;
-
-static void
-add_macro_table(symbol_table_t *table)
-{
-  struct macro_table *new;
-
-  new = (struct macro_table *)GP_Malloc(sizeof(*new));
-  new->table = table;
-  new->line_number = state.src->line_number;
-  new->next = NULL;
-
-  if (macro_table_list == NULL) {
-    macro_table_list = new;
-  } else {
-    struct macro_table *list = macro_table_list;
-
-    /* find the end of the list */
-    while (list->next != NULL) {
-      list = list->next;
-    }
-
-    list->next = new;
-  }
-}
-
 symbol_table_t *
-push_macro_symbol_table(symbol_table_t *table)
+macro_push_symbol_table(symbol_table_t *table)
 {
   symbol_table_t *new = NULL;
 
   if (state.pass == 1) {
     new = sym_push_table(table, state.case_insensitive);
-    add_macro_table(new);
+    _add_macro_table(new);
   } else {
     if (macro_table_list == NULL) {
       gpverror(GPE_UNKNOWN, "An error occurred during a macro execution on pass %i.", state.pass);
@@ -139,13 +139,13 @@ push_macro_symbol_table(symbol_table_t *table)
 }
 
 void
-list_macro(macro_body_t *p)
+macro_list(macro_body_t *p)
 {
   unsigned int old_line_number = state.src->line_number;
 
   /* Never executed: list the macro body */
   state.lst.line.linetype = LTY_DIR;
-  state.src->line_number = state.while_head->line_number;
+  state.src->line_number  = state.while_head->line_number;
   while (p != NULL) {
     ++state.src->line_number;
     lst_format_line(p->src_line, 0);

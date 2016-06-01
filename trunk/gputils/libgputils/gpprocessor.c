@@ -1661,63 +1661,63 @@ gp_processor_check_ibank(proc_class_t class, unsigned int address)
 
 /* When unsupported on the class */
 static int
-gp_processor_check_xbank_unsupported(unsigned int address)
+_check_xbank_unsupported(unsigned int address)
 {
   assert(0);
   return 0;
 }
 
 static int
-gp_processor_set_xbank_unsupported(int num_banks, int bank, MemBlock *m, unsigned int address)
+_set_xbank_unsupported(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   assert(0);
   return 0;
 }
 
 static int
-gp_processor_check_page_unsupported(unsigned int org)
+_check_page_unsupported(unsigned int org)
 {
   assert(0);
   return 0;
 }
 
 static int
-gp_processor_set_page_unsupported(int num_pages, int page, MemBlock *m, unsigned int address,
-                                  gp_boolean use_wreg)
+_set_page_unsupported(int num_pages, int page, MemBlock *m, unsigned int address, gp_boolean use_wreg)
 {
     assert(0);
     return 0;
 }
 
 static int
-gp_processor_page_addr_unsupported(unsigned int address)
+_page_addr_unsupported(unsigned int address)
 {
     assert(0);
     return 0;
 }
 
 static int
-gp_processor_page_bits_to_addr_unsupported(unsigned int bits)
+_page_bits_to_addr_unsupported(unsigned int bits)
 {
     assert(0);
     return 0;
 }
 
-static int reloc_unsupported(unsigned int address)
+static int
+_reloc_unsupported(unsigned int address)
 {
   assert(0);
   return 0;
 }
 
 static int
-reloc_bra_unsupported(gp_section_type *section, unsigned value, unsigned int byte_org)
+_reloc_bra_unsupported(gp_section_type *section, unsigned value, unsigned int byte_org)
 {
   assert(0);
   return 0;
 }
 
 static int
-reloc_high_unsupported(gp_boolean is_code, int value)
+_reloc_high_unsupported(gp_boolean is_code, int value)
 {
   assert(0);
   return 0;
@@ -1725,12 +1725,12 @@ reloc_high_unsupported(gp_boolean is_code, int value)
 
 /* Common to most */
 
-static const struct insn *
-find_insn_generic(proc_class_t cls, unsigned int opcode)
+static const insn_t *
+_find_insn_generic(proc_class_t cls, unsigned int opcode)
 {
-  const struct insn *base = cls->instructions;
-  int count = (base == NULL) ? 0 : *cls->num_instructions;
-  int i;
+  const insn_t *base = cls->instructions;
+  int           count = (base == NULL) ? 0 : *cls->num_instructions;
+  int           i;
 
   for (i = 0; i < count; i++) {
     if ((base[i].mask & opcode) == base[i].opcode) {
@@ -1741,7 +1741,7 @@ find_insn_generic(proc_class_t cls, unsigned int opcode)
 }
 
 static int
-reloc_high_generic(gp_boolean is_code, int value)
+_reloc_high_generic(gp_boolean is_code, int value)
 {
   return ((value >> 8) & 0xff);
 }
@@ -1749,12 +1749,12 @@ reloc_high_generic(gp_boolean is_code, int value)
 /* Common to PIC12 and PIC14 */
 
 static int
-gp_processor_set_page_pic12_14(int num_pages, int page, MemBlock *m, unsigned int address,
-                               gp_boolean use_wreg, int bcf_insn, int bsf_insn, int movlw_insn,
-                               int movwf_insn, int location, int page0, int page1)
+_set_page_pic12_14(int num_pages, int page, MemBlock *m, unsigned int address,
+                   gp_boolean use_wreg, int bcf_insn, int bsf_insn, int movlw_insn,
+                   int movwf_insn, int location, int page0, int page1)
 {
-  unsigned int data;
-  char         buf[BUFSIZ];
+  uint16_t data;
+  char     buf[BUFSIZ];
 
   assert(num_pages <= 4);
 
@@ -1788,11 +1788,11 @@ gp_processor_set_page_pic12_14(int num_pages, int page, MemBlock *m, unsigned in
 }
 
 static int
-gp_processor_set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned int address,
-                               int bcf_insn, int bsf_insn, int location, int bank0, int bank1, int bank2)
+_set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned int address,
+                   int bcf_insn, int bsf_insn, int location, int bank0, int bank1, int bank2)
 {
-  unsigned int data;
-  char         buf[BUFSIZ];
+  uint16_t data;
+  char     buf[BUFSIZ];
 
   /* 16F59 */
   assert(num_banks <= 8);
@@ -1806,6 +1806,7 @@ gp_processor_set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned in
   /* bank low bit */
   data = ((bank & 1) ? bsf_insn : bcf_insn) | bank0 | location;
   i_memory_put_le(m, address, data, buf, NULL);
+
   if (num_banks > 2) {
     /* bank high bit */
     data = ((bank & 2) ? bsf_insn : bcf_insn) | bank1 | location;
@@ -1832,7 +1833,7 @@ gp_processor_set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned in
 /* PIC12 */
 
 static unsigned int
-id_location_pic12(pic_processor_t processor)
+_id_location_pic12(pic_processor_t processor)
 {
   if ((processor->idlocs_addrs[0] > 0) && (processor->idlocs_addrs[1] > 0)) {
     /* We carry org in the struct px, but return byte address. */
@@ -1842,72 +1843,71 @@ id_location_pic12(pic_processor_t processor)
 }
 
 static int
-gp_processor_check_bank_pic12(unsigned int address)
+_check_bank_pic12(unsigned int address)
 {
   return ((address >> PIC12_BANK_SHIFT) & PIC12_BMSK_BANK);
 }
 
 static int
-gp_processor_set_bank_pic12(int num_banks, int bank, MemBlock *m, unsigned int address)
+_set_bank_pic12(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
-  return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
-                                        PIC12_INSN_BCF, PIC12_INSN_BSF, PIC12_REG_FSR,
-                                        PIC14_BIT_FSR_RP0 << 5,
-                                        PIC14_BIT_FSR_RP1 << 5,
-                                        PIC14_BIT_FSR_RP2 << 5);
+  return _set_bank_pic12_14(num_banks, bank, m, address,
+                            PIC12_INSN_BCF, PIC12_INSN_BSF, PIC12_REG_FSR,
+                            PIC14_BIT_FSR_RP0 << 5,
+                            PIC14_BIT_FSR_RP1 << 5,
+                            PIC14_BIT_FSR_RP2 << 5);
 }
 
 static int
-gp_processor_check_page_pic12(unsigned int org)
+_check_page_pic12(unsigned int org)
 {
   return ((org & PIC12_PAGE_BITS) >> PIC12_SHIFT_PAGE_ADDR);
 }
 
 static int
-gp_processor_page_addr_pic12(unsigned int org)
+_page_addr_pic12(unsigned int org)
 {
   return (org & PIC12_PAGE_BITS);
 }
 
 static int
-gp_processor_page_bits_to_addr_pic12(unsigned int bits)
+_page_bits_to_addr_pic12(unsigned int bits)
 {
-  return gp_processor_page_addr_pic12(bits << PIC12_SHIFT_PAGE_ADDR);
+  return _page_addr_pic12(bits << PIC12_SHIFT_PAGE_ADDR);
 }
 
 static int
-gp_processor_set_page_pic12(int num_pages, int page, MemBlock *m, unsigned int address,
-                            gp_boolean use_wreg)
+_set_page_pic12(int num_pages, int page, MemBlock *m, unsigned int address, gp_boolean use_wreg)
 
 {
-  return gp_processor_set_page_pic12_14(num_pages, page, m, address, use_wreg,
-                                        PIC12_INSN_BCF, PIC12_INSN_BSF,
-                                        PIC12_INSN_MOVLW, PIC12_INSN_MOVWF, PIC12_REG_STATUS,
-                                        PIC12_BIT_STATUS_PA0 << 5,
-                                        PIC12_BIT_STATUS_PA1 << 5);
+  return _set_page_pic12_14(num_pages, page, m, address, use_wreg,
+                            PIC12_INSN_BCF, PIC12_INSN_BSF,
+                            PIC12_INSN_MOVLW, PIC12_INSN_MOVWF, PIC12_REG_STATUS,
+                            PIC12_BIT_STATUS_PA0 << 5,
+                            PIC12_BIT_STATUS_PA1 << 5);
 }
 
 
 static int
-reloc_call_pic12(unsigned int org)
+_reloc_call_pic12(unsigned int org)
 {
   return (org & PIC12_BMSK_CALL);
 }
 
 static int
-reloc_goto_pic12(unsigned int org)
+_reloc_goto_pic12(unsigned int org)
 {
   return (org & PIC12_BMSK_GOTO);
 }
 
 static int
-reloc_f_pic12(unsigned int address)
+_reloc_f_pic12(unsigned int address)
 {
   return (address & PIC12_BMSK_FILE);
 }
 
 static int
-reloc_tris_pic12(unsigned int address)
+_reloc_tris_pic12(unsigned int address)
 {
   /* TODO This is not accurate, for example PIC12F510/16F506 only has
      three bits and allowed values of 6 and 7. MPASM 5.34 has
@@ -1921,19 +1921,19 @@ reloc_tris_pic12(unsigned int address)
 /* PIC12E */
 
 static int
-gp_processor_check_bank_pic12e(unsigned int address)
+_check_bank_pic12e(unsigned int address)
 {
   return ((address >> PIC12_BANK_SHIFT) & PIC12E_BMSK_BANK);
 }
 
 static int
-gp_processor_set_bank_pic12e(int num_banks, int bank, MemBlock *m, unsigned int address)
+_set_bank_pic12e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
-  unsigned int data;
-  char         buf[BUFSIZ];
+  uint16_t data;
+  char     buf[BUFSIZ];
 
   bank &= PIC12E_BMSK_BANK;
-  data = PIC12E_INSN_MOVLB | bank;
+  data  = PIC12E_INSN_MOVLB | bank;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
   i_memory_put_le(m, address, data, buf, NULL);
@@ -1941,13 +1941,13 @@ gp_processor_set_bank_pic12e(int num_banks, int bank, MemBlock *m, unsigned int 
 }
 
 static int
-reloc_tris_pic12e(unsigned int address)
+_reloc_tris_pic12e(unsigned int address)
 {
   return (address & PIC12_BMSK_TRIS);
 }
 
-static const struct insn *
-find_insn_pic12e(proc_class_t cls, unsigned int opcode)
+static const insn_t *
+_find_insn_pic12e(proc_class_t cls, unsigned int opcode)
 {
   int i;
 
@@ -1970,29 +1970,28 @@ find_insn_pic12e(proc_class_t cls, unsigned int opcode)
 /* SX */
 
 static int
-gp_processor_check_page_sx(unsigned int org)
+_check_page_sx(unsigned int org)
 {
   return ((org & PIC12_PAGE_BITS) >> PIC12_SHIFT_PAGE_ADDR);
 }
 
 static int
-gp_processor_page_addr_sx(unsigned int org)
+_page_addr_sx(unsigned int org)
 {
   return (org & PIC12_PAGE_BITS);
 }
 
 static int
-gp_processor_page_bits_to_addr_sx(unsigned int bits)
+_page_bits_to_addr_sx(unsigned int bits)
 {
-  return gp_processor_page_addr_sx(bits << PIC12_SHIFT_PAGE_ADDR);
+  return _page_addr_sx(bits << PIC12_SHIFT_PAGE_ADDR);
 }
 
 static int
-gp_processor_set_page_sx(int num_pages, int page, MemBlock *m, unsigned int address,
-                         gp_boolean use_wreg)
+_set_page_sx(int num_pages, int page, MemBlock *m, unsigned int address, gp_boolean use_wreg)
 {
-  unsigned int data;
-  char         buf[BUFSIZ];
+  uint16_t data;
+  char     buf[BUFSIZ];
 
   if (num_pages == 1) {
     return 0;
@@ -2009,7 +2008,7 @@ gp_processor_set_page_sx(int num_pages, int page, MemBlock *m, unsigned int addr
 /* PIC14 */
 
 static unsigned int
-id_location_pic14(pic_processor_t processor)
+_id_location_pic14(pic_processor_t processor)
 {
   if ((processor->idlocs_addrs[0] > 0) && (processor->idlocs_addrs[1] > 0)) {
     /* We carry org in the struct px, but return byte address. */
@@ -2019,31 +2018,31 @@ id_location_pic14(pic_processor_t processor)
 }
 
 static int
-gp_processor_check_bank_pic14(unsigned int address)
+_check_bank_pic14(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & PIC14_BMSK_BANK);
 }
 
 static int
-gp_processor_set_bank_pic14(int num_banks, int bank, MemBlock *m, unsigned int address)
+_set_bank_pic14(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
-  return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
-                                        PIC14_INSN_BCF,
-                                        PIC14_INSN_BSF,
-                                        PIC14_REG_STATUS,
-                                        PIC14_BIT_STATUS_RP0 << PIC14_INSN_BxF_BITSHIFT,
-                                        PIC14_BIT_STATUS_RP1 << PIC14_INSN_BxF_BITSHIFT,
-                                        -1);
+  return _set_bank_pic12_14(num_banks, bank, m, address,
+                            PIC14_INSN_BCF,
+                            PIC14_INSN_BSF,
+                            PIC14_REG_STATUS,
+                            PIC14_BIT_STATUS_RP0 << PIC14_INSN_BxF_BITSHIFT,
+                            PIC14_BIT_STATUS_RP1 << PIC14_INSN_BxF_BITSHIFT,
+                            -1);
 }
 
 static int
-gp_processor_check_ibank_pic14(unsigned int address)
+_check_ibank_pic14(unsigned int address)
 {
   return ((address >> 8) & 0x0f);
 }
 
 static int
-gp_processor_set_ibank_pic14(int num_banks, int bank, MemBlock *m,unsigned int address)
+_set_ibank_pic14(int num_banks, int bank, MemBlock *m,unsigned int address)
 {
   /* bcf 3,7 or bsf 3,7 */
   i_memory_put_le(m, address, (bank == 0) ? 0x1383 : 0x1783, (bank == 0) ? "ibank0" : "ibank1", NULL);
@@ -2051,68 +2050,67 @@ gp_processor_set_ibank_pic14(int num_banks, int bank, MemBlock *m,unsigned int a
 }
 
 static int
-gp_processor_check_page_pic14(unsigned int org)
+_check_page_pic14(unsigned int org)
 {
   return ((org & PIC14_PAGE_BITS) >> PIC14_SHIFT_PAGE_ADDR);
 }
 
 static int
-gp_processor_page_addr_pic14(unsigned int org)
+_page_addr_pic14(unsigned int org)
 {
   return (org & PIC14_PAGE_BITS);
 }
 
 static int
-gp_processor_page_bits_to_addr_pic14(unsigned int bits)
+_page_bits_to_addr_pic14(unsigned int bits)
 {
-  return gp_processor_page_addr_pic14(bits << PIC14_SHIFT_PAGE_ADDR);
+  return _page_addr_pic14(bits << PIC14_SHIFT_PAGE_ADDR);
 }
 
 static int
-gp_processor_set_page_pic14(int num_pages, int page, MemBlock *m, unsigned int address,
-                            gp_boolean use_wreg)
+_set_page_pic14(int num_pages, int page, MemBlock *m, unsigned int address, gp_boolean use_wreg)
 {
-  return gp_processor_set_page_pic12_14(num_pages,
-                                        page,
-                                        m,
-                                        address,
-                                        use_wreg,
-                                        PIC14_INSN_BCF,
-                                        PIC14_INSN_BSF,
-                                        PIC14_INSN_MOVLW,
-                                        PIC14_INSN_MOVWF,
-                                        PIC14_REG_PCLATH,
-                                        3 << PIC14_INSN_BxF_BITSHIFT,
-                                        4 << PIC14_INSN_BxF_BITSHIFT);
+  return _set_page_pic12_14(num_pages,
+                            page,
+                            m,
+                            address,
+                            use_wreg,
+                            PIC14_INSN_BCF,
+                            PIC14_INSN_BSF,
+                            PIC14_INSN_MOVLW,
+                            PIC14_INSN_MOVWF,
+                            PIC14_REG_PCLATH,
+                            3 << PIC14_INSN_BxF_BITSHIFT,
+                            4 << PIC14_INSN_BxF_BITSHIFT);
 }
 
 static int
-reloc_call_pic14(unsigned int org)
-{
-  return (org & PIC14_BMSK_BRANCH);
-}
-
-static int
-reloc_goto_pic14(unsigned int org)
+_reloc_call_pic14(unsigned int org)
 {
   return (org & PIC14_BMSK_BRANCH);
 }
 
 static int
-reloc_f_pic14(unsigned int address)
+_reloc_goto_pic14(unsigned int org)
+{
+  return (org & PIC14_BMSK_BRANCH);
+}
+
+static int
+_reloc_f_pic14(unsigned int address)
 {
   return (address & PIC14_BMSK_FILE);
 }
 
 static int
-reloc_tris_pic14(unsigned int address)
+_reloc_tris_pic14(unsigned int address)
 {
   /* According to the data sheets, the TRIS instruction does not exist in the PIC14 family. */
   return (address & PIC14_BMSK_TRIS);
 }
 
 static void
-patch_strict_pic14(void)
+_patch_strict_pic14(void)
 {
   int i;
   int j;
@@ -2128,16 +2126,16 @@ patch_strict_pic14(void)
 /* PIC14E */
 
 static int
-gp_processor_check_bank_pic14e(unsigned int address)
+_check_bank_pic14e(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & PIC14E_BMSK_BANK);
 }
 
 static int
-gp_processor_set_bank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int address)
+_set_bank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
-  unsigned int data;
-  char         buf[BUFSIZ];
+  uint16_t data;
+  char     buf[BUFSIZ];
 
   bank &= PIC14E_BMSK_BANK;
   data  = PIC14E_INSN_MOVLB | bank;
@@ -2148,13 +2146,13 @@ gp_processor_set_bank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int 
 }
 
 static int
-gp_processor_check_ibank_pic14e(unsigned int address)
+_check_ibank_pic14e(unsigned int address)
 {
   return ((address >> 8) & 0x0f);
 }
 
 static int
-gp_processor_set_ibank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int address)
+_set_ibank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   /* bcf: 01 00bb bfff ffff
    * bsf: 01 01bb bfff ffff
@@ -2178,29 +2176,28 @@ gp_processor_set_ibank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int
 }
 
 static int
-gp_processor_check_page_pic14e(unsigned int org)
+_check_page_pic14e(unsigned int org)
 {
   return ((org >> 8) & PIC14E_BMSK_PAGE512);
 }
 
 static int
-gp_processor_page_addr_pic14e(unsigned int org)
+_page_addr_pic14e(unsigned int org)
 {
   return (org & PIC14E_PAGE_BITS);
 }
 
 static int
-gp_processor_page_bits_to_addr_pic14e(unsigned int bits)
+_page_bits_to_addr_pic14e(unsigned int bits)
 {
-  return gp_processor_page_addr_pic14e(bits << 8);
+  return _page_addr_pic14e(bits << 8);
 }
 
 static int
-gp_processor_set_page_pic14e(int num_pages, int page, MemBlock *m, unsigned int address,
-                             gp_boolean use_wreg)
+_set_page_pic14e(int num_pages, int page, MemBlock *m, unsigned int address, gp_boolean use_wreg)
 {
-  unsigned int data;
-  char         buf[BUFSIZ];
+  uint16_t data;
+  char     buf[BUFSIZ];
 
   if (num_pages == 1) {
     return 0;
@@ -2225,13 +2222,13 @@ gp_processor_set_page_pic14e(int num_pages, int page, MemBlock *m, unsigned int 
 }
 
 static int
-reloc_movlb_pic14e(unsigned int address)
+_reloc_movlb_pic14e(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & 0xff);
 }
 
 static int
-reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org)
+_reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org)
 {
   int offset = value - (byte_org / 2) - 1;
 
@@ -2242,14 +2239,14 @@ reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org
 }
 
 static int
-reloc_high_pic14e(gp_boolean is_code, int value)
+_reloc_high_pic14e(gp_boolean is_code, int value)
 {
   /* set 7th bit if in is_code */
   return (((value >> 8) & 0xff) | (is_code ? 0x80 : 0));
 }
 
-static const struct insn *
-find_insn_pic14e(proc_class_t cls, unsigned int opcode)
+static const insn_t *
+_find_insn_pic14e(proc_class_t cls, unsigned int opcode)
 {
   int i;
   /* might be from the enhanced instruction set */
@@ -2269,16 +2266,16 @@ find_insn_pic14e(proc_class_t cls, unsigned int opcode)
 /* PIC14EX */
 
 static int
-gp_processor_check_bank_pic14ex(unsigned int address)
+_check_bank_pic14ex(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & PIC14EX_BMSK_BANK);
 }
 
 static int
-gp_processor_set_bank_pic14ex(int num_banks, int bank, MemBlock *m, unsigned int address)
+_set_bank_pic14ex(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
-  unsigned int data;
-  char         buf[BUFSIZ];
+  uint16_t data;
+  char     buf[BUFSIZ];
 
   bank &= PIC14EX_BMSK_BANK;
   data  = PIC14EX_INSN_MOVLB | bank;
@@ -2288,8 +2285,8 @@ gp_processor_set_bank_pic14ex(int num_banks, int bank, MemBlock *m, unsigned int
   return 2;
 }
 
-static const struct insn *
-find_insn_pic14ex(proc_class_t cls, unsigned int opcode)
+static const insn_t *
+_find_insn_pic14ex(proc_class_t cls, unsigned int opcode)
 {
   int i;
   /* might be from the enhanced instruction set */
@@ -2309,7 +2306,7 @@ find_insn_pic14ex(proc_class_t cls, unsigned int opcode)
 /* PIC16 */
 
 static int
-gp_processor_check_bank_pic16(unsigned int address)
+_check_bank_pic16(unsigned int address)
 {
   if ((address & 0xff) < 0x20) {
     return (address >> PIC16_BANK_SHIFT) & PIC16_BMSK_BANK;
@@ -2322,7 +2319,7 @@ gp_processor_check_bank_pic16(unsigned int address)
 
 
 static int
-gp_processor_set_bank_pic16(int num_banks, int bank, MemBlock *m, unsigned int address)
+_set_bank_pic16(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   char buf[BUFSIZ];
 
@@ -2334,29 +2331,28 @@ gp_processor_set_bank_pic16(int num_banks, int bank, MemBlock *m, unsigned int a
 }
 
 static int
-gp_processor_check_page_pic16(unsigned int org)
+_check_page_pic16(unsigned int org)
 {
   return ((org >> 8) & PIC16_BMSK_PAGE);
 }
 
 static int
-gp_processor_page_addr_pic16(unsigned int org)
+_page_addr_pic16(unsigned int org)
 {
   return (org & (PIC16_BMSK_PAGE << 8));
 }
 
 static int
-gp_processor_page_bits_to_addr_pic16(unsigned int bits)
+_page_bits_to_addr_pic16(unsigned int bits)
 {
-  return gp_processor_page_addr_pic16(bits << 8);
+  return _page_addr_pic16(bits << 8);
 }
 
 static int
-gp_processor_set_page_pic16(int num_pages, int page, MemBlock *m, unsigned int address,
-                            gp_boolean use_wreg)
+_set_page_pic16(int num_pages, int page, MemBlock *m, unsigned int address, gp_boolean use_wreg)
 {
-  unsigned int data;
-  char         buf[BUFSIZ];
+  uint16_t data;
+  char     buf[BUFSIZ];
 
   page &= PIC16_BMSK_PAGE;
   snprintf(buf, sizeof(buf), "page_%02x", page);
@@ -2369,19 +2365,19 @@ gp_processor_set_page_pic16(int num_pages, int page, MemBlock *m, unsigned int a
 }
 
 static int
-reloc_call_pic16(unsigned int org)
+_reloc_call_pic16(unsigned int org)
 {
   return (org & PIC16_BMSK_BRANCH);
 }
 
 static int
-reloc_goto_pic16(unsigned int org)
+_reloc_goto_pic16(unsigned int org)
 {
   return (org & PIC16_BMSK_BRANCH);
 }
 
 static int
-reloc_f_pic16(unsigned int address)
+_reloc_f_pic16(unsigned int address)
 {
   return (address & PIC16_BMSK_FILE);
 }
@@ -2389,7 +2385,7 @@ reloc_f_pic16(unsigned int address)
 /* PIC16E */
 
 static unsigned int
-id_location_pic16e(pic_processor_t processor)
+_id_location_pic16e(pic_processor_t processor)
 {
   if ((processor->idlocs_addrs[0] > 0) && (processor->idlocs_addrs[1] > 0)) {
     return processor->idlocs_addrs[0];
@@ -2399,7 +2395,7 @@ id_location_pic16e(pic_processor_t processor)
 
 
 static int
-gp_processor_set_bank_pic16e(int num_banks, int bank, MemBlock *m, unsigned int address)
+_set_bank_pic16e(int num_banks, int bank, MemBlock *m, unsigned int address)
 {
   char buf[BUFSIZ];
 
@@ -2410,17 +2406,20 @@ gp_processor_set_bank_pic16e(int num_banks, int bank, MemBlock *m, unsigned int 
   return 2;
 }
 
-static int reloc_call_pic16e(unsigned int org)
+static int
+_reloc_call_pic16e(unsigned int org)
 {
   return ((org >> 1) & PIC16E_BMSK_BRANCH_LOWER);
 }
 
-static int reloc_goto_pic16e(unsigned int org)
+static int
+_reloc_goto_pic16e(unsigned int org)
 {
   return ((org >> 1) & PIC16E_BMSK_BRANCH_LOWER);
 }
 
-static int reloc_movlb_pic16e(unsigned int address)
+static int
+_reloc_movlb_pic16e(unsigned int address)
 {
   /* The upper byte of the symbol is used for the BSR.  This is inconsistent
      with the datasheet and the assembler, but is done to maintain
@@ -2429,7 +2428,7 @@ static int reloc_movlb_pic16e(unsigned int address)
 }
 
 static int
-reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org)
+_reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org)
 {
   int offset = ((int)(value - byte_org - 2)) >> 1;
 
@@ -2446,7 +2445,7 @@ reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org
 }
 
 static const insn_t *
-find_insn_pic16e(proc_class_t cls, unsigned int opcode)
+_find_insn_pic16e(proc_class_t cls, unsigned int opcode)
 {
   int i;
 
@@ -2477,7 +2476,7 @@ find_insn_pic16e(proc_class_t cls, unsigned int opcode)
 }
 
 static int
-core_sfr_cmp(const void *P0, const void *P1)
+_core_sfr_cmp(const void *P0, const void *P1)
 {
   const core_sfr_t *s0 = (const core_sfr_t *)P0;
   const core_sfr_t *s1 = (const core_sfr_t *)P1;
@@ -2506,7 +2505,7 @@ gp_processor_find_sfr(proc_class_t class, int address)
 
   sfr.address = address;
   return (core_sfr_t *)bsearch(&sfr, class->core_sfr_table, class->core_sfr_number,
-                               sizeof(core_sfr_t), core_sfr_cmp);
+                               sizeof(core_sfr_t), _core_sfr_cmp);
 }
 
 const char *
@@ -2519,7 +2518,7 @@ gp_processor_find_sfr_name(proc_class_t class, int address)
 }
 
 static int
-vector_cmp(const void *P0, const void *P1)
+_vector_cmp(const void *P0, const void *P1)
 {
   const vector_t *v0 = (const vector_t *)P0;
   const vector_t *v1 = (const vector_t *)P1;
@@ -2548,7 +2547,7 @@ gp_processor_find_vector(proc_class_t class, int address)
 
   vec.address = address;
   return (vector_t *)bsearch(&vec, class->vector_table, class->vector_number,
-                             sizeof(vector_t), vector_cmp);
+                             sizeof(vector_t), _vector_cmp);
 }
 
 static const core_sfr_t core_sfr_table_pic12[] = {
@@ -2734,21 +2733,21 @@ const struct proc_class proc_class_eeprom8 = {
   NULL,                                 /* vector_table */
   0,                                    /* vector_number */
   0,                                    /* id_location */
-  gp_processor_check_xbank_unsupported, /* check_bank */
-  gp_processor_set_xbank_unsupported,   /* set_bank */
-  gp_processor_check_xbank_unsupported, /* check_ibank */
-  gp_processor_set_xbank_unsupported,   /* set_ibank */
-  gp_processor_check_page_unsupported,  /* check_page */
-  gp_processor_set_page_unsupported,    /* set_page */
-  gp_processor_page_addr_unsupported,   /* page_addr */
-  gp_processor_page_bits_to_addr_unsupported, /* page_bits_to_addr */
-  reloc_unsupported,                    /* reloc_call */
-  reloc_unsupported,                    /* reloc_goto */
-  reloc_unsupported,                    /* reloc_f */
-  reloc_unsupported,                    /* reloc_tris */
-  reloc_unsupported,                    /* reloc_movlb */
-  reloc_bra_unsupported,                /* reloc_bra */
-  reloc_high_unsupported,               /* reloc_high */
+  _check_xbank_unsupported,             /* check_bank */
+  _set_xbank_unsupported,               /* set_bank */
+  _check_xbank_unsupported,             /* check_ibank */
+  _set_xbank_unsupported,               /* set_ibank */
+  _check_page_unsupported,              /* check_page */
+  _set_page_unsupported,                /* set_page */
+  _page_addr_unsupported,               /* page_addr */
+  _page_bits_to_addr_unsupported,       /* page_bits_to_addr */
+  _reloc_unsupported,                   /* reloc_call */
+  _reloc_unsupported,                   /* reloc_goto */
+  _reloc_unsupported,                   /* reloc_f */
+  _reloc_unsupported,                   /* reloc_tris */
+  _reloc_unsupported,                   /* reloc_movlb */
+  _reloc_bra_unsupported,               /* reloc_bra */
+  _reloc_high_unsupported,              /* reloc_high */
   NULL,                                 /* instructions */
   NULL,                                 /* num_instructions */
   NULL,                                 /* find_insn */
@@ -2778,21 +2777,21 @@ const struct proc_class proc_class_eeprom16 = {
   NULL,                                 /* vector_table */
   0,                                    /* vector_number */
   0,                                    /* id_location */
-  gp_processor_check_xbank_unsupported, /* check_bank */
-  gp_processor_set_xbank_unsupported,   /* set_bank */
-  gp_processor_check_xbank_unsupported, /* check_ibank */
-  gp_processor_set_xbank_unsupported,   /* set_ibank */
-  gp_processor_check_page_unsupported,  /* check_page */
-  gp_processor_set_page_unsupported,    /* set_page */
-  gp_processor_page_addr_unsupported,   /* page_addr */
-  gp_processor_page_bits_to_addr_unsupported, /* page_bits_to_addr */
-  reloc_unsupported,                    /* reloc_call */
-  reloc_unsupported,                    /* reloc_goto */
-  reloc_unsupported,                    /* reloc_f */
-  reloc_unsupported,                    /* reloc_tris */
-  reloc_unsupported,                    /* reloc_movlb */
-  reloc_bra_unsupported,                /* reloc_bra */
-  reloc_high_unsupported,               /* reloc_high */
+  _check_xbank_unsupported,             /* check_bank */
+  _set_xbank_unsupported,               /* set_bank */
+  _check_xbank_unsupported,             /* check_ibank */
+  _set_xbank_unsupported,               /* set_ibank */
+  _check_page_unsupported,              /* check_page */
+  _set_page_unsupported,                /* set_page */
+  _page_addr_unsupported,               /* page_addr */
+  _page_bits_to_addr_unsupported,       /* page_bits_to_addr */
+  _reloc_unsupported,                   /* reloc_call */
+  _reloc_unsupported,                   /* reloc_goto */
+  _reloc_unsupported,                   /* reloc_f */
+  _reloc_unsupported,                   /* reloc_tris */
+  _reloc_unsupported,                   /* reloc_movlb */
+  _reloc_bra_unsupported,               /* reloc_bra */
+  _reloc_high_unsupported,              /* reloc_high */
   NULL,                                 /* instructions */
   NULL,                                 /* num_instructions */
   NULL,                                 /* find_insn */
@@ -2821,22 +2820,22 @@ const struct proc_class proc_class_generic = {
   TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   vector_table_pic12,                   /* vector_table */
   TABLE_SIZE(vector_table_pic12),       /* vector_number */
-  id_location_pic12,                    /* id_location */
-  gp_processor_check_bank_pic12,        /* check_bank */
-  gp_processor_set_bank_pic12,          /* set_bank */
-  gp_processor_check_xbank_unsupported, /* check_ibank */
-  gp_processor_set_xbank_unsupported,   /* set_ibank */
-  gp_processor_check_page_pic12,        /* check_page */
-  gp_processor_set_page_pic12,          /* set_page */
-  gp_processor_page_addr_pic12,         /* page_addr */
-  gp_processor_page_bits_to_addr_pic12, /* page_bits_to_addr */
-  reloc_unsupported,                    /* reloc_call */
-  reloc_unsupported,                    /* reloc_goto */
-  reloc_unsupported,                    /* reloc_f */
-  reloc_unsupported,                    /* reloc_tris */
-  reloc_unsupported,                    /* reloc_movlb */
-  reloc_bra_unsupported,                /* reloc_bra */
-  reloc_high_unsupported,               /* reloc_high */
+  _id_location_pic12,                   /* id_location */
+  _check_bank_pic12,                    /* check_bank */
+  _set_bank_pic12,                      /* set_bank */
+  _check_xbank_unsupported,             /* check_ibank */
+  _set_xbank_unsupported,               /* set_ibank */
+  _check_page_pic12,                    /* check_page */
+  _set_page_pic12,                      /* set_page */
+  _page_addr_pic12,                     /* page_addr */
+  _page_bits_to_addr_pic12,             /* page_bits_to_addr */
+  _reloc_unsupported,                   /* reloc_call */
+  _reloc_unsupported,                   /* reloc_goto */
+  _reloc_unsupported,                   /* reloc_f */
+  _reloc_unsupported,                   /* reloc_tris */
+  _reloc_unsupported,                   /* reloc_movlb */
+  _reloc_bra_unsupported,               /* reloc_bra */
+  _reloc_high_unsupported,              /* reloc_high */
   NULL,                                 /* instructions */
   NULL,                                 /* num_instructions */
   NULL,                                 /* find_insn */
@@ -2865,25 +2864,25 @@ const struct proc_class proc_class_pic12 = {
   TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   vector_table_pic12,                   /* vector_table */
   TABLE_SIZE(vector_table_pic12),       /* vector_number */
-  id_location_pic12,                    /* id_location */
-  gp_processor_check_bank_pic12,        /* check_bank */
-  gp_processor_set_bank_pic12,          /* set_bank */
-  gp_processor_check_xbank_unsupported, /* check_ibank */
-  gp_processor_set_xbank_unsupported,   /* set_ibank */
-  gp_processor_check_page_pic12,        /* check_page */
-  gp_processor_set_page_pic12,          /* set_page */
-  gp_processor_page_addr_pic12,         /* page_addr */
-  gp_processor_page_bits_to_addr_pic12, /* page_bits_to_addr */
-  reloc_call_pic12,                     /* reloc_call */
-  reloc_goto_pic12,                     /* reloc_goto */
-  reloc_f_pic12,                        /* reloc_f */
-  reloc_tris_pic12,                     /* reloc_tris */
-  reloc_unsupported,                    /* reloc_movlb */
-  reloc_bra_unsupported,                /* reloc_bra */
-  reloc_high_generic,                   /* reloc_high */
+  _id_location_pic12,                   /* id_location */
+  _check_bank_pic12,                    /* check_bank */
+  _set_bank_pic12,                      /* set_bank */
+  _check_xbank_unsupported,             /* check_ibank */
+  _set_xbank_unsupported,               /* set_ibank */
+  _check_page_pic12,                    /* check_page */
+  _set_page_pic12,                      /* set_page */
+  _page_addr_pic12,                     /* page_addr */
+  _page_bits_to_addr_pic12,             /* page_bits_to_addr */
+  _reloc_call_pic12,                    /* reloc_call */
+  _reloc_goto_pic12,                    /* reloc_goto */
+  _reloc_f_pic12,                       /* reloc_f */
+  _reloc_tris_pic12,                    /* reloc_tris */
+  _reloc_unsupported,                   /* reloc_movlb */
+  _reloc_bra_unsupported,               /* reloc_bra */
+  _reloc_high_generic,                  /* reloc_high */
   op_12c5xx,                            /* instructions */
   &num_op_12c5xx,                       /* num_instructions */
-  find_insn_generic,                    /* find_insn */
+  _find_insn_generic,                   /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
@@ -2909,25 +2908,25 @@ const struct proc_class proc_class_pic12e = {
   TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   vector_table_pic12,                   /* vector_table */
   TABLE_SIZE(vector_table_pic12),       /* vector_number */
-  id_location_pic12,                    /* id_location */
-  gp_processor_check_bank_pic12e,       /* check_bank */
-  gp_processor_set_bank_pic12e,         /* set_bank */
-  gp_processor_check_xbank_unsupported, /* check_ibank */
-  gp_processor_set_xbank_unsupported,   /* set_ibank */
-  gp_processor_check_page_pic12,        /* check_page */
-  gp_processor_set_page_pic12,          /* set_page */
-  gp_processor_page_addr_pic12,         /* page_addr */
-  gp_processor_page_bits_to_addr_pic12, /* page_bits_to_addr */
-  reloc_call_pic12,                     /* reloc_call */
-  reloc_goto_pic12,                     /* reloc_goto */
-  reloc_f_pic12,                        /* reloc_f */
-  reloc_tris_pic12e,                    /* reloc_tris */
-  reloc_unsupported,                    /* reloc_movlb */
-  reloc_bra_unsupported,                /* reloc_bra */
-  reloc_high_generic,                   /* reloc_high */
+  _id_location_pic12,                   /* id_location */
+  _check_bank_pic12e,                   /* check_bank */
+  _set_bank_pic12e,                     /* set_bank */
+  _check_xbank_unsupported,             /* check_ibank */
+  _set_xbank_unsupported,               /* set_ibank */
+  _check_page_pic12,                    /* check_page */
+  _set_page_pic12,                      /* set_page */
+  _page_addr_pic12,                     /* page_addr */
+  _page_bits_to_addr_pic12,             /* page_bits_to_addr */
+  _reloc_call_pic12,                    /* reloc_call */
+  _reloc_goto_pic12,                    /* reloc_goto */
+  _reloc_f_pic12,                       /* reloc_f */
+  _reloc_tris_pic12e,                   /* reloc_tris */
+  _reloc_unsupported,                   /* reloc_movlb */
+  _reloc_bra_unsupported,               /* reloc_bra */
+  _reloc_high_generic,                  /* reloc_high */
   op_12c5xx,                            /* instructions */
   &num_op_12c5xx,                       /* num_instructions */
-  find_insn_pic12e,                     /* find_insn */
+  _find_insn_pic12e,                    /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
@@ -2953,25 +2952,25 @@ const struct proc_class proc_class_pic12i = {
   TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   vector_table_pic12i,                  /* vector_table */
   TABLE_SIZE(vector_table_pic12i),      /* vector_number */
-  id_location_pic12,                    /* id_location */
-  gp_processor_check_bank_pic12e,       /* check_bank */
-  gp_processor_set_bank_pic12e,         /* set_bank */
-  gp_processor_check_xbank_unsupported, /* check_ibank */
-  gp_processor_set_xbank_unsupported,   /* set_ibank */
-  gp_processor_check_page_pic12,        /* check_page */
-  gp_processor_set_page_pic12,          /* set_page */
-  gp_processor_page_addr_pic12,         /* page_addr */
-  gp_processor_page_bits_to_addr_pic12, /* page_bits_to_addr */
-  reloc_call_pic12,                     /* reloc_call */
-  reloc_goto_pic12,                     /* reloc_goto */
-  reloc_f_pic12,                        /* reloc_f */
-  reloc_tris_pic12e,                    /* reloc_tris */
-  reloc_unsupported,                    /* reloc_movlb */
-  reloc_bra_unsupported,                /* reloc_bra */
-  reloc_high_generic,                   /* reloc_high */
+  _id_location_pic12,                   /* id_location */
+  _check_bank_pic12e,                   /* check_bank */
+  _set_bank_pic12e,                     /* set_bank */
+  _check_xbank_unsupported,             /* check_ibank */
+  _set_xbank_unsupported,               /* set_ibank */
+  _check_page_pic12,                    /* check_page */
+  _set_page_pic12,                      /* set_page */
+  _page_addr_pic12,                     /* page_addr */
+  _page_bits_to_addr_pic12,             /* page_bits_to_addr */
+  _reloc_call_pic12,                    /* reloc_call */
+  _reloc_goto_pic12,                    /* reloc_goto */
+  _reloc_f_pic12,                       /* reloc_f */
+  _reloc_tris_pic12e,                   /* reloc_tris */
+  _reloc_unsupported,                   /* reloc_movlb */
+  _reloc_bra_unsupported,               /* reloc_bra */
+  _reloc_high_generic,                  /* reloc_high */
   op_12c5xx,                            /* instructions */
   &num_op_12c5xx,                       /* num_instructions */
-  find_insn_pic12e,                     /* find_insn */
+  _find_insn_pic12e,                    /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
@@ -2997,25 +2996,25 @@ const struct proc_class proc_class_sx = {
   TABLE_SIZE(core_sfr_table_sx),        /* core_sfr_number */
   vector_table_sx,                      /* vector_table */
   TABLE_SIZE(vector_table_sx),          /* vector_number */
-  id_location_pic12,                    /* id_location */
-  gp_processor_check_bank_pic12,        /* check_bank */
-  gp_processor_set_bank_pic12,          /* set_bank */
-  gp_processor_check_xbank_unsupported, /* check_ibank */
-  gp_processor_set_xbank_unsupported,   /* set_ibank */
-  gp_processor_check_page_sx,           /* check_page */
-  gp_processor_set_page_sx,             /* set_page */
-  gp_processor_page_addr_sx,            /* page_addr */
-  gp_processor_page_bits_to_addr_sx,    /* page_bits_to_addr */
-  reloc_call_pic12,                     /* reloc_call */
-  reloc_goto_pic12,                     /* reloc_goto */
-  reloc_f_pic12,                        /* reloc_f */
-  reloc_tris_pic12,                     /* reloc_tris */
-  reloc_unsupported,                    /* reloc_movlb */
-  reloc_bra_unsupported,                /* reloc_bra */
-  reloc_high_generic,                   /* reloc_high */
+  _id_location_pic12,                   /* id_location */
+  _check_bank_pic12,                    /* check_bank */
+  _set_bank_pic12,                      /* set_bank */
+  _check_xbank_unsupported,             /* check_ibank */
+  _set_xbank_unsupported,               /* set_ibank */
+  _check_page_sx,                       /* check_page */
+  _set_page_sx,                         /* set_page */
+  _page_addr_sx,                        /* page_addr */
+  _page_bits_to_addr_sx,                /* page_bits_to_addr */
+  _reloc_call_pic12,                    /* reloc_call */
+  _reloc_goto_pic12,                    /* reloc_goto */
+  _reloc_f_pic12,                       /* reloc_f */
+  _reloc_tris_pic12,                    /* reloc_tris */
+  _reloc_unsupported,                   /* reloc_movlb */
+  _reloc_bra_unsupported,               /* reloc_bra */
+  _reloc_high_generic,                  /* reloc_high */
   op_sx,                                /* instructions */
   &num_op_sx,                           /* num_instructions */
-  find_insn_generic,                    /* find_insn */
+  _find_insn_generic,                   /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
@@ -3041,28 +3040,28 @@ const struct proc_class proc_class_pic14 = {
   TABLE_SIZE(core_sfr_table_pic14),     /* core_sfr_number */
   vector_table_pic14,                   /* vector_table */
   TABLE_SIZE(vector_table_pic14),       /* vector_number */
-  id_location_pic14,                    /* id_location */
-  gp_processor_check_bank_pic14,        /* check_bank */
-  gp_processor_set_bank_pic14,          /* set_bank */
-  gp_processor_check_ibank_pic14,       /* check_ibank */
-  gp_processor_set_ibank_pic14,         /* set_ibank */
-  gp_processor_check_page_pic14,        /* check_page */
-  gp_processor_set_page_pic14,          /* set_page */
-  gp_processor_page_addr_pic14,         /* page_addr */
-  gp_processor_page_bits_to_addr_pic14, /* page_bits_to_addr */
-  reloc_call_pic14,                     /* reloc_call */
-  reloc_goto_pic14,                     /* reloc_goto */
-  reloc_f_pic14,                        /* reloc_f */
-  reloc_tris_pic14,                     /* reloc_tris */
-  reloc_unsupported,                    /* reloc_movlb */
-  reloc_bra_unsupported,                /* reloc_bra */
-  reloc_high_generic,                   /* reloc_high */
+  _id_location_pic14,                   /* id_location */
+  _check_bank_pic14,                    /* check_bank */
+  _set_bank_pic14,                      /* set_bank */
+  _check_ibank_pic14,                   /* check_ibank */
+  _set_ibank_pic14,                     /* set_ibank */
+  _check_page_pic14,                    /* check_page */
+  _set_page_pic14,                      /* set_page */
+  _page_addr_pic14,                     /* page_addr */
+  _page_bits_to_addr_pic14,             /* page_bits_to_addr */
+  _reloc_call_pic14,                    /* reloc_call */
+  _reloc_goto_pic14,                    /* reloc_goto */
+  _reloc_f_pic14,                       /* reloc_f */
+  _reloc_tris_pic14,                    /* reloc_tris */
+  _reloc_unsupported,                   /* reloc_movlb */
+  _reloc_bra_unsupported,               /* reloc_bra */
+  _reloc_high_generic,                  /* reloc_high */
   op_16cxx,                             /* instructions */
   &num_op_16cxx,                        /* num_instructions */
-  find_insn_generic,                    /* find_insn */
+  _find_insn_generic,                   /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
-  patch_strict_pic14,                   /* patch_strict */
+  _patch_strict_pic14,                  /* patch_strict */
 };
 
 const struct proc_class proc_class_pic14e = {
@@ -3085,28 +3084,28 @@ const struct proc_class proc_class_pic14e = {
   TABLE_SIZE(core_sfr_table_pic14e),    /* core_sfr_number */
   vector_table_pic14,                   /* vector_table */
   TABLE_SIZE(vector_table_pic14),       /* vector_number */
-  id_location_pic14,                    /* id_location */
-  gp_processor_check_bank_pic14e,       /* check_bank */
-  gp_processor_set_bank_pic14e,         /* set_bank */
-  gp_processor_check_ibank_pic14e,      /* check_ibank */
-  gp_processor_set_ibank_pic14e,        /* set_ibank */
-  gp_processor_check_page_pic14e,       /* check_page */
-  gp_processor_set_page_pic14e,         /* set_page */
-  gp_processor_page_addr_pic14e,        /* page_addr */
-  gp_processor_page_bits_to_addr_pic14e, /* page_bits_to_addr */
-  reloc_call_pic14,                     /* reloc_call */
-  reloc_goto_pic14,                     /* reloc_goto */
-  reloc_f_pic14,                        /* reloc_f */
-  reloc_tris_pic14,                     /* reloc_tris */
-  reloc_movlb_pic14e,                   /* reloc_movlb */
-  reloc_bra_pic14e,                     /* reloc_bra */
-  reloc_high_pic14e,                    /* reloc_high */
+  _id_location_pic14,                   /* id_location */
+  _check_bank_pic14e,                   /* check_bank */
+  _set_bank_pic14e,                     /* set_bank */
+  _check_ibank_pic14e,                  /* check_ibank */
+  _set_ibank_pic14e,                    /* set_ibank */
+  _check_page_pic14e,                   /* check_page */
+  _set_page_pic14e,                     /* set_page */
+  _page_addr_pic14e,                    /* page_addr */
+  _page_bits_to_addr_pic14e,            /* page_bits_to_addr */
+  _reloc_call_pic14,                    /* reloc_call */
+  _reloc_goto_pic14,                    /* reloc_goto */
+  _reloc_f_pic14,                       /* reloc_f */
+  _reloc_tris_pic14,                    /* reloc_tris */
+  _reloc_movlb_pic14e,                  /* reloc_movlb */
+  _reloc_bra_pic14e,                    /* reloc_bra */
+  _reloc_high_pic14e,                   /* reloc_high */
   op_16cxx,                             /* instructions */
   &num_op_16cxx,                        /* num_instructions */
-  find_insn_pic14e,                     /* find_insn */
+  _find_insn_pic14e,                    /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
-  patch_strict_pic14,                   /* patch_strict */
+  _patch_strict_pic14,                  /* patch_strict */
 };
 
 const struct proc_class proc_class_pic14ex = {
@@ -3129,28 +3128,28 @@ const struct proc_class proc_class_pic14ex = {
   TABLE_SIZE(core_sfr_table_pic14e),    /* core_sfr_number */
   vector_table_pic14,                   /* vector_table */
   TABLE_SIZE(vector_table_pic14),       /* vector_number */
-  id_location_pic14,                    /* id_location */
-  gp_processor_check_bank_pic14ex,      /* check_bank */
-  gp_processor_set_bank_pic14ex,        /* set_bank */
-  gp_processor_check_ibank_pic14e,      /* check_ibank */
-  gp_processor_set_ibank_pic14e,        /* set_ibank */
-  gp_processor_check_page_pic14e,       /* check_page */
-  gp_processor_set_page_pic14e,         /* set_page */
-  gp_processor_page_addr_pic14e,        /* page_addr */
-  gp_processor_page_bits_to_addr_pic14e, /* page_bits_to_addr */
-  reloc_call_pic14,                     /* reloc_call */
-  reloc_goto_pic14,                     /* reloc_goto */
-  reloc_f_pic14,                        /* reloc_f */
-  reloc_tris_pic14,                     /* reloc_tris */
-  reloc_movlb_pic14e,                   /* reloc_movlb */
-  reloc_bra_pic14e,                     /* reloc_bra */
-  reloc_high_pic14e,                    /* reloc_high */
+  _id_location_pic14,                   /* id_location */
+  _check_bank_pic14ex,                  /* check_bank */
+  _set_bank_pic14ex,                    /* set_bank */
+  _check_ibank_pic14e,                  /* check_ibank */
+  _set_ibank_pic14e,                    /* set_ibank */
+  _check_page_pic14e,                   /* check_page */
+  _set_page_pic14e,                     /* set_page */
+  _page_addr_pic14e,                    /* page_addr */
+  _page_bits_to_addr_pic14e,            /* page_bits_to_addr */
+  _reloc_call_pic14,                    /* reloc_call */
+  _reloc_goto_pic14,                    /* reloc_goto */
+  _reloc_f_pic14,                       /* reloc_f */
+  _reloc_tris_pic14,                    /* reloc_tris */
+  _reloc_movlb_pic14e,                  /* reloc_movlb */
+  _reloc_bra_pic14e,                    /* reloc_bra */
+  _reloc_high_pic14e,                   /* reloc_high */
   op_16cxx,                             /* instructions */
   &num_op_16cxx,                        /* num_instructions */
-  find_insn_pic14ex,                    /* find_insn */
+  _find_insn_pic14ex,                   /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
-  patch_strict_pic14,                   /* patch_strict */
+  _patch_strict_pic14,                  /* patch_strict */
 };
 
 const struct proc_class proc_class_pic16 = {
@@ -3174,24 +3173,24 @@ const struct proc_class proc_class_pic16 = {
   vector_table_pic16,                   /* vector_table */
   TABLE_SIZE(vector_table_pic16),       /* vector_number */
   NULL,                                 /* id_location */
-  gp_processor_check_bank_pic16,        /* check_bank */
-  gp_processor_set_bank_pic16,          /* set_bank */
-  gp_processor_check_bank_pic16,        /* check_ibank: same as check_bank */
-  gp_processor_set_bank_pic16,          /* set_ibank: same as set_bank */
-  gp_processor_check_page_pic16,        /* check_page */
-  gp_processor_set_page_pic16,          /* set_page */
-  gp_processor_page_addr_pic16,         /* page_addr */
-  gp_processor_page_bits_to_addr_pic16, /* page_bits_to_addr */
-  reloc_call_pic16,                     /* reloc_call */
-  reloc_goto_pic16,                     /* reloc_goto */
-  reloc_f_pic16,                        /* reloc_f */
-  reloc_unsupported,                    /* reloc_tris */
-  reloc_unsupported,                    /* reloc_movlb */
-  reloc_bra_unsupported,                /* reloc_bra */
-  reloc_high_generic,                   /* reloc_high */
+  _check_bank_pic16,                    /* check_bank */
+  _set_bank_pic16,                      /* set_bank */
+  _check_bank_pic16,                    /* check_ibank: same as check_bank */
+  _set_bank_pic16,                      /* set_ibank: same as set_bank */
+  _check_page_pic16,                    /* check_page */
+  _set_page_pic16,                      /* set_page */
+  _page_addr_pic16,                     /* page_addr */
+  _page_bits_to_addr_pic16,             /* page_bits_to_addr */
+  _reloc_call_pic16,                    /* reloc_call */
+  _reloc_goto_pic16,                    /* reloc_goto */
+  _reloc_f_pic16,                       /* reloc_f */
+  _reloc_unsupported,                   /* reloc_tris */
+  _reloc_unsupported,                   /* reloc_movlb */
+  _reloc_bra_unsupported,               /* reloc_bra */
+  _reloc_high_generic,                  /* reloc_high */
   op_17cxx,                             /* instructions */
   &num_op_17cxx,                        /* num_instructions */
-  find_insn_generic,                    /* find_insn */
+  _find_insn_generic,                   /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
@@ -3217,25 +3216,25 @@ const struct proc_class proc_class_pic16e = {
   TABLE_SIZE(core_sfr_table_pic16e),    /* core_sfr_number */
   vector_table_pic16e,                  /* vector_table */
   TABLE_SIZE(vector_table_pic16e),      /* vector_number */
-  id_location_pic16e,                   /* id_location */
-  gp_processor_check_bank_pic16,        /* check_bank: Same as for pic16 */
-  gp_processor_set_bank_pic16e,         /* set_bank */
-  gp_processor_check_xbank_unsupported, /* check_ibank */
-  gp_processor_set_xbank_unsupported,   /* set_ibank */
-  gp_processor_check_page_unsupported,  /* check_page */
-  gp_processor_set_page_unsupported,    /* set_page */
-  gp_processor_page_addr_unsupported,   /* page_addr */
-  gp_processor_page_bits_to_addr_unsupported, /* page_bits_to_addr */
-  reloc_call_pic16e,                    /* reloc_call */
-  reloc_goto_pic16e,                    /* reloc_goto */
-  reloc_f_pic16,                        /* reloc_f: same as for pic16 */
-  reloc_unsupported,                    /* reloc_tris */
-  reloc_movlb_pic16e,                   /* reloc_movlb */
-  reloc_bra_pic16e,                     /* reloc_bra */
-  reloc_high_generic,                   /* reloc_high */
+  _id_location_pic16e,                  /* id_location */
+  _check_bank_pic16,                    /* check_bank: Same as for pic16 */
+  _set_bank_pic16e,                     /* set_bank */
+  _check_xbank_unsupported,             /* check_ibank */
+  _set_xbank_unsupported,               /* set_ibank */
+  _check_page_unsupported,              /* check_page */
+  _set_page_unsupported,                /* set_page */
+  _page_addr_unsupported,               /* page_addr */
+  _page_bits_to_addr_unsupported,       /* page_bits_to_addr */
+  _reloc_call_pic16e,                   /* reloc_call */
+  _reloc_goto_pic16e,                   /* reloc_goto */
+  _reloc_f_pic16,                       /* reloc_f: same as for pic16 */
+  _reloc_unsupported,                   /* reloc_tris */
+  _reloc_movlb_pic16e,                  /* reloc_movlb */
+  _reloc_bra_pic16e,                    /* reloc_bra */
+  _reloc_high_generic,                  /* reloc_high */
   op_18cxx,                             /* instructions */
   &num_op_18cxx,                        /* num_instructions */
-  find_insn_pic16e,                     /* find_insn */
+  _find_insn_pic16e,                    /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */

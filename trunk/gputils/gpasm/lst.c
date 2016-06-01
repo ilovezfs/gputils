@@ -125,229 +125,6 @@ _prev_reloc_type(void)
   return ((p->address == p->next->address) ? p->type : 0);
 }
 
-void
-lst_throw(void)
-{
-  if (state.lst.f != NULL) {
-    state.lst.page++;
-    fprintf(state.lst.f,
-            "%s%s %*.*s   %-28sPAGE %2d\n%s\n%s\n",
-            (state.lst.page == 1) ? "" : "\f",
-            GPASM_VERSION_STRING,
-            (int)(45 - sizeof(GPASM_VERSION_STRING)),
-            (int)(45 - sizeof(GPASM_VERSION_STRING)),
-            state.srcfilename,
-            state.lst.startdate,
-            state.lst.page,
-            state.lst.title_name,
-            state.lst.subtitle_name);
-    state.lst.lineofpage = 4;
-    cod_lst_line(COD_NORMAL_LST_LINE);
-    cod_lst_line(COD_NORMAL_LST_LINE);
-    cod_lst_line(COD_NORMAL_LST_LINE);
-    state.lst.line_number += 3;
-  }
-}
-
-void
-lst_page_start(void)
-{
-  lst_throw();
-  switch (state.lst.lst_state) {
-  case LST_IN_MEM:
-    lst_line("LOC    OBJECT CODE    LINE  SOURCE TEXT");
-    lst_line("  VALUE");
-    break;
-
-  case LST_IN_SYMTAB:
-    lst_line("SYMBOL TABLE");
-    lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
-    break;
-
-  default:
-    lst_line(NULL);
-    break;
-  }
-
-  lst_line(NULL);
-}
-
-void
-lst_line(const char *format, ...)
-{
-  if (state.lst.f != NULL) {
-    if (format != NULL) {
-      va_list args;
-
-      _lst_check_page_start();
-      va_start(args, format);
-      vfprintf(state.lst.f, format, args);
-      va_end(args);
-    }
-    _lst_eol();
-  }
-}
-
-void
-lst_err_line(const char *type, unsigned int code, const char *format, va_list args)
-{
-  if (state.lst.f != NULL) {
-    _lst_check_page_start();
-    fprintf(state.lst.f, "%s[%03d]%s: ", type, code, (strcmp(type, "Error") == 0) ? "  " : "");
-    vfprintf(state.lst.f, format, args);
-    _lst_eol();
-  }
-}
-
-void
-lst_init(void)
-{
-  state.lst.lineofpage = 0;
-  state.lst.page = 0;
-  state.lst.linesperpage = 59;
-  state.lst.line_number = 1;
-  state.lst.memorymap = true;
-  state.lst.symboltable = true;
-  state.lst.lst_state = LST_IN_MEM;
-
-  /* Determine state.startdate */
-  gp_date_string(state.lst.startdate, sizeof(state.lst.startdate));
-
-  if (!state.cmd_line.macro_expand){
-    state.lst.expand = true;
-  }
-
-  state.lst.force = (state.cmd_line.lst_force) ? true : false;
-  state.lst.config_address = 0;
-  state.lst.title_name[0] = '\0';
-  state.lst.subtitle_name[0] = '\0';
-  state.lst.tabstop = 8;        /* Default tabstop every 8 */
-  state.lst.line_width = 132;   /* Default line width is 132 */
-
-  if (state.lstfile != OUT_NAMED) {
-    snprintf(state.lstfilename, sizeof(state.lstfilename), "%s.lst", state.basefilename);
-  }
-
-  if (state.lstfile == OUT_SUPPRESS) {
-    state.lst.f = NULL;
-    state.lst.enabled = false;
-    unlink(state.lstfilename);
-  } else {
-    state.lst.f = fopen(state.lstfilename, "wt");
-
-    if (state.lst.f == NULL) {
-      perror(state.lstfilename);
-      exit(1);
-    }
-    state.lst.enabled = true;
-  }
-
-  cod_lst_line(COD_FIRST_LST_LINE);
-}
-
-void
-lst_memory_map(MemBlock *m)
-{
-#define MEM_IS_USED(m, i)  (((m)->memory != NULL) ? (IS_BYTE ? ((m)->memory[i].data & BYTE_USED_MASK) : (((m)->memory[2 * (i)].data & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1].data & BYTE_USED_MASK))) : 0)
-
-  int i, j, base, row_used, num_per_line, num_per_block;
-
-  lst_line(NULL);
-  lst_line(NULL);
-  lst_line("MEMORY USAGE MAP ('X' = Used,  '-' = Unused)");
-  lst_line(NULL);
-
-  num_per_line = 64;
-  num_per_block = 16;
-
-  while (m) {
-    unsigned int max_mem = MAX_I_MEM  >> !IS_BYTE;
-
-    base = (m->base << I_MEM_BITS) >> !IS_BYTE;
-
-    for (i = 0; i < max_mem; i += num_per_line) {
-      row_used = 0;
-
-      for (j = 0; j < num_per_line; j++) {
-        if (MEM_IS_USED(m, i + j)) {
-          row_used = 1;
-          break;
-        }
-      }
-
-      if (row_used) {
-        if ((state.device.class != NULL) && state.show_full_addr && IS_PIC16E_CORE) {
-          /* Gpasm mode: Print all address digits. */
-          _lst_printf("%0*X :", state.device.class->addr_digits, (i + base));
-        }
-        else {
-          /* MPASM(X) compatible: Print only lower 4 address digits. */
-          _lst_printf("%04X :", (i + base) & 0xffff);
-        }
-
-        for (j = 0; j < num_per_line; j++) {
-          if ((j % num_per_block) == 0) {
-            _lst_printf(" ");
-          }
-          _lst_printf(MEM_IS_USED(m, i + j) ? "X" : "-");
-        }
-
-        _lst_eol();
-        _lst_check_page_start();
-      }
-    }
-
-    m = m->next;
-  }
-
-  lst_line(NULL);
-  lst_line("All other memory blocks unused.");
-  lst_line(NULL);
-
-  /* it seems that MPASM includes config bytes into program memory usage
-   * count for 16 bit cores. See gpasm testsuite:
-   * gpasm/testsuite/gpasm.mchip/listfiles/configX.lst */
-#define IS_PIC16  (IS_PIC16_CORE || IS_PIC16E_CORE)
-
-  if (IS_EEPROM) {
-    lst_line("Memory Bytes Used: %5i", b_memory_used(state.i_memory));
-  }
-  else {
-    unsigned int used = gp_processor_byte_to_real(state.processor, ((!IS_PIC16) && (state.processor != NULL)) ?
-      b_range_memory_used(state.i_memory, 0,
-                          gp_processor_org_to_byte(state.device.class, state.processor->prog_mem_size)) :
-      b_memory_used(state.i_memory));
-
-    lst_line("Program Memory %s Used: %5i", IS_BYTE ? "Bytes" : "Words", used);
-
-    if ((state.processor != NULL) && (state.processor->prog_mem_size >= 0)) {
-      lst_line("Program Memory %s Free: %5u",
-               IS_BYTE ? "Bytes" : "Words",
-               (used <= state.processor->prog_mem_size) ? (state.processor->prog_mem_size - used) : 0);
-    }
-  }
-  lst_line(NULL);
-}
-
-void
-lst_close(void)
-{
-  cod_lst_line(COD_LAST_LST_LINE);
-
-  state.lst.lst_state = LST_IN_NONE;
-
-  if (state.lst.f != NULL) {
-    lst_line(NULL);
-    lst_line("Errors   : %5d", state.num.errors);
-    lst_line("Warnings : %5d reported, %5d suppressed", state.num.warnings, state.num.warnings_suppressed);
-    lst_line("Messages : %5d reported, %5d suppressed", state.num.messages, state.num.messages_suppressed);
-    lst_line(NULL);
-    putc('\f', state.lst.f);
-
-    fclose(state.lst.f);
-  }
-}
-
 /* print word value with undefined nibbles replaced by "?" */
 /* enable assertions
  * #define DO_ASSERT */
@@ -633,6 +410,253 @@ _lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr, unsigned int by
   return lst_bytes;
 }
 
+static void
+_cod_symbol_table(void)
+{
+  const symbol_t **lst;
+  size_t           sym_count;
+
+  sym_count = sym_get_symbol_count(state.stGlobal);
+
+  if (sym_count == 0) {
+    return;
+  }
+
+  lst = sym_clone_symbol_array(state.stGlobal, sym_compare_fn);
+  assert(lst != NULL);
+
+  cod_write_symbols(lst, sym_count);
+  free(lst);
+}
+
+void
+lst_init(void)
+{
+  state.lst.lineofpage   = 0;
+  state.lst.page         = 0;
+  state.lst.linesperpage = 59;
+  state.lst.line_number  = 1;
+  state.lst.memorymap    = true;
+  state.lst.symboltable  = true;
+  state.lst.lst_state    = LST_IN_MEM;
+
+  /* Determine state.startdate */
+  gp_date_string(state.lst.startdate, sizeof(state.lst.startdate));
+
+  if (!state.cmd_line.macro_expand){
+    state.lst.expand = true;
+  }
+
+  state.lst.force = (state.cmd_line.lst_force) ? true : false;
+  state.lst.config_address   = 0;
+  state.lst.title_name[0]    = '\0';
+  state.lst.subtitle_name[0] = '\0';
+  state.lst.tabstop          = 8;   /* Default tabstop every 8 */
+  state.lst.line_width       = 132; /* Default line width is 132 */
+
+  if (state.lstfile != OUT_NAMED) {
+    snprintf(state.lstfilename, sizeof(state.lstfilename), "%s.lst", state.basefilename);
+  }
+
+  if (state.lstfile == OUT_SUPPRESS) {
+    state.lst.f = NULL;
+    state.lst.enabled = false;
+    unlink(state.lstfilename);
+  } else {
+    state.lst.f = fopen(state.lstfilename, "wt");
+
+    if (state.lst.f == NULL) {
+      perror(state.lstfilename);
+      exit(1);
+    }
+    state.lst.enabled = true;
+  }
+
+  cod_lst_line(COD_FIRST_LST_LINE);
+}
+
+void
+lst_close(void)
+{
+  cod_lst_line(COD_LAST_LST_LINE);
+
+  state.lst.lst_state = LST_IN_NONE;
+
+  if (state.lst.f != NULL) {
+    lst_line(NULL);
+    lst_line("Errors   : %5d", state.num.errors);
+    lst_line("Warnings : %5d reported, %5d suppressed", state.num.warnings, state.num.warnings_suppressed);
+    lst_line("Messages : %5d reported, %5d suppressed", state.num.messages, state.num.messages_suppressed);
+    lst_line(NULL);
+    putc('\f', state.lst.f);
+
+    fclose(state.lst.f);
+  }
+}
+
+void
+lst_throw(void)
+{
+  if (state.lst.f != NULL) {
+    state.lst.page++;
+    fprintf(state.lst.f,
+            "%s%s %*.*s   %-28sPAGE %2d\n%s\n%s\n",
+            (state.lst.page == 1) ? "" : "\f",
+            GPASM_VERSION_STRING,
+            (int)(45 - sizeof(GPASM_VERSION_STRING)),
+            (int)(45 - sizeof(GPASM_VERSION_STRING)),
+            state.srcfilename,
+            state.lst.startdate,
+            state.lst.page,
+            state.lst.title_name,
+            state.lst.subtitle_name);
+    state.lst.lineofpage = 4;
+    cod_lst_line(COD_NORMAL_LST_LINE);
+    cod_lst_line(COD_NORMAL_LST_LINE);
+    cod_lst_line(COD_NORMAL_LST_LINE);
+    state.lst.line_number += 3;
+  }
+}
+
+void
+lst_page_start(void)
+{
+  lst_throw();
+  switch (state.lst.lst_state) {
+  case LST_IN_MEM:
+    lst_line("LOC    OBJECT CODE    LINE  SOURCE TEXT");
+    lst_line("  VALUE");
+    break;
+
+  case LST_IN_SYMTAB:
+    lst_line("SYMBOL TABLE");
+    lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
+    break;
+
+  default:
+    lst_line(NULL);
+    break;
+  }
+
+  lst_line(NULL);
+}
+
+void
+lst_line(const char *format, ...)
+{
+  if (state.lst.f != NULL) {
+    if (format != NULL) {
+      va_list args;
+
+      _lst_check_page_start();
+      va_start(args, format);
+      vfprintf(state.lst.f, format, args);
+      va_end(args);
+    }
+    _lst_eol();
+  }
+}
+
+void
+lst_err_line(const char *type, unsigned int code, const char *format, va_list args)
+{
+  if (state.lst.f != NULL) {
+    _lst_check_page_start();
+    fprintf(state.lst.f, "%s[%03d]%s: ", type, code, (strcmp(type, "Error") == 0) ? "  " : "");
+    vfprintf(state.lst.f, format, args);
+    _lst_eol();
+  }
+}
+
+void
+lst_memory_map(MemBlock *m)
+{
+#define MEM_IS_USED(m, i)  (((m)->memory != NULL) ? (IS_BYTE ? ((m)->memory[i].data & BYTE_USED_MASK) : (((m)->memory[2 * (i)].data & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1].data & BYTE_USED_MASK))) : 0)
+
+  int i;
+  int j;
+  int base;
+  int row_used;
+  int num_per_line;
+  int num_per_block;
+
+  lst_line(NULL);
+  lst_line(NULL);
+  lst_line("MEMORY USAGE MAP ('X' = Used,  '-' = Unused)");
+  lst_line(NULL);
+
+  num_per_line  = 64;
+  num_per_block = 16;
+
+  while (m) {
+    unsigned int max_mem = MAX_I_MEM  >> !IS_BYTE;
+
+    base = (m->base << I_MEM_BITS) >> !IS_BYTE;
+
+    for (i = 0; i < max_mem; i += num_per_line) {
+      row_used = 0;
+
+      for (j = 0; j < num_per_line; j++) {
+        if (MEM_IS_USED(m, i + j)) {
+          row_used = 1;
+          break;
+        }
+      }
+
+      if (row_used) {
+        if ((state.device.class != NULL) && state.show_full_addr && IS_PIC16E_CORE) {
+          /* Gpasm mode: Print all address digits. */
+          _lst_printf("%0*X :", state.device.class->addr_digits, (i + base));
+        }
+        else {
+          /* MPASM(X) compatible: Print only lower 4 address digits. */
+          _lst_printf("%04X :", (i + base) & 0xffff);
+        }
+
+        for (j = 0; j < num_per_line; j++) {
+          if ((j % num_per_block) == 0) {
+            _lst_printf(" ");
+          }
+          _lst_printf(MEM_IS_USED(m, i + j) ? "X" : "-");
+        }
+
+        _lst_eol();
+        _lst_check_page_start();
+      }
+    }
+
+    m = m->next;
+  }
+
+  lst_line(NULL);
+  lst_line("All other memory blocks unused.");
+  lst_line(NULL);
+
+  /* it seems that MPASM includes config bytes into program memory usage
+   * count for 16 bit cores. See gpasm testsuite:
+   * gpasm/testsuite/gpasm.mchip/listfiles/configX.lst */
+#define IS_PIC16  (IS_PIC16_CORE || IS_PIC16E_CORE)
+
+  if (IS_EEPROM) {
+    lst_line("Memory Bytes Used: %5i", b_memory_used(state.i_memory));
+  }
+  else {
+    unsigned int used = gp_processor_byte_to_real(state.processor, ((!IS_PIC16) && (state.processor != NULL)) ?
+      b_range_memory_used(state.i_memory, 0,
+                          gp_processor_org_to_byte(state.device.class, state.processor->prog_mem_size)) :
+      b_memory_used(state.i_memory));
+
+    lst_line("Program Memory %s Used: %5i", IS_BYTE ? "Bytes" : "Words", used);
+
+    if ((state.processor != NULL) && (state.processor->prog_mem_size >= 0)) {
+      lst_line("Program Memory %s Free: %5u",
+               IS_BYTE ? "Bytes" : "Words",
+               (used <= state.processor->prog_mem_size) ? (state.processor->prog_mem_size - used) : 0);
+    }
+  }
+  lst_line(NULL);
+}
+
 void
 lst_format_line(const char *src_line, int value)
 {
@@ -850,25 +874,6 @@ lst_data:
     }
     state.cod.emitting = 0;
   }
-}
-
-static void
-_cod_symbol_table(void)
-{
-  const symbol_t **lst;
-  size_t           sym_count;
-
-  sym_count = sym_get_symbol_count(state.stGlobal);
-
-  if (sym_count == 0) {
-    return;
-  }
-
-  lst = sym_clone_symbol_array(state.stGlobal, sym_compare_fn);
-  assert(lst != NULL);
-
-  cod_write_symbols(lst, sym_count);
-  free(lst);
 }
 
 /* append the symbol table to the .lst file */

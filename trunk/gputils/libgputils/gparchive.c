@@ -302,7 +302,7 @@ gp_archive_read(const char *filename)
   gp_archive_type *archive;
   gp_archive_type *list;
   gp_archive_type *new;
-  struct ar_hdr    tmpheader;
+  ar_hdr_t         tmpheader;
   fpos_t           position;
   int              object_size;
   char             buffer[SARMAG + 1];

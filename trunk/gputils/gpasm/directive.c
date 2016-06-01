@@ -2049,9 +2049,9 @@ do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
 static gpasmVal
 do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  const pnode_t     *p;
-  const symbol_t    *s;
-  const struct insn *i;
+  const pnode_t  *p;
+  const symbol_t *s;
+  const insn_t   *i;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -2222,7 +2222,7 @@ do_endw(gpasmVal r, const char *name, int arity, pnode_t *parms)
     state.next_buffer.macro = state.while_head;
   }
   else if (state.pass == 2) {
-    list_macro(state.while_head->body);
+    macro_list(state.while_head->body);
     state.preproc.do_emit = false;
   }
 
@@ -4720,16 +4720,16 @@ check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageSe
 gpasmVal
 do_insn(const char *Op_name, pnode_t *Parameters)
 {
-  pnode_t           *p;
-  const symbol_t    *sym;
-  int                arity;
-  int                file;            /* register file address, if applicable */
-  unsigned int       bank_num;
-  gpasmVal           r;               /* Return value. */
-  gp_boolean         is_btfsx = false;
-  const struct insn *ins;
-  enum common_insn   icode;
-  const char        *sym_name;
+  pnode_t          *p;
+  const symbol_t   *sym;
+  int               arity;
+  int               file;            /* register file address, if applicable */
+  unsigned int      bank_num;
+  gpasmVal          r;               /* Return value. */
+  gp_boolean        is_btfsx = false;
+  const insn_t     *ins;
+  enum common_insn  icode;
+  const char       *sym_name;
 
   /* We want to have r as the value to assign to label. */
   r = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(state.device.class, state.byte_addr);
@@ -6552,7 +6552,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           gperror(GPE_UNKNOWN, "Forward references to macros are not allowed.");
         }
         else {
-          setup_macro(h, arity, Parameters);
+          macro_setup(h, arity, Parameters);
           state.preproc.do_emit = false;
         }
       }
@@ -6587,7 +6587,7 @@ leave:
 
 /* Note that instructions within each group are sorted alphabetically. */
 
-const struct insn op_0[] = {
+const insn_t op_0[] = {
   { "access_ovr", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_access_ovr },
   { "bcdirect",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_direct     },
   { "code",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_code       },
@@ -6656,7 +6656,7 @@ const struct insn op_0[] = {
 
 const int num_op_0 = TABLE_SIZE(op_0);
 
-const struct insn op_1[] = {
+const insn_t op_1[] = {
   { "__badram",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_badram       },
   { "__badrom",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_badrom       },
   { "__config",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_config       },
@@ -6687,9 +6687,9 @@ const int num_op_1 = TABLE_SIZE(op_1);
 void
 opcode_init(int stage)
 {
-  const struct insn *base = NULL;
-  int                i;
-  int                count = 0;
+  const insn_t *base = NULL;
+  int           i;
+  int           count = 0;
 
   switch (stage) {
   case 0:

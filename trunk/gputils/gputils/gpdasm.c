@@ -1590,7 +1590,7 @@ int main(int argc, char *argv[])
 
   select_processor();
 
-  state.hex_info = readhex(filename, state.i_memory);
+  state.hex_info = gp_readhex(filename, state.i_memory);
 
   if (state.hex_info->error) {
     state.num.errors++;

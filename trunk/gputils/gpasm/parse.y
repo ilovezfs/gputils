@@ -279,7 +279,7 @@ void next_line(int value)
     case STATE_MACRO:
       state.src->line_number++;
       /* push the label for local directive */
-      state.stTop = push_macro_symbol_table(state.stTop);
+      state.stTop = macro_push_symbol_table(state.stTop);
       execute_macro(state.next_buffer.macro, false);
       break;
 
