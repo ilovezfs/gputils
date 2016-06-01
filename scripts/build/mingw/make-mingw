@@ -29,19 +29,19 @@
 # Options for the system on which the package will run.
 case $(uname) in
 *MINGW*|*CYGWIN*)
-  TOOLSPREFIX=i686-pc-mingw32-
+  TOOLSPREFIX="i686-pc-mingw32-"
   MAKENSIS="c:/Program Files/NSIS/makensis"
   ;;
 *)
-  TOOLSPREFIX=i686-w64-mingw32-
+  TOOLSPREFIX="i686-w64-mingw32-"
   MAKENSIS=makensis
   ;;
 esac
 
-test -z "${CC}" && CC=${TOOLSPREFIX}gcc
-test -z "${AR}" && AR=${TOOLSPREFIX}ar
-test -z "${RANLIB}" && RANLIB=${TOOLSPREFIX}ranlib
-test -z "${STRIP}" && STRIP=${TOOLSPREFIX}strip 
+test -z "${CC}" && CC="${TOOLSPREFIX}gcc"
+test -z "${AR}" && AR="${TOOLSPREFIX}ar"
+test -z "${RANLIB}" && RANLIB="${TOOLSPREFIX}ranlib"
+test -z "${STRIP}" && STRIP="${TOOLSPREFIX}strip"
 
 test -z "$CFLAGS" && CFLAGS="-s -O2"
 
@@ -188,37 +188,42 @@ done
 # extract files from source archive
 ################################################################################
 
-if [ ! $srcfilename ]; then
+if [ ! "$srcfilename" ]; then
   echo "error: specify source filename using --source=FILENAME"
   exit 1
-elif [ ! -f $srcfilename ]; then
+elif [ ! -f "$srcfilename" ]; then
   echo "$srcfilename: No such file"
   exit 1
 else
-  # determine the src directory and version  and 
-  version=`echo $srcfilename | sed -e 's%.tar.gz%%g'`
-  ver=`echo $srcfilename | sed -e 's%gputils-\(.*\)\.tar\.gz%\1%'`
-  ver_major=`echo $ver|awk 'BEGIN {FS="."} {print $1}'`
-  ver_minor=`echo $ver|awk 'BEGIN {FS="."} {print $2}'`
-  ver_revision=`echo $ver|awk 'BEGIN {FS="."} {print $3}'`
+  # determine the src directory and version
+  archive_type=`echo "$srcfilename" | sed -e 's%.*-.\..\..\..*\.\(.*\)%\1%'`
+  version=`echo "$srcfilename" | sed -e 's%.tar.'"$archive_type"'%%g'`
+  ver=`echo "$version" | sed -e 's%.*-\(.*\)%\1%'`
+  ver_major=`echo "$ver" | awk 'BEGIN {FS="."} {print $1}'`
+  ver_minor=`echo "$ver" | awk 'BEGIN {FS="."} {print $2}'`
+  ver_revision=`echo "$ver" | awk 'BEGIN {FS="."} {print $3}'`
   ver_build=0
   # extract the files
-  rm -Rf $version
-  tar -zxf $srcfilename
+  rm -Rf "$version"
+  if test "$archive_type" = "bz2"; then
+    tar -jxf "$srcfilename"
+  else
+    tar -zxf "$srcfilename"
+  fi
   # make the distribution directory
   root_dir="`pwd`"
   dist_dir="`pwd`/dist"
-  rm -Rf $dist_dir
-  mkdir -p $dist_dir/gputils
+  rm -Rf "$dist_dir"
+  mkdir -p "$dist_dir/gputils"
 fi
 
 # copy the patch to the distribution and patch the source
-if [ $patch ]; then
-  if [ -f $patch ]; then
+if [ "$patch" ]; then
+  if [ -f "$patch" ]; then
     echo "copying patch to binary distribution... $patch.  "
-    cp $patch $dist_dir/gputils
+    cp "$patch" "$dist_dir/gputils"
     echo "patching source..."
-    patch -p0 < $patch
+    patch -p0 < "$patch"
   else
     echo "error: patch file \"$patch\" not found."
     exit 1;
@@ -226,11 +231,11 @@ if [ $patch ]; then
 fi
 
 # change to the source directory
-if [ -d $version ]; then
-  cd $version
+if [ -d "$version" ]; then
+  cd "$version"
   echo "changing to source directory... $version"
 else  
-  echo "error: directory $version not found"
+  echo "error: directory \"$version\" not found"
   exit 1
 fi
 
@@ -243,7 +248,7 @@ config_options="$config_options --host=$host"
 echo "checking host system type... $host"
 
 # Detect the system that the distribution to be built on. 
-if [ ! $build ]; then
+if [ ! "$build" ]; then
   build=`./config.guess`
 fi
 config_options="$config_options --build=$build"
@@ -255,7 +260,7 @@ echo "checking maintainer email address... $EMAIL"
 
 # if release is not specified use "1"
 dash_release=""
-if [ $release ]; then
+if [ "$release" ]; then
   dash_release="-$release"
 fi
 echo "checking distribution dash number... $dash_release"
@@ -270,7 +275,7 @@ echo "checking distribution name... $distname"
 ################################################################################
 
 print_banner "Configuring project"
-CC=${CC} CFLAGS=${CFLAGS} AR=${AR} RANLIB=${RANLIB} STRIP=${STRIP} GPUTILS_HTMLDOC_PATH=${dist_dir}/gputils/doc/html-help ./configure --prefix=${dist_dir}/gputils --datadir=${dist_dir} \
+CC="${CC}" CFLAGS=${CFLAGS} AR="${AR}" RANLIB="${RANLIB}" STRIP="${STRIP}" GPUTILS_HTMLDOC_PATH="${dist_dir}/gputils/doc/html-help" ./configure --prefix="${dist_dir}/gputils" --datadir="${dist_dir}" \
   $config_options
 RETVAL=$?
 if [ $RETVAL -ne 0 ]; then
@@ -298,33 +303,33 @@ print_banner "Copying project data to distribution directory"
 # copy the common files
 for x in $common
   do
-    cp $x $dist_dir/gputils/$x.txt
-    $UNIX2DOS $dist_dir/gputils/$x.txt
+    cp "$x" "$dist_dir/gputils/$x.txt"
+    $UNIX2DOS "$dist_dir/gputils/$x.txt"
   done
 echo "copying project data... $common"
 
 # copy the docs
-mkdir $dist_dir/gputils/doc
+mkdir "$dist_dir/gputils/doc"
 for x in $doc
   do
-    cp ./doc/$x $dist_dir/gputils/doc
+    cp "./doc/$x" "$dist_dir/gputils/doc"
   done
 echo "copying project documents... $doc"
 
 # remove unnecessary directories
 for x in $delete_dir
   do
-    rm -Rf $dist_dir/gputils/$x
+    rm -Rf "$dist_dir/gputils/$x"
   done
 echo "removing directories... $delete_dir"
 
 # generate the binary distribution data file
-data_file > $dist_dir/gputils/DISTRIBUTION.txt
-$UNIX2DOS $dist_dir/gputils/DISTRIBUTION.txt
+data_file > "$dist_dir/gputils/DISTRIBUTION.txt"
+$UNIX2DOS "$dist_dir/gputils/DISTRIBUTION.txt"
 echo "creating binary data file... DISTRIBUTION.txt"
 
 # copy the NSIS script and icon
-cp $root_dir/gputils.nsi $dist_dir/gputils/gputils.nsi
+cp "$root_dir/gputils.nsi" "$dist_dir/gputils/gputils.nsi"
 echo "copying NSIS script... gputils.nsi"
 
 # convert the remaining project data to dos format
@@ -336,29 +341,32 @@ echo "converting project data to DOS format... done"
 # make the archive
 ################################################################################
 
-cd $dist_dir
+cd "$dist_dir"
 
 if test x$use_zip = xyes; then
   filename="$distname.zip"
-  zip -r $filename gputils 
+  zip -r "$filename" gputils
+elif test "$archive_type" = "bz2"; then
+  filename="$distname.tar.$archive_type"
+  tar -jcvf "$filename" gputils
 else
-  filename="$distname.tar.gz"
-  tar -zcvf $filename gputils
+  filename="$distname.tar.$archive_type"
+  tar -zcvf "$filename" gputils
 fi
 
-if [ -f $filename ]; then
-  mv $filename ..
+if [ -f "$filename" ]; then
+  mv "$filename" ..
   print_banner "$filename ready for distribution"
 fi
 
 # clean the dist and src directories
 cd ..
 if test x$clean = xyes; then
-  rm -Rf $version
-  rm -Rf $dist_dir 
+  rm -Rf "$version"
+  rm -Rf "$dist_dir"
 fi
 
-cd dist/gputils
+cd "dist/gputils"
 "${MAKENSIS}" -DVER_MAJOR=$ver_major -DVER_MINOR=$ver_minor -DVER_REVISION=$ver_revision -DVER_BUILD=$ver_build -DDASH_RELEASE="" gputils.nsi
 
 exit

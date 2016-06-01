@@ -5,7 +5,7 @@ AC_PREREQ(2.60)
 AC_INIT([gputils],[1.4.3], [<URL:http://gputils.sourceforge.net/>])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([dist-bzip2])
 AM_MAINTAINER_MODE
 
 # Determine the host and build type. The target is always a PIC.

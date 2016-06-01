@@ -248,10 +248,10 @@ struct proc_class {
   const int        *num_instructions;
   const insn_t   *(*find_insn)(const struct proc_class *cls, unsigned int opcode);
 
-  unsigned int    (*i_memory_get)(const MemBlock *m, unsigned int byte_address, unsigned short *word,
+  unsigned int    (*i_memory_get)(const MemBlock *m, unsigned int byte_address, uint16_t *word,
                                   const char **section_name, const char **symbol_name);
 
-  void            (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value,
+  void            (*i_memory_put)(MemBlock *m, unsigned int byte_address, uint16_t value,
                                   const char *section_name, const char *symbol_name);
 
   void            (*patch_strict)(void);

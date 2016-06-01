@@ -1607,37 +1607,37 @@ typedef struct strict_insn {
 
 #define TABLE_SIZE(X)       (sizeof(X) / sizeof((X)[0]))
 
-extern const struct insn op_12c5xx[];
+extern const insn_t op_12c5xx[];
 extern const int num_op_12c5xx;
 
-extern const struct insn op_16c5xx_enh[];
+extern const insn_t op_16c5xx_enh[];
 extern const int num_op_16c5xx_enh;
 
-extern const struct insn op_sx[];
+extern const insn_t op_sx[];
 extern const int num_op_sx;
 
-extern struct insn op_16cxx[];
+extern insn_t op_16cxx[];
 extern const int num_op_16cxx;
 
 extern const struct strict_insn op_16cxx_strict_mask[];
 extern const int num_op_16cxx_strict_mask;
 
-extern const struct insn op_16cxx_enh[];
+extern const insn_t op_16cxx_enh[];
 extern const int num_op_16cxx_enh;
 
-extern const struct insn op_16cxx_enhx[];
+extern const insn_t op_16cxx_enhx[];
 extern const int num_op_16cxx_enhx;
 
-extern const struct insn op_17cxx[];
+extern const insn_t op_17cxx[];
 extern const int num_op_17cxx;
 
-extern const struct insn op_18cxx[];
+extern const insn_t op_18cxx[];
 extern const int num_op_18cxx;
 
-extern const struct insn op_18cxx_sp[];
+extern const insn_t op_18cxx_sp[];
 extern const int num_op_18cxx_sp;
 
-extern const struct insn op_18cxx_ext[];
+extern const insn_t op_18cxx_ext[];
 extern const int num_op_18cxx_ext;
 
 #endif

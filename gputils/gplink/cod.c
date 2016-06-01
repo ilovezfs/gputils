@@ -29,7 +29,7 @@ Boston, MA 02111-1307, USA.  */
 static DirBlockInfo *main_dir;
 
 static DirBlockInfo *
-new_dir_block(void)
+_new_dir_block(void)
 {
   /* initialize eveything to zero */
   DirBlockInfo *dir = GP_Calloc(1, sizeof(DirBlockInfo));
@@ -39,9 +39,9 @@ new_dir_block(void)
 }
 
 static DirBlockInfo *
-init_dir_block(void)
+_init_dir_block(void)
 {
-  DirBlockInfo *dir = new_dir_block();
+  DirBlockInfo *dir = _new_dir_block();
 
   /* Initialize the directory block with known data. It'll be written
    * to the .cod file after everything else. */
@@ -66,14 +66,14 @@ init_dir_block(void)
 /* Assign each file name unique file number. A file may appear in the
    symbol table more than once. */
 static void
-assign_file_id(void)
+_assign_file_id(void)
 {
   symbol_table_t *file_table;
   gp_symbol_type *symbol;
-  gp_aux_type *aux;
-  symbol_t *sym;
-  int file_id = 0;
-  int *value;
+  gp_aux_type    *aux;
+  symbol_t       *sym;
+  int             file_id = 0;
+  int            *value;
 
   /* build a case sensitive file table */
   file_table = sym_push_table(NULL, false);
@@ -111,12 +111,11 @@ void
 cod_init(void)
 {
   if (state.codfile != OUT_NAMED) {
-    snprintf(state.codfilename, sizeof(state.codfilename),
-             "%s.cod", state.basefilename);
+    snprintf(state.codfilename, sizeof(state.codfilename), "%s.cod", state.basefilename);
   }
 
   if ((gp_num_errors > 0) || (state.codfile == OUT_SUPPRESS)) {
-    state.cod.f = NULL;
+    state.cod.f       = NULL;
     state.cod.enabled = false;
     unlink(state.codfilename);
   } else {
@@ -133,9 +132,9 @@ cod_init(void)
     return;
   }
 
-  main_dir = init_dir_block();
+  main_dir = _init_dir_block();
 
-  assign_file_id();
+  _assign_file_id();
 }
 
 /*
@@ -143,11 +142,11 @@ cod_init(void)
  * source files.
  */
 static void
-write_file_block(void)
+_write_file_block(void)
 {
   const gp_symbol_type *symbol;
-  BlockList *fb = NULL;
-  int file_id = 0;
+  BlockList            *fb = NULL;
+  int                   file_id = 0;
 
   symbol = state.object->symbols;
   while (symbol != NULL) {
@@ -178,7 +177,7 @@ write_file_block(void)
 }
 
 static DirBlockInfo *
-find_dir_block_by_high_addr(int high_addr)
+_find_dir_block_by_high_addr(int high_addr)
 {
   DirBlockInfo *dbi = main_dir;
 
@@ -188,7 +187,7 @@ find_dir_block_by_high_addr(int high_addr)
        blocks) is NULL, then this is the first time to encounter this
        _64k segment. So we need to create a new segment. */
     if (dbi->next == NULL) {
-      dbi->next = new_dir_block();
+      dbi->next = _new_dir_block();
       gp_putl16(&dbi->next->dir[COD_DIR_HIGHADDR], high_addr);
       dbi = dbi->next;
       break;
@@ -207,12 +206,13 @@ void
 cod_lst_line(int line_type)
 {
   static DirBlockInfo *dbi = NULL;
-  static int _64k_base = 0;
+  static int           _64k_base = 0;
 
-  unsigned char smod_flag;
-  BlockList *lb;
-  gp_boolean first_time;
-  int address, high_address;
+  unsigned char        smod_flag;
+  BlockList           *lb;
+  gp_boolean           first_time;
+  int                  address;
+  int                  high_address;
 
   if (!state.cod.enabled) {
     return;
@@ -223,7 +223,7 @@ cod_lst_line(int line_type)
 
   if ((dbi == NULL) || (high_address != _64k_base)) {
     _64k_base = high_address;
-    dbi = find_dir_block_by_high_addr(_64k_base);
+    dbi = _find_dir_block_by_high_addr(_64k_base);
   }
 
   first_time = (gp_blocks_get_last(&dbi->lst) == NULL) ? true : false;
@@ -264,13 +264,14 @@ cod_lst_line(int line_type)
 void
 cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 {
-  size_t i;
-  int len, type;
+  size_t                    i;
+  int                       len;
+  int                       type;
   const gp_coffsymbol_type *var;
-  const gp_symbol_type *symbol;
-  const gp_section_type *section;
-  const char *name;
-  BlockList *sb = NULL;
+  const gp_symbol_type     *symbol;
+  const gp_section_type    *section;
+  const char               *name;
+  BlockList                *sb = NULL;
 
   if ((symbol_list == NULL) || (num_symbols == 0)) {
     return;
@@ -321,7 +322,7 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 /* cod_emit_opcode - write one opcode to a cod_image_block
  */
 static void
-cod_emit_opcode(DirBlockInfo *dbi, int address, int opcode)
+_emit_opcode(DirBlockInfo *dbi, int address, int opcode)
 {
   int block_index;
 
@@ -351,43 +352,48 @@ cod_emit_opcode(DirBlockInfo *dbi, int address, int opcode)
 /* cod_write_code - write all of the assembled pic code to the .cod file
  */
 static void
-cod_write_code(void)
+_write_code(void)
 {
   static DirBlockInfo *dbi = NULL;
 
-  const MemBlock *m = state.i_memory;
-  int mem_base, i;
-  int start_address = 0, used_flag = 0;
-  BlockList *rb = NULL;
-  int _64k_base = 0;
+  const MemBlock      *m;
+  int                  i;
+  int                  mem_base;
+  int                  high_addr;
+  int                  start_address;
+  gp_boolean           used_flag;
+  BlockList           *rb;
+  int                  _64k_base;
+  uint16_t             insn;
+
+  start_address = 0;
+  used_flag     = false;
+  _64k_base     = 0;
+  m             = state.i_memory;
 
   while (m != NULL) {
-    int high_addr;
-
-    mem_base = m->base << I_MEM_BITS;
+    mem_base  = m->base << I_MEM_BITS;
     high_addr = (mem_base >> 16) & 0xffff;
 
     if ((dbi == NULL) || (high_addr != _64k_base)) {
       _64k_base = high_addr;
-      dbi = find_dir_block_by_high_addr(_64k_base);
+      dbi = _find_dir_block_by_high_addr(_64k_base);
     }
 
     for (i = mem_base; (i - mem_base) <= MAX_I_MEM; i += 2) {
-      unsigned short insn;
-
       if (((i - mem_base) < MAX_I_MEM) &&
           state.class->i_memory_get(state.i_memory, i, &insn, NULL, NULL)) {
-        cod_emit_opcode(dbi, i, insn);
+        _emit_opcode(dbi, i, insn);
 
-        if (used_flag == 0) {
+        if (!used_flag) {
           /* Save the start address in a range of opcodes */
           start_address = i;
-          used_flag = 1;
+          used_flag     = true;
         }
       } else {
         /* No code at address i, but we need to check if this is the
            first empty address after a range of address. */
-        if (used_flag == 1) {
+        if (used_flag) {
           rb = gp_blocks_get_last_or_new(&dbi->rng);
 
           if ((rb == NULL) || ((dbi->rng.offset + COD_MAPENTRY_SIZE) >= COD_BLOCK_SIZE)) {
@@ -403,7 +409,7 @@ cod_write_code(void)
           gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_START], start_address);
           gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_LAST], i - 1);
 
-          used_flag = 0;
+          used_flag = false;
 
           dbi->rng.offset += COD_MAPENTRY_SIZE;
         }
@@ -417,19 +423,20 @@ cod_write_code(void)
 /* cod_write_debug - write debug symbols to the .cod file
  */
 static void
-cod_write_debug(void)
+_write_debug(void)
 {
-  int len;
+  int                   len;
   const gp_symbol_type *symbol;
-  const gp_aux_type *aux;
-  BlockList *db = NULL;
-  char command;
-  const char *string;
+  const gp_aux_type    *aux;
+  BlockList            *db;
+  char                  command;
+  const char           *string;
 
   if (!state.cod.enabled) {
     return;
   }
 
+  db     = NULL;
   symbol = state.object->symbols;
   while (symbol != NULL) {
     if (strcasecmp(".direct", symbol->name) == 0) {
@@ -462,7 +469,7 @@ cod_write_debug(void)
 }
 
 static void
-cod_symbol_table(const symbol_table_t *Table)
+_cod_symbol_table(const symbol_table_t *Table)
 {
   const symbol_t **lst;
   size_t           sym_count;
@@ -492,10 +499,10 @@ cod_close_file(void)
 
   /* All the global symbols are written.  Need to figure out what to do about
      the local symbols. */
-  cod_symbol_table(state.symbol.definition);
-  write_file_block();
-  cod_write_code();
-  cod_write_debug();
+  _cod_symbol_table(state.symbol.definition);
+  _write_file_block();
+  _write_code();
+  _write_debug();
   gp_blocks_enumerate_directory(main_dir);
   gp_blocks_write_directory(state.cod.f, main_dir);
   gp_blocks_free_directory(main_dir);

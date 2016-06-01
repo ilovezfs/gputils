@@ -113,19 +113,19 @@ make_page_constants(pic_processor_t Proc, int Num_of_pages)
 void
 select_processor(const char *name)
 {
-  pic_processor_t    found;
-  proc_class_t       class;
-  const int         *pair;
-  const vector_t    *vec;
-  unsigned int       num;
-  int                addr;
-  int                num_of_banks;
-  int                num_of_pages;
-  char               buf[BUFSIZ];
-  int                badrom_idx;
-  long               start;
-  long               end;
-  range_pair_t      *new_pair;
+  pic_processor_t  found;
+  proc_class_t     class;
+  const int       *pair;
+  const vector_t  *vec;
+  unsigned int     num;
+  int              addr;
+  int              num_of_banks;
+  int              num_of_pages;
+  char             buf[BUFSIZ];
+  int              badrom_idx;
+  long             start;
+  long             end;
+  range_pair_t    *new_pair;
 
   if (state.cmd_line.processor) {
     gpvwarning(GPW_CMDLINE_PROC, NULL);
@@ -140,10 +140,10 @@ select_processor(const char *name)
         }
 
         state.processor = found;
-        state.maxram = found->maxram;
-        state.maxrom = found->maxrom;
+        state.maxram    = found->maxram;
+        state.maxrom    = found->maxrom;
         /* Initialize badrom from internal processor info. */
-        state.badrom = NULL;
+        state.badrom    = NULL;
 
         for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx += 2) {
           start = found->badrom[badrom_idx];

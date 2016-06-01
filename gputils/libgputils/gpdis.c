@@ -2901,8 +2901,8 @@ _insn_class_pf:
     case INSN_CLASS_MOVINDF:
       /* PIC14E (moviw, movwi) */
       {
-        const char *op_pre[]  = { "++", "--", "",   ""   };
-        const char *op_post[] = { "",   "",   "++", "--" };
+        static const char *op_pre[]  = { "++", "--", "",   ""   };
+        static const char *op_post[] = { "",   "",   "++", "--" };
 
         file1 = (opcode >> 2) & 1;
         tmp   = opcode & 0x0003;

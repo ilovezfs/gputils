@@ -38,7 +38,7 @@ typedef struct gp_binary_type {
 gp_coff_type gp_identify_coff_file(const char *filename);
 gp_binary_type *gp_read_file(const char *filename);
 void gp_free_file(gp_binary_type *data);
-gp_object_type *gp_convert_file(const char *filename, gp_binary_type *data);
+gp_object_type *gp_convert_file(const char *filename, const gp_binary_type *data);
 gp_object_type *gp_read_coff(const char *filename);
 
 #endif

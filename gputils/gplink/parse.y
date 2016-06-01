@@ -38,34 +38,34 @@ int yylex(void);
 
 /* Some simple functions for building parse trees */
 
-static struct pnode *mk_pnode(enum pnode_tag tag)
+static pnode_t *mk_pnode(enum pnode_tag tag)
 {
-  struct pnode *new = GP_Malloc(sizeof(*new));
+  pnode_t *new = GP_Malloc(sizeof(*new));
 
   new->tag = tag;
   return new;
 }
 
-struct pnode *mk_constant(long value)
+pnode_t *mk_constant(long value)
 {
-  struct pnode *new = mk_pnode(PTAG_CONSTANT);
+  pnode_t *new = mk_pnode(PTAG_CONSTANT);
 
   new->value.constant = value;
   return new;
 }
 
-static struct pnode *mk_symbol(const char *value)
+static pnode_t *mk_symbol(const char *value)
 {
-  struct pnode *new = mk_pnode(PTAG_SYMBOL);
+  pnode_t *new = mk_pnode(PTAG_SYMBOL);
 
   new->value.symbol = value;
   return new;
 }
 
 /*
-static struct pnode *mk_string(const char *value)
+static pnode_t *mk_string(const char *value)
 {
-  struct pnode *new = mk_pnode(PTAG_STRING);
+  pnode_t *new = mk_pnode(PTAG_STRING);
 
   new->value.string = value;
   return new;
@@ -73,18 +73,18 @@ static struct pnode *mk_string(const char *value)
 
 */
 
-struct pnode *mk_list(struct pnode *head, struct pnode *tail)
+pnode_t *mk_list(pnode_t *head, pnode_t *tail)
 {
-  struct pnode *new = mk_pnode(PTAG_LIST);
+  pnode_t *new = mk_pnode(PTAG_LIST);
 
   new->value.list.head = head;
   new->value.list.tail = tail;
   return new;
 }
 
-static struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
+static pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1)
 {
-  struct pnode *new = mk_pnode(PTAG_BINOP);
+  pnode_t *new = mk_pnode(PTAG_BINOP);
 
   new->value.binop.op = op;
   new->value.binop.p0 = p0;
@@ -93,9 +93,9 @@ static struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
 }
 
 /*
-static struct pnode *mk_1op(int op, struct pnode *p0)
+static pnode_t *mk_1op(int op, pnode_t *p0)
 {
-  struct pnode *new = mk_pnode(PTAG_UNOP);
+  pnode_t *new = mk_pnode(PTAG_UNOP);
 
   new->value.unop.op = op;
   new->value.unop.p0 = p0;
@@ -109,9 +109,9 @@ static struct pnode *mk_1op(int op, struct pnode *p0)
 /* Bison declarations */
 
 %union {
-  int i;
-  long l;
-  char *s;
+  int           i;
+  long          l;
+  char         *s;
   struct pnode *p;
 }
 
@@ -157,25 +157,25 @@ line:
 	LIBPATH path_list
 	{
 	  if (state.ifdef == NULL || state.ifdef->istrue)
-	    add_path($2);
+	    script_add_path($2);
 	}
 	|
 	LKRPATH path_list
 	{
 	  if (state.ifdef == NULL || state.ifdef->istrue)
-	    add_path($2);
+	    script_add_path($2);
 	}
 	|
 	SYMBOL parameter_list
 	{
 	  if (state.ifdef == NULL || state.ifdef->istrue)
-	    execute_command($1, $2);
+	    script_execute_command($1, $2);
 	}
 	|
 	STRING parameter_list
 	{
 	  if (state.ifdef == NULL || state.ifdef->istrue)
-	    execute_command($1, $2);
+	    script_execute_command($1, $2);
 	}
 	|
 	ERROR
@@ -203,7 +203,7 @@ line:
 		newval = lh / rh;
 	      break;
 	    }
-	    add_script_macro($2, newval);
+	    script_add_macro($2, newval);
 	  }
 	}
 	|
@@ -307,7 +307,7 @@ e0:
 macroval:
 	SYMBOL
 	{
-	  $$ = get_script_macro($1);
+	  $$ = script_get_macro($1);
 	}
 	|
 	NUMBER

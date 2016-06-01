@@ -31,7 +31,7 @@ static FILE *infile;
 
 /* Converts a single ASCII character into a number. */
 static unsigned int
-a2n(unsigned char character)
+_a2n(unsigned char character)
 {
   unsigned int number;
 
@@ -46,52 +46,52 @@ a2n(unsigned char character)
 }
 
 static unsigned int
-readbyte(void)
+_readbyte(void)
 {
   unsigned int number;
 
   linept++;
-  number = a2n(*linept) << 4;
+  number  = _a2n(*linept) << 4;
   linept++;
-  number |= a2n(*linept);
+  number |= _a2n(*linept);
   checksum += number;
   return number;
 } 
 
 static unsigned int
-readword(void)
+_readword(void)
 {
   unsigned int number;
 
-  number = readbyte();  
-  number = (readbyte() << 8) | number;
+  number  = _readbyte();  
+  number |= (_readbyte() << 8);
   return number; 
 }
 
 static unsigned int
-swapword(unsigned int input)
+_swapword(unsigned int input)
 {
   unsigned int number;
 
-  number = ((input & 0xFF) << 8) | ((input & 0xFF00) >> 8);
+  number = ((input & 0x00FF) << 8) | ((input & 0xFF00) >> 8);
   return number;
 }
 
-struct hex_data *
-readhex(const char *filename, MemBlock *m)
+hex_data_t *
+gp_readhex(const char *filename, MemBlock *m)
 {
-  struct hex_data *info;
-  unsigned int     length;
-  unsigned int     address;
-  unsigned int     type;
-  unsigned int     data;
-  int              i;
-  unsigned int     page;
+  hex_data_t   *info;
+  unsigned int  length;
+  unsigned int  address;
+  unsigned int  type;
+  unsigned int  data;
+  int           i;
+  unsigned int  page;
 
   info = GP_Malloc(sizeof(*info));
   info->hex_format = INHX8M;
-  info->size = 0;
-  info->error = 0;
+  info->size       = 0;
+  info->error      = false;
 
   /* Open the input file. */
   if ((infile = fopen(filename, "rt")) == NULL) {
@@ -114,39 +114,39 @@ readhex(const char *filename, MemBlock *m)
     checksum = 0;
 
     /* Fetch the number of bytes. */
-    length = readbyte();
+    length = _readbyte();
     if (length == 0) {
       fclose(infile);
       return info;
     }
 
     /* Fetch the address. */
-    address = readword();
-    address = swapword(address);
+    address = _readword();
+    address = _swapword(address);
 
     if (info->hex_format == INHX16) {
       address *= 2;
-      length *= 2;
+      length  *= 2;
     }
 
     /* Read the type of record. */
-    type = readbyte();
+    type = _readbyte();
 
     if (type == 4) {
       if (info->hex_format == INHX16) {
         printf("\nHex Format Error\n");
         fclose(infile);
-        info->error = 1;
+        info->error = true;
         return info;      
       }
 
       /* INHX32 segment line. */
-      page = ((readbyte() << 8) + readbyte()) << 16;
+      page = ((_readbyte() << 8) + _readbyte()) << 16;
       info->hex_format = INHX32;
     } else {
       /* Read the data (skipping last byte if at odd address). */
       for (i = 0; i < length; ++i) {
-	data = readbyte();
+	data = _readbyte();
 
 	if (info->hex_format == INHX16) {
 	  b_memory_put(m, page | ((address + i) ^ 1), data, filename, NULL);
@@ -160,7 +160,7 @@ readhex(const char *filename, MemBlock *m)
     }
 
     /* Read the checksum, data is thrown away. */
-    data = readbyte();
+    data = _readbyte();
 
     if ((checksum & 0xFF) != 0) { 
       if (info->hex_format == INHX8M) {
@@ -174,7 +174,7 @@ readhex(const char *filename, MemBlock *m)
       } else {
         printf("\nChecksum Error\n");
         fclose(infile);
-        info->error = 1;
+        info->error = true;
         return info;
       }
     }

@@ -398,12 +398,12 @@ gp_cofflink_merge_sections(gp_object_type *object)
       }
 
       /* Copy the section data. */
-      if (_has_data(second)) {
+      if (gp_has_data(second)) {
         unsigned int last = second->size;
         unsigned int offset = first->size;
         unsigned int org;
 
-        if (!_has_data(first)) {
+        if (!gp_has_data(first)) {
           /* TODO optimization: adopt data from second by moving second->size bytes from org to org + offset */
           first->data = i_memory_create();
         }
@@ -518,7 +518,8 @@ _copy_rom_section(const gp_object_type *object, const gp_section_type *idata, gp
   }
 }
 
-static char *_create_i_section_name(const char *name)
+static char *
+_create_i_section_name(const char *name)
 {
   /* create the new section */
   size_t  len = strlen(name);
@@ -873,8 +874,7 @@ gp_cofflink_reloc_abs(gp_object_type *object, MemBlock *m,
    assigned section that has not been relocated. */
 
 static gp_section_type *
-gp_cofflink_find_big_assigned(gp_section_type *section, unsigned long flags,
-                              symbol_table_t *logical_sections)
+_find_big_assigned(gp_section_type *section, unsigned long flags, symbol_table_t *logical_sections)
 {
   gp_section_type *biggest;
   const symbol_t  *sym;
@@ -899,7 +899,7 @@ gp_cofflink_find_big_assigned(gp_section_type *section, unsigned long flags,
    section that has not been relocated. */
 
 static gp_section_type *
-gp_cofflink_find_big_section(gp_section_type *section, unsigned long flags)
+_find_big_section(gp_section_type *section, unsigned long flags)
 {
   gp_section_type *biggest;
 
@@ -1068,7 +1068,8 @@ _unmap_from_shadow_address(linker_section_t *section_def, unsigned int address)
 
 /* Compare function for sym_clone_symbol_array(). */
 
-static int _sect_addr_cmp(const void *P0, const void *P1)
+static int
+_sect_addr_cmp(const void *P0, const void *P1)
 {
   const symbol_t         *sym0 = *(const symbol_t **)P0;
   const symbol_t         *sym1 = *(const symbol_t **)P1;
@@ -1108,7 +1109,7 @@ gp_cofflink_reloc_assigned(gp_object_type *object, MemBlock *m, int org_to_byte_
 
   section = object->sections;
   while (true) {
-    current = gp_cofflink_find_big_assigned(section, flags, logical_sections);
+    current = _find_big_assigned(section, flags, logical_sections);
 
     if (current == NULL) {
       break;
@@ -1154,7 +1155,7 @@ gp_cofflink_reloc_assigned(gp_object_type *object, MemBlock *m, int org_to_byte_
       gp_debug("    section name: %s", section_name);
       gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, current_shadow_address));
 
-      if (_has_data(current)) {
+      if (gp_has_data(current)) {
         _move_data(current->data, current->shadow_address, current->size, current_shadow_address);
       }
 
@@ -1253,7 +1254,7 @@ gp_cofflink_reloc_cinit(gp_object_type *object, MemBlock *m, int org_to_byte_shi
   if (success) {
     gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, smallest_shadow_address));
 
-    if (_has_data(cinit_section)) {
+    if (gp_has_data(cinit_section)) {
       _move_data(cinit_section->data, cinit_section->shadow_address, size, smallest_shadow_address);
     }
     cinit_section->shadow_address = smallest_shadow_address;
@@ -1304,7 +1305,7 @@ gp_cofflink_reloc_unassigned(gp_object_type *object, MemBlock *m, int org_to_byt
 
   section = object->sections;
   while (true) {
-    current = gp_cofflink_find_big_section(section, flags);
+    current = _find_big_section(section, flags);
 
     if (current == NULL) {
       break;
@@ -1402,7 +1403,7 @@ next_pass:
     if (success) {
       gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, smallest_shadow_address));
 
-      if (_has_data(current)) {
+      if (gp_has_data(current)) {
         _move_data(current->data, current->shadow_address, size, smallest_shadow_address);
       }
 
@@ -1553,7 +1554,7 @@ gp_cofflink_fill_pages(gp_object_type *object, MemBlock *m, const symbol_table_t
 }
 
 static void
-check_relative(gp_section_type *section, int org, int argument, int range)
+_check_relative(gp_section_type *section, int org, int argument, int range)
 {
   /* If the branch is too far then issue a warning */
   if ((argument > range) || (argument < -(range + 1))) {
@@ -1564,20 +1565,22 @@ check_relative(gp_section_type *section, int org, int argument, int range)
 /* patch one word with the relocated address */
 
 static void
-gp_cofflink_patch_addr(proc_class_t class, int num_pages, int num_banks, int bsr_boundary,
-                       gp_section_type *section, gp_symbol_type *symbol, gp_reloc_type *relocation)
+_patch_addr(proc_class_t class, int num_pages, int num_banks, int bsr_boundary,
+            gp_section_type *section, const gp_symbol_type *symbol, const gp_reloc_type *relocation)
 {
-  int            org;
-  int            value;
-  uint16_t       current_value;
-  int            data;
-  int            offset;
-  gp_boolean     write_data;
+  int        org;
+  int        value;
+  uint16_t   current_value;
+  int        data;
+  int        offset;
+  int        bank;
+  int        page;
+  gp_boolean write_data;
 
   org   = section->address + relocation->address;
   value = symbol->value    + relocation->offset;
 
-  gp_debug("  patching %#x from %s/%s with %#x", org, section->name, symbol->name, value);
+  gp_debug("  patching at %#x from %s/%s with %#x", org, section->name, symbol->name, value);
 
   /* fetch the current contents of the memory */
   class->i_memory_get(section->data, org, &current_value, NULL, NULL);
@@ -1610,12 +1613,9 @@ gp_cofflink_patch_addr(proc_class_t class, int num_pages, int num_banks, int bsr
     break;
 
   case RELOCT_BANKSEL:
-    {
-      int bank = gp_processor_check_bank(class, value);
-
-      gp_processor_set_bank(class, num_banks, bank, section->data, org);
-      write_data = false;
-    }
+    bank = gp_processor_check_bank(class, value);
+    gp_processor_set_bank(class, num_banks, bank, section->data, org);
+    write_data = false;
     break;
 
   case RELOCT_ALL:
@@ -1623,7 +1623,8 @@ gp_cofflink_patch_addr(proc_class_t class, int num_pages, int num_banks, int bsr
     break;
 
   case RELOCT_IBANKSEL:
-    gp_processor_set_ibank(class, num_banks, gp_processor_check_ibank(class, value), section->data, org);
+    bank = gp_processor_check_ibank(class, value);
+    gp_processor_set_ibank(class, num_banks, bank, section->data, org);
     write_data = false;
     break;
 
@@ -1686,7 +1687,7 @@ gp_cofflink_patch_addr(proc_class_t class, int num_pages, int num_banks, int bsr
       }
 
       offset >>= 1;
-      check_relative(section, org, offset, 0x7f);
+      _check_relative(section, org, offset, 0x7f);
       data = offset & 0xff;
     }
     break;
@@ -1706,22 +1707,16 @@ gp_cofflink_patch_addr(proc_class_t class, int num_pages, int num_banks, int bsr
     break;
 
   case RELOCT_PAGESEL_WREG:
-    {
-      int page = gp_processor_check_page(class, value);
-
-      gp_processor_set_page(class, num_pages, page, section->data, org, true);
-      write_data = false;
-    }
+    page = gp_processor_check_page(class, value);
+    gp_processor_set_page(class, num_pages, page, section->data, org, true);
+    write_data = false;
     break;
 
   case RELOCT_PAGESEL_BITS:
   case RELOCT_PAGESEL_MOVLP:
-    {
-      int page = gp_processor_check_page(class, value);
-
-      gp_processor_set_page(class, num_pages, page, section->data, org, false);
-      write_data = false;
-    }
+    page = gp_processor_check_page(class, value);
+    gp_processor_set_page(class, num_pages, page, section->data, org, false);
+    write_data = false;
     break;
 
   /* unimplemented relocations */
@@ -1775,14 +1770,12 @@ gp_cofflink_patch(gp_object_type *object)
 
   section = object->sections;
   while (section != NULL) {
-    if (_has_data(section)) {
+    if (gp_has_data(section)) {
       /* patch raw data with relocation entries */
       relocation = section->relocations;
       while (relocation != NULL) {
         symbol = relocation->symbol;
-        gp_cofflink_patch_addr(object->class, num_pages, num_banks, bsr_boundary,
-                               section, symbol, relocation);
-
+        _patch_addr(object->class, num_pages, num_banks, bsr_boundary,  section, symbol, relocation);
         relocation = relocation->next;
       }
 

@@ -67,13 +67,13 @@ char *gp_stptoupper(char *Dest, const char *Src, size_t Maxlen);
 size_t gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length);
 size_t gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...);
 
-typedef struct gp_list_struct gp_linked_list;
+typedef struct gp_list {
+  void           *annotation;
+  struct gp_list *prev;
+  struct gp_list *next;
+} gp_list_t;
 
-struct gp_list_struct {
-  void *annotation;
-  struct gp_list_struct *prev;
-  struct gp_list_struct *next;
-};
+typedef struct gp_list gp_linked_list;
 
 gp_linked_list *gp_list_make(void);
 void gp_list_annotate(gp_linked_list *link, void *a);

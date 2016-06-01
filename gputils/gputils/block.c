@@ -43,8 +43,9 @@ read_block(unsigned char *block, int block_number)
 DirBlockInfo *
 read_directory(void)
 {
-  DirBlockInfo *dbi = NULL, *start = NULL;
-  int next_dir_block = 0;
+  DirBlockInfo *dbi = NULL;
+  DirBlockInfo *start = NULL;
+  int           next_dir_block = 0;
 
   do {
     DirBlockInfo *p = GP_Malloc(sizeof(DirBlockInfo));

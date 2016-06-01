@@ -29,30 +29,30 @@ Boston, MA 02111-1307, USA. */
 
 /* A directive value. */
 typedef struct {
-  const char *name;                         /* Name of the value. */
-  unsigned short value;                     /* The value. */
+  const char     *name;                     /* Name of the value. */
+  unsigned short  value;                    /* The value. */
 } gp_cfg_option_t;
 
 /* A directive, i.e., FOSC. */
 typedef struct {
-  const char *name;                         /* Name of the directive. */
-  unsigned short mask;                      /* Mask of words in the config address that apply to its value. */
-  unsigned int option_count;                /* Number of possible values. */
+  const char             *name;             /* Name of the directive. */
+  unsigned short          mask;             /* Mask of words in the config address that apply to its value. */
+  unsigned int            option_count;     /* Number of possible values. */
   const gp_cfg_option_t **options;          /* Array of addresses of values. */
 } gp_cfg_directive_t;
 
 /* One particular configuration address, i.e., 0x300001. */
 typedef struct {
-  unsigned int address;                     /* The address. */
-  unsigned short def_value;                 /* Its default value. */
-  unsigned int directive_count;             /* Count of relevant directives. */
+  unsigned int              address;        /* The address. */
+  unsigned short            def_value;      /* Its default value. */
+  unsigned int              directive_count;/* Count of relevant directives. */
   const gp_cfg_directive_t *directives;     /* Array of directives. */
 } gp_cfg_addr_t;
 
 /* A device - that is, a collection of configuration addresses. */
 typedef struct {
-  const char *name;                         /* Name of the device. */
-  unsigned int address_count;               /* Number of configuration addresses. */
+  const char          *name;                /* Name of the device. */
+  unsigned int         address_count;       /* Number of configuration addresses. */
   const gp_cfg_addr_t *addresses;           /* Array of configuration addresses. */
 } gp_cfg_device_t;
 
@@ -61,13 +61,13 @@ typedef struct {
 
 typedef struct {
   const gp_cfg_directive_t *directive;
-  const gp_cfg_option_t *option;
+  const gp_cfg_option_t    *option;
 } gp_cfg_addr_hit_pair_t;
 
 typedef struct {
-  unsigned int max_dir_width;               /* The size of the longest directive name. */
-  unsigned short def_value;                 /* Default value of this gp_cfg_addr_t. */
-  unsigned int pair_count;                  /* Number of the pairs. */
+  unsigned int           max_dir_width;     /* The size of the longest directive name. */
+  unsigned short         def_value;         /* Default value of this gp_cfg_addr_t. */
+  unsigned int           pair_count;        /* Number of the pairs. */
   gp_cfg_addr_hit_pair_t pairs[GP_CFG_ADDR_HIT_MAX];
 } gp_cfg_addr_hit_t;
 
@@ -77,7 +77,7 @@ typedef struct {
   gp_cfg_addr_hit_t hits[GP_CFG_ADDR_PACK_MAX];
 } gp_cfg_addr_pack_t;
 
-extern const gp_cfg_device_t gp_cfg_devices[];
+extern const     gp_cfg_device_t gp_cfg_devices[];
 extern const int gp_cfg_device_count;
 
 const gp_cfg_device_t *gp_cfg_find_pic(const char *Pic);

@@ -743,7 +743,7 @@ do_or_append_insn(const char *op, pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 /*static void
-print_pnode(const pnode_t *p)
+_print_pnode(const pnode_t *p)
 {
   if (p == NULL) {
     printf("Null\n");

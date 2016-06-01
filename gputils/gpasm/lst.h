@@ -32,7 +32,7 @@ Boston, MA 02111-1307, USA.  */
 #else
 #define LST_LINENUM_POS 15
 #endif
-#define LST_SRC_POS (LST_LINENUM_POS + 6)
+#define LST_SRC_POS     (LST_LINENUM_POS + 6)
 
 void lst_line(const char *format, ...);
 void lst_err_line(const char *type, unsigned int code, const char *format, va_list args);

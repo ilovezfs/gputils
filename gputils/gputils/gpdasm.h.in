@@ -34,10 +34,10 @@ extern struct gpdasm_state {
   MemBlock        *i_memory;    /* Instruction memory linked list */
 
   char *srcfilename,            /* Source (.asm) file name */
-    basefilename[BUFSIZ],       /* basename for generating hex,list,symbol filenames */
-    hexfilename[BUFSIZ];        /* Hex (.hex) file name */
+        basefilename[BUFSIZ],   /* basename for generating hex,list,symbol filenames */
+        hexfilename[BUFSIZ];    /* Hex (.hex) file name */
 
-  struct hex_data *hex_info;    /* information on input hex file */
+  hex_data_t                *hex_info;    /* information on input hex file */
   const gp_register_table_t *proc_regs;
 
   struct {                      /* Totals for errors, warnings, messages */

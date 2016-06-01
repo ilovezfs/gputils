@@ -278,9 +278,10 @@ static void
 pic16e_lister(pic_processor_t processor)
 {
   const gp_cfg_device_t *dev;
-  proc_class_t class;
-  const int *pair;
-  int addr0, addr1;
+  proc_class_t           class;
+  const int             *pair;
+  int                    addr0;
+  int                    addr1;
 
   if ((processor == NULL) || ((class = processor->class) == NULL)) {
     fprintf(stderr, "Warning: The processor not selected!\n");
@@ -328,10 +329,10 @@ static void
 lister_of_devices(pic_processor_t processor)
 {
   const gp_cfg_device_t *dev;
-  proc_class_t class;
-  const int *pair;
-  int addr_digits;
-  const char *txt;
+  proc_class_t           class;
+  const int             *pair;
+  int                    addr_digits;
+  const char            *txt;
 
   if ((processor == NULL) || ((class = processor->class) == NULL)) {
     fprintf(stderr, "Warning: The processor not selected!\n");
@@ -529,17 +530,17 @@ add_path(const char *path)
 void
 process_args(int argc, char *argv[])
 {
-  int option_index;
+  int         option_index;
   const char *command;
-  int c;
-  long pic_family;
-  gp_boolean usage          = false;
-  gp_boolean sdcc_dev14     = false;
-  gp_boolean sdcc_dev16     = false;
-  gp_boolean properties     = false;
-  gp_boolean strict_options = false;
-  int usage_code = 0;
-  char *pc;
+  int         c;
+  long        pic_family;
+  gp_boolean  usage          = false;
+  gp_boolean  sdcc_dev14     = false;
+  gp_boolean  sdcc_dev16     = false;
+  gp_boolean  properties     = false;
+  gp_boolean  strict_options = false;
+  int         usage_code = 0;
+  char       *pc;
 
   list_options.processor = NULL;
   list_options.class0    = PROC_CLASS_UNKNOWN;
@@ -953,7 +954,7 @@ process_args(int argc, char *argv[])
 int
 assemble(void)
 {
-  char *pc;
+  char           *pc;
   symbol_table_t *cmd_defines;
 
   /* store the command line defines to restore on second pass */

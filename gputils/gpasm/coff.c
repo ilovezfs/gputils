@@ -26,32 +26,6 @@ Boston, MA 02111-1307, USA.  */
 #include "gperror.h"
 #include "coff.h"
 
-void
-coff_init(void)
-{
-  if (state.objfile != OUT_NAMED) {
-    snprintf(state.objfilename, sizeof(state.objfilename), "%s.o", state.basefilename);
-  }
-
-  if (state.objfile == OUT_SUPPRESS) {
-    state.obj.enabled = false;
-    unlink(state.objfilename);
-  }
-  else {
-    if (!state.processor_chosen) {
-      state.obj.enabled = false;
-    }
-    else {
-      state.obj.object = gp_coffgen_init();
-      state.obj.object->filename = GP_Strdup(state.objfilename);
-      state.obj.object->processor = state.processor;
-      state.obj.object->class = state.device.class;
-      state.obj.object->isnew = state.obj.newcoff;
-      state.obj.enabled = true;
-    }
-  }
-}
-
 static void
 _update_section_symbol(gp_section_type *section)
 {
@@ -61,24 +35,14 @@ _update_section_symbol(gp_section_type *section)
   section->symbol->aux_list->_aux_symbol._aux_scn.nlineno = section->num_lineno;
 }
 
-void
-coff_close_section(void)
-{
-  if (state.obj.section == NULL) {
-    return;
-  }
-
-  state.obj.section->size = state.byte_addr - state.obj.section->address;
-  _update_section_symbol(state.obj.section);
-}
-
 static void
 _update_reloc_ptr(void)
 {
-  gp_section_type *section = state.obj.object->sections;
-  gp_symbol_type *symbol;
-  gp_reloc_type *reloc;
+  gp_section_type *section;
+  gp_symbol_type  *symbol;
+  gp_reloc_type   *reloc;
 
+  section = state.obj.object->sections;
   while (section != NULL) {
     reloc = section->relocations;
     while (reloc != NULL) {
@@ -102,8 +66,8 @@ l1:
 static void
 _new_config_section(const char *name, int addr, int flags, MemBlock *data, gp_boolean new_config)
 {
-  gp_symbol_type *new = NULL;
-  gp_aux_type *new_aux;
+  gp_symbol_type *new;
+  gp_aux_type    *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -187,6 +151,43 @@ _create_config_sections(void)
 }
 
 void
+coff_init(void)
+{
+  if (state.objfile != OUT_NAMED) {
+    snprintf(state.objfilename, sizeof(state.objfilename), "%s.o", state.basefilename);
+  }
+
+  if (state.objfile == OUT_SUPPRESS) {
+    state.obj.enabled = false;
+    unlink(state.objfilename);
+  }
+  else {
+    if (!state.processor_chosen) {
+      state.obj.enabled = false;
+    }
+    else {
+      state.obj.object = gp_coffgen_init();
+      state.obj.object->filename = GP_Strdup(state.objfilename);
+      state.obj.object->processor = state.processor;
+      state.obj.object->class = state.device.class;
+      state.obj.object->isnew = state.obj.newcoff;
+      state.obj.enabled = true;
+    }
+  }
+}
+
+void
+coff_close_section(void)
+{
+  if (state.obj.section == NULL) {
+    return;
+  }
+
+  state.obj.section->size = state.byte_addr - state.obj.section->address;
+  _update_section_symbol(state.obj.section);
+}
+
+void
 coff_cleanup_before_eof(void)
 {
   if (!state.obj.enabled) {
@@ -226,9 +227,9 @@ coff_close_file(void)
 void
 coff_new_section(const char *name, int addr, int flags)
 {
-  gp_section_type *found = NULL;
-  gp_symbol_type *new = NULL;
-  gp_aux_type *new_aux;
+  gp_section_type *found;
+  gp_symbol_type  *new;
+  gp_aux_type     *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -294,8 +295,8 @@ coff_new_section(const char *name, int addr, int flags)
 void
 coff_reloc(int symbol, short offset, enum gpasmValTypes type)
 {
-  gp_reloc_type *new = NULL;
-  int origin;
+  gp_reloc_type *new;
+  int            origin;
 
   if ((!state.obj.enabled) || (state.obj.section == NULL)) {
     return;
@@ -313,10 +314,11 @@ coff_reloc(int symbol, short offset, enum gpasmValTypes type)
 void
 coff_linenum(int emitted)
 {
-  gp_linenum_type *new = NULL;
-  int end;
-  int origin;
-  static gp_boolean show_bad_debug = true;
+  static gp_boolean  show_bad_debug = true;
+
+  gp_linenum_type   *new;
+  int                end;
+  int                origin;
 
   if ((!state.obj.enabled) || (state.obj.section == NULL)) {
     return;
@@ -361,14 +363,18 @@ coff_linenum(int emitted)
 gp_symbol_type *
 coff_add_sym(const char *name, int value, enum gpasmValTypes type)
 {
-  gp_symbol_type *new = NULL;
-  char message[BUFSIZ];
-  int section_number = 0;
-  int class = C_EXT;
+  gp_symbol_type *new;
+  int             section_number;
+  int             class;
+  char            message[BUFSIZ];
 
   if (!state.obj.enabled) {
     return NULL;
   }
+
+  new            = NULL;
+  section_number = 0;
+  class          = C_EXT;
 
   switch (type) {
   case GVT_EXTERN:
@@ -442,8 +448,8 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
 gp_symbol_type *
 coff_add_filesym(const char *name, gp_boolean isinclude)
 {
-  gp_symbol_type *new = NULL;
-  gp_aux_type *new_aux;
+  gp_symbol_type *new;
+  gp_aux_type    *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -557,8 +563,8 @@ coff_add_nolistsym(void)
 void
 coff_add_directsym(unsigned char command, const char *string)
 {
-  gp_symbol_type *new = NULL;
-  gp_aux_type *new_aux;
+  gp_symbol_type *new;
+  gp_aux_type    *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -586,8 +592,8 @@ coff_add_directsym(unsigned char command, const char *string)
 void
 coff_add_identsym(const char *string)
 {
-  gp_symbol_type *new = NULL;
-  gp_aux_type *new_aux;
+  gp_symbol_type *new;
+  gp_aux_type    *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -615,15 +621,16 @@ coff_add_identsym(const char *string)
 char *
 coff_local_name(const char *name)
 {
-  symbol_t *local;
+  symbol_t       *local;
   gp_symbol_type *symbol;
-  char buffer[BUFSIZ];
-  int count = 1;
+  int             count;
+  char            buffer[BUFSIZ];
 
   if (!state.obj.enabled) {
     return NULL;
   }
 
+  count = 1;
   local = sym_get_symbol(state.stGlobal, name);
   if (local == NULL) {
     /* It isn't in the stGlobal so it must be in stTop. It's local. */

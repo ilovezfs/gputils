@@ -1,8 +1,12 @@
-2016-06-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+2016-06-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* build/mingw/do_setup.sh, build/mingw/make-mingw:
+	  Enabled use the bzip2 source archive.
+
+2016-05-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/cfg-import.pl, tools/device-help.pl:
 	  Updated with new devices based on the mplabx-3.30.
 
-2016-06-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+2016-05-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-help.pl, tools/device-manager.pl:
 	  Updated with new devices based on the mplabx-3.30.
 

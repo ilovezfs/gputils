@@ -37,8 +37,10 @@ function make_asm()
     echo \
 "	include \"$1\"
 	code
-	banksel	__BANK_LAST
-	pagesel	__PAGE_LAST
+	banksel	 __BANK_LAST
+	bankisel __BANK_LAST
+	pagesel	 __PAGE_LAST
+	pageselw __PAGE_LAST
 	end" > "$TEST_SRC"
   else
     echo \

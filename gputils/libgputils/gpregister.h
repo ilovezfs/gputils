@@ -5,20 +5,20 @@
 /* This file is generated automatically by the build-register-db.pl, 2016-01-17 10:12:31 UTC. */
 
 typedef struct {
-  const char *name;
-  unsigned int address;
+  const char   *name;
+  unsigned int  address;
 } gp_bit_t;
 
 typedef struct {
-  const char *name;
-  unsigned int address;
-  unsigned int bit_number;
+  const char     *name;
+  unsigned int    address;
+  unsigned int    bit_number;
   const gp_bit_t *bits;
 } gp_register_t;
 
 typedef struct {
-  const char *name;
-  unsigned int register_number;
+  const char           *name;
+  unsigned int          register_number;
   const gp_register_t **registers;
 } gp_register_table_t;
 

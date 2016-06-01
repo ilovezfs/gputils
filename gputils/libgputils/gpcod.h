@@ -170,27 +170,27 @@ typedef struct {
 
 typedef struct block_list_struct {
   unsigned char block[COD_BLOCK_SIZE];
-  struct block_list_struct *next;
+  struct        block_list_struct *next;
 } BlockList;
 
 #define COD_CODE_IMAGE_BLOCKS 128  /* Max # of blocks for the opcodes. */
 
 typedef struct {
-  BlockList *first;             /* pointer to the first element of list of blocks */
-  BlockList *last;              /* pointer to the last element of list of blocks */
-  unsigned int count;           /* number of elements in list of blocks */
-  unsigned int offset;          /* offset to empty slot in last block */
+  BlockList    *first;          /* pointer to the first element of list of blocks */
+  BlockList    *last;           /* pointer to the last element of list of blocks */
+  unsigned int  count;          /* number of elements in list of blocks */
+  unsigned int  offset;         /* offset to empty slot in last block */
 } Blocks;
 
 typedef struct dir_block_info {
   unsigned char dir[COD_BLOCK_SIZE];
-  Block cod_image_blocks[COD_CODE_IMAGE_BLOCKS];
-  Blocks src;                   /* source files blocks */
-  Blocks lst;                   /* pointer to the list of line number information blocks */
-  Blocks sym;                   /* pointer to the list of long symbol blocks */
-  Blocks rng;                   /* pointer to the list of range blocks */
-  Blocks dbg;                   /* pointer to the list of debug messages blocks */
-  struct dir_block_info *next;  /* pointer to the next dirdctory info block */
+  Block         cod_image_blocks[COD_CODE_IMAGE_BLOCKS];
+  Blocks        src;                    /* source files blocks */
+  Blocks        lst;                    /* pointer to the list of line number information blocks */
+  Blocks        sym;                    /* pointer to the list of long symbol blocks */
+  Blocks        rng;                    /* pointer to the list of range blocks */
+  Blocks        dbg;                    /* pointer to the list of debug messages blocks */
+  struct        dir_block_info *next;   /* pointer to the next dirdctory info block */
 } DirBlockInfo;
 
 /* common cod functions */

@@ -24,7 +24,7 @@ Boston, MA 02111-1307, USA.  */
 
 /* Parse node: created by the parser, interpreted by the 'backend' */
 
-struct pnode {
+typedef struct pnode {
   enum pnode_tag {
     PTAG_CONSTANT,
     PTAG_SYMBOL,
@@ -35,31 +35,33 @@ struct pnode {
     } tag;
 
   union {
-    long constant;
+    long        constant;
     const char *symbol;
 
     struct {
-      struct pnode *head, *tail;
+      struct pnode *head;
+      struct pnode *tail;
     } list;
 
     struct {
-      int op;
-      struct pnode *p0, *p1;
+      int           op;
+      struct pnode *p0;
+      struct pnode *p1;
     } binop;
 
     struct {
-      int op;
+      int           op;
       struct pnode *p0;
     } unop;
 
     const char *string;
   } value;
-};
+} pnode_t;
 
 void script_error(const char *messg, const char *detail);
-int add_path(struct pnode *parms);
-void add_script_macro(const char *name, long value);
-long get_script_macro(const char *name);
-int execute_command(const char *name, struct pnode *parms);
+int script_add_path(const pnode_t *parms);
+void script_add_macro(const char *name, long value);
+long script_get_macro(const char *name);
+int script_execute_command(const char *name, const pnode_t *parms);
 
 #endif

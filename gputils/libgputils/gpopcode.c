@@ -23,7 +23,7 @@ Boston, MA 02111-1307, USA.  */
 #include "libgputils.h"
 
 /* PIC 12-bit instruction set */
-const struct insn op_12c5xx[] = {
+const insn_t op_12c5xx[] = {
   { "addwf" ,  PIC12_MASK_ADDWF ,  PIC12_INSN_ADDWF ,    ICODE_ADDWF , INSN_CLASS_OPWF5   , INV_MASK_NULL },
   { "andlw" ,  PIC12_MASK_ANDLW ,  PIC12_INSN_ANDLW ,    ICODE_ANDLW , INSN_CLASS_LIT8    , INV_MASK_NULL },
   { "andwf" ,  PIC12_MASK_ANDWF ,  PIC12_INSN_ANDWF ,    ICODE_ANDWF , INSN_CLASS_OPWF5   , INV_MASK_NULL },
@@ -63,7 +63,7 @@ const struct insn op_12c5xx[] = {
 const int num_op_12c5xx = TABLE_SIZE(op_12c5xx);
 
 /* PIC 12-bit Enhanced instruction set */
-const struct insn op_16c5xx_enh[] = {
+const insn_t op_16c5xx_enh[] = {
   { "movlb" ,  PIC12E_MASK_MOVLB , PIC12E_INSN_MOVLB ,   ICODE_MOVLB , INSN_CLASS_LIT3    , INV_MASK_NULL },
   { "retfie",  PIC12E_MASK_RETFIE, PIC12E_INSN_RETFIE,   ICODE_RETFIE, INSN_CLASS_IMPLICIT, INV_MASK_BANK },
   { "return",  PIC12E_MASK_RETURN, PIC12E_INSN_RETURN,   ICODE_RETURN, INSN_CLASS_IMPLICIT, INV_MASK_BANK }
@@ -74,10 +74,10 @@ const int num_op_16c5xx_enh = TABLE_SIZE(op_16c5xx_enh);
 /* Scenix SX has a superset of the PIC 12-bit instruction set. */
 /*
  * It would be nice if there was a more elegant way to do this,
- * either by adding a flags field to struct insn, or by allowing a
+ * either by adding a flags field to insn_t, or by allowing a
  * processor to have more than one associated table.
  */
-const struct insn op_sx[] = {
+const insn_t op_sx[] = {
   { "addwf" ,  PIC12_MASK_ADDWF ,  PIC12_INSN_ADDWF ,    ICODE_ADDWF , INSN_CLASS_OPWF5    , INV_MASK_NULL },
   { "andlw" ,  PIC12_MASK_ANDLW ,  PIC12_INSN_ANDLW ,    ICODE_ANDLW , INSN_CLASS_LIT8     , INV_MASK_NULL },
   { "andwf" ,  PIC12_MASK_ANDWF ,  PIC12_INSN_ANDWF ,    ICODE_ANDWF , INSN_CLASS_OPWF5    , INV_MASK_NULL },
@@ -126,7 +126,7 @@ const struct insn op_sx[] = {
 const int num_op_sx = TABLE_SIZE(op_sx);
 
 /* PIC 14-bit instruction set */
-struct insn op_16cxx[] = {
+insn_t op_16cxx[] = {
   { "addlw" ,  PIC14_MASK_ADDLW ,  PIC14_INSN_ADDLW ,    ICODE_ADDLW , INSN_CLASS_LIT8    , INV_MASK_NULL },
   { "addwf" ,  PIC14_MASK_ADDWF ,  PIC14_INSN_ADDWF ,    ICODE_ADDWF , INSN_CLASS_OPWF7   , INV_MASK_NULL },
   { "andlw" ,  PIC14_MASK_ANDLW ,  PIC14_INSN_ANDLW ,    ICODE_ANDLW , INSN_CLASS_LIT8    , INV_MASK_NULL },
@@ -182,7 +182,7 @@ const int num_op_16cxx_strict_mask = TABLE_SIZE(op_16cxx_strict_mask);
 
 
 /* PIC 14-bit Enhanced instruction set */
-const struct insn op_16cxx_enh[] = {
+const insn_t op_16cxx_enh[] = {
   { "addfsr",  PIC14E_MASK_ADDFSR, PIC14E_INSN_ADDFSR,   ICODE_ADDFSR, INSN_CLASS_LITFSR_14, INV_MASK_NULL },
   { "addlw" ,  PIC14E_MASK_ADDLW , PIC14E_INSN_ADDLW ,   ICODE_ADDLW , INSN_CLASS_LIT8     , INV_MASK_NULL },
   { "addwfc",  PIC14E_MASK_ADDWFC, PIC14E_INSN_ADDWFC,   ICODE_ADDWFC, INSN_CLASS_OPWF7    , INV_MASK_NULL },
@@ -207,7 +207,7 @@ const struct insn op_16cxx_enh[] = {
 const int num_op_16cxx_enh = TABLE_SIZE(op_16cxx_enh);
 
 /* PIC 14-bit Enhanced-X instruction set */
-const struct insn op_16cxx_enhx[] = {
+const insn_t op_16cxx_enhx[] = {
   { "addfsr",  PIC14E_MASK_ADDFSR, PIC14E_INSN_ADDFSR,   ICODE_ADDFSR, INSN_CLASS_LITFSR_14, INV_MASK_NULL },
   { "addlw" ,  PIC14E_MASK_ADDLW , PIC14E_INSN_ADDLW ,   ICODE_ADDLW , INSN_CLASS_LIT8     , INV_MASK_NULL },
   { "addwfc",  PIC14E_MASK_ADDWFC, PIC14E_INSN_ADDWFC,   ICODE_ADDWFC, INSN_CLASS_OPWF7    , INV_MASK_NULL },
@@ -232,7 +232,7 @@ const struct insn op_16cxx_enhx[] = {
 const int num_op_16cxx_enhx = TABLE_SIZE(op_16cxx_enhx);
 
 /* PIC 16-bit instruction set */
-const struct insn op_17cxx[] = {
+const insn_t op_17cxx[] = {
   { "addlw" ,  PIC16_MASK_ADDLW ,  PIC16_INSN_ADDLW ,    ICODE_ADDLW , INSN_CLASS_LIT8    , INV_MASK_NULL },
   { "addwf" ,  PIC16_MASK_ADDWF ,  PIC16_INSN_ADDWF ,    ICODE_ADDWF , INSN_CLASS_OPWF8   , INV_MASK_NULL },
   { "addwfc",  PIC16_MASK_ADDWFC,  PIC16_INSN_ADDWFC,    ICODE_ADDWFC, INSN_CLASS_OPWF8   , INV_MASK_NULL },
@@ -295,7 +295,7 @@ const struct insn op_17cxx[] = {
 
 const int num_op_17cxx = TABLE_SIZE(op_17cxx);
 
-const struct insn op_18cxx[] = {
+const insn_t op_18cxx[] = {
   { "addlw" , PIC16E_MASK_ADDLW , PIC16E_INSN_ADDLW ,    ICODE_ADDLW , INSN_CLASS_LIT8    , INV_MASK_NULL },
   { "addwf" , PIC16E_MASK_ADDWF , PIC16E_INSN_ADDWF ,    ICODE_ADDWF , INSN_CLASS_OPWFA8  , INV_MASK_NULL },
   { "addwfc", PIC16E_MASK_ADDWFC, PIC16E_INSN_ADDWFC,    ICODE_ADDWFC, INSN_CLASS_OPWFA8  , INV_MASK_NULL },
@@ -373,7 +373,7 @@ const struct insn op_18cxx[] = {
 const int num_op_18cxx = TABLE_SIZE(op_18cxx);
 
 /* PIC 16-bit "Special" instruction set */
-const struct insn op_18cxx_sp[] = {
+const insn_t op_18cxx_sp[] = {
   { "clrc"  , 0xffff, PIC16ES_INSN_CLRC  ,  0, INSN_CLASS_IMPLICIT, INV_MASK_NULL },
   { "clrdc" , 0xffff, PIC16ES_INSN_CLRDC ,  0, INSN_CLASS_IMPLICIT, INV_MASK_NULL },
   { "clrn"  , 0xffff, PIC16ES_INSN_CLRN  ,  0, INSN_CLASS_IMPLICIT, INV_MASK_NULL },
@@ -405,7 +405,7 @@ const struct insn op_18cxx_sp[] = {
 const int num_op_18cxx_sp = TABLE_SIZE(op_18cxx_sp);
 
 /* PIC 16-bit Extended instruction set */
-const struct insn op_18cxx_ext[] = {
+const insn_t op_18cxx_ext[] = {
   { "addfsr" , PIC16EX_MASK_ADDFSR , PIC16EX_INSN_ADDFSR , ICODE_ADDFSR , INSN_CLASS_LITFSR_16, INV_MASK_NULL },
   { "addulnk", PIC16EX_MASK_ADDULNK, PIC16EX_INSN_ADDULNK, ICODE_ADDULNK, INSN_CLASS_LIT6     , INV_MASK_NULL },
   { "callw"  , PIC16EX_MASK_CALLW  , PIC16EX_INSN_CALLW  , ICODE_CALLW  , INSN_CLASS_IMPLICIT , INV_MASK_BANK },
