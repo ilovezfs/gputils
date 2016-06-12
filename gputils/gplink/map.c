@@ -130,7 +130,6 @@ _write_sections(void)
   map_line("                  Section       Type    Address   Location Size(Bytes)");
   map_line("                ---------  ---------  ---------  ---------  ---------");
 
-
   for (i = 0; i < num_sections; i++) {
     org_to_byte_shift = state.class->org_to_byte_shift;
     section           = section_list[i];
@@ -167,8 +166,7 @@ _write_sections(void)
     assert(section->name != NULL);
 
     if (section->size != 0) {
-      map_line("%25s %10s   0x%06x %10s   0x%06x",
-               section->name, type,
+      map_line("%25s %10s   0x%06x %10s   0x%06x", section->name, type,
                gp_byte_to_org(org_to_byte_shift, section->address),
                location, section->size);
     }

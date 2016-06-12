@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.60)
-AC_INIT([gputils],[1.4.3], [<URL:http://gputils.sourceforge.net/>])
+AC_INIT([gputils],[1.4.4], [<URL:http://gputils.sourceforge.net/>])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([dist-bzip2])

@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass book
 \use_default_options false
 \maintain_unincluded_children false
@@ -9,16 +11,16 @@
 \language_package default
 \inputencoding utf8
 \fontencoding global
-\font_roman times
-\font_sans default
-\font_typewriter default
-\font_math auto
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -72,7 +74,7 @@
 \begin_body
 
 \begin_layout Title
-gputils 1.4.3
+gputils 1.4.4
 \end_layout
 
 \begin_layout Author
@@ -80,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-May 26, 2016
+2016 Jun 12
 \end_layout
 
 \begin_layout Standard
@@ -1122,7 +1124,7 @@ Where options can be one of:
 \noindent
 \begin_inset Tabular
 <lyxtabular version="3" rows="27" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="3.5cm">
 <column alignment="left" valignment="top" width="7.4cm">
 <column alignment="block" valignment="top" width="7cm">
@@ -1169,7 +1171,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
---hex-format <format>
+–hex-format <format>
 \end_layout
 
 \end_inset
@@ -1208,7 +1210,7 @@ hex file in one of four formats: inhx8m, inhx8s, inhx16, inhx32 (the default).
 \begin_inset Text
 
 \begin_layout Plain Layout
---object
+–object
 \end_layout
 
 \end_inset
@@ -1237,7 +1239,7 @@ Output a relocatable object in the older version of the Microchip COFF format.
 \begin_inset Text
 
 \begin_layout Plain Layout
---old-coff
+–old-coff
 \end_layout
 
 \end_inset
@@ -1266,7 +1268,7 @@ Output a relocatable object in the old Microchip COFF format.
 \begin_inset Text
 
 \begin_layout Plain Layout
---debug
+–debug
 \end_layout
 
 \end_inset
@@ -1295,7 +1297,7 @@ Output debug messages.
 \begin_inset Text
 
 \begin_layout Plain Layout
---define symbol[=value]
+–define symbol[=value]
 \end_layout
 
 \end_inset
@@ -1332,7 +1334,7 @@ Equivalent to
 \begin_inset Text
 
 \begin_layout Plain Layout
---expand [ON|OFF]
+–expand [ON|OFF]
 \end_layout
 
 \end_inset
@@ -1361,7 +1363,7 @@ Expand macros in listing file.
 \begin_inset Text
 
 \begin_layout Plain Layout
---full-address
+–full-address
 \end_layout
 
 \end_inset
@@ -1390,7 +1392,7 @@ Show full address in .lst file at the memory map region.
 \begin_inset Text
 
 \begin_layout Plain Layout
---debug-info
+–debug-info
 \end_layout
 
 \end_inset
@@ -1419,7 +1421,7 @@ Use debug directives for COFF.
 \begin_inset Text
 
 \begin_layout Plain Layout
---help
+–help
 \end_layout
 
 \end_inset
@@ -1448,7 +1450,7 @@ Display the help message.
 \begin_inset Text
 
 \begin_layout Plain Layout
---ignore-case
+–ignore-case
 \end_layout
 
 \end_inset
@@ -1503,7 +1505,7 @@ FOOYA
 \begin_inset Text
 
 \begin_layout Plain Layout
---sdcc-dev16-list
+–sdcc-dev16-list
 \end_layout
 
 \end_inset
@@ -1534,7 +1536,7 @@ Help to the extension of the pic16devices.txt file in the sdcc project.
 \begin_inset Text
 
 \begin_layout Plain Layout
---include <directory>
+–include <directory>
 \end_layout
 
 \end_inset
@@ -1563,7 +1565,7 @@ Specify an include directory.
 \begin_inset Text
 
 \begin_layout Plain Layout
---error
+–error
 \end_layout
 
 \end_inset
@@ -1592,7 +1594,7 @@ Enables the creation of the error file.
 \begin_inset Text
 
 \begin_layout Plain Layout
---list-chips[=(12[ce]|14[cef]|16[ce]])]
+–list-chips[=(12[ce]|14[cef]|16[ce]])]
 \end_layout
 
 \end_inset
@@ -1622,7 +1624,7 @@ List the supported processors based on various aspects.
 \begin_inset Text
 
 \begin_layout Plain Layout
---force-list
+–force-list
 \end_layout
 
 \end_inset
@@ -1651,7 +1653,7 @@ Ignore nolist directives.
 \begin_inset Text
 
 \begin_layout Plain Layout
---dump
+–dump
 \end_layout
 
 \end_inset
@@ -1680,7 +1682,7 @@ Memory dump.
 \begin_inset Text
 
 \begin_layout Plain Layout
---mpasm-compatible
+–mpasm-compatible
 \end_layout
 
 \end_inset
@@ -1709,7 +1711,7 @@ MPASM(X) compatibility mode.
 \begin_inset Text
 
 \begin_layout Plain Layout
---deps
+–deps
 \end_layout
 
 \end_inset
@@ -1738,7 +1740,7 @@ Output a dependency file.
 \begin_inset Text
 
 \begin_layout Plain Layout
---dos
+–dos
 \end_layout
 
 \end_inset
@@ -1768,7 +1770,7 @@ Use DOS style newlines (CRLF) in hex file.
 \begin_inset Text
 
 \begin_layout Plain Layout
---output <file>
+–output <file>
 \end_layout
 
 \end_inset
@@ -1782,7 +1784,7 @@ Alternate name of output files.
 \end_layout
 
 \begin_layout Plain Layout
--- If the 
+– If the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1874,7 +1876,7 @@ o
 \end_layout
 
 \begin_layout Plain Layout
--- If the 
+– If the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1990,7 +1992,7 @@ hex
 \begin_inset Text
 
 \begin_layout Plain Layout
---processor <processor>
+–processor <processor>
 \end_layout
 
 \end_inset
@@ -2019,7 +2021,7 @@ Select target processor.
 \begin_inset Text
 
 \begin_layout Plain Layout
---preprocess <file>
+–preprocess <file>
 \end_layout
 
 \end_inset
@@ -2048,7 +2050,7 @@ Write preprocessed asm file to <file>.
 \begin_inset Text
 
 \begin_layout Plain Layout
---quiet
+–quiet
 \end_layout
 
 \end_inset
@@ -2077,7 +2079,7 @@ Suppress anything sent to standard output.
 \begin_inset Text
 
 \begin_layout Plain Layout
---radix <radix>
+–radix <radix>
 \end_layout
 
 \end_inset
@@ -2151,7 +2153,7 @@ hex
 \begin_inset Text
 
 \begin_layout Plain Layout
---list-processor-properties[=([12[ce]|14[cef]|16[ce]])]
+–list-processor-properties[=([12[ce]|14[cef]|16[ce]])]
 \end_layout
 
 \end_inset
@@ -2183,7 +2185,7 @@ Lists properties of the processors.
 \begin_inset Text
 
 \begin_layout Plain Layout
---strict [0|1|2]
+–strict [0|1|2]
 \end_layout
 
 \end_inset
@@ -2265,7 +2267,7 @@ Set the strict level of the recommended instruction-parameters (W or F and
 \noindent
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="3.5cm">
 <column alignment="left" valignment="top" width="7.4cm">
 <column alignment="left" valignment="top" width="7cm">
@@ -2312,7 +2314,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
---sdcc-dev14-list
+–sdcc-dev14-list
 \end_layout
 
 \end_inset
@@ -2343,7 +2345,7 @@ Help to the extension of the pic14devices.txt file in the sdcc project.
 \begin_inset Text
 
 \begin_layout Plain Layout
---strict-options
+–strict-options
 \end_layout
 
 \end_inset
@@ -2373,7 +2375,7 @@ If this is set, then an option may not be parameter of an another option.
 \begin_inset Text
 
 \begin_layout Plain Layout
---absolute
+–absolute
 \end_layout
 
 \end_inset
@@ -2402,7 +2404,7 @@ Use absolute paths.
 \begin_inset Text
 
 \begin_layout Plain Layout
---version
+–version
 \end_layout
 
 \end_inset
@@ -2431,7 +2433,7 @@ Show version information and exit.
 \begin_inset Text
 
 \begin_layout Plain Layout
---warning [0|1|2]
+–warning [0|1|2]
 \end_layout
 
 \end_inset
@@ -2537,7 +2539,7 @@ warnings, and errors to be reported.
 \begin_inset Text
 
 \begin_layout Plain Layout
---macro-dereference
+–macro-dereference
 \end_layout
 
 \end_inset
@@ -2566,7 +2568,7 @@ Use the source from where the macro was invoked for errors.
 \begin_inset Text
 
 \begin_layout Plain Layout
---extended
+–extended
 \end_layout
 
 \end_inset
@@ -2664,8 +2666,8 @@ MPASM(X) compatibility mode
 \end_layout
 
 \begin_layout Standard
-When the --mpasm-compatibe command line option is specified gpasm tries
- to mimic MPASM(X) behaviour:
+When the –mpasm-compatibe command line option is specified gpasm tries to
+ mimic MPASM(X) behaviour:
 \end_layout
 
 \begin_layout Itemize
@@ -2985,7 +2987,7 @@ operators, based on the C operator set.
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="26" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -3543,7 +3545,7 @@ Any symbol appearing in column 1 may be assigned a value using the assignment
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="14" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -3611,7 +3613,7 @@ increment by 1
 \begin_inset Text
 
 \begin_layout Plain Layout
---
+–
 \end_layout
 
 \end_inset
@@ -3878,7 +3880,7 @@ gpasm gives you several ways of specifying numbers.
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
@@ -4121,7 +4123,7 @@ Several legacy mpasm number formats are also supported.
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
@@ -4567,7 +4569,7 @@ gpasm
 \emph on
 not
 \emph default
- included the "--mpasm-compatible" option).
+ included the "–mpasm-compatible" option).
 \series default
 
 \begin_inset Newline newline
@@ -5082,7 +5084,7 @@ gpasm
 \emph on
 not
 \emph default
- included the "--mpasm-compatible" option).
+ included the "–mpasm-compatible" option).
 \series default
 
 \begin_inset Newline newline
@@ -5099,8 +5101,8 @@ The last time selected (with BANKSEL directive, or MOVLB instruction) RAM
 \begin_inset Newline newline
 \end_inset
 
--- This value becomes invalid after the following instructions, in the (Enhanced
- and Regular) 12 bit and 14 bit core -- PIC12XXX, PIC16XXX:
+– This value becomes invalid after the following instructions, in the (Enhanced
+ and Regular) 12 bit and 14 bit core – PIC12XXX, PIC16XXX:
 \end_layout
 
 \begin_layout Standard
@@ -5109,8 +5111,8 @@ BRA, BRW, CALL, CALLW, GOTO, RESET, RETFIE, RETLW, RETURN, (SX: RETI, RETIW,
 \begin_inset Newline newline
 \end_inset
 
--- This value becomes invalid after the following instructions, in the Regular
- 16 bit core -- PIC17XXX:
+– This value becomes invalid after the following instructions, in the Regular
+ 16 bit core – PIC17XXX:
 \end_layout
 
 \begin_layout Standard
@@ -5118,8 +5120,8 @@ CALL, GOTO, LCALL, RETFIE, RETLW, RETURN
 \begin_inset Newline newline
 \end_inset
 
--- This value becomes invalid after the following instructions, in the Extended
- 16 bit core -- PIC18XXX:
+– This value becomes invalid after the following instructions, in the Extended
+ 16 bit core – PIC18XXX:
 \end_layout
 
 \begin_layout Standard
@@ -5137,13 +5139,13 @@ __ACTIVE_BANK_ADDR -- e.g.
 
 \begin_layout Standard
 The last time selected (with PAGESEL or PAGESELW directive, or MOVLP instruction
-) ROM Page in the (Enhanced and Regular) 12 and 14 bit core -- PIC12XXX,
+) ROM Page in the (Enhanced and Regular) 12 and 14 bit core – PIC12XXX,
  PIC16XXX.Partially or completely is still usable: bcf/bcf STATUS, PA[0-2]
  (12 bit), bcf/bsf PCLATH, [3-4] (14 bit)
 \begin_inset Newline newline
 \end_inset
 
--- This value becomes invalid after the following instructions:
+– This value becomes invalid after the following instructions:
 \end_layout
 
 \begin_layout Standard
@@ -5184,7 +5186,7 @@ You can choose the fuse settings, also known as Configuration Bits, for
  project.
  __CONFIG and __FUSES directives are deprecated for 16-bit PIC MCU devices
  (PIC18FXXX), CONFIG directive should be used instead if in the command
- line is included the "--mpasm-compatible" option.
+ line is included the "–mpasm-compatible" option.
  Otherwise in the 
 \begin_inset Quotes eld
 \end_inset
@@ -5197,7 +5199,7 @@ gpasm
 \emph on
 not
 \emph default
- included the "--mpasm-compatible" option) these directives are deprecated
+ included the "–mpasm-compatible" option) these directives are deprecated
  for 
 \emph on
 all
@@ -5218,7 +5220,7 @@ gpasm
 \emph on
 not
 \emph default
- included the "--mpasm-compatible" option), in the case of each processor
+ included the "–mpasm-compatible" option), in the case of each processor
  (PIC12XXX, PIC14XXX, PIC18XXX) it is possible to use the CONFIG directive.
 \end_layout
 
@@ -5783,7 +5785,7 @@ See also: CONFIG, __FUSES
 
 NOTE: __CONFIG and __FUSES directives are deprecated for 16-bit PIC MCU
  devices (PIC18FXXX), CONFIG directive should be used instead if in the
- command line is included the "--mpasm-compatible" option.
+ command line is included the "–mpasm-compatible" option.
 \end_layout
 
 \begin_layout Standard
@@ -5799,7 +5801,7 @@ gpasm
 \emph on
 not
 \emph default
- included the "--mpasm-compatible" option) these directives are deprecated
+ included the "–mpasm-compatible" option) these directives are deprecated
  for 
 \emph on
 all
@@ -5866,7 +5868,7 @@ See also: CONFIG
 
 NOTE: __CONFIG and __FUSES directives are deprecated for 16-bit PIC MCU
  devices (PIC18FXXX), CONFIG directive should be used instead if in the
- command line is included the "--mpasm-compatible" option.
+ command line is included the "–mpasm-compatible" option.
 \end_layout
 
 \begin_layout Standard
@@ -5882,7 +5884,7 @@ gpasm
 \emph on
 not
 \emph default
- included the "--mpasm-compatible" option) these directives are deprecated
+ included the "–mpasm-compatible" option) these directives are deprecated
  for 
 \emph on
 all
@@ -6134,7 +6136,7 @@ CONFIG <expression>[, <expression>]*
 
 \begin_layout Standard
 Sets configuration fuses only on 16-bit PIC MCU devices (PIC18FXXX) if the
- command line is included the "--mpasm-compatible" option.
+ command line is included the "–mpasm-compatible" option.
 \begin_inset Newline newline
 \end_inset
 
@@ -6150,7 +6152,7 @@ gpasm
 \emph on
 not
 \emph default
- included the "--mpasm-compatible" option), in the case of each processor
+ included the "–mpasm-compatible" option), in the case of each processor
  (PIC12XXX, PIC14XXX, PIC18XXX) it is possible to use this directive.
 \end_layout
 
@@ -6833,7 +6835,7 @@ Sets the types of messages that are printed.
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -7180,7 +7182,7 @@ gpasm
 \emph on
 not
 \emph default
- included the "--mpasm-compatible" option), in the case of PIC18FXXX processors
+ included the "–mpasm-compatible" option), in the case of PIC18FXXX processors
  it is possible to use this directive.
 \end_layout
 
@@ -7362,7 +7364,7 @@ list n=0
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -8346,7 +8348,7 @@ Create a new COFF <symbol>.
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="10" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -8690,7 +8692,7 @@ Each directive creates a new COFF symbol
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -9099,7 +9101,7 @@ Instruction set summary
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="35" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -9816,7 +9818,7 @@ Xor W and <f>, result in <dst>
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -9913,7 +9915,7 @@ Return, maintain W
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="38" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -10690,7 +10692,7 @@ Xor W and <f>, result in <dst>
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="23" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -10898,7 +10900,7 @@ Move Indirect FSR<n> to W with preincrement
 \begin_inset Text
 
 \begin_layout Plain Layout
-MOVIW --FSR<n>
+MOVIW –FSR<n>
 \end_layout
 
 \end_inset
@@ -10938,7 +10940,7 @@ Move Indirect FSR<n> to W with postincrement
 \begin_inset Text
 
 \begin_layout Plain Layout
-MOVIW FSR<n>--
+MOVIW FSR<n>–
 \end_layout
 
 \end_inset
@@ -10998,7 +11000,7 @@ Move W to Indirect FSR<n> with preincrement
 \begin_inset Text
 
 \begin_layout Plain Layout
-MOVWI --FSR<n>
+MOVWI –FSR<n>
 \end_layout
 
 \end_inset
@@ -11038,7 +11040,7 @@ Move W to Indirect FSR<n> with postincrement
 \begin_inset Text
 
 \begin_layout Plain Layout
-MOVWI FSR<n>--
+MOVWI FSR<n>–
 \end_layout
 
 \end_inset
@@ -11180,7 +11182,7 @@ s, in addition to those listed under
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -11422,7 +11424,7 @@ There are also a number of standard additional macros.
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="19" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -12474,7 +12476,7 @@ No destination was specified so the default location was used.
 \end_layout
 
 \begin_layout Description
-306 Crossing page boundary -- ensure page bits are set.
+306 Crossing page boundary – ensure page bits are set.
 \end_layout
 
 \begin_layout Standard
@@ -12598,7 +12600,7 @@ Where options can be one of:
 \noindent
 \begin_inset Tabular
 <lyxtabular version="3" rows="21" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -12645,7 +12647,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
---hex-format <format>
+–hex-format <format>
 \end_layout
 
 \end_inset
@@ -12675,7 +12677,7 @@ Produce hex file in one of four formats: inhx8m, inhx8s, inhx16, inhx32
 \begin_inset Text
 
 \begin_layout Plain Layout
---object
+–object
 \end_layout
 
 \end_inset
@@ -12704,7 +12706,7 @@ Output an executable object
 \begin_inset Text
 
 \begin_layout Plain Layout
---no-cinit-warnings
+–no-cinit-warnings
 \end_layout
 
 \end_inset
@@ -12734,7 +12736,7 @@ Disable this warnings of _cinit section with -O2 option: "Relocation symbol
 \begin_inset Text
 
 \begin_layout Plain Layout
---debug
+–debug
 \end_layout
 
 \end_inset
@@ -12763,7 +12765,7 @@ Display debug messages
 \begin_inset Text
 
 \begin_layout Plain Layout
---fill <value>
+–fill <value>
 \end_layout
 
 \end_inset
@@ -12792,7 +12794,7 @@ Fill unused unprotected program memory with <value>
 \begin_inset Text
 
 \begin_layout Plain Layout
---help
+–help
 \end_layout
 
 \end_inset
@@ -12821,7 +12823,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
---include <directory>
+–include <directory>
 \end_layout
 
 \end_inset
@@ -12850,7 +12852,7 @@ Specify an include directory
 \begin_inset Text
 
 \begin_layout Plain Layout
---no-list
+–no-list
 \end_layout
 
 \end_inset
@@ -12879,7 +12881,7 @@ Disable the list file output
 \begin_inset Text
 
 \begin_layout Plain Layout
---map
+–map
 \end_layout
 
 \end_inset
@@ -12908,7 +12910,7 @@ Output a map file
 \begin_inset Text
 
 \begin_layout Plain Layout
---mplink-compatible
+–mplink-compatible
 \end_layout
 
 \end_inset
@@ -12937,7 +12939,7 @@ MPLINK compatibility mode
 \begin_inset Text
 
 \begin_layout Plain Layout
---output <file>
+–output <file>
 \end_layout
 
 \end_inset
@@ -12966,7 +12968,7 @@ Alternate name of hex output file
 \begin_inset Text
 
 \begin_layout Plain Layout
---optimize <level>
+–optimize <level>
 \end_layout
 
 \end_inset
@@ -12995,7 +12997,7 @@ Optimization level
 \begin_inset Text
 
 \begin_layout Plain Layout
---quiet
+–quiet
 \end_layout
 
 \end_inset
@@ -13024,7 +13026,7 @@ Quiet
 \begin_inset Text
 
 \begin_layout Plain Layout
---use-shared
+–use-shared
 \end_layout
 
 \end_inset
@@ -13054,7 +13056,7 @@ Attempt to relocate unshared data sections to shared memory if relocation
 \begin_inset Text
 
 \begin_layout Plain Layout
---script <file>
+–script <file>
 \end_layout
 
 \end_inset
@@ -13083,7 +13085,7 @@ Specify linker script
 \begin_inset Text
 
 \begin_layout Plain Layout
---stack <size>
+–stack <size>
 \end_layout
 
 \end_inset
@@ -13112,7 +13114,7 @@ Create a stack section
 \begin_inset Text
 
 \begin_layout Plain Layout
---strict-options
+–strict-options
 \end_layout
 
 \end_inset
@@ -13122,7 +13124,7 @@ Create a stack section
 
 \begin_layout Plain Layout
 If this is set, then an option may not be parameter of an another option.
- For example: -s --quiet
+ For example: -s –quiet
 \end_layout
 
 \end_inset
@@ -13142,7 +13144,7 @@ If this is set, then an option may not be parameter of an another option.
 \begin_inset Text
 
 \begin_layout Plain Layout
---macro <symbol[=value]>
+–macro <symbol[=value]>
 \end_layout
 
 \end_inset
@@ -13171,7 +13173,7 @@ Add macro value for script.
 \begin_inset Text
 
 \begin_layout Plain Layout
---version
+–version
 \end_layout
 
 \end_inset
@@ -13200,7 +13202,7 @@ Print gplink version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
---processor-mismatch
+–processor-mismatch
 \end_layout
 
 \end_inset
@@ -13234,7 +13236,7 @@ MPLINK compatibility mode
 \end_layout
 
 \begin_layout Standard
-When the --mplink-compatibe command line option is specified gpl tries to
+When the –mplink-compatibe command line option is specified gpl tries to
  mimic MPLINK behaviour:
 \end_layout
 
@@ -13318,7 +13320,7 @@ gplink is an optimizing linker.
 \end_layout
 
 \begin_layout Subsection
-Level 0
+Level 0 (default)
 \end_layout
 
 \begin_layout Standard
@@ -13326,7 +13328,7 @@ No optimizations.
 \end_layout
 
 \begin_layout Subsection
-Level 1 (default)
+Level 1
 \end_layout
 
 \begin_layout Subsubsection
@@ -13349,7 +13351,7 @@ Level 2
 \end_layout
 
 \begin_layout Subsubsection
-Dead Sections
+Dead Sections + Weak Symbols
 \end_layout
 
 \begin_layout Standard
@@ -13365,8 +13367,85 @@ A dead section is any section that doesn't have relocations pointing to
 Level 3
 \end_layout
 
+\begin_layout Subsubsection
+Unnecessary Pagesel Directives
+\end_layout
+
 \begin_layout Standard
-No optimizations.
+The Pagesel directive must use before a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+call label
+\series default
+
+\begin_inset Quotes erd
+\end_inset
+
+ or a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+goto label
+\series default
+
+\begin_inset Quotes erd
+\end_inset
+
+ instructions, if the 
+\series bold
+label
+\series default
+ is located in another object.
+ This address is not known at compile time.
+ It is possible that during linking the caller and the called objects will
+ be located same page.
+ In this case, there is no need for the Pagesel directive.
+ This optmization remove the unnecessary Pagesel directives.
+ In fact remove the instructions which was created by this directive.
+ 
+\series bold
+This option for now experimental.
+\end_layout
+
+\begin_layout Subsection
+Level 4 (Level 3 + Level 1)
+\end_layout
+
+\begin_layout Subsubsection
+Unnecessary Pagesel Directives + Weak Symbols
+\end_layout
+
+\begin_layout Standard
+Combinations of previous levels.
+\end_layout
+
+\begin_layout Subsection
+Level 5
+\end_layout
+
+\begin_layout Subsubsection
+Unnecessary Pagesel Directives + Dead Sections
+\end_layout
+
+\begin_layout Standard
+Combinations of previous levels.
+\end_layout
+
+\begin_layout Subsection
+Level 6 (Level 5 + Level 1)
+\end_layout
+
+\begin_layout Subsubsection
+Unnecessary Pagesel Directives + Dead Sections + Weak Symbols
+\end_layout
+
+\begin_layout Standard
+Combinations of previous levels.
 \end_layout
 
 \begin_layout Chapter
@@ -13417,7 +13496,7 @@ Where options can be one of:
 \noindent
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -13464,7 +13543,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
---create
+–create
 \end_layout
 
 \end_inset
@@ -13493,7 +13572,7 @@ Create a new library
 \begin_inset Text
 
 \begin_layout Plain Layout
---delete
+–delete
 \end_layout
 
 \end_inset
@@ -13522,7 +13601,7 @@ Delete member from library
 \begin_inset Text
 
 \begin_layout Plain Layout
---help
+–help
 \end_layout
 
 \end_inset
@@ -13551,7 +13630,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
---no-index
+–no-index
 \end_layout
 
 \end_inset
@@ -13580,7 +13659,7 @@ Don't add the symbol index
 \begin_inset Text
 
 \begin_layout Plain Layout
---quiet
+–quiet
 \end_layout
 
 \end_inset
@@ -13609,7 +13688,7 @@ Quiet mode
 \begin_inset Text
 
 \begin_layout Plain Layout
---replace
+–replace
 \end_layout
 
 \end_inset
@@ -13638,7 +13717,7 @@ Add or replace member from library
 \begin_inset Text
 
 \begin_layout Plain Layout
---symbols
+–symbols
 \end_layout
 
 \end_inset
@@ -13667,7 +13746,7 @@ List global symbols in libary
 \begin_inset Text
 
 \begin_layout Plain Layout
---list
+–list
 \end_layout
 
 \end_inset
@@ -13696,7 +13775,7 @@ List member in library
 \begin_inset Text
 
 \begin_layout Plain Layout
---version
+–version
 \end_layout
 
 \end_inset
@@ -13725,7 +13804,7 @@ Print gplib version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
---extract
+–extract
 \end_layout
 
 \end_inset
@@ -13954,7 +14033,7 @@ Where options can be one of:
 \noindent
 \begin_inset Tabular
 <lyxtabular version="3" rows="17" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -14001,7 +14080,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
---mnemonics
+–mnemonics
 \end_layout
 
 \end_inset
@@ -14030,7 +14109,7 @@ Decode the special mnemonics.
 \begin_inset Text
 
 \begin_layout Plain Layout
---help
+–help
 \end_layout
 
 \end_inset
@@ -14059,7 +14138,7 @@ Display the help message.
 \begin_inset Text
 
 \begin_layout Plain Layout
---hex-info
+–hex-info
 \end_layout
 
 \end_inset
@@ -14088,7 +14167,7 @@ Show the informations of the input hex file
 \begin_inset Text
 
 \begin_layout Plain Layout
---mov-fsrn
+–mov-fsrn
 \end_layout
 
 \end_inset
@@ -14119,7 +14198,7 @@ In the MOVIW or MOVWI instructions show as base the FSRn register instead
 \begin_inset Text
 
 \begin_layout Plain Layout
---label-list <file>
+–label-list <file>
 \end_layout
 
 \end_inset
@@ -14150,7 +14229,7 @@ A file which lists the names and addresses of the labels in the disassembled
 \begin_inset Text
 
 \begin_layout Plain Layout
---list-chips
+–list-chips
 \end_layout
 
 \end_inset
@@ -14179,7 +14258,7 @@ List the supported processors.
 \begin_inset Text
 
 \begin_layout Plain Layout
---dump
+–dump
 \end_layout
 
 \end_inset
@@ -14208,7 +14287,7 @@ Memory dump of the input hex file.
 \begin_inset Text
 
 \begin_layout Plain Layout
---show-names
+–show-names
 \end_layout
 
 \end_inset
@@ -14238,7 +14317,7 @@ For some case of SFR, shows the name of instead of the address.
 \begin_inset Text
 
 \begin_layout Plain Layout
---show-config
+–show-config
 \end_layout
 
 \end_inset
@@ -14267,7 +14346,7 @@ Show the CONFIG and IDLOCS - or __idlocs - directives.
 \begin_inset Text
 
 \begin_layout Plain Layout
---processor <processor>
+–processor <processor>
 \end_layout
 
 \end_inset
@@ -14296,7 +14375,7 @@ Select the processor.
 \begin_inset Text
 
 \begin_layout Plain Layout
---short
+–short
 \end_layout
 
 \end_inset
@@ -14327,7 +14406,7 @@ Print short form output.
 \begin_inset Text
 
 \begin_layout Plain Layout
---use-tab
+–use-tab
 \end_layout
 
 \end_inset
@@ -14356,7 +14435,7 @@ Uses tabulator character in the written disassembled text.
 \begin_inset Text
 
 \begin_layout Plain Layout
---version
+–version
 \end_layout
 
 \end_inset
@@ -14385,7 +14464,7 @@ Print the gpdasm version information and exit.
 \begin_inset Text
 
 \begin_layout Plain Layout
---extended
+–extended
 \end_layout
 
 \end_inset
@@ -14414,7 +14493,7 @@ Enable 18xx extended mode.
 \begin_inset Text
 
 \begin_layout Plain Layout
---strict
+–strict
 \end_layout
 
 \end_inset
@@ -14444,7 +14523,7 @@ Disassemble only opcodes generated by gpasm in case of instructions with
 \begin_inset Text
 
 \begin_layout Plain Layout
---strict-options
+–strict-options
 \end_layout
 
 \end_inset
@@ -14454,7 +14533,7 @@ Disassemble only opcodes generated by gpasm in case of instructions with
 
 \begin_layout Plain Layout
 If this is set, then an option may not be parameter of an another option.
- For example: -p --dump
+ For example: -p –dump
 \end_layout
 
 \end_inset
@@ -14591,7 +14670,7 @@ In this case helps the
 \begin_inset Quotes eld
 \end_inset
 
---label-list
+–label-list
 \begin_inset Quotes erd
 \end_inset
 
@@ -14682,7 +14761,7 @@ Where options can be one of:
 \noindent
 \begin_inset Tabular
 <lyxtabular version="3" rows="14" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -14729,7 +14808,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
---strip-debug
+–strip-debug
 \end_layout
 
 \end_inset
@@ -14758,7 +14837,7 @@ Strip debug symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
---help
+–help
 \end_layout
 
 \end_inset
@@ -14787,7 +14866,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
---keep-symbol <symbol>
+–keep-symbol <symbol>
 \end_layout
 
 \end_inset
@@ -14816,7 +14895,7 @@ Keep symbol
 \begin_inset Text
 
 \begin_layout Plain Layout
---strip-symbol <symbol>
+–strip-symbol <symbol>
 \end_layout
 
 \end_inset
@@ -14845,7 +14924,7 @@ Remove symbol
 \begin_inset Text
 
 \begin_layout Plain Layout
---output <file>
+–output <file>
 \end_layout
 
 \end_inset
@@ -14874,7 +14953,7 @@ Alternate output file
 \begin_inset Text
 
 \begin_layout Plain Layout
---preserve-dates
+–preserve-dates
 \end_layout
 
 \end_inset
@@ -14903,7 +14982,7 @@ Preserve dates
 \begin_inset Text
 
 \begin_layout Plain Layout
---remove-section <section>
+–remove-section <section>
 \end_layout
 
 \end_inset
@@ -14932,7 +15011,7 @@ Remove section
 \begin_inset Text
 
 \begin_layout Plain Layout
---strict-options
+–strict-options
 \end_layout
 
 \end_inset
@@ -14942,7 +15021,7 @@ Remove section
 
 \begin_layout Plain Layout
 If this is set, then an option may not be parameter of an another option.
- For example: -o --version
+ For example: -o –version
 \end_layout
 
 \end_inset
@@ -14962,7 +15041,7 @@ If this is set, then an option may not be parameter of an another option.
 \begin_inset Text
 
 \begin_layout Plain Layout
---strip-all
+–strip-all
 \end_layout
 
 \end_inset
@@ -14991,7 +15070,7 @@ Remove all symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
---strip-unneeded
+–strip-unneeded
 \end_layout
 
 \end_inset
@@ -15020,7 +15099,7 @@ Remove all symbols not needed for relocations
 \begin_inset Text
 
 \begin_layout Plain Layout
---version
+–version
 \end_layout
 
 \end_inset
@@ -15049,7 +15128,7 @@ Show version
 \begin_inset Text
 
 \begin_layout Plain Layout
---verbose
+–verbose
 \end_layout
 
 \end_inset
@@ -15078,7 +15157,7 @@ Verbose mode
 \begin_inset Text
 
 \begin_layout Plain Layout
---discard-all
+–discard-all
 \end_layout
 
 \end_inset
@@ -15164,7 +15243,7 @@ Where options can be one of:
 \noindent
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -15211,7 +15290,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
---all
+–all
 \end_layout
 
 \end_inset
@@ -15240,7 +15319,7 @@ Display all information
 \begin_inset Text
 
 \begin_layout Plain Layout
---directory
+–directory
 \end_layout
 
 \end_inset
@@ -15269,7 +15348,7 @@ Display directory header
 \begin_inset Text
 
 \begin_layout Plain Layout
---help
+–help
 \end_layout
 
 \end_inset
@@ -15298,7 +15377,7 @@ Show the help message.
 \begin_inset Text
 
 \begin_layout Plain Layout
---listing
+–listing
 \end_layout
 
 \end_inset
@@ -15327,7 +15406,7 @@ Display source listing
 \begin_inset Text
 
 \begin_layout Plain Layout
---message
+–message
 \end_layout
 
 \end_inset
@@ -15356,7 +15435,7 @@ Display debug message area
 \begin_inset Text
 
 \begin_layout Plain Layout
---rom
+–rom
 \end_layout
 
 \end_inset
@@ -15385,7 +15464,7 @@ Display ROM
 \begin_inset Text
 
 \begin_layout Plain Layout
---symbols
+–symbols
 \end_layout
 
 \end_inset
@@ -15414,7 +15493,7 @@ Display symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
---version
+–version
 \end_layout
 
 \end_inset
@@ -15576,7 +15655,7 @@ Where options can be one of:
 \noindent
 \begin_inset Tabular
 <lyxtabular version="3" rows="12" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -15623,7 +15702,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
---binary
+–binary
 \end_layout
 
 \end_inset
@@ -15652,7 +15731,7 @@ Binary data
 \begin_inset Text
 
 \begin_layout Plain Layout
---mnemonics
+–mnemonics
 \end_layout
 
 \end_inset
@@ -15681,7 +15760,7 @@ Decode special mnemonics
 \begin_inset Text
 
 \begin_layout Plain Layout
---file
+–file
 \end_layout
 
 \end_inset
@@ -15710,7 +15789,7 @@ File header
 \begin_inset Text
 
 \begin_layout Plain Layout
---help
+–help
 \end_layout
 
 \end_inset
@@ -15739,7 +15818,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
---no-names
+–no-names
 \end_layout
 
 \end_inset
@@ -15768,7 +15847,7 @@ Suppress filenames
 \begin_inset Text
 
 \begin_layout Plain Layout
---section
+–section
 \end_layout
 
 \end_inset
@@ -15797,7 +15876,7 @@ Section data
 \begin_inset Text
 
 \begin_layout Plain Layout
---strict-options
+–strict-options
 \end_layout
 
 \end_inset
@@ -15807,7 +15886,7 @@ Section data
 
 \begin_layout Plain Layout
 If this is set, then an option may not be parameter of an another option.
- For example: -x --symbol
+ For example: -x –symbol
 \end_layout
 
 \end_inset
@@ -15827,7 +15906,7 @@ If this is set, then an option may not be parameter of an another option.
 \begin_inset Text
 
 \begin_layout Plain Layout
---symbol
+–symbol
 \end_layout
 
 \end_inset
@@ -15856,7 +15935,7 @@ Symbol data
 \begin_inset Text
 
 \begin_layout Plain Layout
---version
+–version
 \end_layout
 
 \end_inset
@@ -15885,7 +15964,7 @@ Print gpvo version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
---export <file>
+–export <file>
 \end_layout
 
 \end_inset
@@ -15914,7 +15993,7 @@ Export symbols to an include file.
 \begin_inset Text
 
 \begin_layout Plain Layout
---extended
+–extended
 \end_layout
 
 \end_inset

@@ -32,7 +32,8 @@ struct gplib_state state = {
 static symbol_table_t *definition_tbl = NULL;
 static symbol_table_t *symbol_index = NULL;
 
-static void select_mode(enum lib_modes mode)
+static void
+_select_mode(enum lib_modes mode)
 {
   if (state.mode == AR_NULL) {
     state.mode = mode;
@@ -44,7 +45,7 @@ static void select_mode(enum lib_modes mode)
 /* return the object name without the path */
 
 static char *
-object_name(char *file_name)
+_object_name(char *file_name)
 {
   char *name;
 
@@ -67,7 +68,7 @@ object_name(char *file_name)
 }
 
 static gp_boolean
-has_path(const char *file_name)
+_has_path(const char *file_name)
 {
   char *name;
 
@@ -81,7 +82,8 @@ has_path(const char *file_name)
   return ((name == NULL) ? false : true);
 }
 
-void show_usage(void)
+static void
+_show_usage(void)
 {
   printf("Usage: gplib [options] library [member]\n");
   printf("Options: [defaults in brackets after descriptions]\n");
@@ -119,12 +121,12 @@ static struct option longopts[] =
 
 int main(int argc, char *argv[])
 {
-  int c;
-  int i;
-  gp_boolean usage          = false;
-  gp_boolean update_archive = false;
-  gp_boolean no_index       = false;
-  gp_archive_type *object = NULL;
+  int              c;
+  int              i;
+  gp_boolean       usage          = false;
+  gp_boolean       update_archive = false;
+  gp_boolean       no_index       = false;
+  gp_archive_type *object         = NULL;
 
   gp_init();
 
@@ -140,11 +142,11 @@ int main(int argc, char *argv[])
       break;
 
     case 'c':
-      select_mode(AR_CREATE);
+      _select_mode(AR_CREATE);
       break;
 
     case 'd':
-      select_mode(AR_DELETE);
+      _select_mode(AR_DELETE);
       break;
 
     case 'n':
@@ -156,15 +158,15 @@ int main(int argc, char *argv[])
       break;
 
     case 'r':
-      select_mode(AR_REPLACE);
+      _select_mode(AR_REPLACE);
       break;
 
     case 's':
-      select_mode(AR_SYMBOLS);
+      _select_mode(AR_SYMBOLS);
       break;
 
     case 't':
-      select_mode(AR_LIST);
+      _select_mode(AR_LIST);
       break;
 
     case 'v':
@@ -173,7 +175,7 @@ int main(int argc, char *argv[])
       break;
 
     case 'x':
-      select_mode(AR_EXTRACT);
+      _select_mode(AR_EXTRACT);
       break;
     }
 
@@ -209,7 +211,7 @@ int main(int argc, char *argv[])
   }
 
   if (usage) {
-    show_usage();
+    _show_usage();
   }
 
   /* if we are not creating a new archive, we have to read an existing one */
@@ -235,7 +237,7 @@ int main(int argc, char *argv[])
         break;
       } else {
         state.archive = gp_archive_add_member(state.archive, state.objectname[i],
-                                              object_name(state.objectname[i]));
+                                              _object_name(state.objectname[i]));
       }
       i++;
     }
@@ -244,7 +246,7 @@ int main(int argc, char *argv[])
 
   case AR_DELETE:
     while (i < state.numobjects) {
-      if (has_path(state.objectname[i])) {
+      if (_has_path(state.objectname[i])) {
         gp_error("invalid object name \"%s\"", state.objectname[i]);
         break;
       }
@@ -262,7 +264,7 @@ int main(int argc, char *argv[])
 
   case AR_EXTRACT:
     while (i < state.numobjects) {
-      if (has_path(state.objectname[i])) {
+      if (_has_path(state.objectname[i])) {
         gp_error("invalid object name \"%s\"", state.objectname[i]);
         break;
       }

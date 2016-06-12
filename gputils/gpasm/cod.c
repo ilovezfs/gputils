@@ -196,8 +196,8 @@ _write_code(void)
       dbi = _find_dir_block_by_high_addr(_64k_base);
     }
 
-    for (i = mem_base; (i - mem_base) <= MAX_I_MEM; i += 2) {
-      if (((i - mem_base) < MAX_I_MEM) &&
+    for (i = mem_base; (i - mem_base) <= I_MEM_MAX; i += 2) {
+      if (((i - mem_base) < I_MEM_MAX) &&
           state.device.class->i_memory_get(state.i_memory, i, &insn, NULL, NULL)) {
         _emit_opcode(dbi, i, insn);
 

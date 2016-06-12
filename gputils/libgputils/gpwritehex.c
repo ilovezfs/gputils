@@ -164,7 +164,7 @@ _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
 
-    maximum = i + MAX_I_MEM;
+    maximum = i + I_MEM_MAX;
 
     if (hex_format == INHX32) {
       /* FIXME would mode swap require division by 2? */

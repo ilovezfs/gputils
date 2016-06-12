@@ -47,8 +47,8 @@ gp_init(void)
 #ifdef USE_DEFAULT_PATHS
   /* load the environmental variables */
   gp_header_path = getenv("GPUTILS_HEADER_PATH");
-  gp_lkr_path = getenv("GPUTILS_LKR_PATH");
-  gp_lib_path = getenv("GPUTILS_LIB_PATH");
+  gp_lkr_path    = getenv("GPUTILS_LKR_PATH");
+  gp_lib_path    = getenv("GPUTILS_LIB_PATH");
 
   #ifndef HAVE_DOS_BASED_FILE_SYSTEM
     if (gp_header_path == NULL) {
@@ -64,8 +64,8 @@ gp_init(void)
 
 #else
   gp_header_path = NULL;
-  gp_lkr_path = NULL;
-  gp_lib_path = NULL;
+  gp_lkr_path    = NULL;
+  gp_lib_path    = NULL;
 #endif
 
 }
@@ -75,7 +75,7 @@ gp_init(void)
 /* little endian functions */
 
 void 
-gp_fputl16(short data, FILE *fp) 
+gp_fputl16(int16_t data, FILE *fp) 
 {
   fputc(data & 0xff, fp);
   fputc((data >> 8) & 0xff, fp);
@@ -84,10 +84,10 @@ gp_fputl16(short data, FILE *fp)
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_fputl32(long data, FILE *fp) 
+gp_fputl32(int32_t data, FILE *fp) 
 {
   fputc(data & 0xff, fp);
-  fputc((data >> 8) & 0xff, fp);
+  fputc((data >>  8) & 0xff, fp);
   fputc((data >> 16) & 0xff, fp);
   fputc((data >> 24) & 0xff, fp);
 }
@@ -97,9 +97,9 @@ gp_fputl32(long data, FILE *fp)
 void
 gp_fputvar(const void *data_, int number, FILE *fp)
 {
-  const unsigned char *data = (const unsigned char *)data_;
-  int                  i;
-  
+  const uint8_t *data = (const uint8_t *)data_;
+  int            i;
+
   for (i = 0; i < number; i++) {
     fputc(data[i], fp);
   }
@@ -108,11 +108,11 @@ gp_fputvar(const void *data_, int number, FILE *fp)
 /*------------------------------------------------------------------------------------------------*/
 
 int16_t
-gp_getl16(const unsigned char *addr)
+gp_getl16(const uint8_t *addr)
 {
   int16_t value;
   
-  value  = addr[0];
+  value  = (int16_t)addr[0];
   value |= (int16_t)addr[1] << 8;
   
   return value;
@@ -121,30 +121,38 @@ gp_getl16(const unsigned char *addr)
 /*------------------------------------------------------------------------------------------------*/
 
 uint16_t
-gp_getu16(const unsigned char *addr)
+gp_getu16(const uint8_t *addr)
 {
   return (uint16_t)gp_getl16(addr);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-long 
-gp_getl32(const unsigned char *addr)
+int32_t
+gp_getl32(const uint8_t *addr)
 {
-  long value;
+  int32_t value;
 
-  value  = addr[0];
-  value |= (long)addr[1] << 8;
-  value |= (long)addr[2] << 16;
-  value |= (long)addr[3] << 24;
+  value  = (int32_t)addr[0];
+  value |= (int32_t)addr[1] << 8;
+  value |= (int32_t)addr[2] << 16;
+  value |= (int32_t)addr[3] << 24;
 
   return value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
+uint32_t
+gp_getu32(const uint8_t *addr)
+{
+  return (uint32_t)gp_getl32(addr);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void 
-gp_putl16(unsigned char *addr, uint16_t data)
+gp_putl16(uint8_t *addr, uint16_t data)
 {
   addr[0] = data & 0xff;
   addr[1] = (data >> 8) & 0xff;
@@ -153,10 +161,10 @@ gp_putl16(unsigned char *addr, uint16_t data)
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_putl32(unsigned char *addr, unsigned long data)
+gp_putl32(uint8_t *addr, uint32_t data)
 {
   addr[0] = data & 0xff;
-  addr[1] = (data >> 8)  & 0xff;
+  addr[1] = (data >>  8) & 0xff;
   addr[2] = (data >> 16) & 0xff;
   addr[3] = (data >> 24) & 0xff;
 }
@@ -165,15 +173,15 @@ gp_putl32(unsigned char *addr, unsigned long data)
 
 /* big endian functions */
 
-long 
-gp_getb32(const unsigned char *addr)
+int32_t 
+gp_getb32(const uint8_t *addr)
 {
-  long value;
+  int32_t value;
 
-  value  = addr[0] << 24;
-  value |= addr[1] << 16;
-  value |= addr[2] << 8;
-  value |= addr[3];
+  value  = (int32_t)addr[0] << 24;
+  value |= (int32_t)addr[1] << 16;
+  value |= (int32_t)addr[2] <<  8;
+  value |= (int32_t)addr[3];
 
   return value;
 }
@@ -181,11 +189,11 @@ gp_getb32(const unsigned char *addr)
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_putb32(unsigned char *addr, unsigned long data)
+gp_putb32(uint8_t *addr, uint32_t data)
 {
   addr[0] = (data >> 24) & 0xff;
   addr[1] = (data >> 16) & 0xff;
-  addr[2] = (data >> 8)  & 0xff;
+  addr[2] = (data >>  8) & 0xff;
   addr[3] = data & 0xff;
 }
 

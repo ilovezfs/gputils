@@ -22,117 +22,117 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPCOFF_H__
 #define __GPCOFF_H__
 
-
 /* These definitions are for the COFF as stored in a file. */
 
 /* define the typical values, if they aren't found warn the user */
-#define MICROCHIP_MAGIC_v1 0x1234
-#define MICROCHIP_MAGIC_v2 0x1240
+#define MICROCHIP_MAGIC_v1      0x1234
+#define MICROCHIP_MAGIC_v2      0x1240
 
-#define OPTMAGIC_v1 0x5678
-#define OPTMAGIC_v2 0x5678
+#define OPTMAGIC_v1             0x5678
+#define OPTMAGIC_v2             0x5678
 
 /* coff file header format */
 struct filehdr
 {
-  unsigned short  f_magic;   /* magic number */
-  unsigned short  f_nscns;   /* number of sections */
-  unsigned long   f_timdat;  /* time and date stamp */
-  unsigned long   f_symptr;  /* file ptr to symtab */
-  unsigned long   f_nsyms;   /* # symtab entries */
-  unsigned short  f_opthdr;  /* sizeof(opt hdr) */
-  unsigned short  f_flags;   /* flags */
+  uint16_t f_magic;             /* magic number */
+  uint16_t f_nscns;             /* number of sections */
+  uint32_t f_timdat;            /* time and date stamp */
+  uint32_t f_symptr;            /* file ptr to symtab */
+  uint32_t f_nsyms;             /* # symtab entries */
+  uint16_t f_opthdr;            /* sizeof(opt hdr) */
+  uint16_t f_flags;             /* flags */
 };
 
 /* define the size in the file, don't use sizeof() !! */
-#define FILE_HDR_SIZ_v1 20
-#define FILE_HDR_SIZ_v2 20
+#define FILE_HDR_SIZ_v1         20
+#define FILE_HDR_SIZ_v2         20
 
 /* relocation info has been stripped */
-#define F_RELFLG      0x0001
+#define F_RELFLG                0x0001
 /* file is executable - has no unresolved external symbols */
-#define F_EXEC        0x0002
+#define F_EXEC                  0x0002
 /* line numbers have been stripped */
-#define F_LINENO      0x0004
+#define F_LINENO                0x0004
 /* the MPASM assembler object file is from absolute (as opposed to relocatable) assembly code */
-#define F_ABSOLUTE    0x0010
+#define F_ABSOLUTE              0x0010
 /* local symbols have been stripped */
-#define L_SYMS        0x0080
+#define L_SYMS                  0x0080
 /* the COFF file produced utilizing the Extended mode */
-#define F_EXTENDED18  0x4000
+#define F_EXTENDED18            0x4000
 /* processor independent file for a core */
-#define F_GENERIC     0x8000
+#define F_GENERIC               0x8000
 
 /* optional header format */
 struct opthdr
 {
-  unsigned short  opt_magic;
-  unsigned long   vstamp;         /* version of the compiler assembler */
-  unsigned long   proc_type;
-  unsigned long   rom_width_bits;
-  unsigned long   ram_width_bits;
+  uint16_t opt_magic;
+  uint32_t vstamp;              /* version of the compiler assembler */
+  uint32_t proc_type;
+  uint32_t rom_width_bits;
+  uint32_t ram_width_bits;
 };
 
-#define OPT_HDR_SIZ_v1 16
-#define OPT_HDR_SIZ_v2 18
+#define OPT_HDR_SIZ_v1          16
+#define OPT_HDR_SIZ_v2          18
 
 /* section header format */
 struct scnhdr
 {
   union {
-    char          name[8];   /* section name if less then 8 characters */
+    char       name[8];         /* section name if less then 8 characters */
     struct {
-      unsigned long s_zeros;   /* first four characters are 0 */
-      unsigned long s_offset;  /* pointer to the string table */
+      uint32_t s_zeros;         /* first four characters are 0 */
+      uint32_t s_offset;        /* pointer to the string table */
     } ptr;
   } s_name;
-  unsigned long   s_paddr;   /* physical address */
-  unsigned long   s_vaddr;   /* virtual address */
-  unsigned long   s_size;    /* section size */
-  unsigned long   s_scnptr;  /* file ptr to raw data */
-  unsigned long   s_relptr;  /* file ptr to relocation */
-  unsigned long   s_lnnoptr; /* file ptr to line numbers */
-  unsigned short  s_nreloc;  /* # reloc entries */
-  unsigned short  s_nlnno;   /* # line number entries */
-  unsigned long   s_flags;   /* flags */
+
+  uint32_t     s_paddr;         /* physical address */
+  uint32_t     s_vaddr;         /* virtual address */
+  uint32_t     s_size;          /* section size */
+  uint32_t     s_scnptr;        /* file ptr to raw data */
+  uint32_t     s_relptr;        /* file ptr to relocation */
+  uint32_t     s_lnnoptr;       /* file ptr to line numbers */
+  uint16_t     s_nreloc;        /* # reloc entries */
+  uint16_t     s_nlnno;         /* # line number entries */
+  uint32_t     s_flags;         /* flags */
 };
 
-#define SEC_HDR_SIZ_v1 40
-#define SEC_HDR_SIZ_v2 40
+#define SEC_HDR_SIZ_v1          40
+#define SEC_HDR_SIZ_v2          40
 
 /* Section contains executable code. */
-#define STYP_TEXT     0x00000020
+#define STYP_TEXT               0x00000020
 /* Section contains initialized data. */
-#define STYP_DATA     0x00000040
+#define STYP_DATA               0x00000040
 /* Section contains uninitialized data. */
-#define STYP_BSS      0x00000080
+#define STYP_BSS                0x00000080
 /* Section contains initialized data for ROM. */
-#define STYP_DATA_ROM 0x00000100
+#define STYP_DATA_ROM           0x00000100
 /* Section is absolute. */
-#define STYP_ABS      0x00001000
+#define STYP_ABS                0x00001000
 /* Section is shared across banks. */
-#define STYP_SHARED   0x00002000
+#define STYP_SHARED             0x00002000
 /* Section is overlaid with other sections of the same name from different objects modules. */
-#define STYP_OVERLAY  0x00004000
+#define STYP_OVERLAY            0x00004000
 /* Section is available using access bit. */
-#define STYP_ACCESS   0x00008000
+#define STYP_ACCESS             0x00008000
 /* Section contains the activation record for a function. */
-#define STYP_ACTREC   0x00010000
-/* Section has been relocated.  This is a temporary flag used by the linker. */
-#define STYP_RELOC    0x00020000
+#define STYP_ACTREC             0x00010000
+/* Section has been relocated. This is a temporary flag used by the linker. */
+#define STYP_RELOC              0x00020000
 /* Section is byte packed on 16bit devices. */
-#define STYP_BPACK    0x00040000
+#define STYP_BPACK              0x00040000
 
 /* relocation entry */
 struct reloc
 {
-  unsigned long   r_vaddr;     /* entry relative virtual address */
-  unsigned long   r_symndx;    /* index into symbol table */
-  short           r_offset;    /* offset to be added to address of symbol 'r_symndx' */
-  unsigned short  r_type;      /* relocation type */
+  uint32_t r_vaddr;             /* entry relative virtual address */
+  uint32_t r_symndx;            /* index into symbol table */
+  int16_t  r_offset;            /* offset to be added to address of symbol 'r_symndx' */
+  uint16_t r_type;              /* relocation type */
 };
 
-#define RELOC_SIZ     12
+#define RELOC_SIZ               12
 
 /* relocation for the CALL instruction (first word only on 18cxx) */
 #define RELOCT_CALL             1
@@ -204,308 +204,295 @@ struct reloc
 #define RELOCT_PAGESEL_MOVLP    34
 
 /* linenumber entry */
-struct lineno
-{
-  unsigned long  l_srcndx;     /* symbol table index of associated source file */
-  unsigned short l_lnno;       /* line number */
-  unsigned long  l_paddr;      /* address of code for this lineno */
-  unsigned short l_flags;      /* bit flags for the line number */
-  unsigned long  l_fcnndx;     /* symbol table index of associated function, if
-                                  there is one */
+struct lineno {
+  uint32_t l_srcndx;            /* symbol table index of associated source file */
+  uint16_t l_lnno;              /* line number */
+  uint32_t l_paddr;             /* address of code for this lineno */
+  uint16_t l_flags;             /* bit flags for the line number */
+  uint32_t l_fcnndx;            /* symbol table index of associated function, if there is one */
 };
 
-#define LINENO_SIZ      16
+#define LINENO_SIZ              16
 
 /* Set if l_fcnndx is valid */
-#define LINENO_HASFCN   0x01
+#define LINENO_HASFCN           1
 
 /* symbol table entry */
-struct syment
-{
+struct syment {
   union {
-    char            name[8];   /* symbol name if less than 8 characters */
+    char       name[8];         /* symbol name if less than 8 characters */
     struct {
-      unsigned long s_zeros;   /* first four characters are 0 */
-      unsigned long s_offset;  /* pointer to the string table */
+      uint32_t s_zeros;         /* first four characters are 0 */
+      uint32_t s_offset;        /* pointer to the string table */
     } ptr;
   } sym_name;
-  unsigned long   value;       /* symbol value */
-  short           sec_num;     /* section number */
-  unsigned long   type;        /* type */
-  char            st_class;    /* storage class */
-  unsigned char   num_auxsym;  /* number of auxiliary symbols */
+
+  uint32_t     value;           /* symbol value */
+  int16_t      sec_num;         /* section number */
+  uint32_t     type;            /* type */
+  int8_t       st_class;        /* storage class */
+  uint8_t      num_auxsym;      /* number of auxiliary symbols */
 };
 
-#define SYMBOL_SIZE_v1 18
-#define SYMBOL_SIZE_v2 20
+#define SYMBOL_SIZE_v1          18
+#define SYMBOL_SIZE_v2          20
 
 /* Symbol section numbers. */
-#define N_DEBUG    -2
-#define N_ABS      -1
-#define N_UNDEF     0
-#define N_SCNUM     1
+#define N_DEBUG                -2
+#define N_ABS                  -1
+#define N_UNDEF                 0
+#define N_SCNUM                 1
 
 /* Symbol types
 
-  Type in an unsigned short (16 bits).  The lowest four or five bits contains
-  the basic type.  The next higher three bits contain the derived symbol type.
+  Type in an uint16_t       (16 bits). The lowest four or five bits contains
+  the basic type. The next higher three bits contain the derived symbol type.
   The rest of the bits are unused. */
 
 /* Basic symbol types  */
-#define T_NULL      0   /* null */
-#define T_VOID      1   /* void */
-#define T_CHAR      2   /* character */
-#define T_SHORT     3   /* short integer */
-#define T_INT       4   /* integer */
-#define T_LONG      5   /* long integer */
-#define T_FLOAT     6   /* floating point */
-#define T_DOUBLE    7   /* double length floating point */
-#define T_STRUCT    8   /* structure */
-#define T_UNION     9   /* union */
-#define T_ENUM      10  /* enumeration */
-#define T_MOE       11  /* member of enumeration */
-#define T_UCHAR     12  /* unsigned character */
-#define T_USHORT    13  /* unsigned short */
-#define T_UINT      14  /* unsigned integer */
-#define T_ULONG     15  /* unsigned long */
+#define T_NULL                  0   /* null */
+#define T_VOID                  1   /* void */
+#define T_CHAR                  2   /* character */
+#define T_SHORT                 3   /* short integer */
+#define T_INT                   4   /* integer */
+#define T_LONG                  5   /* long integer */
+#define T_FLOAT                 6   /* floating point */
+#define T_DOUBLE                7   /* double length floating point */
+#define T_STRUCT                8   /* structure */
+#define T_UNION                 9   /* union */
+#define T_ENUM                  10  /* enumeration */
+#define T_MOE                   11  /* member of enumeration */
+#define T_UCHAR                 12  /* unsigned character */
+#define T_USHORT                13  /* uint16_t       */
+#define T_UINT                  14  /* unsigned integer */
+#define T_ULONG                 15  /* unsigned long */
 /* Basic symbol types for new format only */
-#define T_LNGDBL    16  /* long double floating point */
-#define T_SLONG     17  /* short long */
-#define T_USLONG    18  /* unsigned short long */
+#define T_LNGDBL                16  /* long double floating point */
+#define T_SLONG                 17  /* short long */
+#define T_USLONG                18  /* uint16_t       long */
 
 /* Derived types */
-#define DT_NON      0  /* no derived type */
-#define DT_PTR      1  /* pointer */
-#define DT_FCN      2  /* function */
-#define DT_ARY      3  /* array */
-#define DT_ROMPTR   4
-#define DT_FARROMPTR 5
+#define DT_NON                  0   /* no derived type */
+#define DT_PTR                  1   /* pointer */
+#define DT_FCN                  2   /* function */
+#define DT_ARY                  3   /* array */
+#define DT_ROMPTR               4
+#define DT_FARROMPTR            5
 
 /* Storage classes */
-#define C_EFCN      0xff /* physical end of function */
-#define C_NULL      0    /* null */
-#define C_AUTO      1    /* automatic variable */
-#define C_EXT       2    /* external symbol */
-#define C_STAT      3    /* static */
-#define C_REG       4    /* register variable */
-#define C_EXTDEF    5    /* external definition */
-#define C_LABEL     6    /* label */
-#define C_ULABEL    7    /* undefined label */
-#define C_MOS       8    /* member of structure */
-#define C_ARG       9    /* function argument */
-#define C_STRTAG    10   /* structure tag */
-#define C_MOU       11   /* member of union */
-#define C_UNTAG     12   /* union tag */
-#define C_TPDEF     13   /* type definition */
-#define C_USTATIC   14   /* undefined static */
-#define C_ENTAG     15   /* enumeration tag */
-#define C_MOE       16   /* member of enumeration */
-#define C_REGPARM   17   /* register parameter */
-#define C_FIELD     18   /* bit field */
-#define C_AUTOARG   19   /* auto argument */
-#define C_LASTENT   20   /* dummy entry (end of block) */
-#define C_BLOCK     100  /* ".bb" or ".eb" */
-#define C_FCN       101  /* ".bf" or ".ef" */
-#define C_EOS       102  /* end of structure */
-#define C_FILE      103  /* file name */
-#define C_LINE      104  /* line number reformatted as symbol table entry */
-#define C_ALIAS     105  /* duplicate tag */
-#define C_HIDDEN    106  /* ext symbol in dmert public lib */
-#define C_EOF       107  /* end of file */
-#define C_LIST      108  /* absoulte listing on or off */
-#define C_SECTION   109  /* section */
+#define C_NULL                  0   /* null */
+#define C_AUTO                  1   /* automatic variable */
+#define C_EXT                   2   /* external symbol */
+#define C_STAT                  3   /* static */
+#define C_REG                   4   /* register variable */
+#define C_EXTDEF                5   /* external definition */
+#define C_LABEL                 6   /* label */
+#define C_ULABEL                7   /* undefined label */
+#define C_MOS                   8   /* member of structure */
+#define C_ARG                   9   /* function argument */
+#define C_STRTAG                10  /* structure tag */
+#define C_MOU                   11  /* member of union */
+#define C_UNTAG                 12  /* union tag */
+#define C_TPDEF                 13  /* type definition */
+#define C_USTATIC               14  /* undefined static */
+#define C_ENTAG                 15  /* enumeration tag */
+#define C_MOE                   16  /* member of enumeration */
+#define C_REGPARM               17  /* register parameter */
+#define C_FIELD                 18  /* bit field */
+#define C_AUTOARG               19  /* auto argument */
+#define C_LASTENT               20  /* dummy entry (end of block) */
+#define C_BLOCK                 100 /* ".bb" or ".eb" */
+#define C_FCN                   101 /* ".bf" or ".ef" */
+#define C_EOS                   102 /* end of structure */
+#define C_FILE                  103 /* file name */
+#define C_LINE                  104 /* line number reformatted as symbol table entry */
+#define C_ALIAS                 105 /* duplicate tag */
+#define C_HIDDEN                106 /* ext symbol in dmert public lib */
+#define C_EOF                   107 /* end of file */
+#define C_LIST                  108 /* absoulte listing on or off */
+#define C_SECTION               109 /* section */
+#define C_EFCN                  255 /* physical end of function */
 
-/* Auxiliary symbol table entry for a file */
-struct aux_file
-{
-  unsigned long  x_offset;  /* String table offset for filename */
-  unsigned long  x_incline; /* Line number at which this file was included,
-                              0->not included */
-  unsigned char  x_flags;
-  char _unused[11];
+/* Auxiliary symbol table entry for a file. */
+struct aux_file {
+  uint32_t x_offset;    /* String table offset for filename. */
+  uint32_t x_incline;   /* Line number at which this file was included, 0->not included. */
+                        
+  uint8_t  x_flags;
+  uint8_t  _unused[11];
 };
 
-/* Auxiliary symbol table entry for a section */
-struct aux_scn
-{
-  unsigned long  x_scnlen;  /* Section Length */
-  unsigned short x_nreloc;  /* Number of relocation entries */
-  unsigned short x_nlinno;  /* Number of line numbers */
-  char _unused[12];
+/* Auxiliary symbol table entry for a section. */
+struct aux_scn {
+  uint32_t x_scnlen;    /* Section Length. */
+  uint16_t x_nreloc;    /* Number of relocation entries. */
+  uint16_t x_nlinno;    /* Number of line numbers. */
+  uint8_t  _unused[12];
 };
 
-/* Auxiliary symbol table entry for the tagname of a struct/union/enum */
-struct aux_tag
-{
-  char _unused[6];
-  unsigned short x_size;     /* Size of struct/union/enum */
-  char _unused2[4];
-  unsigned long x_endndx;    /* Symbol index of next entry beyond this
-                                struct/union/enum */
-  char _unused3[4];
+/* Auxiliary symbol table entry for the tagname of a struct/union/enum. */
+struct aux_tag {
+  uint8_t  _unused0[6];
+  uint16_t x_size;      /* Size of struct/union/enum. */
+  uint8_t  _unused1[4];
+  uint32_t x_endndx;    /* Symbol index of next entry beyond this struct/union/enum. */
+  uint8_t  _unused2[4];
 };
 
-/* Auxiliary symbol table entry for an end of struct/union/enum */
-struct aux_eos
-{
-  unsigned long x_tagndx;    /* Symbol index of struct/union/enum tag */
-  char _unused[2];
-  unsigned short x_size;     /* Size of struct/union/enum */
-  char _unused2[12];
+/* Auxiliary symbol table entry for an end of struct/union/enum. */
+struct aux_eos {
+  uint32_t x_tagndx;    /* Symbol index of struct/union/enum tag. */
+  uint8_t  _unused0[2];
+  uint16_t x_size;      /* Size of struct/union/enum. */
+  uint8_t  _unused1[12];
 };
 
-/* Auxiliary symbol table entry for a function name */
-struct aux_fcn
-{
-  unsigned long x_tagndx;   /* Unused??  Tag Index */
-  unsigned long x_size;     /* Unused??  Size of function in bits */
-  unsigned long x_lnnoptr;  /* File pointer to line numbers for this function */
-  unsigned long x_endndx;   /* Symbol Index of next entry beyond this
-                               function */
-  short x_actscnum; /* size of static activation record to allocate */
-  char _unused[2];
+/* Auxiliary symbol table entry for a function name. */
+struct aux_fcn {
+  uint32_t x_tagndx;    /* Unused?? Tag Index. */
+  uint32_t x_size;      /* Unused?? Size of function in bits. */
+  uint32_t x_lnnoptr;   /* File pointer to line numbers for this function. */
+  uint32_t x_endndx;    /* Symbol Index of next entry beyond this function. */
+  uint16_t x_actscnum;  /* Size of static activation record to allocate. */
+  uint8_t  _unused[2];
 };
 
 /* Auxiliary symbol table entry for an array */
-struct aux_arr
-{
-  unsigned long  x_tagndx;   /* Unused??  Tag Index */
-  unsigned short x_lnno;     /* Unused??  Line number declaration */
-  unsigned short x_size;     /* Size of array */
-  unsigned short x_dimen[4]; /* Size of first four dimensions */
-  char _unused[4];
+struct aux_arr {
+  uint32_t x_tagndx;    /* Unused?? Tag Index. */
+  uint16_t x_lnno;      /* Unused?? Line number declaration. */
+  uint16_t x_size;      /* Size of array. */
+  uint16_t x_dimen[4];  /* Size of first four dimensions. */
+  uint8_t  _unused[4];
 };
 
-/* Auxiliary symbol table entry for the end of a block or function */
-struct aux_eobf
-{
-  char _unused[4];
-  unsigned short x_lnno;   /* C Source line number of the end, relative to
-                              start of block/func */
-  char _unused2[14];
+/* Auxiliary symbol table entry for the end of a block or function. */
+struct aux_eobf {
+  uint8_t  _unused0[4];
+  uint16_t x_lnno;      /* C source line number of the end, relative to start of block/func. */
+  uint8_t  _unused1[14];
 };
 
-/* Auxiliary symbol table entry for the beginning of a block or function */
-struct aux_bobf
-{
-  char _unused[4];
-  unsigned short x_lnno;   /* C Source line number of the beginning, relative
-                              to start enclosing scope */
-  char _unused2[6];
-  unsigned long x_endndx;  /* Symbol Index of next entry past this block/func */
-  char _unused3[4];
+/* Auxiliary symbol table entry for the beginning of a block or function. */
+struct aux_bobf {
+  uint8_t  _unused0[4];
+  uint16_t x_lnno;      /* C source line number of the beginning, relative to start enclosing scope. */
+  uint8_t  _unused1[6];
+  uint32_t x_endndx;    /* Symbol Index of next entry past this block/func. */
+  uint8_t  _unused2[4];
 };
 
-/* Auxiliary symbol table entry for a variable of type struct/union/enum */
-struct aux_var
-{
-  unsigned long x_tagndx;  /* Symbol Index of struct/union/enum tagname */
-  char _unused[2];
-  unsigned short x_size;   /* Size of the struct/union/enum */
-  char _unused2[12];
+/* Auxiliary symbol table entry for a variable of type struct/union/enum. */
+struct aux_var {
+  uint32_t x_tagndx;    /* Symbol Index of struct/union/enum tagname. */
+  uint8_t  _unused0[2];
+  uint16_t x_size;      /* Size of the struct/union/enum. */
+  uint8_t  _unused1[12];
 };
 
 struct aux_field {
-  char _unused[6];
-  unsigned short x_size;
-  char _unused2[12];
+  uint8_t  _unused0[6];
+  uint16_t x_size;
+  uint8_t  _unused1[12];
 };
 
 struct aux_fcn_calls {
-  unsigned long x_calleendx;    /* Symbol table entry of callee - 1 */
-  unsigned long x_is_interrupt; /* 0 not, 1 low, 2 high */
-  char _unused[12];
+  uint32_t x_calleendx;    /* Symbol table entry of callee - 1. */
+  uint32_t x_is_interrupt; /* 0: not, 1: low, 2: high */
+  uint8_t  _unused[12];
 };
 
-
-
 /* Auxiliary entries */
-#define X_DIMNUM      4
-#define AUX_NONE      0
-#define AUX_FILE      1   /* detail information for a source file */
-#define AUX_SCN       2   /* detail information for a section */
-#define AUX_TAG       3   /* detail informationfor a struct/union/enum tag */
-#define AUX_EOS       4   /* end of struct/union/enum */
-#define AUX_FCN       5   /* detail information for a function */
-#define AUX_ARR       6   /* FIXME */
-#define AUX_EOBF      7   /* end of block or function */
-#define AUX_BOBF      8   /* beginning of block or function */
-#define AUX_VAR       9   /* variable */
-#define AUX_DIRECT    10  /* direct message */
-#define AUX_IDENT     11  /* ident */
-#define AUX_FCN_CALLS 12  /* function called by this function */
+#define X_DIMNUM                4
+#define AUX_NONE                0
+#define AUX_FILE                1   /* detail information for a source file */
+#define AUX_SCN                 2   /* detail information for a section */
+#define AUX_TAG                 3   /* detail informationfor a struct/union/enum tag */
+#define AUX_EOS                 4   /* end of struct/union/enum */
+#define AUX_FCN                 5   /* detail information for a function */
+#define AUX_ARR                 6   /* FIXME */
+#define AUX_EOBF                7   /* end of block or function */
+#define AUX_BOBF                8   /* beginning of block or function */
+#define AUX_VAR                 9   /* variable */
+#define AUX_DIRECT              10  /* direct message */
+#define AUX_IDENT               11  /* ident */
+#define AUX_FCN_CALLS           12  /* function called by this function */
 
 /* These definitions are for the COFF as stored in memory. */
 
 /* relocation linked list */
 
-typedef struct gp_reloc_type
-{
+typedef struct gp_reloc_type {
   /* entry relative address in bytes */
-  long address;
+  uint32_t               address;
 
   /* symbol */
   struct gp_symbol_type *symbol;
 
   /* symbol number, only valid when generating a coff file */
-  long symbol_number;
+  uint32_t               symbol_number;
 
   /* offset added to address of symbol */
-  short offset;
+  int16_t                offset;
 
   /* relocation type */
-  unsigned short type;
+  uint16_t               type;
 
-  struct gp_reloc_type *next;
+  struct gp_reloc_type  *prev;
+  struct gp_reloc_type  *next;
 } gp_reloc_type;
 
 /* line number linked list */
 
-typedef struct gp_linenum_type
-{
+typedef struct gp_linenum_type {
   /* source file symbol */
-  struct gp_symbol_type *symbol;
+  const struct gp_symbol_type *symbol;
 
   /* line number */
-  unsigned short line_number;
+  uint16_t                     line_number;
 
   /* byte address for this line number */
-  unsigned int address;
+  uint32_t                     address;
 
-  struct gp_linenum_type *next;
+  struct gp_linenum_type      *prev;
+  struct gp_linenum_type      *next;
 } gp_linenum_type;
 
 /* auxiliary symbol linked list */
 
-typedef struct gp_aux_type
-{
+typedef struct gp_aux_type {
   /* auxiliary symbol type */
-  long type;
+  uint32_t type;
 
   /* FIXME: Finish the aux entries. */
   union {
     struct {
-      unsigned char command;
+      uint8_t     command;
       const char *string;
     } _aux_direct;
+
     struct {
       const char *filename;
-      unsigned long line_number;
-      unsigned char flags;
+      uint32_t    line_number;
+      uint8_t     flags;
     } _aux_file;
+
     struct {
       const char *string;
     } _aux_ident;
+
     struct {
-      unsigned long  length;
-      unsigned short nreloc;
-      unsigned short nlineno;
+      uint32_t    length;
+      uint16_t    nreloc;
+      uint16_t    nlineno;
     } _aux_scn;
+
     struct {
-      struct gp_symbol_type *callee; /* NULL for call through pointer */
-      unsigned long is_interrupt;    /* 0 not, 1 low, 2 high */
+      struct gp_symbol_type *callee;        /* NULL for call through pointer */
+      uint32_t               is_interrupt;  /* 0 not, 1 low, 2 high */
     } _aux_fcn_calls;
-    char data[SYMBOL_SIZE_v2];
+
+    uint8_t data[SYMBOL_SIZE_v2];
   } _aux_symbol;
 
   struct gp_aux_type *next;
@@ -513,167 +500,169 @@ typedef struct gp_aux_type
 
 /* symbol linked list */
 
-typedef struct gp_symbol_type
-{
+typedef struct gp_symbol_type {
   /* symbol name */
-  char *name;
+  char                   *name;
 
   /* symbol value */
-  gp_symvalue_t value;
+  gp_symvalue_t           value;
 
   /* section name of symbol */
-  const char *section_name;
+  const char             *section_name;
 
   /* section number, only for used for determining symbol type:
      N_DEBUG = -2, N_ABS = -1, N_UNDEF = 0, or N_SCNUM = 1 if defined */
-  short section_number;
+  int16_t                 section_number;
 
   /* defining section */
   struct gp_section_type *section;
 
   /* type */
-  unsigned char type;
+  uint8_t                 type;
 
   /* derived type */
-  unsigned long derived_type;
+  uint32_t                derived_type;
 
   /* storage class */
-  signed char class;
+  uint8_t                 class;
 
-   /* number of auxiliary symbols */
-  char num_auxsym;
+  /* number of auxiliary symbols */
+  uint8_t                 num_auxsym;
 
   /* auxiliary symbols */
-  struct gp_aux_type *aux_list;
+  gp_aux_type            *aux_list;
 
   /* symbol number, only valid when writing coff or cod file */
-  unsigned long number;
+  uint32_t                number;
 
-  struct gp_symbol_type *next;
+  /* use the optimization */
+  uint32_t                opt_flags;
+
+  struct gp_symbol_type  *next;
 } gp_symbol_type;
 
 /* hash table for find symbol name */
 
-typedef struct gp_hash
-{
+typedef struct gp_hash {
   hash128_t             hash;
   const gp_symbol_type *symbol;
 } gp_hash_type;
 
 /* section linked list */
 
-typedef struct gp_section_type
-{
+typedef struct gp_section_type {
   /* section name */
-  char *name;
+  char                   *name;
 
   /* section symbol */
-  struct gp_symbol_type *symbol;
+  struct gp_symbol_type  *symbol;
 
   /* flags */
-  unsigned long flags;
+  uint32_t                flags;
 
   /* section physical address in bytes */
-  unsigned int address;
+  uint32_t                address;
 
   /* section virtual address in bytes */
-  unsigned int virtual_address;
+  uint32_t                virtual_address;
 
   /* section shadow address in bytes */
-  unsigned int shadow_address;
+  uint32_t                shadow_address;
 
   /* section size in bytes */
-  unsigned long size;
+  uint32_t                size;
 
   /* memory linked list */
-  MemBlock *data;
+  MemBlock               *data;
 
   /* number of relocations */
-  unsigned short num_reloc;
+  uint16_t                num_reloc;
 
   /* head of relocations */
-  gp_reloc_type *relocations;
+  gp_reloc_type          *relocations;
 
   /* tail of relocations */
-  gp_reloc_type *relocations_tail;
+  gp_reloc_type          *relocations_tail;
 
   /* number of line numbers */
-  unsigned short num_lineno;
+  uint16_t                num_lineno;
 
   /* head of line numbers */
-  gp_linenum_type *line_numbers;
+  gp_linenum_type        *line_numbers;
 
   /* tail of line numbers */
-  gp_linenum_type *line_numbers_tail;
+  gp_linenum_type        *line_numbers_tail;
 
   /* this section required for symbol resolution, only valid when linking */
-  gp_boolean is_used;
+  gp_boolean              is_used;
 
   /* section number, only valid when writing coff file */
-  unsigned long number;
+  uint32_t                number;
 
   /* data pointer, only valid when writing coff file */
-  unsigned long data_ptr;
+  uint32_t                data_ptr;
 
   /* relocations pointer, only valid when writing coff file */
-  unsigned long reloc_ptr;
+  uint32_t                reloc_ptr;
 
   /* linenumber pointer, only valid when writing coff file */
-  unsigned long lineno_ptr;
+  uint32_t                lineno_ptr;
+
+  /* use the optimization */
+  uint32_t                opt_flags;
 
   struct gp_section_type *next;
 } gp_section_type;
 
-typedef struct gp_object_type
-{
+typedef struct gp_object_type {
   /* object filename */
-  char *filename;
+  char                  *filename;
 
   /* format version/magic number */
-  int version;
+  uint16_t               version;
 
   /* to reduce conditionals, store the size of symbols in this object */
-  size_t symbol_size;
+  size_t                 symbol_size;
 
   /* new style coff file? */
-  gp_boolean isnew;
+  gp_boolean             isnew;
 
   /* processor */
-  pic_processor_t processor;
+  pic_processor_t        processor;
 
   /* processor class */
-  proc_class_t class;
+  proc_class_t           class;
 
   /* time object was created */
-  time_t time;
+  time_t                 time;
 
   /* flags */
-  unsigned short flags;
+  uint16_t               flags;
 
   /* number of sections */
-  long num_sections;
+  uint16_t               num_sections;
 
   /* head of sections */
-  gp_section_type *sections;
+  gp_section_type       *sections;
 
   /* tail of sections */
-  gp_section_type *sections_tail;
+  gp_section_type       *sections_tail;
 
   /* number of symbols */
-  long num_symbols;
+  uint32_t               num_symbols;
 
   /* head of symbols */
-  gp_symbol_type *symbols;
+  gp_symbol_type        *symbols;
 
   /* tail of symbols */
-  gp_symbol_type *symbols_tail;
+  gp_symbol_type        *symbols_tail;
 
   /* hash table of symbols */
-  gp_hash_type *symbol_hashtable;
-  unsigned int symbol_hashtable_size;
+  gp_hash_type          *symbol_hashtable;
+  unsigned int           symbol_hashtable_size;
 
   /* symbol table pointer, only valid when writing coff file */
-  unsigned long symbol_ptr;
+  uint32_t               symbol_ptr;
 
   /* next object in the linked list */
   struct gp_object_type *next;

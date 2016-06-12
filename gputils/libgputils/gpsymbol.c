@@ -108,7 +108,7 @@ gp_symbol_make_hash_table(gp_object_type *Object)
     return NULL;
   }
 
-  current = Object->symbols;
+  current     = Object->symbols;
   num_symbols = 0;
   while (current != NULL) {
     if ((current->class != C_FILE)    && (current->class != C_EOF) &&
@@ -145,7 +145,7 @@ gp_symbol_make_hash_table(gp_object_type *Object)
 /*------------------------------------------------------------------------------------------------*/
 
 const gp_symbol_type *
-gp_symbol_find_hash_table(const gp_object_type *Object, const char *Section_name, gp_symvalue_t Symbol_value)
+gp_symbol_find(const gp_object_type *Object, const char *Section_name, gp_symvalue_t Symbol_value)
 {
   gp_hash_type  gp_hash;
   gp_hash_type *ret;
@@ -166,4 +166,125 @@ gp_symbol_find_hash_table(const gp_object_type *Object, const char *Section_name
                                 sizeof(gp_hash_type), _hash_find_cmp);
 
   return ((ret != NULL) ? ret->symbol : NULL);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static int
+_value_cmp(const void *P0, const void *P1)
+{
+  const gp_symbol_type *s0 = *(const gp_symbol_type **)P0;
+  const gp_symbol_type *s1 = *(const gp_symbol_type **)P1;
+
+  if (s0->value < s1->value) {
+    return -1;
+  }
+  else if (s0->value > s1->value) {
+    return 1;
+  }
+  else {
+    return 0;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_symbol_type **
+gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_name, unsigned int *Num_labels)
+{
+  gp_symbol_type  *current;
+  gp_symbol_type **label_array;
+  unsigned int     i;
+  unsigned int     n_labels;
+
+  if ((First_symbol == NULL) || (Num_labels == NULL)) {
+    return NULL;
+  }
+
+  current  = First_symbol;
+  n_labels = 0;
+  while (current != NULL) {
+    current->opt_flags = false;
+
+    if ((current->class == C_EXT) || (current->class == C_LABEL)) {
+      if (Section_name != NULL) {
+        if ((current->section_name != NULL) && (strcmp(current->section_name, Section_name) == 0)) {
+          ++n_labels;
+          current->opt_flags = true;
+        }
+      }
+      else {
+        ++n_labels;
+        current->opt_flags = true;
+      }
+    }
+    current = current->next;
+  }
+
+  if (n_labels == 0) {
+    return NULL;
+  }
+
+  label_array = (gp_symbol_type **)GP_Calloc(n_labels, sizeof(gp_symbol_type *));
+
+  current = First_symbol;
+  i       = 0;
+  while (current != NULL) {
+    if (current->opt_flags) {
+      label_array[i] = current;
+      ++i;
+    }
+    current = current->next;
+  }
+
+  qsort(label_array, n_labels, sizeof(gp_symbol_type *), _value_cmp);
+  *Num_labels = n_labels;
+  return label_array;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_symbol_type **
+gp_symbol_make_section_array(gp_symbol_type *First_symbol, unsigned int *Num_sections)
+{
+  gp_symbol_type  *current;
+  gp_symbol_type **section_array;
+  unsigned int     i;
+  unsigned int     n_sections;
+
+  if ((First_symbol == NULL) || (Num_sections == NULL)) {
+    return NULL;
+  }
+
+  current  = First_symbol;
+  n_sections = 0;
+  while (current != NULL) {
+    current->opt_flags = false;
+
+    if (current->class == C_SECTION) {
+      ++n_sections;
+      current->opt_flags = true;
+    }
+    current = current->next;
+  }
+
+  if (n_sections == 0) {
+    return NULL;
+  }
+
+  section_array = (gp_symbol_type **)GP_Calloc(n_sections, sizeof(gp_symbol_type *));
+
+  current = First_symbol;
+  i       = 0;
+  while (current != NULL) {
+    if (current->opt_flags) {
+      section_array[i] = current;
+      ++i;
+    }
+    current = current->next;
+  }
+
+  qsort(section_array, n_sections, sizeof(gp_symbol_type *), _value_cmp);
+  *Num_sections = n_sections;
+  return section_array;
 }

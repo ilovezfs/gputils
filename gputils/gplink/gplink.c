@@ -376,17 +376,36 @@ static void
 _set_optimize_level(void)
 {
   /* default */
+  state.optimize.pagesel       = false;
   state.optimize.dead_sections = false;
   state.optimize.weak_symbols  = false;
 
   switch(state.optimize.level) {
+  case 6:
+    state.optimize.pagesel       = true;
+    state.optimize.dead_sections = true;
+    state.optimize.weak_symbols  = true;
+    break;
+
+  case 5:
+    state.optimize.pagesel       = true;
+    state.optimize.dead_sections = true;
+    break;
+
+  case 4:
+    state.optimize.pagesel       = true;
+    state.optimize.weak_symbols  = true;
+    break;
+
   case 3:
-    /* fall through */
+    state.optimize.pagesel       = true;
+    break;
+
   case 2:
     state.optimize.dead_sections = true;
     /* fall through */
   case 1:
-    state.optimize.weak_symbols = true;
+    state.optimize.weak_symbols  = true;
     /* fall through */
   case 0:
     break;
@@ -509,7 +528,7 @@ _show_usage(void)
   printf("  -m, --map                      Output a map file.\n");
   printf("      --mplink-compatible        MPLINK compatibility mode.\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
-  printf("  -O OPT, --optimize OPT         Optimization level [1].\n");
+  printf("  -O OPT, --optimize OPT         Optimization level [0].\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r, --use-shared               Use shared memory if necessary.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
@@ -732,7 +751,7 @@ _process_args(int argc, char *argv[])
 
       fn = GP_Malloc(sizeof(struct srcfns));
       fn->filename = GP_Strdup(argv[optind++]);
-      fn->next = NULL;
+      fn->next     = NULL;
 
       if (state.srcfilenames == NULL) {
         state.srcfilenames = fn;
@@ -863,6 +882,7 @@ _linker(void)
 
   /* combine all sections with the same name */
   gp_cofflink_merge_sections(state.object);
+  gp_symbol_make_hash_table(state.object);
 
   /* create ROM data for initialized data sections */
   gp_cofflink_make_idata(state.object, state.mplink_compatible);
@@ -883,7 +903,7 @@ _linker(void)
     /* allocate cinit section to the lowest possible address */
     gp_section_type *cinit_section;
 
-    cinit_section = gp_coffgen_findsection(state.object, state.object->sections, ".cinit");
+    cinit_section = gp_coffgen_find_section(state.object, state.object->sections, ".cinit");
 
     if (cinit_section != NULL) {
       gp_cofflink_reloc_cinit(state.object, program, state.class->org_to_byte_shift,
@@ -919,6 +939,10 @@ _linker(void)
 
   gp_cofflink_update_table(state.object, state.class->org_to_byte_shift);
 
+  if (state.optimize.pagesel) {
+    gp_coffopt_remove_unnecessary_pagesel(state.object);
+  }
+
   gp_cofflink_fill_pages(state.object, program, state.section.definition);
 
   i_memory_free(data);
@@ -953,7 +977,7 @@ _linker(void)
 
   /* convert the executable object into a cod file and list file */
   cod_init();
-  write_lst();
+  lst_write();
   cod_close_file();
 
   /* write map file */

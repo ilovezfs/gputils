@@ -22,6 +22,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __LST_H__
 #define __LST_H__
 
-void write_lst(void);
+void lst_write(void);
 
 #endif

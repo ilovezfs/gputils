@@ -78,7 +78,7 @@ char *SymbolType4[154] = {
 
 
 static void
-show_usage(void)
+_show_usage(void)
 {
   printf("Usage: gpvc [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
@@ -114,14 +114,14 @@ static struct option longopts[] =
 int
 main(int argc, char *argv[])
 {
-  int c;
-  gp_boolean usage = false;
-  int display_flags;
+  int              c;
+  gp_boolean       usage = false;
+  int              display_flags;
 
-  char temp_buf[12];
-  char *processor_name;
-  const struct px *processor_info;
-  proc_class_t processor_class;
+  char             temp_buf[12];
+  char            *processor_name;
+  pic_processor_t  processor_info;
+  proc_class_t     processor_class;
 
   gp_init();
 
@@ -187,7 +187,7 @@ main(int argc, char *argv[])
   }
 
   if (usage) {
-    show_usage();
+    _show_usage();
   }
 
   codefile = fopen(filename,"rb");

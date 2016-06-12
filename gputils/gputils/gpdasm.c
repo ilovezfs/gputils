@@ -379,7 +379,7 @@ mark_false_addresses(MemBlock *memory)
   m = memory;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
-    maximum = i + MAX_I_MEM;
+    maximum = i + I_MEM_MAX;
 
     insn_size = 2;
     while (i < maximum) {
@@ -451,7 +451,7 @@ recognize_labels_and_spec_words(MemBlock *memory)
   idlocs_pack.is_print = true;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
-    maximum = i + MAX_I_MEM;
+    maximum = i + I_MEM_MAX;
 
     insn_size = 2;
     while (i < maximum) {
@@ -636,7 +636,7 @@ recognize_registers(MemBlock *memory)
   fstate.need_sfr_equ = false;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
-    maximum = i + MAX_I_MEM;
+    maximum = i + I_MEM_MAX;
 
     insn_size = 2;
     while (i < maximum) {
@@ -685,7 +685,7 @@ denominate_labels(MemBlock *memory)
   label_idx = 0;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
-    maximum = i + MAX_I_MEM;
+    maximum = i + I_MEM_MAX;
 
     while (i < maximum) {
       type = b_memory_get_addr_type(m, i, NULL, NULL);
@@ -1133,7 +1133,7 @@ dasm(MemBlock *memory)
   last_loc = 0;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
-    maximum = i + MAX_I_MEM;
+    maximum = i + I_MEM_MAX;
 
     insn_size = 2;
     while (i < maximum) {
@@ -1650,7 +1650,7 @@ int main(int argc, char *argv[])
 
   if (state.num.errors == 0) {
     if (memory_dump) {
-      print_i_memory(state.i_memory, state.processor);
+      i_memory_print(state.i_memory, state.processor);
     } else {
       load_processor_constants();
       dasm(state.i_memory);

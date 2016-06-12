@@ -588,8 +588,8 @@ lst_memory_map(MemBlock *m)
   num_per_line  = 64;
   num_per_block = 16;
 
-  while (m) {
-    unsigned int max_mem = MAX_I_MEM  >> !IS_BYTE;
+  while (m != NULL) {
+    unsigned int max_mem = I_MEM_MAX  >> !IS_BYTE;
 
     base = (m->base << I_MEM_BITS) >> !IS_BYTE;
 

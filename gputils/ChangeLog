@@ -1,3 +1,60 @@
+2016-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, configure, configure.ac:
+    Changed the gputils version from 1.4.3 to 1.4.4.
+
+  * doc/gputils.lyx, gplink/gplink.c, gplink/gplink.h.in,
+    libgputils/gpcoffopt.c, libgputils/gpcoffopt.h:
+    New experimental feature:
+        Remove the unnecessary Pagesel directives during link time.
+
+  * libgputils/gpcoffgen.c, libgputils/gpcoffgen.h:
+    New functions:
+        gp_coffgen_del_reloc(),
+        gp_coffgen_del_linenum(),
+        gp_coffgen_find_linenum_by_address(),
+        gp_coffgen_del_linenum_by_address(),
+        gp_coffgen_del_linenum_by_address_area()
+
+  * libgputils/gpcofflink.c, libgputils/gpcofflink.h:
+    New function: gp_cofflink_reloc_type_to_str()
+
+  * libgputils/gpmemory.c, libgputils/gpmemory.h:
+    New functions:
+        b_memory_move(), b_memory_delete(), b_memory_delete_area()
+
+  * libgputils/gpsymbol.c, libgputils/gpsymbol.h:
+    New functions:
+        gp_symbol_make_label_array(), gp_symbol_make_section_array()
+
+  * libgputils/gpgrocessor.c, libgputils/gpgrocessor.h:
+    The struct proc_class got a new element: pagesel_byte_length
+
+  * gpasm/cod.c, gpasm/coff, gpasm/directive, gpasm/gpasm.c,
+    gpasm/lst.c, gplink/cod.c, gplink/gplink.c, gplink/lst.c,
+    gplink/lst.h, gputils/gpdasm.c, gputils/gpstrip.c,
+    libgputils/gpcoffgen.c, libgputils/gpcofflink.c, libgputils/gpmemory.c,
+    libgputils/gpmemory.h, libgputils/gpsymbol.c, libgputils/gpsymbol.h,
+    libgputils/gpwritehex.c:
+    Renamed some functions and constants.
+
+  * libgputils/gpcoff.h, libgputils/gparchive.c, libgputils/gparchive.h,
+    libgputils/gpreadobj.c, libgputils/gpreadobj.h, libgputils/gpsystem.c,
+    libgputils/gpsystem.h:
+    Changed types:
+        unsigned char  --> uint8_t
+        short          --> int16_t
+        unsigned short --> uint16_t
+        unsigned long  --> uint32_t
+
+  * gputils/gplib.c, gputils/gpstrip.c, gputils/gpvc.c, gputils/gpvo.c:
+    The names of static functions got '_' prefix.
+
+  * doc/gputils.lyx:
+    Changed lyx format from 474 to 508.
+
+  * gplink/map.c, libgputils/gparchive.c, libgputils/gpreadhex.c:
+    Code formatting.
+
 2016-06-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure.ac, configure, Makefile.in:
     Added the dist-bzip2 target.

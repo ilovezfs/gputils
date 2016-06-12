@@ -22,6 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_object_type *
 gp_coffgen_init(void)
 {
@@ -32,14 +34,16 @@ gp_coffgen_init(void)
 
   /* initialize the object */
   object->processor = gp_find_processor("generic");
-  object->class = PROC_CLASS_GENERIC;
-  object->time = (long)time(NULL);
+  object->class     = PROC_CLASS_GENERIC;
+  object->time      = (long)time(NULL);
 
   return object;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_section_type *
-gp_coffgen_findsection(gp_object_type *object, gp_section_type *start, const char *name)
+gp_coffgen_find_section(gp_object_type *object, gp_section_type *start, const char *name)
 {
   gp_section_type *current;
   gp_section_type *found;
@@ -62,8 +66,10 @@ gp_coffgen_findsection(gp_object_type *object, gp_section_type *start, const cha
   return found;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_section_type *
-gp_coffgen_newsection(const char *name, MemBlock *data)
+gp_coffgen_new_section(const char *name, MemBlock *data)
 {
   gp_section_type *new;
 
@@ -77,8 +83,10 @@ gp_coffgen_newsection(const char *name, MemBlock *data)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_section_type *
-gp_coffgen_addsection(gp_object_type *object, const char *name, MemBlock *data)
+gp_coffgen_add_section(gp_object_type *object, const char *name, MemBlock *data)
 {
   gp_section_type *new;
 
@@ -86,7 +94,7 @@ gp_coffgen_addsection(gp_object_type *object, const char *name, MemBlock *data)
     return NULL;
   }
 
-  new = gp_coffgen_newsection(name, data);
+  new = gp_coffgen_new_section(name, data);
 
   if (object->sections == NULL) {
     /* the list is empty */
@@ -103,8 +111,10 @@ gp_coffgen_addsection(gp_object_type *object, const char *name, MemBlock *data)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-gp_coffgen_delsectionsyms(gp_object_type *object, gp_section_type *section)
+gp_coffgen_del_section_symbols(gp_object_type *object, gp_section_type *section)
 {
   gp_symbol_type *list;
   gp_symbol_type *symbol;
@@ -117,13 +127,15 @@ gp_coffgen_delsectionsyms(gp_object_type *object, gp_section_type *section)
     list = list->next;
 
     if (symbol->section == section) {
-      gp_coffgen_delsymbol(object, symbol);
+      gp_coffgen_del_symbol(object, symbol);
     }
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_section_type *
-gp_coffgen_delsection(gp_object_type *object, gp_section_type *section)
+gp_coffgen_del_section(gp_object_type *object, gp_section_type *section)
 {
   gp_section_type *list;
   gp_section_type *previous;
@@ -175,8 +187,10 @@ gp_coffgen_delsection(gp_object_type *object, gp_section_type *section)
   return removed;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_reloc_type *
-gp_coffgen_addreloc(gp_section_type *section)
+gp_coffgen_add_reloc(gp_section_type *section)
 {
   gp_reloc_type *new;
 
@@ -189,6 +203,7 @@ gp_coffgen_addreloc(gp_section_type *section)
   }
   else {
     section->relocations_tail->next = new;
+    new->prev = section->relocations_tail;
   }
 
   section->relocations_tail = new;
@@ -197,8 +212,40 @@ gp_coffgen_addreloc(gp_section_type *section)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
+gp_reloc_type *
+gp_coffgen_del_reloc(gp_section_type *section, gp_reloc_type *relocation)
+{
+  if ((section->relocations == NULL) || (section->num_reloc == 0)) {
+    return NULL;
+  }
+
+  if (section->relocations == relocation) {
+    /* This is first element of the list. */
+    section->relocations = relocation->next;
+  }
+  else {
+    relocation->prev->next = relocation->next;
+  }
+
+  if (section->relocations_tail == relocation) {
+    /* This is last element of the list. */
+    section->relocations_tail = relocation->prev;
+  }
+  else {
+    relocation->next->prev = relocation->prev;
+  }
+
+  (section->num_reloc)--;
+
+  return relocation;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 gp_linenum_type *
-gp_coffgen_addlinenum(gp_section_type *section)
+gp_coffgen_add_linenum(gp_section_type *section)
 {
   gp_linenum_type *new;
 
@@ -211,6 +258,7 @@ gp_coffgen_addlinenum(gp_section_type *section)
   }
   else {
     section->line_numbers_tail->next = new;
+    new->prev = section->line_numbers_tail;
   }
 
   section->line_numbers_tail = new;
@@ -219,8 +267,101 @@ gp_coffgen_addlinenum(gp_section_type *section)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
+gp_linenum_type *
+gp_coffgen_del_linenum(gp_section_type *section, gp_linenum_type *linenum)
+{
+  if ((section->line_numbers == NULL) || (section->num_lineno == 0)) {
+    return NULL;
+  }
+
+  if (section->line_numbers == linenum) {
+    /* This is first element of the list. */
+    section->line_numbers = linenum->next;
+  }
+  else {
+    linenum->prev->next = linenum->next;
+  }
+
+  if (section->line_numbers_tail == linenum) {
+    /* This is last element of the list. */
+    section->line_numbers_tail = linenum->prev;
+  }
+  else {
+    linenum->next->prev = linenum->prev;
+  }
+
+  (section->num_lineno)--;
+
+  return linenum;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_linenum_type *
+gp_coffgen_find_linenum_by_address(gp_section_type *section, unsigned int address)
+{
+  gp_linenum_type *linenum;
+
+  if ((section->line_numbers == NULL) || (section->num_lineno == 0)) {
+    return NULL;
+  }
+
+  linenum = section->line_numbers;
+  while (linenum != NULL) {
+    if (linenum->address == address) {
+      return linenum;
+    }
+    linenum = linenum->next;
+  }
+
+  return NULL;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_linenum_type *
+gp_coffgen_del_linenum_by_address(gp_section_type *section, unsigned int address)
+{
+  gp_linenum_type *linenum;
+
+  linenum = gp_coffgen_find_linenum_by_address(section, address);
+
+  if (linenum == NULL) {
+    return NULL;
+  }
+
+  return gp_coffgen_del_linenum(section, linenum);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+gp_coffgen_del_linenum_by_address_area(gp_section_type *section, unsigned int address_start,
+                                       unsigned int address_end)
+{
+  gp_linenum_type *linenum;
+
+  if ((section->line_numbers == NULL) || (section->num_lineno == 0)) {
+    return false;
+  }
+
+  linenum = section->line_numbers;
+  while ((linenum != NULL) && (linenum->address <= address_end)) {
+    if (linenum->address >= address_start) {
+      gp_coffgen_del_linenum(section, linenum);
+    }
+    linenum = linenum->next;
+  }
+
+  return true;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 gp_symbol_type *
-gp_coffgen_findsymbol(gp_object_type *object, const char *name)
+gp_coffgen_find_symbol(gp_object_type *object, const char *name)
 {
   gp_symbol_type *current;
   gp_symbol_type *found;
@@ -244,8 +385,10 @@ gp_coffgen_findsymbol(gp_object_type *object, const char *name)
   return found;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_symbol_type *
-gp_coffgen_findsectionsymbol(gp_object_type *object, const char *name)
+gp_coffgen_find_section_symbol(gp_object_type *object, const char *name)
 {
   gp_symbol_type *current;
   gp_symbol_type *found;
@@ -269,11 +412,13 @@ gp_coffgen_findsectionsymbol(gp_object_type *object, const char *name)
   return found;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Search for a symbol, based on the value and name of host section.
    The function is slow, but only need the error messages. */
 
 gp_symbol_type *
-gp_coffgen_findsymbol_sect_val(gp_object_type *object, const char *section_name, long value)
+gp_coffgen_find_symbol_section_value(gp_object_type *object, const char *section_name, long value)
 {
   gp_symbol_type *current;
   gp_symbol_type *found;
@@ -299,8 +444,10 @@ gp_coffgen_findsymbol_sect_val(gp_object_type *object, const char *section_name,
   return found;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_aux_type *
-gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol)
+gp_coffgen_add_aux(gp_object_type *object, gp_symbol_type *symbol)
 {
   gp_aux_type *new;
   gp_aux_type *list;
@@ -327,8 +474,10 @@ gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_symbol_type *
-gp_coffgen_addsymbol(gp_object_type *object)
+gp_coffgen_add_symbol(gp_object_type *object)
 {
   gp_symbol_type *new;
 
@@ -350,8 +499,10 @@ gp_coffgen_addsymbol(gp_object_type *object)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_symbol_type *
-gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol)
+gp_coffgen_del_symbol(gp_object_type *object, gp_symbol_type *symbol)
 {
   gp_symbol_type *list;
   gp_symbol_type *previous;
@@ -402,6 +553,8 @@ gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol)
   return removed;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Determine if any relocation uses the symbol. */
 
 gp_boolean
@@ -426,7 +579,9 @@ gp_coffgen_has_reloc(const gp_object_type *object, const gp_symbol_type *symbol)
   return false;
 }
 
-/* Determine if the symbol is global */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Determine if the symbol is global. */
 
 gp_boolean
 gp_coffgen_is_global(const gp_symbol_type *Symbol)
@@ -434,7 +589,9 @@ gp_coffgen_is_global(const gp_symbol_type *Symbol)
   return (((Symbol->class == C_EXT) && (Symbol->section_number == N_SCNUM)) ? true : false);
 }
 
-/* Determine if the symbol is external */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Determine if the symbol is external. */
 
 gp_boolean
 gp_coffgen_is_external(const gp_symbol_type *Symbol)
@@ -442,7 +599,9 @@ gp_coffgen_is_external(const gp_symbol_type *Symbol)
   return (((Symbol->class == C_EXT) && (Symbol->section_number == N_UNDEF)) ? true : false);
 }
 
-/* Determine if the symbol is debug */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Determine if the symbol is debug. */
 
 gp_boolean
 gp_coffgen_is_debug(const gp_symbol_type *Symbol)
@@ -450,7 +609,9 @@ gp_coffgen_is_debug(const gp_symbol_type *Symbol)
   return ((Symbol->class == N_DEBUG) ? true : false);
 }
 
-/* Determine if the symbol is absolute */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Determine if the symbol is absolute. */
 
 gp_boolean
 gp_coffgen_is_absolute(const gp_symbol_type *Symbol)
@@ -458,10 +619,12 @@ gp_coffgen_is_absolute(const gp_symbol_type *Symbol)
   return ((Symbol->class == N_ABS) ? true : false);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* allocate a block of section */
 
 gp_section_type *
-gp_coffgen_blocksec(unsigned int number)
+gp_coffgen_make_block_section(unsigned int number)
 {
   gp_section_type *new;
   unsigned int     i;
@@ -487,11 +650,12 @@ gp_coffgen_blocksec(unsigned int number)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
 
 /* allocate a block of relocations */
 
 gp_reloc_type *
-gp_coffgen_blockrel(unsigned int number)
+gp_coffgen_make_block_reloc(unsigned int number)
 {
   gp_reloc_type *new;
   unsigned int   i;
@@ -508,19 +672,21 @@ gp_coffgen_blockrel(unsigned int number)
 
   /* initialize the pointers to create the linked list */
   for (i = 0; i < number; i++) {
-    new[i].next = &new[i + 1];
+    new[i+1].prev = &new[i];
+    new[i].next   = &new[i + 1];
   }
 
-  /* assign the tail of the list */
-  new[number].next = NULL;
+  /* The head and tail value already NULL. (GP_Calloc) */
 
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* allocate a block of line numbers */
 
 gp_linenum_type *
-gp_coffgen_blockline(unsigned int number)
+gp_coffgen_make_block_linenum(unsigned int number)
 {
   gp_linenum_type *new;
   unsigned int     i;
@@ -537,20 +703,21 @@ gp_coffgen_blockline(unsigned int number)
 
   /* initialize the pointers to create the linked list */
   for (i = 0; i < number; i++) {
-    new[i].next = &new[i + 1];
+    new[i+1].prev = &new[i];
+    new[i].next   = &new[i + 1];
   }
 
-  /* assign the tail of the list */
-  new[number].next = NULL;
+  /* The head and tail value already NULL. (GP_Calloc) */
 
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
 
 /* allocate a block of symbols */
 
 gp_symbol_type *
-gp_coffgen_blocksym(unsigned int number)
+gp_coffgen_make_block_symbol(unsigned int number)
 {
   gp_symbol_type *new;
   unsigned int    i;
@@ -578,10 +745,12 @@ gp_coffgen_blocksym(unsigned int number)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* allocate a block of auxiliary symbols */
 
 gp_aux_type *
-gp_coffgen_blockaux(unsigned int number)
+gp_coffgen_make_block_aux(unsigned int number)
 {
   gp_aux_type  *new;
   unsigned int  i;
@@ -607,6 +776,8 @@ gp_coffgen_blockaux(unsigned int number)
 
   return new;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_coffgen_free_section(gp_section_type *section)
@@ -636,6 +807,8 @@ gp_coffgen_free_section(gp_section_type *section)
   free(section);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_coffgen_free_symbol(gp_symbol_type *symbol)
 {
@@ -663,6 +836,8 @@ gp_coffgen_free_symbol(gp_symbol_type *symbol)
   return num_auxsym;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_coffgen_free(gp_object_type *object)
 {
@@ -680,14 +855,14 @@ gp_coffgen_free(gp_object_type *object)
   section = object->sections;
   while (section != NULL) {
     old_section = section;
-    section = section->next;
+    section     = section->next;
     gp_coffgen_free_section(old_section);
   }
 
   symbol = object->symbols;
   while (symbol != NULL) {
     old_symbol = symbol;
-    symbol = symbol->next;
+    symbol     = symbol->next;
     gp_coffgen_free_symbol(old_symbol);
   }
 
@@ -695,6 +870,8 @@ gp_coffgen_free(gp_object_type *object)
 
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_determine_aux(gp_symbol_type *symbol)
