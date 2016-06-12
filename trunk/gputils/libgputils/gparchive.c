@@ -436,7 +436,7 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
   size_t                     sym_name_len;
   const gp_coffsymbol_type  *var;
   char                       size[10];
-  unsigned char             *ptr;
+  uint8_t                   *ptr;
   long                       index_size;
 
   if ((Archive == NULL) || (Table == NULL)) {
@@ -463,7 +463,7 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
   new_member = (gp_archive_type *)GP_Malloc(sizeof(*new_member));
   new_member->data.file = (unsigned char *)GP_Malloc(index_size);
   new_member->data.size = index_size;
-  new_member->next = NULL;
+  new_member->next      = NULL;
 
   /* fill in the archive header */
   memset(&new_member->header, ' ', AR_HDR_SIZ); /* fill the header with space */
@@ -531,13 +531,13 @@ symbol and the archive member that the symbol is defined in. */
 void
 gp_archive_read_index(symbol_table_t *table, gp_archive_type *archive)
 {
-  int                  number;
-  int                  i;
-  const char          *name;
-  const unsigned char *offset;
-  int                  offset_value;
-  gp_archive_type     *list;
-  const unsigned char *file;
+  unsigned int     number;
+  unsigned int     i;
+  const char      *name;
+  const uint8_t   *offset;
+  unsigned int     offset_value;
+  gp_archive_type *list;
+  const uint8_t   *file;
 
   assert(gp_archive_have_index(archive));
 
@@ -548,7 +548,7 @@ gp_archive_read_index(symbol_table_t *table, gp_archive_type *archive)
 
   /* set the pointers to the offsets and symbol names */
   offset = &file[AR_INDEX_NUMBER_SIZ];
-  name = (const char *)(offset + (AR_INDEX_OFFSET_SIZ * number));
+  name   = (const char *)(offset + (AR_INDEX_OFFSET_SIZ * number));
 
   for (i = 0; i < number; i++) {
     /* get the symbol offset from the symbol index */

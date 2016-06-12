@@ -27,8 +27,8 @@ Boston, MA 02111-1307, USA.  */
 struct gpstrip_state state;
 gp_boolean verbose;
 
-void
-conditional_remove(gp_symbol_type *symbol)
+static void
+_conditional_remove(gp_symbol_type *symbol)
 {
   const symbol_t *sym;
 
@@ -37,12 +37,12 @@ conditional_remove(gp_symbol_type *symbol)
     if (verbose) {
       gp_message("removing symbol \"%s\"", symbol->name);
     }
-    gp_coffgen_delsymbol(state.object, symbol);
+    gp_coffgen_del_symbol(state.object, symbol);
   }
 }
 
-void
-remove_sections(void)
+static void
+_remove_sections(void)
 {
   size_t           i;
   const symbol_t  *sym;
@@ -52,23 +52,23 @@ remove_sections(void)
 
   for (i = 0; i < sym_get_symbol_count(state.section_remove); ++i) {
     sym     = sym_get_symbol_with_index(state.section_remove, i);
-    section = gp_coffgen_findsection(state.object, state.object->sections, sym_get_symbol_name(sym));
+    section = gp_coffgen_find_section(state.object, state.object->sections, sym_get_symbol_name(sym));
     if (section != NULL) {
       if (verbose) {
         gp_message("removing section \"%s\"", sym_get_symbol_name(sym));
       }
 
       /* remove the sections symbols */
-      gp_coffgen_delsectionsyms(state.object, section);
+      gp_coffgen_del_section_symbols(state.object, section);
 
       /* remove the section */
-      gp_coffgen_delsection(state.object, section);
+      gp_coffgen_del_section(state.object, section);
     }
   }
 }
 
-void
-remove_symbols(void)
+static void
+_remove_symbols(void)
 {
   size_t          i;
   const symbol_t *sym;
@@ -76,17 +76,17 @@ remove_symbols(void)
 
   for (i = 0; i < sym_get_symbol_count(state.symbol_remove); ++i) {
     sym    = sym_get_symbol_with_index(state.symbol_remove, i);
-    symbol = gp_coffgen_findsymbol(state.object, sym_get_symbol_name(sym));
+    symbol = gp_coffgen_find_symbol(state.object, sym_get_symbol_name(sym));
     if (symbol != NULL) {
       if (!gp_coffgen_has_reloc(state.object, symbol)) {
-        conditional_remove(symbol);
+        _conditional_remove(symbol);
       }
     }
   }
 }
 
-void
-strip_all(void)
+static void
+_strip_all(void)
 {
   gp_section_type *section;
 
@@ -94,30 +94,29 @@ strip_all(void)
     section = state.object->sections;
     while (section != NULL) {
       /* remove the line numbers, have too because the symbols will be removed */
-      section->num_lineno = 0;
-      section->line_numbers = NULL;
+      section->num_lineno        = 0;
+      section->line_numbers      = NULL;
       section->line_numbers_tail = NULL;
 
       /* remove the relocations, they should already be removed */
-      section->num_reloc = 0;
-      section->relocations = NULL;
+      section->num_reloc        = 0;
+      section->relocations      = NULL;
       section->relocations_tail = NULL;
     
       section = section->next;
     }  
 
     /* remove all symbols */
-    state.object->num_symbols = 0;
-    state.object->symbols = NULL;
+    state.object->num_symbols  = 0;
+    state.object->symbols      = NULL;
     state.object->symbols_tail = NULL;
-
   } else {
     gp_error("can not strip all symbols because the object file is not executable");
   }
 }
 
-void
-strip_debug(void)
+static void
+_strip_debug(void)
 {
   gp_section_type *section;
   gp_symbol_type  *list;
@@ -126,8 +125,8 @@ strip_debug(void)
   section = state.object->sections;
   while (section != NULL) {
     /* remove the line numbers */
-    section->num_lineno = 0;
-    section->line_numbers = NULL;
+    section->num_lineno        = 0;
+    section->line_numbers      = NULL;
     section->line_numbers_tail = NULL;
     
     section = section->next;
@@ -137,15 +136,15 @@ strip_debug(void)
   while (list != NULL) {
     /* remove any debug symbols */
     symbol = list;
-    list = list->next;
+    list   = list->next;
     if (symbol->section_number == N_DEBUG) {
-      conditional_remove(symbol);
+      _conditional_remove(symbol);
     }
   }
 }
 
-void
-strip_unneeded(void)
+static void
+_strip_unneeded(void)
 {
   gp_symbol_type *list;
   gp_symbol_type *symbol;
@@ -153,17 +152,17 @@ strip_unneeded(void)
   list = state.object->symbols;
   while (list != NULL) {
     symbol = list;
-    list = list->next;
+    list   = list->next;
     
     /* if the symbol has a relocation or is global it can't be removed */
     if (!gp_coffgen_has_reloc(state.object, symbol) && !gp_coffgen_is_global(symbol)) {
-      conditional_remove(symbol);
+      _conditional_remove(symbol);
     }
   }
 }
 
-void
-discard_all(void)
+static void
+_discard_all(void)
 {
   gp_symbol_type *list;
   gp_symbol_type *symbol;
@@ -171,16 +170,16 @@ discard_all(void)
   list = state.object->symbols;
   while (list != NULL) {
     symbol = list;
-    list = list->next;
+    list   = list->next;
     
     if (!gp_coffgen_is_global(symbol)) {
-      conditional_remove(symbol);
+      _conditional_remove(symbol);
     }
   }
 }
 
-void 
-add_name(symbol_table_t *table, char *name)
+static void 
+_add_name(symbol_table_t *table, char *name)
 {
   const symbol_t *sym;
 
@@ -190,7 +189,8 @@ add_name(symbol_table_t *table, char *name)
   }
 }
 
-void show_usage(void)
+static void
+_show_usage(void)
 {
   printf("Usage: gpstrip [options] file(s)\n");
   printf("Options: [defaults in brackets after descriptions]\n");
@@ -292,11 +292,11 @@ int main(int argc, char *argv[])
       break;
 
     case 'k':
-      add_name(state.symbol_keep, optarg);
+      _add_name(state.symbol_keep, optarg);
       break;
 
     case 'n':
-      add_name(state.symbol_remove, optarg);
+      _add_name(state.symbol_remove, optarg);
       break;
 
     case 'o':
@@ -308,7 +308,7 @@ int main(int argc, char *argv[])
       break;
 
     case 'r':
-      add_name(state.section_remove, optarg);
+      _add_name(state.section_remove, optarg);
       break;
 
     case 's':
@@ -341,7 +341,7 @@ int main(int argc, char *argv[])
   }
 
   if ((optind == argc) || (usage)) {
-    show_usage();
+    _show_usage();
   }
 
   for ( ; optind < argc; optind++) {
@@ -356,18 +356,18 @@ int main(int argc, char *argv[])
     state.object = gp_read_coff(state.input_file);
 
     if (state.object != NULL) {
-      remove_sections();
-      remove_symbols();
+      _remove_sections();
+      _remove_symbols();
     
       if (state.strip_all) {
-        strip_all();
+        _strip_all();
       }
 
       if (state.strip_debug) {
         if (state.strip_all) {
           gp_message("strip debug ignored");
         } else {
-          strip_debug();
+          _strip_debug();
         }
       }
 
@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
         if (state.strip_all) {
           gp_message("strip unneeded ignored");
         } else {
-          strip_unneeded();
+          _strip_unneeded();
         }
       }
 
@@ -383,7 +383,7 @@ int main(int argc, char *argv[])
         if (state.strip_all) {
           gp_message("discard all ignored");
         } else {
-          discard_all();
+          _discard_all();
         }
       }
 

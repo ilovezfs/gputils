@@ -55,7 +55,7 @@ Cette option définit le mode de compatibilité MPLINK.
 Nom alternatif du fichier de sortie.
 .TP
 .BR "\-O OPT" , " \-\-optimize OPT
-Niveau d'optimization. La valeur par défaut est 1.
+Niveau d'optimization. La valeur par défaut est 0.
 .TP
 .BR \-q ", "\-\-quiet
 Supprimer tout ce qui est envoyé sur la sortie standard.

@@ -216,32 +216,34 @@ struct proc_class {
   int             (*check_bank)(unsigned int address);
 
   /* Set the bank bits, return the number of instructions required. */
-  int             (*set_bank)(int num_banks, int bank, MemBlock *m, unsigned int address);
+  int             (*set_bank)(int num_banks, int bank, MemBlock *m, unsigned int byte_address);
 
   /* Determine which ibank of data memory the address is located. */
   int             (*check_ibank)(unsigned int address);
 
   /* Set the ibank bits, return the number of instructions required. */
-  int             (*set_ibank)(int num_banks, int bank, MemBlock *m, unsigned int address);
+  int             (*set_ibank)(int num_banks, int bank, MemBlock *m, unsigned int byte_address);
 
   /* Determine which page of program memory the address is located. */
-  int             (*check_page)(unsigned int address);
+  int             (*check_page)(unsigned int insn_address);
 
   /* Set the page bits, return the number of instructions required. */
-  int             (*set_page)(int num_pages, int page, MemBlock *m, unsigned int address,
+  int             (*set_page)(int num_pages, int page, MemBlock *m, unsigned int byte_address,
                               gp_boolean use_wreg);
 
-  int             (*page_addr)(unsigned int org);
+  int             (*pagesel_byte_length)(int num_pages, gp_boolean use_wreg);
+
+  int             (*page_addr)(unsigned int insn_address);
 
   int             (*page_bits_to_addr)(unsigned int bits);
 
   /* These return the bits to set in instruction for given address. */
-  int             (*reloc_call)(unsigned int address);
-  int             (*reloc_goto)(unsigned int address);
+  int             (*reloc_call)(unsigned int insn_address);
+  int             (*reloc_goto)(unsigned int insn_address);
   int             (*reloc_f)(unsigned int address);
   int             (*reloc_tris)(unsigned int address);
   int             (*reloc_movlb)(unsigned int address);
-  int             (*reloc_bra)(struct gp_section_type *section, unsigned int value, unsigned int byte_org);
+  int             (*reloc_bra)(struct gp_section_type *section, unsigned int value, unsigned int byte_address);
   int             (*reloc_high)(gp_boolean is_code, int value);
 
   const insn_t     *instructions;
@@ -376,8 +378,8 @@ const char *gp_processor_header(pic_processor_t processor);
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
 
-int gp_org_to_byte(unsigned int shift, int org);
-int gp_byte_to_org(unsigned int shift, int byte);
+int gp_org_to_byte(unsigned int shift, int insn_addr);
+int gp_byte_to_org(unsigned int shift, int byte_addr);
 
 int gp_processor_reg_offs(pic_processor_t processor, int address);
 int gp_processor_bank_addr(pic_processor_t processor, int address);
@@ -406,26 +408,26 @@ int gp_processor_rom_width(proc_class_t class);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);
 
 int gp_processor_set_bank(proc_class_t class, int num_banks, int bank, MemBlock *m,
-                          unsigned int address);
+                          unsigned int byte_address);
 
 int gp_processor_check_ibank(proc_class_t class, unsigned int address);
 
 int gp_processor_set_ibank(proc_class_t class, int num_banks, int bank, MemBlock *m,
-                           unsigned int address);
+                           unsigned int byte_address);
 
 int gp_processor_check_page(proc_class_t class, unsigned int address);
 
 int gp_processor_set_page(proc_class_t class, int num_pages, int page, MemBlock *m,
-                          unsigned int address, gp_boolean use_wreg);
+                          unsigned int byte_address, gp_boolean use_wreg);
 
-int gp_processor_page_addr(proc_class_t class, unsigned int address);
+int gp_processor_page_addr(proc_class_t class, unsigned int insn_address);
 
 int gp_processor_page_bits_to_addr(proc_class_t class, unsigned int bits);
 
 int gp_processor_retlw(proc_class_t class);
 
-int gp_processor_org_to_byte(proc_class_t class, int org);
-int gp_processor_real_to_byte(pic_processor_t processor, int org);
+int gp_processor_org_to_byte(proc_class_t class, int insn_address);
+int gp_processor_real_to_byte(pic_processor_t processor, int insn_address);
 
 int gp_processor_byte_to_org(proc_class_t class, int byte_address);
 int gp_processor_byte_to_real(pic_processor_t processor, int byte_address);

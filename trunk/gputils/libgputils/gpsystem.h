@@ -33,17 +33,18 @@ extern const char *gp_lib_path;
 
 void gp_init(void);
 
-void  gp_fputl16(short data, FILE *fp);
-void  gp_fputl32(long data, FILE *fp); 
-void  gp_fputvar(const void *data, int number, FILE *fp); 
-int16_t gp_getl16(const unsigned char *addr);
-uint16_t gp_getu16(const unsigned char *addr);
-long  gp_getl32(const unsigned char *addr);
-void  gp_putl16(unsigned char *addr, uint16_t data);
-void  gp_putl32(unsigned char *addr, unsigned long data);
+void     gp_fputl16(int16_t data, FILE *fp);
+void     gp_fputl32(int32_t data, FILE *fp); 
+void     gp_fputvar(const void *data, int number, FILE *fp); 
+int16_t  gp_getl16(const uint8_t *addr);
+uint16_t gp_getu16(const uint8_t *addr);
+int32_t  gp_getl32(const uint8_t *addr);
+uint32_t gp_getu32(const uint8_t *addr);
+void     gp_putl16(uint8_t *addr, uint16_t data);
+void     gp_putl32(uint8_t *addr, uint32_t data);
 
-long  gp_getb32(const unsigned char *addr);
-void  gp_putb32(unsigned char *addr, unsigned long data);
+int32_t  gp_getb32(const uint8_t *addr);
+void     gp_putb32(uint8_t *addr, uint32_t data);
 
 void  gp_date_string(char *buffer, size_t sizeof_buffer);
 

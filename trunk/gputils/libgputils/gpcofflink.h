@@ -45,14 +45,14 @@ enum section_type {
    structure.  These structures are placed in a symbol table.  */
 
 typedef struct linker_section {
-  enum section_type type;
-  int               start;
-  int               end;
-  int               fill;
-  gp_boolean        use_fill;
-  gp_boolean        protected;
-  int               shadow_val;
-  const char       *shadow_sym;
+  enum section_type  type;
+  int                start;
+  int                end;
+  int                fill;
+  gp_boolean         use_fill;
+  gp_boolean         protected;
+  int                shadow_val;
+  const char        *shadow_sym;
 } linker_section_t;
 
 extern void gp_link_add_symbol(symbol_table_t *table, gp_symbol_type *symbol, gp_object_type *file);
@@ -93,6 +93,8 @@ extern void gp_cofflink_reloc_unassigned(gp_object_type *object, MemBlock *m, in
 extern void gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift);
 
 extern void gp_cofflink_fill_pages(gp_object_type *object, MemBlock *m, const symbol_table_t *sections);
+
+extern const char *gp_cofflink_reloc_type_to_str(unsigned int Reloc_type);
 
 extern void gp_cofflink_patch(gp_object_type *object);
 

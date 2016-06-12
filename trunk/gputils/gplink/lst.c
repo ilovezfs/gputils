@@ -348,7 +348,7 @@ _lst_init(void)
 }
 
 void
-write_lst(void)
+lst_write(void)
 {
   gp_symbol_type    *symbol;
   const gp_aux_type *aux;
@@ -395,10 +395,6 @@ write_lst(void)
         cod_lst_line(COD_NORMAL_LST_LINE);
         first_time = false;
       }
-    } else if (symbol->class == C_EOF) {
-      /* print the rest of the current file then, close it */
-      _write_source(0);
-      _close_source();
     } else if (symbol->class == C_LIST) {
       if (strcasecmp(symbol->name, ".list") == 0) {
         _write_source(symbol->value);
@@ -409,6 +405,10 @@ write_lst(void)
       } else {
         assert(0);
       }
+    } else if (symbol->class == C_EOF) {
+      /* print the rest of the current file then, close it */
+      _write_source(0);
+      _close_source();
     }
 
     symbol = symbol->next;

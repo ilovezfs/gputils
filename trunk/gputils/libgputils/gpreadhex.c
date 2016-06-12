@@ -63,8 +63,8 @@ _readword(void)
 {
   unsigned int number;
 
-  number  = _readbyte();  
-  number |= (_readbyte() << 8);
+  number = _readbyte();  
+  number = (_readbyte() << 8) | number;
   return number; 
 }
 
@@ -73,7 +73,7 @@ _swapword(unsigned int input)
 {
   unsigned int number;
 
-  number = ((input & 0x00FF) << 8) | ((input & 0xFF00) >> 8);
+  number = ((input & 0xFF) << 8) | ((input & 0xFF00) >> 8);
   return number;
 }
 
@@ -100,7 +100,7 @@ gp_readhex(const char *filename, MemBlock *m)
   }
     
   /* Go to the beginning of the file. */
-  fseek(infile, 0L, 0);
+  fseek(infile, 0L, SEEK_SET);
 
   /* Set the line pointer to the beginning of the line buffer. */
   linept = linebuf;
@@ -165,9 +165,9 @@ gp_readhex(const char *filename, MemBlock *m)
     if ((checksum & 0xFF) != 0) { 
       if (info->hex_format == INHX8M) {
         /*  First attempt at INHX8M failed, try INHX16. */
-        fseek(infile, 0L, 0);	  
+        fseek(infile, 0L, SEEK_SET);	  
         info->hex_format = INHX16;
-        info->size = 0;
+        info->size       = 0;
         /* Data in i_memory is trash. */
         i_memory_free(m);
         m = i_memory_create();

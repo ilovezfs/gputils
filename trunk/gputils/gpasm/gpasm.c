@@ -1067,7 +1067,7 @@ assemble(void)
   hex_init();
 
   if (state.memory_dump) {
-    print_i_memory(state.i_memory, state.processor);
+    i_memory_print(state.i_memory, state.processor);
   }
 
   /* Maybe produce a symbol table. */

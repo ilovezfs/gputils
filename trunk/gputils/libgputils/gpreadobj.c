@@ -22,8 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-static short
-_check_getl16(const unsigned char *addr, const gp_binary_type *data)
+static uint16_t
+_check_getl16(const uint8_t *addr, const gp_binary_type *data)
 {
   assert(NULL != data);
 
@@ -38,8 +38,8 @@ _check_getl16(const unsigned char *addr, const gp_binary_type *data)
   }
 }
 
-static long
-_check_getl32(const unsigned char *addr, const gp_binary_type *data)
+static uint32_t
+_check_getl32(const uint8_t *addr, const gp_binary_type *data)
 {
   assert(NULL != data);
 
@@ -55,11 +55,11 @@ _check_getl32(const unsigned char *addr, const gp_binary_type *data)
 }
 
 /* Return optional header size (0 for no header). */
-static int
-_read_file_header(gp_object_type *object, const unsigned char *file, const gp_binary_type *data)
+static unsigned int
+_read_file_header(gp_object_type *object, const uint8_t *file, const gp_binary_type *data)
 {
-  gp_boolean isnew = false;
-  int        opt_hdr;
+  gp_boolean   isnew = false;
+  unsigned int opt_hdr;
 
   if (_check_getl16(&file[0], data) == MICROCHIP_MAGIC_v2) {
     isnew = true;
@@ -78,7 +78,7 @@ _read_file_header(gp_object_type *object, const unsigned char *file, const gp_bi
   opt_hdr = _check_getl16(&file[16], data);
 
   if ((opt_hdr != 0) && (opt_hdr != (isnew ? OPT_HDR_SIZ_v2 : OPT_HDR_SIZ_v1))) {
-    gp_error("Incorrect optional header size (%d) in \"%s\".", opt_hdr, object->filename);
+    gp_error("Incorrect optional header size (%u) in \"%s\".", opt_hdr, object->filename);
   }
 
   object->symbol_size = (object->version == MICROCHIP_MAGIC_v1) ? SYMBOL_SIZE_v1 : SYMBOL_SIZE_v2;
@@ -88,14 +88,14 @@ _read_file_header(gp_object_type *object, const unsigned char *file, const gp_bi
 }
 
 static void
-_read_opt_header(gp_object_type *object, const unsigned char *file, const gp_binary_type *data)
+_read_opt_header(gp_object_type *object, const uint8_t *file, const gp_binary_type *data)
 {
-  uint16_t       optmagic;
-  unsigned long  vstamp;
-  unsigned long  proc_code;
-  unsigned long  rom_width;
-  unsigned long  ram_width;
-  size_t         offset = 0;
+  uint16_t optmagic;
+  uint32_t vstamp;
+  uint32_t proc_code;
+  uint32_t rom_width;
+  uint32_t ram_width;
+  size_t   offset;
 
   optmagic = _check_getl16(&file[0], data);
 
@@ -127,7 +127,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, const gp_bin
   object->processor = gp_processor_coff_proc(proc_code);
 
   if (object->processor == NULL) {
-    /* Fallback to a generic processor of matching rom width */
+    /* Fallback to a generic processor of matching rom width. */
     switch(rom_width) {
     case 8:  object->processor = gp_find_processor("pic18cxx"); break;
     case 12: object->processor = gp_find_processor("pic16c5x"); break;
@@ -169,10 +169,10 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, const gp_bin
 
 static void
 _read_section_header(gp_object_type *object, gp_section_type *section,
-                     const unsigned char *file, const char *string_table, const gp_binary_type *data)
+                     const uint8_t *file, const char *string_table, const gp_binary_type *data)
 {
-  char         buffer[9];
-  unsigned int offset;
+  char     buffer[9];
+  uint32_t offset;
 
   if (_check_getl32(&file[0], data) == 0) {
     /* read name from the string table */
@@ -186,7 +186,7 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
     section->name = GP_Strdup(buffer);
   }
 
-  section->symbol = gp_coffgen_findsectionsymbol(object, section->name);
+  section->symbol = gp_coffgen_find_section_symbol(object, section->name);
 
   section->address         = _check_getl32(&file[8], data);
   section->virtual_address = _check_getl32(&file[12], data);
@@ -202,7 +202,7 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
   section->num_reloc  = _check_getl16(&file[32], data);
   section->num_lineno = _check_getl16(&file[34], data);
   section->flags      = _check_getl32(&file[36], data);
-  section->data       = (section->data_ptr) ? i_memory_create() : NULL;
+  section->data       = (section->data_ptr != 0) ? i_memory_create() : NULL;
 
   section->relocations       = NULL;
   section->relocations_tail  = NULL;
@@ -224,7 +224,7 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
 
 static void
 _read_reloc(gp_object_type *object, const gp_section_type *section, gp_reloc_type *relocation,
-            const unsigned char *file, const gp_binary_type *data)
+            const uint8_t *file, const gp_binary_type *data)
 {
   relocation->address = _check_getl32(&file[0], data);
   relocation->symbol  = &object->symbols[_check_getl32(&file[4], data)];
@@ -239,7 +239,7 @@ _read_reloc(gp_object_type *object, const gp_section_type *section, gp_reloc_typ
 
 static void
 _read_lineno(gp_object_type *object, int org_to_byte_shift, gp_linenum_type *line_number,
-             const unsigned char *file, const gp_binary_type *data)
+             const uint8_t *file, const gp_binary_type *data)
 {
   line_number->symbol      = &object->symbols[_check_getl32(&file[0], data)];
   line_number->line_number = _check_getl16(&file[4], data);
@@ -252,43 +252,47 @@ _read_lineno(gp_object_type *object, int org_to_byte_shift, gp_linenum_type *lin
 }
 
 static void
-_read_sections(gp_object_type *object, const unsigned char *file, const gp_binary_type *data)
+_read_sections(gp_object_type *object, const uint8_t *file, const gp_binary_type *data)
 {
-  int                  i;
-  int                  j;
-  const unsigned char *section_ptr;
-  const char          *string_table;
-  const unsigned char *loc;
-  gp_section_type     *current = NULL;
-  gp_reloc_type       *current_reloc = NULL;
-  gp_linenum_type     *current_linenum = NULL;
-  unsigned int         number;
-  int                  org;
+  unsigned int     i;
+  unsigned int     j;
+  const uint8_t   *section_ptr;
+  const char      *string_table;
+  const uint8_t   *loc;
+  gp_section_type *current;
+  gp_reloc_type   *current_reloc;
+  gp_linenum_type *current_linenum;
+  unsigned int     number;
+  uint32_t         byte_addr;
+  uint32_t         header_size;
 
   /* move to the start of the section headers */
   section_ptr = file + (object->isnew ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2) :
                                         (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1));
 
+  header_size = (object->isnew) ? SEC_HDR_SIZ_v2 : SEC_HDR_SIZ_v1;
+
   /* setup pointer to string table */
   string_table = (const char *)&file[object->symbol_ptr + (object->symbol_size * object->num_symbols)];
 
-  object->sections = gp_coffgen_blocksec(object->num_sections);
+  object->sections = gp_coffgen_make_block_section(object->num_sections);
   current = object->sections;
 
   for (i = 0; i < object->num_sections; i++) {
     _read_section_header(object, current, section_ptr, string_table, data);
 
     current->number = i + 1;
-    section_ptr += (object->isnew) ? SEC_HDR_SIZ_v2 : SEC_HDR_SIZ_v1;
+//    section_ptr += (object->isnew) ? SEC_HDR_SIZ_v2 : SEC_HDR_SIZ_v1;
+    section_ptr += header_size;
 
     /* read the data */
     if ((current->size > 0) && (current->data_ptr > 0)) {
-      org = current->address;
-      loc = &file[current->data_ptr];
-      number = current->size;
+      byte_addr = current->address;
+      loc       = &file[current->data_ptr];
+      number    = current->size;
 
       for (j = 0; j < number; j++) {
-        b_memory_put(current->data, org + j, loc[j], current->name, NULL);
+        b_memory_put(current->data, byte_addr + j, loc[j], current->name, NULL);
       }
     }
 
@@ -296,7 +300,7 @@ _read_sections(gp_object_type *object, const unsigned char *file, const gp_binar
     if ((current->num_reloc > 0) && (current->reloc_ptr > 0)) {
       loc = &file[current->reloc_ptr];
       number = current->num_reloc;
-      current->relocations = gp_coffgen_blockrel(number);
+      current->relocations = gp_coffgen_make_block_reloc(number);
       current_reloc = current->relocations;
 
       for (j = 0; j < number; j++) {
@@ -320,7 +324,7 @@ _read_sections(gp_object_type *object, const unsigned char *file, const gp_binar
 
       loc = &file[current->lineno_ptr];
       number = current->num_lineno;
-      current->line_numbers = gp_coffgen_blockline(number);
+      current->line_numbers = gp_coffgen_make_block_linenum(number);
       current_linenum = current->line_numbers;
 
       for (j = 0; j < number; j++) {
@@ -345,7 +349,7 @@ struct lazy_linking_s {
 };
 
 static void
-_read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type, const unsigned char *file,
+_read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type, const uint8_t *file,
           const char *string_table, struct lazy_linking_s *lazy_linking, const gp_binary_type *data)
 {
   aux->type = aux_type;
@@ -373,13 +377,13 @@ _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type, const u
       break;
 
     case AUX_FCN_CALLS: {
-      unsigned long calleendx = _check_getl32(&file[0], data);
+      uint32_t calleendx = _check_getl32(&file[0], data);
 
       /* First symbol index is 0. */
       if (calleendx < i) {
         aux->_aux_symbol._aux_fcn_calls.callee = lazy_linking[calleendx].read.symbol;
       }
-      else if (calleendx == 0xffffffff) {
+      else if (calleendx == UINT32_MAX) {
         /* "higher order function", call through a pointer */
         aux->_aux_symbol._aux_fcn_calls.callee = NULL;
       }
@@ -399,13 +403,13 @@ _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type, const u
 }
 
 static void
-_read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const unsigned char *file,
+_read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const uint8_t *file,
              const char *string_table, struct lazy_linking_s *lazy_linking, const gp_binary_type *data)
 {
   char                   buffer[9];
-  unsigned int           offset;
-  unsigned int           type;
-  size_t                 file_off = 0;
+  uint32_t               offset;
+  uint32_t               type;
+  uint32_t               file_off;
   struct lazy_linking_s *current_lazy;
 
   if (_check_getl32(&file[0], data) == 0) {
@@ -468,13 +472,13 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const unsign
 }
 
 static void
-_read_symtbl(gp_object_type *object, const unsigned char *file, const gp_binary_type *data)
+_read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_type *data)
 {
-  int                    i;
-  int                    j;
-  int                    number;
-  int                    num_auxsym;
-  int                    aux_type;
+  unsigned int           i;
+  unsigned int           j;
+  unsigned int           number;
+  unsigned int           num_auxsym;
+  unsigned int           aux_type;
   gp_symbol_type        *current;
   gp_aux_type           *current_aux;
   const char            *string_table;
@@ -484,7 +488,7 @@ _read_symtbl(gp_object_type *object, const unsigned char *file, const gp_binary_
   number = object->num_symbols;
   if (number > 0) {
     /* create a block of symbols */
-    object->symbols = gp_coffgen_blocksym(number);
+    object->symbols = gp_coffgen_make_block_symbol(number);
 
     /* setup pointer to string table */
     string_table = (const char *)&file[object->symbol_ptr + (object->symbol_size * number)];
@@ -510,7 +514,7 @@ _read_symtbl(gp_object_type *object, const unsigned char *file, const gp_binary_
       file += object->symbol_size;
 
       if (num_auxsym > 0) {
-        current->aux_list = gp_coffgen_blockaux(current->num_auxsym);
+        current->aux_list = gp_coffgen_make_block_aux(current->num_auxsym);
         current_aux = current->aux_list;
         aux_type = gp_determine_aux(current);
 
@@ -548,7 +552,7 @@ _read_symtbl(gp_object_type *object, const unsigned char *file, const gp_binary_
    setup tail pointer */
 
 static void
-_clean_symtbl(gp_object_type *object)
+_clean_symbol_table(gp_object_type *object)
 {
   gp_symbol_type *current;
   gp_symbol_type *next_symbol;
@@ -600,11 +604,11 @@ gp_identify_coff_file(const char *filename)
   fclose(file);
 
   if (n == SARMAG) {
-    if (((magic[1] << 8) + magic[0]) == MICROCHIP_MAGIC_v1) {
+    if (gp_getu16((const uint8_t *)magic) == MICROCHIP_MAGIC_v1) {
       return GP_COFF_OBJECT;
     }
 
-    if (((magic[1] << 8) + magic[0]) == MICROCHIP_MAGIC_v2) {
+    if (gp_getu16((const uint8_t *)magic) == MICROCHIP_MAGIC_v2) {
       return GP_COFF_OBJECT_V2;
     }
 
@@ -639,7 +643,7 @@ gp_read_file(const char *filename)
   file->size = statbuf.st_size;
 
   /* read the object file into memory */
-  file->file = (unsigned char *)GP_Malloc(file->size);
+  file->file = (uint8_t *)GP_Malloc(file->size);
   n = fread(file->file, 1, file->size, infile);
 
   if (n != file->size) {
@@ -677,9 +681,9 @@ gp_convert_file(const char *filename, const gp_binary_type *data)
   if (_read_file_header(object, data->file, data) != 0) {
     _read_opt_header(object, data->file + (object->isnew ? FILE_HDR_SIZ_v2 : FILE_HDR_SIZ_v1), data);
   }
-  _read_symtbl(object, data->file, data);
+  _read_symbol_table(object, data->file, data);
   _read_sections(object, data->file, data);
-  _clean_symtbl(object);
+  _clean_symbol_table(object);
 
   return object;
 }

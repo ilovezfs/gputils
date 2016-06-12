@@ -68,7 +68,7 @@ typedef struct ar_hdr {
 typedef struct gp_archive_type {
   ar_hdr_t                header; /* archive header file */
   gp_binary_type          data;   /* binary data */
-  int                     offset; /* offset from the begining of the archive */
+  unsigned int            offset; /* offset from the beginning of the archive */
   struct gp_archive_type *next;   /* next file in linked list */
 } gp_archive_type;
 

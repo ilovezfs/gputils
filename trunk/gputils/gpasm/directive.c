@@ -1812,7 +1812,7 @@ do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   /* update the symbol with the values */
   if ((state.pass == 2) && (new_class || new_type)) {
-    coff_symbol = gp_coffgen_findsymbol(state.obj.object, symbol_name);
+    coff_symbol = gp_coffgen_find_symbol(state.obj.object, symbol_name);
     assert(coff_symbol != NULL);
 
     if (new_class) {
@@ -1896,7 +1896,7 @@ do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
     if (enforce_simple(p)) {
       /* lookup the symbol */
       symbol_name = p->value.symbol;
-      coff_symbol = gp_coffgen_findsymbol(state.obj.object, symbol_name);
+      coff_symbol = gp_coffgen_find_symbol(state.obj.object, symbol_name);
 
       if (coff_symbol == NULL) {
         gpverror(GPE_NOSYM, NULL, symbol_name);
@@ -1921,7 +1921,7 @@ do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
     parms = TAIL(parms);
 
     /* create the symbols */
-    aux_list = gp_coffgen_addaux(state.obj.object, coff_symbol);
+    aux_list = gp_coffgen_add_aux(state.obj.object, coff_symbol);
 
     /* write the data to the auxiliary symbols */
     i = 0;
@@ -1941,7 +1941,7 @@ do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
       if (i == (state.obj.newcoff ? SYMBOL_SIZE_v2 : SYMBOL_SIZE_v1)) {
         i = 0;
-        aux_list = gp_coffgen_addaux(state.obj.object, coff_symbol);
+        aux_list = gp_coffgen_add_aux(state.obj.object, coff_symbol);
       }
 
       aux_list->_aux_symbol.data[i++] = value;
@@ -4072,7 +4072,7 @@ do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     if (enforce_simple(p)) {
       symbol_name = p->value.symbol;
-      coff_symbol = gp_coffgen_findsymbol(state.obj.object, symbol_name);
+      coff_symbol = gp_coffgen_find_symbol(state.obj.object, symbol_name);
 
       if (coff_symbol == NULL) {
         gpverror(GPE_NOSYM, NULL, symbol_name);

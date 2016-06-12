@@ -54,6 +54,7 @@ extern struct gplink_state {
 
   struct {
     int        level;
+    gp_boolean pagesel;
     gp_boolean dead_sections;
     gp_boolean weak_symbols;
   } optimize;
