@@ -135,7 +135,7 @@ _scan_index(symbol_table_t *table, gp_archive_type *archive)
         object = gp_convert_file(object_name, &member->data);
         /*object_append(object, object_name);*/
         _object_append(object);
-        gp_link_add_symbols(state.symbol.definition, state.symbol.missing, object);
+        gp_cofflink_add_symbols(state.symbol.definition, state.symbol.missing, object);
         /* The symbol tables have been modified. Need to take another
            pass to make sure we get everything. */
         num_added++;
@@ -189,7 +189,7 @@ _remove_linker_symbol(char *name)
 
   sym = sym_get_symbol(state.symbol.missing, name);
   if (sym != NULL) {
-    gp_link_remove_symbol(state.symbol.missing, name);
+    gp_cofflink_remove_symbol(state.symbol.missing, name);
   }
 }
 
@@ -210,7 +210,7 @@ _add_linker_symbol(const char *name)
   }
 
   assert(found != NULL);
-  gp_link_add_symbol(state.symbol.definition, found, NULL);
+  gp_cofflink_add_symbol(state.symbol.definition, found, NULL);
 }
 
 /* Search the object list for an idata section. */
@@ -250,7 +250,7 @@ _build_tables(void)
 
   /* Create the object file symbol tables. */
   while (list != NULL) {
-    gp_link_add_symbols(state.symbol.definition, state.symbol.missing, list);
+    gp_cofflink_add_symbols(state.symbol.definition, state.symbol.missing, list);
     list = list->next;
   }
 
@@ -935,7 +935,7 @@ _linker(void)
                                state.section.definition);
 
   /* load the table with the relocated addresses */
-  gp_add_cinit_section(state.object);
+  gp_cofflink_add_cinit_section(state.object);
 
   gp_cofflink_update_table(state.object, state.class->org_to_byte_shift);
 

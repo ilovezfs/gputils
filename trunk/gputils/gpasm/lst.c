@@ -52,8 +52,8 @@ _lst_check_page_start(void)
   }
 }
 
-static int
-_lst_spaces(int n)
+static unsigned int
+_lst_spaces(unsigned int n)
 {
   int i = n;
 
@@ -77,7 +77,7 @@ _lst_eol(void)
 }
 
 /* Print part of a line. Output must not contain newline. Needs call to lst_eol at end of line. */
-static int
+static unsigned int
 _lst_printf(const char *format, ...)
 {
   int r = 0;
@@ -90,7 +90,8 @@ _lst_printf(const char *format, ...)
     r = vfprintf(state.lst.f, format, args);
     va_end(args);
   }
-  return r;
+  assert(r >= 0);
+  return (unsigned int)r;
 }
 
 /* find relocation by address */
@@ -118,10 +119,12 @@ _prev_reloc_type(void)
     return 0;
   }
 
-  for (p = state.obj.section->relocations;
+/*  for (p = state.obj.section->relocations;
        (p->next != NULL) && (p->next != state.obj.section->relocations_tail); p = p->next)
     ;
-  assert(p->next);
+  assert(p->next != NULL);*/
+  p = state.obj.section->relocations_tail->prev;
+  assert(p != NULL);
   return ((p->address == p->next->address) ? p->type : 0);
 }
 
@@ -137,8 +140,8 @@ _prev_reloc_type(void)
 #define ASSERT(expr)    ((void) 0)
 #endif
 
-static int
-_print_reloc(uint16_t type, uint16_t current_value)
+static unsigned int
+_print_reloc(uint16_t type, uint16_t current_value, unsigned int index)
 {
   proc_class_t class = state.device.class;
 
@@ -146,15 +149,22 @@ _print_reloc(uint16_t type, uint16_t current_value)
   case RELOCT_CALL:
     if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
         (class == PROC_CLASS_SX)    || (class == PROC_CLASS_PIC16E)) {
-      ASSERT(0 == (current_value & 0xff));
-      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
-    } else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT(0 == (current_value & MASK_PIC14_BRANCH));
-      return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
-    } else if (class == PROC_CLASS_PIC16) {
-      ASSERT(0 == (current_value & MASK_PIC16_BRANCH));
+      ASSERT((current_value & PIC12_BMSK_CALL) == 0);
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+      ASSERT((current_value & PIC14_BMSK_CALL) == 0);
+      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
+    }
+    else if (class == PROC_CLASS_PIC16) {
+      ASSERT((current_value & PIC16_BMSK_CALL) == 0);
       return _lst_printf("???? ");
-    } else {
+    }
+    else if (class == PROC_CLASS_PIC16E) {
+      ASSERT((current_value & PIC16E_BMSK_CALL0) == 0);
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else {
       ASSERT(0);
       return 0;
     }
@@ -163,18 +173,22 @@ _print_reloc(uint16_t type, uint16_t current_value)
   case RELOCT_GOTO:
     if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
         (class == PROC_CLASS_SX)) {
-      ASSERT(0 == (current_value & MASK_PIC12_GOTO));
-      return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
-    } else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT(0 == (current_value & MASK_PIC14_BRANCH));
-      return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
-    } else if (class == PROC_CLASS_PIC16) {
-      ASSERT(0 == (current_value & MASK_PIC16_BRANCH));
+      ASSERT((current_value & PIC12_BMSK_GOTO) == 0);
+      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
+    }
+    else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+      ASSERT((current_value & PIC14_BMSK_GOTO) == 0);
+      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
+    }
+    else if (class == PROC_CLASS_PIC16) {
+      ASSERT((current_value & PIC16_BMSK_GOTO) == 0);
       return _lst_printf("???? ");
-    } else if (class == PROC_CLASS_PIC16E) {
-      ASSERT(0 == (current_value & 0xff));
-      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
-    } else {
+    }
+    else if (class == PROC_CLASS_PIC16E) {
+      ASSERT((current_value & PIC16E_BMSK_GOTO0) == 0);
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else {
       ASSERT(0);
       return 0;
     }
@@ -187,16 +201,16 @@ _print_reloc(uint16_t type, uint16_t current_value)
      * in such cases.
      * TODO: This should be solved in DB directive handling function
      * do_db(), file directive.c.
-     * ASSERT(0 == (current_value & 0xff)); */
-    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+     * ASSERT((current_value & 0xff) == 0); */
+    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
     break;
 
   case RELOCT_HIGH:
   case RELOCT_LFSR2:
   case RELOCT_UPPER:
   case RELOCT_CONDBRA:
-    ASSERT(0 == (current_value & 0xff));
-    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    ASSERT((current_value & 0xff) == 0);
+    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
     break;
 
   case RELOCT_P:
@@ -206,13 +220,40 @@ _print_reloc(uint16_t type, uint16_t current_value)
       if (RELOCT_F != _prev_reloc_type()) {
         sprintf(&buf[2], "%02X", current_value & 0x00ff);
       }
-      ASSERT(0 == (current_value & 0x1f00));
+      ASSERT((current_value & 0x1f00) == 0);
       return _lst_printf("%s ", buf);
     }
     break;
 
   case RELOCT_BANKSEL:
-    /* TODO: to be implemented */
+    if (class == PROC_CLASS_PIC12) {
+      ASSERT((current_value & PIC12_BMSK_BxF) == 0);  /* 04A4-04E4 or 05A4-05E4 */
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+      ASSERT((current_value & PIC12E_BMSK_MOVLB) == 0);
+      return _lst_printf("%03X? ", (current_value & 0x0fff0) >> 4);
+    }
+    else if (class == PROC_CLASS_PIC14) {
+      ASSERT((current_value & PIC14_BMSK_BxF) == 0);  /* 1283-1303 or 1683-1703 */
+      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
+    }
+    else if (class == PROC_CLASS_PIC14E) {
+      ASSERT((current_value & PIC14E_BMSK_MOVLB) == 0);  /* 0020-003F */
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else if (class == PROC_CLASS_PIC14EX) {
+      ASSERT((current_value & PIC14EX_BMSK_MOVLB) == 0);  /* 0140-017F */
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else if (class == PROC_CLASS_PIC16) {
+      ASSERT((current_value & PIC16_BMSK_MOVLB) == 0);  /* 0100-010F */
+      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
+    }
+    else if (class == PROC_CLASS_PIC16E) {
+      ASSERT((current_value & PIC16E_BMSK_MOVLB) == 0);  /* 0100-010F */
+      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
+    }
     return _lst_printf("???? ");
     break;
 
@@ -222,14 +263,18 @@ _print_reloc(uint16_t type, uint16_t current_value)
 
   case RELOCT_IBANKSEL:
     if (class == PROC_CLASS_PIC14) {
-      ASSERT(0 == (current_value & 0x0f00));  /* 1383 or 1783 */
-      return _lst_printf("1?83 ");
-    } else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      return _lst_printf("???? ");
-    } else if (class == PROC_CLASS_PIC16) {
-      ASSERT(0 == (current_value & 0x00ff));
-      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
-    } else {
+      ASSERT((current_value & PIC12_BMSK_BxF) == 0);
+      return _lst_printf("1?83 ");  /* 1383 or 1783 */
+    }
+    else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+      ASSERT((current_value & PIC12_BMSK_BxF) == 0);
+      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);  /* 120A-118A or 160A-158A */
+    }
+    else if (class == PROC_CLASS_PIC16) {
+      ASSERT((current_value & 0x00ff) == 0);
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else {
       ASSERT(0);
       return 0;
     }
@@ -238,33 +283,69 @@ _print_reloc(uint16_t type, uint16_t current_value)
   case RELOCT_F:
     if (class == PROC_CLASS_SX) {
       ASSERT((current_value & 0x0007) == 0);
-      return _lst_printf("%03X?? ", (current_value >> 4) & 0x000f);
-    } else if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
-      ASSERT(0 == (current_value & MASK_PIC12_FILE));
-    } else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT(0 == (current_value & MASK_PIC14_FILE));
-    } else if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
-      ASSERT(0 == (current_value & MASK_PIC16_FILE));
-    } else {
+      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
+    }
+    else if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+      ASSERT((current_value & MASK_PIC12_FILE) == 0);
+    }
+    else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+      ASSERT((current_value & MASK_PIC14_FILE) == 0);
+    }
+    else if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
+      ASSERT((current_value & MASK_PIC16_FILE) == 0);
+    }
+    else {
       ASSERT(0);
       return 0;
     }
-    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
     break;
 
   case RELOCT_TRIS_3BIT:
-    ASSERT(0 == (current_value & 0x0007));
-    return _lst_printf("%03X? ", (current_value >> 4) & 0x000f);
+    ASSERT((current_value & PIC12_BMSK_TRIS) == 0);
+    return _lst_printf("%03X? ", (current_value & 0x00f0) >> 4);
     break;
 
   case RELOCT_TRIS:
-    ASSERT(0 == (current_value & 0x001f));
-    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    ASSERT((current_value & 0x001f) == 0);
+    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
     break;
 
   case RELOCT_MOVLR:
-    ASSERT(0 == (current_value & 0x00f0));
-    return _lst_printf("%02X?%01X ", (current_value >> 8) & 0xff, current_value & 0x000f);
+    if (class == PROC_CLASS_PIC16) {
+      ASSERT((current_value & PIC16_BMSK_MOVLR) == 0);
+      return _lst_printf("%02X?%X ", (current_value & 0xff00) >> 8, current_value & 0x000f);  /* 010.-01F. */
+    }
+    else {
+      ASSERT(0);
+      return 0;
+    }
+
+  case RELOCT_MOVLB:
+    if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+      ASSERT((current_value & PIC12E_BMSK_MOVLB) == 0);
+      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
+    }
+    else if (class == PROC_CLASS_PIC14E) {
+      ASSERT((current_value & PIC14E_BMSK_MOVLB) == 0);
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else if (class == PROC_CLASS_PIC14EX) {
+      ASSERT((current_value & PIC14EX_BMSK_MOVLB) == 0);
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else if (class == PROC_CLASS_PIC16) {
+      ASSERT((current_value & PIC16_BMSK_MOVLB) == 0);
+      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);  /* 01.0-01.F */
+    }
+    else if (class == PROC_CLASS_PIC16E) {
+      ASSERT((current_value & PIC16E_BMSK_MOVLB) == 0);
+      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
+    }
+    else {
+      ASSERT(0);
+      return 0;
+    }
     break;
 
   case RELOCT_GOTO2:
@@ -273,69 +354,96 @@ _print_reloc(uint16_t type, uint16_t current_value)
   case RELOCT_FF2:
     /* removed assertion since it fails during sdcc pic16 library
      * compilation: do_insn, case INSN_CLASS_FF
-     * ASSERT(0 == (current_value & 0x0fff)); */
-    return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
+     * ASSERT((current_value & 0x0fff) == 0); */
+    return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
     break;
 
   case RELOCT_LFSR1:
-    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
     break;
 
   case RELOCT_BRA:
     if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT(0 == (current_value & MASK_PIC14E_RBRA9));
-    } else if (class == PROC_CLASS_PIC16E) {
-      ASSERT(0 == (current_value & MASK_PIC16E_RBRA11));
-    } else {
+      ASSERT((current_value & PIC14E_BMSK_RBRA9) == 0);
+    }
+    else if (class == PROC_CLASS_PIC16E) {
+      ASSERT((current_value & PIC16E_BMSK_RBRA11) == 0);
+    }
+    else {
       ASSERT(0);
       return 0;
     }
-    return _lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
-    break;
-
-  case RELOCT_MOVLB:
-    if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
-      ASSERT(0 == (current_value & MASK_PIC12E_BANK));
-      return _lst_printf("%03X? ", (current_value >> 4) & 0x0fff);
-    } else if (class == PROC_CLASS_PIC14E) {
-      ASSERT(0 == (current_value & MASK_PIC14E_BANK));
-      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
-    } else if (class == PROC_CLASS_PIC14EX) {
-      ASSERT(0 == (current_value & MASK_PIC14EX_BANK));
-      return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
-    } else if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
-      ASSERT(0 == (current_value & MASK_PIC16E_BANK));
-      return _lst_printf("%03X? ", (current_value >> 4) & 0x0fff);
-    } else {
-      ASSERT(0);
-      return 0;
-    }
+    return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
     break;
 
   case RELOCT_ACCESS:
     if (class == PROC_CLASS_PIC16E) {
-      ASSERT(0 == (current_value & 0x00ff));
-    } else {
+      ASSERT((current_value & 0x00ff) == 0);
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else {
       ASSERT(0);
       return 0;
     }
-    return _lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_PAGESEL_WREG:
+    if (index == 0) {
+      /* movlw PAGE_VALUE */
+      if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+        ASSERT((current_value & PIC12_BMSK_MOVLW) == 0);
+        return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8); /* 0C00 -- movlw ... */
+      }
+      else if (class == PROC_CLASS_PIC14) {
+        ASSERT((current_value & PIC14_BMSK_MOVLW) == 0);
+        return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8); /* 3000 -- movlw ... */
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
+    }
+    else {
+      /* movwf register */
+      if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+        ASSERT((current_value & PIC12_BMSK_FILE) == 0);
+        return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8); /* 0023 -- movwf STATUS */
+      }
+      else if (class == PROC_CLASS_PIC14) {
+        ASSERT((current_value & PIC14_BMSK_FILE) == 0);
+        return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8); /* 008A -- movwf PCLATH */
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
+    }
+    break;
+
   case RELOCT_PAGESEL_BITS:
-    /* TODO: to be implemented */
-    return _lst_printf("???? ");
+    if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+      ASSERT((current_value & PIC12_BMSK_BxF) == 0);
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);  /* 04A3-04E3 or 05A3-05E3 */
+    }
+    else if (class == PROC_CLASS_PIC14) {
+      ASSERT((current_value & PIC14_BMSK_BxF) == 0);
+      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);  /* 120A-118A or 160A-158A */
+    }
+    else {
+      ASSERT(0);
+      return 0;
+    }
     break;
 
   case RELOCT_PAGESEL_MOVLP:
     if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT(0 == (current_value & MASK_PIC14E_PAGE));
-    } else {
+      ASSERT((current_value & PIC14E_BMSK_MOVLP) == 0);
+      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
+    }
+    else {
       ASSERT(0);
       return 0;
     }
-    return _lst_printf("31?? ", (current_value >> 16) & 0xff);
     break;
 
   /* unimplemented relocations */
@@ -356,11 +464,15 @@ _print_reloc(uint16_t type, uint16_t current_value)
 static unsigned int
 _lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr, unsigned int bytes_emitted, uint16_t reloc_type)
 {
-  uint8_t    emit_byte;
-  uint16_t   emit_word;
-  int        lst_bytes = 0;
-  gp_boolean is_eeprom_area = (gp_processor_is_eeprom_byte_addr(state.processor, byte_addr) >= 0) ? true : false;
+  uint8_t      emit_byte;
+  uint16_t     emit_word;
+  unsigned int start_addr;
+  unsigned int lst_bytes;
+  gp_boolean   is_eeprom_area;
+  unsigned int n;
 
+  lst_bytes      = 0;
+  is_eeprom_area = (gp_processor_is_eeprom_byte_addr(state.processor, byte_addr) >= 0) ? true : false;
   /* When in a idata or byte packed section or eeprom area, print byte by byte. */
   if (IS_EEPROM8 || is_eeprom_area || (state.obj.new_sect_flags & (STYP_DATA | STYP_BPACK))) {
     while ((bytes_emitted > lst_bytes) && ((pos + 3) <= LST_LINENUM_POS)) {
@@ -372,19 +484,20 @@ _lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr, unsigned int by
   }
   else {    /* non-code pack section */
     /* list first byte on odd address */
-    if (bytes_emitted && (byte_addr & 1)) {
+    if ((bytes_emitted != 0) && (byte_addr & 1)) {
       b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
       pos += _lst_printf("%02X ", emit_byte);
       ++byte_addr;
       ++lst_bytes;
     }
     /* list full words */
+    start_addr = byte_addr;
     while (((bytes_emitted - lst_bytes) > 1) && ((pos + 5) <= LST_LINENUM_POS)) {
       state.device.class->i_memory_get(m, byte_addr, &emit_word, NULL, NULL);
 
       /* Display '?' for undefined bytes if it is a relocatable code. */
       if (reloc_type != 0) {
-        int n = _print_reloc(reloc_type, emit_word);
+        n = _print_reloc(reloc_type, emit_word, (byte_addr - start_addr) / 2);
 
         pos += (n == 0) ? _lst_printf("%04X ", emit_word) : n;
       }

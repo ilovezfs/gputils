@@ -416,7 +416,7 @@ gp_archive_make_index(gp_archive_type *archive, symbol_table_t *definition)
 
     object = gp_convert_file(name, &archive->data);
     assert(object != NULL);
-    gp_link_add_symbols(definition, NULL, object);
+    gp_cofflink_add_symbols(definition, NULL, object);
     archive = archive->next;
   }
 
