@@ -32,7 +32,7 @@ gp_boolean gp_relocate_to_shared = false;
    at the begining of the relocation process. */
 
 void
-gp_link_add_symbol(symbol_table_t *table, gp_symbol_type *symbol, gp_object_type *file)
+gp_cofflink_add_symbol(symbol_table_t *table, gp_symbol_type *symbol, gp_object_type *file)
 {
   symbol_t           *sym;
   gp_coffsymbol_type *var;
@@ -52,7 +52,7 @@ gp_link_add_symbol(symbol_table_t *table, gp_symbol_type *symbol, gp_object_type
 }
 
 void
-gp_link_remove_symbol(symbol_table_t *table, char *name)
+gp_cofflink_remove_symbol(symbol_table_t *table, char *name)
 {
   symbol_t           *sym;
   gp_coffsymbol_type *var;
@@ -73,7 +73,7 @@ gp_link_remove_symbol(symbol_table_t *table, char *name)
    not used for generating symbol indexes for archives. */
 
 gp_boolean
-gp_link_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_object_type *object)
+gp_cofflink_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_object_type *object)
 {
   gp_symbol_type     *symbol;
   symbol_t           *sym;
@@ -97,7 +97,7 @@ gp_link_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_obje
         sym = sym_get_symbol(definition, symbol->name);
 
         if ((sym == NULL) && (missing != NULL)) {
-          gp_link_add_symbol(missing, symbol, object);
+          gp_cofflink_add_symbol(missing, symbol, object);
         }
       }
       else {
@@ -113,11 +113,11 @@ gp_link_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_obje
                    symbol->name, var->file->filename, object->filename);
         }
         else {
-          gp_link_add_symbol(definition, symbol, object);
+          gp_cofflink_add_symbol(definition, symbol, object);
         }
 
         if (missing != NULL) {
-          gp_link_remove_symbol(missing, symbol->name);
+          gp_cofflink_remove_symbol(missing, symbol->name);
         }
       }
     }
@@ -212,7 +212,7 @@ gp_cofflink_clean_table(gp_object_type *object, symbol_table_t *symbols)
     section = section->next;
   }
 
-  symbol = object->symbols;
+  symbol   = object->symbols;
   previous = NULL;
   while (symbol != NULL) {
     if ((symbol->class == C_EXT) && (symbol->section_number == N_UNDEF)) {
@@ -701,7 +701,7 @@ gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit)
 /* load the relocated sections addresses in the table */
 
 void
-gp_add_cinit_section(gp_object_type *object)
+gp_cofflink_add_cinit_section(gp_object_type *object)
 {
   gp_section_type       *section;
   proc_class_t           class;

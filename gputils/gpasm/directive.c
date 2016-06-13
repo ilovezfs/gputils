@@ -46,7 +46,7 @@ extern pnode_t *mk_constant(int value);
 static gp_boolean prev_btfsx = false;
 
 static uint16_t
-checkwrite(uint16_t value)
+_checkwrite(uint16_t value)
 {
   uint16_t insn;
   int      org;
@@ -138,7 +138,7 @@ checkwrite(uint16_t value)
 }
 
 static gp_boolean
-check_processor_select(const char *Name)
+_check_processor_select(const char *Name)
 {
   if (state.processor == NULL) {
     if ((!state.mpasm_compatible) && (state.strict_level > 0)) {
@@ -158,11 +158,11 @@ check_processor_select(const char *Name)
 /* Write a word into the memory image at the current location. */
 
 static void
-emit(uint16_t value, const char *name)
+_emit(uint16_t value, const char *name)
 {
   /* only write the program data to memory on the second pass */
   if (state.pass == 2) {
-    value = checkwrite(value);
+    value = _checkwrite(value);
     state.device.class->i_memory_put(state.i_memory, state.byte_addr, value, name, NULL);
   }
 
@@ -170,7 +170,7 @@ emit(uint16_t value, const char *name)
 }
 
 static void
-emit_byte(uint16_t value, const char *name)
+_emit_byte(uint16_t value, const char *name)
 {
   if (state.pass == 2) {
     if ((state.mode == MODE_RELOCATABLE) && (state.obj.section == NULL)) {
@@ -227,7 +227,7 @@ emit_byte(uint16_t value, const char *name)
 }
 
 static gp_boolean
-off_or_on(pnode_t *p)
+_off_or_on(pnode_t *p)
 {
   int had_error = false;
   int ret = false;
@@ -262,7 +262,7 @@ off_or_on(pnode_t *p)
  */
 
 static int
-emit_data(pnode_t *L, int char_shift, const char *name)
+_emit_data(pnode_t *L, int char_shift, const char *name)
 {
   const pnode_t  *p;
   const char     *pc;
@@ -281,11 +281,11 @@ emit_data(pnode_t *L, int char_shift, const char *name)
         /* Special case of PIC16E strings in code. */
         for (n = 0; *pc != '\0'; ++n) {
           pc = convert_escape_chars(pc, &value);
-          emit_byte(value, name);
+          _emit_byte(value, name);
         }
         /* Pad using zero if 16-bit numbers. */
         if (n & 1) {
-          emit_byte(0, name);
+          _emit_byte(0, name);
         }
       }
       else {
@@ -304,22 +304,22 @@ emit_data(pnode_t *L, int char_shift, const char *name)
               v |= value & 0xff;
             }
           }
-          emit(v, name);
+          _emit(v, name);
         }
         /* For data and packed emit a terminating nul for strings. */
         if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
-          emit(0, name);
+          _emit(0, name);
         }
       }
     }
     else if (state.device.class->core_mask > 0xff) {
       v = reloc_evaluate(p, RELOCT_ALL);
-      emit(v, name);
+      _emit(v, name);
     }
     else {
       /* FIXME: This case is for EEPROM8. Do we need the RELOCT_LOW? */
       v = reloc_evaluate(p, RELOCT_LOW);
-      emit_byte(v, name);
+      _emit_byte(v, name);
     }
   }
 
@@ -330,7 +330,7 @@ emit_data(pnode_t *L, int char_shift, const char *name)
    This is used by do_if, do_ifdef and do_ifndef. */
 
 static void
-enter_if(void)
+_enter_if(void)
 {
   amode_t *new = GP_Malloc(sizeof(*new));
 
@@ -350,7 +350,7 @@ enter_if(void)
 }
 
 static void
-enter_elif(void)
+_enter_elif(void)
 {
   if (state.astack == NULL) {
     gpverror(GPE_ILLEGAL_COND, NULL);
@@ -365,7 +365,7 @@ enter_elif(void)
 /* Checking that a macro definition's parameters are correct. */
 
 static gp_boolean
-macro_parms_simple(pnode_t *parms)
+_macro_parms_simple(pnode_t *parms)
 {
   while (parms != NULL) {
     if (HEAD(parms)->tag != PTAG_SYMBOL) {
@@ -378,7 +378,7 @@ macro_parms_simple(pnode_t *parms)
 }
 
 static gp_boolean
-macro_parm_unique(pnode_t *M, pnode_t *L)
+_macro_parm_unique(pnode_t *M, pnode_t *L)
 {
   while (L != NULL) {
     if (STRCMP(M->value.symbol, HEAD(L)->value.symbol) == 0) {
@@ -394,16 +394,16 @@ macro_parm_unique(pnode_t *M, pnode_t *L)
 }
 
 static gp_boolean
-macro_parms_ok(pnode_t *parms)
+_macro_parms_ok(pnode_t *parms)
 {
   /* Check if all params are symbols. */
-  if (!macro_parms_simple(parms)) {
+  if (!_macro_parms_simple(parms)) {
     return false;
   }
 
   /* Check if params are unique. */
   while (parms != NULL) {
-    if (!macro_parm_unique(HEAD(parms), TAIL(parms))) {
+    if (!_macro_parm_unique(HEAD(parms), TAIL(parms))) {
       return false;
     }
     parms = TAIL(parms);
@@ -415,7 +415,7 @@ macro_parms_ok(pnode_t *parms)
 /************************************************************************/
 
 static gpasmVal
-do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -456,7 +456,7 @@ do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   int            maxram;
@@ -524,7 +524,7 @@ do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_badrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_badrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -540,7 +540,7 @@ do_badrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_bankisel(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_bankisel(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   int            num_reloc;
@@ -590,11 +590,11 @@ do_bankisel(gpasmVal r, const char *name, int arity, pnode_t *parms)
           unsigned int mask;
 
           for (mask = 0x100; mask < (state.processor->num_banks << PIC14_BANK_SHIFT); mask <<= 1) {
-            emit(0, name);
+            _emit(0, name);
           }
         }
         else {
-          emit(0, name);
+          _emit(0, name);
         }
       }
     }
@@ -604,7 +604,7 @@ do_bankisel(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   int            address;
@@ -666,35 +666,35 @@ do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
       }
       else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
         reloc_evaluate(p, RELOCT_MOVLB);
-        emit(PIC12E_INSN_MOVLB, name);
+        _emit(PIC12E_INSN_MOVLB, name);
       }
       else if (IS_PIC14E_CORE) {
         reloc_evaluate(p, RELOCT_MOVLB);
-        emit(PIC14E_INSN_MOVLB, name);
+        _emit(PIC14E_INSN_MOVLB, name);
       }
       else if (IS_PIC14EX_CORE) {
         reloc_evaluate(p, RELOCT_MOVLB);
-        emit(PIC14EX_INSN_MOVLB, name);
+        _emit(PIC14EX_INSN_MOVLB, name);
       }
       else if (IS_PIC16_CORE) {
         reloc_evaluate(p, RELOCT_BANKSEL);
-        emit(0x0000, name);
+        _emit(0x0000, name);
       }
       else if (IS_PIC16E_CORE) {
         reloc_evaluate(p, RELOCT_BANKSEL);
-        emit(PIC16E_INSN_MOVLB, name);
+        _emit(PIC16E_INSN_MOVLB, name);
       }
       else {
         switch (state.processor->num_banks) {
         case 2:
           reloc_evaluate(p, RELOCT_BANKSEL);
-          emit(0, name);
+          _emit(0, name);
           break;
 
         case 4:
           reloc_evaluate(p, RELOCT_BANKSEL);
-          emit(0, name);
-          emit(0, name);
+          _emit(0, name);
+          _emit(0, name);
           break;
         }
       }
@@ -705,7 +705,7 @@ do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_code(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_code(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -746,7 +746,7 @@ do_code(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -792,14 +792,14 @@ do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_constant(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_constant(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   gp_boolean     first;
   const char    *lhs;
   gpasmVal       val;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -848,7 +848,7 @@ do_constant(gpasmVal r, const char *name, int arity, pnode_t *parms)
  *                     directives for all devices.
  */
 
-static gp_boolean config_us_used = false;
+static gp_boolean config_us_used    = false;
 static gp_boolean config_mpasm_used = false;
 
 /*
@@ -857,7 +857,7 @@ static gp_boolean config_mpasm_used = false;
  */
 
 static MemBlock *
-find_conf_sec_mem(int ca)
+_find_conf_sec_mem(int ca)
 {
   conf_mem_block_t *p;
   int               ba = (IS_PIC16_CORE || IS_PIC16E_CORE) ? ca : (ca - (ca & 1));
@@ -872,7 +872,7 @@ find_conf_sec_mem(int ca)
 }
 
 static MemBlock *
-add_conf_sec_mem(int ca, gp_boolean new_config)
+_add_conf_sec_mem(int ca, gp_boolean new_config)
 {
   conf_mem_block_t *new = GP_Malloc(sizeof(conf_mem_block_t));
 
@@ -905,16 +905,16 @@ add_conf_sec_mem(int ca, gp_boolean new_config)
 }
 
 static MemBlock *
-get_config_mem(int ca, gp_boolean new_config)
+_get_config_mem(int ca, gp_boolean new_config)
 {
   if (state.mode != MODE_RELOCATABLE) {
     return state.c_memory;
   }
   else {
-    MemBlock *mem = find_conf_sec_mem(ca);
+    MemBlock *mem = _find_conf_sec_mem(ca);
 
     if (mem == NULL) {
-      mem = add_conf_sec_mem(ca, new_config);
+      mem = _add_conf_sec_mem(ca, new_config);
     }
 
     return mem;
@@ -923,8 +923,8 @@ get_config_mem(int ca, gp_boolean new_config)
 
 /* helper to write configuration data, grabbing defaults when necessary */
 static void
-config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
-                       int ca, uint8_t byte, uint8_t mask)
+_config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
+                        int ca, uint8_t byte, uint8_t mask)
 {
   uint8_t old_byte;
   char    buf[BUFSIZ];
@@ -939,8 +939,8 @@ config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
 }
 
 static void
-config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
-                       int ca, uint8_t byte, uint8_t mask)
+_config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
+                        int ca, uint8_t byte, uint8_t mask)
 {
   uint8_t other_byte;
   char    buf[BUFSIZ];
@@ -950,11 +950,11 @@ config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
     other_byte = gp_cfg_get_default(p_dev, ca ^ 1);
     b_memory_put(config_mem, ca ^ 1, other_byte, buf, NULL);
   }
-  config_16_set_byte_mem(config_mem, p_dev, ca, byte, mask);
+  _config_16_set_byte_mem(config_mem, p_dev, ca, byte, mask);
 }
 
 static gpasmVal
-do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   int            ca;
@@ -1009,7 +1009,7 @@ do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.lst.config_address = ca;
 
   if ((can_evaluate(p)) && (state.pass == 2)) {
-    MemBlock *config_mem = get_config_mem(ca, false);
+    MemBlock *config_mem = _get_config_mem(ca, false);
     value = evaluate(p);
 
     if (IS_PIC16E_CORE) {
@@ -1022,7 +1022,7 @@ do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
       p_dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
       if (p_dev != NULL) {
         /* We do this to also set the other byte in a word. */
-        config_16_set_word_mem(config_mem, p_dev, ca, value, 0xff);
+        _config_16_set_word_mem(config_mem, p_dev, ca, value, 0xff);
       }
       else {
         assert(0); /* this shouldn't happen */
@@ -1057,7 +1057,7 @@ do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
 /* Sets defaults over unused portions of configuration memory. */
 static void
-config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
+_config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 {
   const gp_cfg_addr_t *addrs = p_dev->addresses;
   int t;
@@ -1076,14 +1076,14 @@ config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
     uint8_t byte;
 
     if (!b_memory_get(config_mem, addrs->address, &byte, NULL, NULL)) {
-      config_16_set_byte_mem(config_mem, p_dev, addrs->address, addrs->def_value, 0xff);
+      _config_16_set_byte_mem(config_mem, p_dev, addrs->address, addrs->def_value, 0xff);
     }
   }
 }
 
 /* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC16(E) devices. */
 static gpasmVal
-do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
+_do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 {
   static uint8_t            double_mask[64] = { 0, };
 
@@ -1177,10 +1177,10 @@ do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   /* emit the bytes if appropriate */
   if (state.pass == 2) {
     unsigned int  dm_addr = (ca - p_dev->addresses->address) & 0xFF;
-    MemBlock     *config_mem = get_config_mem(ca, true);
+    MemBlock     *config_mem = _get_config_mem(ca, true);
 
     if (state.mode != MODE_RELOCATABLE) {
-      config_16_check_defaults(config_mem, p_dev);
+      _config_16_check_defaults(config_mem, p_dev);
     }
 
     /* make sure we've not written here yet */
@@ -1197,7 +1197,7 @@ do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
     }
 
     /* Let the helper set the data. */
-    config_16_set_byte_mem(config_mem, p_dev, ca, (uint8_t)p_opt->value, (uint8_t)p_dir->mask);
+    _config_16_set_byte_mem(config_mem, p_dev, ca, (uint8_t)p_opt->value, (uint8_t)p_dir->mask);
   }
 
   return r;
@@ -1206,8 +1206,8 @@ do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 /*-------------------------------------------------------------------------*/
 
 static void
-config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
-                          int ca, uint16_t word, uint16_t mask)
+_config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
+                           int ca, uint16_t word, uint16_t mask)
 {
   int      org;
   uint16_t old_word;
@@ -1227,7 +1227,7 @@ config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
 
 /* Sets defaults over unused portions of configuration memory. */
 static void
-config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
+_config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 {
   const gp_cfg_addr_t *addrs = p_dev->addresses;
   unsigned int         addr;
@@ -1246,7 +1246,7 @@ config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 
 /* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC14(E) and PIC12(E) devices. */
 static gpasmVal
-do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
+_do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 {
   static uint16_t           double_mask[256] = { 0, };
 
@@ -1343,10 +1343,10 @@ do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   /* emit the bytes if appropriate */
   if (state.pass == 2) {
     unsigned int dm_addr = (conf_org - p_dev->addresses->address) & 0xFF;
-    MemBlock *config_mem = get_config_mem(ca, true);
+    MemBlock *config_mem = _get_config_mem(ca, true);
 
     if (state.mode != MODE_RELOCATABLE) {
-      config_12_14_check_defaults(config_mem, p_dev);
+      _config_12_14_check_defaults(config_mem, p_dev);
     }
 
     /* make sure we've not written here yet */
@@ -1364,14 +1364,14 @@ do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
     }
 
     /* Let the helper set the data. */
-    config_12_14_set_word_mem(config_mem, p_dev, ca, p_opt->value, p_dir->mask);
+    _config_12_14_set_word_mem(config_mem, p_dev, ca, p_opt->value, p_dir->mask);
   }
 
   return r;
 }
 
 static gpasmVal
-do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   char           buf[BUFSIZ];
@@ -1411,10 +1411,10 @@ do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
     p = HEAD(parms);
 
     if (IS_PIC16_CORE || IS_PIC16E_CORE) {
-      do_16_config(r, name, arity, p);
+      _do_16_config(r, name, arity, p);
     }
     else {
-      do_12_14_config(r, name, arity, p);
+      _do_12_14_config(r, name, arity, p);
     }
   }
 
@@ -1431,7 +1431,7 @@ do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
  *          for 14-bit cores it packs two 7-bit characters into one word.
  */
 static gpasmVal
-do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   int char_shift;
 
@@ -1448,7 +1448,7 @@ do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
     char_shift = 8;
   }
 
-  emit_data(parms, char_shift, name);
+  _emit_data(parms, char_shift, name);
 
   return r;
 }
@@ -1467,7 +1467,7 @@ do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
  */
 
 static gpasmVal
-do_data(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_data(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -1479,7 +1479,7 @@ do_data(gpasmVal r, const char *name, int arity, pnode_t *parms)
     state.lst.line.linetype = LTY_DATA;
   }
 
-  emit_data(parms, 8, name);
+  _emit_data(parms, 8, name);
 
   return r;
 }
@@ -1493,7 +1493,7 @@ do_data(gpasmVal r, const char *name, int arity, pnode_t *parms)
  */
 
 static gpasmVal
-do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *L;
   const pnode_t *p;
@@ -1532,7 +1532,7 @@ do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
           int value;
 
           pc = convert_escape_chars(pc, &value);
-          emit_byte(value, name);
+          _emit_byte(value, name);
         }
       }
       else {
@@ -1545,14 +1545,14 @@ do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
           gpvwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
         }
 
-        emit_byte(value, name);
+        _emit_byte(value, name);
       }
     }
 
     if (state.mpasm_compatible) {
       if ((state.mode == MODE_ABSOLUTE) || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
         if ((state.byte_addr - begin_byte_addr) & 1) {
-          emit_byte(0, name);
+          _emit_byte(0, name);
         }
       }
     }
@@ -1564,7 +1564,7 @@ do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
           (gp_processor_is_eeprom_org(state.processor, org) < 0)) {
         if ((state.mode == MODE_ABSOLUTE) || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
           if ((state.byte_addr - begin_byte_addr) & 1) {
-            emit_byte(0, name);
+            _emit_byte(0, name);
           }
         }
       }
@@ -1606,21 +1606,21 @@ do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
             v = value << 8;
           }
           else {
-            emit(v | value, name);
+            _emit(v | value, name);
           }
         }
         else {
           org = gp_processor_byte_to_real(state.processor, state.byte_addr);
 
           if (gp_processor_is_eeprom_org(state.processor, org) >= 0) {
-            emit_byte(value, name);
+            _emit_byte(value, name);
           }
           else {
             if (!(n & 1)) {
               v = value << 8;
             }
             else {
-              emit(v | value, name);
+              _emit(v | value, name);
             }
           }
         }
@@ -1636,7 +1636,7 @@ do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     if (state.mpasm_compatible) {
       if (n & 1) {
-        emit(v, name);
+        _emit(v, name);
       }
     }
     else {
@@ -1644,7 +1644,7 @@ do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
       if (gp_processor_is_eeprom_org(state.processor, org) < 0) {
         if (n & 1) {
-          emit(v, name);
+          _emit(v, name);
         }
       }
     }
@@ -1653,7 +1653,7 @@ do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -1663,7 +1663,7 @@ do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   if (IS_PIC16E_CORE) {
-    return do_db(r, name, arity, parms);
+    return _do_db(r, name, arity, parms);
   }
 
   for (; parms != NULL; parms = TAIL(parms)) {
@@ -1676,14 +1676,14 @@ do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
         int value;
 
         pc = convert_escape_chars(pc, &value);
-        emit(value & 0xff, name);
+        _emit(value & 0xff, name);
       }
     }
     else {
       uint16_t v;
 
       v = reloc_evaluate(p, RELOCT_ALL);
-      emit(v & 0xff, name);
+      _emit(v & 0xff, name);
     }
   }
 
@@ -1692,7 +1692,7 @@ do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
 /* Extension to MPASM(X), used at least by LLVM to emit debugging information. */
 static gpasmVal
-do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t      *p;
   char               *symbol_name = NULL;
@@ -1828,11 +1828,11 @@ do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   pnode_t *p;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -1869,7 +1869,7 @@ do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
 /* Extension to MPASM(X), used at least by LLVM to emit debugging information. */
 static gpasmVal
-do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t  *p;
   const char     *symbol_name;
@@ -1954,7 +1954,7 @@ do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   pnode_t       *p;
   int            value;
@@ -2010,7 +2010,7 @@ do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   int            retlw;
@@ -2032,14 +2032,14 @@ do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
         int value;
 
         pc = convert_escape_chars(pc, &value);
-        emit((value & 0xff) | retlw, name);
+        _emit((value & 0xff) | retlw, name);
       }
     }
     else {
       uint16_t v;
 
       v = reloc_evaluate(p, RELOCT_ALL);
-      emit((v & 0xff) | retlw, name);
+      _emit((v & 0xff) | retlw, name);
     }
   }
 
@@ -2047,7 +2047,7 @@ do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t  *p;
   const symbol_t *s;
@@ -2075,14 +2075,14 @@ do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
         int value;
 
         pc = convert_escape_chars(pc, &value);
-        emit(i->opcode | (value & 0xff), name);
+        _emit(i->opcode | (value & 0xff), name);
       }
     }
     else {
       uint16_t v;
 
       v = reloc_evaluate(p, RELOCT_ALL);
-      emit(i->opcode | (v & 0xff), name);
+      _emit(i->opcode | (v & 0xff), name);
     }
   }
 
@@ -2096,7 +2096,7 @@ do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
  *          also the way mpasm does it.)
  */
 static gpasmVal
-do_dw(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_dw(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -2115,16 +2115,16 @@ do_dw(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
   /* MPASM 5.34 seems to do this same for p18cxxx as for others. */
-  emit_data(parms, 8, name);
+  _emit_data(parms, 8, name);
 
   return r;
 }
 
 
 static gpasmVal
-do_else(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_else(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -2145,7 +2145,7 @@ do_else(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_end(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_end(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   state.found_end = true;
   state.lst.line.linetype = LTY_DIR;
@@ -2154,9 +2154,9 @@ do_end(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_endif(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_endif(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -2182,9 +2182,9 @@ do_endif(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_endm(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_endm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -2205,9 +2205,9 @@ do_endm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_endw(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_endw(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -2234,7 +2234,7 @@ do_endw(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_eof(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_eof(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
@@ -2254,9 +2254,9 @@ do_eof(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_equ(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_equ(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -2271,7 +2271,7 @@ do_equ(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
 /* Recognize it and decodes the characters which are protects a special (meta) character. */
 static int
-resolve_meta_chars(char *Dst, int Max_size, const char *Src, int Size)
+_resolve_meta_chars(char *Dst, int Max_size, const char *Src, int Size)
 {
   char       *d;
   char        ch;
@@ -2323,7 +2323,7 @@ resolve_meta_chars(char *Dst, int Max_size, const char *Src, int Size)
 }
 
 static const char *
-hv_macro_resolver(const char *String)
+_hv_macro_resolver(const char *String)
 {
   static char out[BUFSIZ];
 
@@ -2354,7 +2354,7 @@ hv_macro_resolver(const char *String)
         }
 
         /* Decodes the protected characters. */
-        mt_size = resolve_meta_chars(buf, sizeof(buf), st_start, raw_size);
+        mt_size = _resolve_meta_chars(buf, sizeof(buf), st_start, raw_size);
         st_start += raw_size;
 
         if (mt_size > 0) {
@@ -2433,12 +2433,12 @@ hv_macro_resolver(const char *String)
 }
 
 static gpasmVal
-do_error(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_error(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   const char    *str;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -2448,7 +2448,7 @@ do_error(gpasmVal r, const char *name, int arity, pnode_t *parms)
     p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
-      if ((str = hv_macro_resolver(p->value.string)) != NULL) {
+      if ((str = _hv_macro_resolver(p->value.string)) != NULL) {
         gpverror(GPE_USER, NULL, str);
       }
     }
@@ -2477,11 +2477,11 @@ do_error(gpasmVal r, const char *name, int arity, pnode_t *parms)
  ************************************************************************/
 
 static gpasmVal
-do_errlvl(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_errlvl(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -2517,9 +2517,9 @@ do_errlvl(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_exitm(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_exitm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -2538,7 +2538,7 @@ do_exitm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_expand(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_expand(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
@@ -2554,7 +2554,7 @@ do_expand(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_extern(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_extern(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const char *p;
 
@@ -2577,7 +2577,7 @@ do_extern(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_file(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_file(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -2609,7 +2609,7 @@ do_file(gpasmVal r, const char *name, int arity, pnode_t *parms)
    in the parser. */
 
 static gpasmVal
-do_fill(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_fill(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *h;
   int            number;
@@ -2625,14 +2625,14 @@ do_fill(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     for (; number > 0; --number) {
       /* we must evaluate each loop, because some symbols change (i.e. $) */
-      emit(maybe_evaluate(h), name);
+      _emit(maybe_evaluate(h), name);
     }
   }
   return r;
 }
 
 static gpasmVal
-do_global(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_global(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const char     *p;
   const symbol_t *s;
@@ -2688,7 +2688,7 @@ do_global(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_idata(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_idata(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -2732,7 +2732,7 @@ do_idata(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_idata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_idata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -2776,7 +2776,7 @@ do_idata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_ident(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_ident(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -2800,7 +2800,7 @@ do_ident(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   int          value;
   int          v;
@@ -2926,7 +2926,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
 /* Support IDLOCS "abcdef" or IDLOCS 'a', 'b', 'c' syntax for PIC16E devices. */
 static gpasmVal
-do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   static unsigned int last_idreg = 0;
 
@@ -3081,18 +3081,18 @@ warning:
 }
 
 static gpasmVal
-do_if(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_if(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
   state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
-  enter_if();
+  _enter_if();
 
   /* Only evaluate the conditional if it matters... */
   if (state.astack->upper_enabled) {
@@ -3107,7 +3107,7 @@ do_if(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_elif(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_elif(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   char           buf[BUFSIZ];
@@ -3118,14 +3118,14 @@ do_elif(gpasmVal r, const char *name, int arity, pnode_t *parms)
     return r;
   }
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
   state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
-  enter_elif();
+  _enter_elif();
 
   /* Only evaluate the conditional elif it matters... */
   if (state.astack->upper_enabled) {
@@ -3140,18 +3140,18 @@ do_elif(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_ifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_ifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
   state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
-  enter_if();
+  _enter_if();
 
   /* Only evaluate the conditional ifdef it matters... */
   if (state.astack->upper_enabled) {
@@ -3173,7 +3173,7 @@ do_ifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   char           buf[BUFSIZ];
@@ -3184,14 +3184,14 @@ do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
     return r;
   }
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
   state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
-  enter_elif();
+  _enter_elif();
 
   /* Only evaluate the conditional elifdef it matters... */
   if (state.astack->upper_enabled) {
@@ -3213,18 +3213,18 @@ do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_ifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_ifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
   state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
-  enter_if();
+  _enter_if();
 
   /* Only evaluate the conditional ifndef it matters... */
   if (state.astack->upper_enabled) {
@@ -3246,7 +3246,7 @@ do_ifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   char           buf[BUFSIZ];
@@ -3257,14 +3257,14 @@ do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
     return r;
   }
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
   state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
-  enter_elif();
+  _enter_elif();
 
   /* Only evaluate the conditional elifndef it matters... */
   if (state.astack->upper_enabled) {
@@ -3286,7 +3286,7 @@ do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_include(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_include(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -3308,7 +3308,7 @@ do_include(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_line(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_line(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -3348,7 +3348,7 @@ do_line(gpasmVal r, const char *name, int arity, pnode_t *parms)
  ************************************************************************/
 
 static gpasmVal
-do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -3416,7 +3416,7 @@ do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
           }
         }
         else if (strcasecmp(lhs, "mm") == 0) {
-          state.lst.memorymap = off_or_on(p->value.binop.p1);
+          state.lst.memorymap = _off_or_on(p->value.binop.p1);
         }
         else if (strcasecmp(lhs, "n") == 0) {
           if (can_evaluate(p->value.binop.p1)) {
@@ -3448,7 +3448,7 @@ do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
           }
         }
         else if (strcasecmp(lhs, "st") == 0) {
-          state.lst.symboltable = off_or_on(p->value.binop.p1);
+          state.lst.symboltable = _off_or_on(p->value.binop.p1);
         }
         else if (strcasecmp(lhs, "t") == 0) {
           ; /* Ignore this for now: always wrap long list lines */
@@ -3497,12 +3497,12 @@ do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   gp_boolean     first;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -3555,7 +3555,7 @@ do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_noexpand(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_noexpand(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
@@ -3571,7 +3571,7 @@ do_noexpand(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_nolist(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_nolist(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
@@ -3585,7 +3585,7 @@ do_nolist(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_maxram(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_maxram(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -3608,7 +3608,7 @@ do_maxram(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_maxrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_maxrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -3631,11 +3631,11 @@ do_maxrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_macro(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_macro(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   macro_head_t *head;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -3652,7 +3652,7 @@ do_macro(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   state.lst.line.linetype = LTY_DIR;
 
-  if (macro_parms_ok(parms)) {
+  if (_macro_parms_ok(parms)) {
     state.mac_head = head;
   }
 
@@ -3663,12 +3663,12 @@ do_macro(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_messg(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_messg(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   const char    *str;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -3678,7 +3678,7 @@ do_messg(gpasmVal r, const char *name, int arity, pnode_t *parms)
     p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
-      if ((str = hv_macro_resolver(p->value.string)) != NULL) {
+      if ((str = _hv_macro_resolver(p->value.string)) != NULL) {
         gpvmessage(GPM_USER, NULL, str);
       }
     }
@@ -3691,7 +3691,7 @@ do_messg(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -3738,7 +3738,7 @@ do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_page(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_page(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
@@ -3804,29 +3804,29 @@ _do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms, uint16_t re
       }
       else if (IS_PIC16_CORE) {
         reloc_evaluate(p, RELOCT_PAGESEL_WREG);
-        emit(0x0000, name);
-        emit(0x0000, name);
+        _emit(0x0000, name);
+        _emit(0x0000, name);
       }
       else if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
         if (!use_wreg) {
           reloc_evaluate(p, RELOCT_PAGESEL_MOVLP);
-          emit(PIC14E_INSN_MOVLP, name);
+          _emit(PIC14E_INSN_MOVLP, name);
         }
         else {
           reloc_evaluate(p, RELOCT_PAGESEL_WREG);
-          emit(0x0000, name);
-          emit(0x0000, name);
+          _emit(0x0000, name);
+          _emit(0x0000, name);
         }
       }
       else {
         if (!use_wreg && (state.processor->num_pages == 2)) {
           reloc_evaluate(p, RELOCT_PAGESEL_BITS);
-          emit(0, name);
+          _emit(0, name);
         }
         else if (state.processor->num_pages >= 2) {
           reloc_evaluate(p, reloc_type);
-          emit(0x0000, name);
-          emit(0x0000, name);
+          _emit(0x0000, name);
+          _emit(0x0000, name);
         }
       }
     }
@@ -3836,7 +3836,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms, uint16_t re
 }
 
 static gpasmVal
-do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_pagesel_wrapper(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -3851,7 +3851,7 @@ do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_pageselw(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_pageselw_wrapper(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -3866,7 +3866,7 @@ do_pageselw(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_processor(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_processor(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
@@ -3882,7 +3882,7 @@ do_processor(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_radix(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_radix(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -3900,7 +3900,7 @@ do_radix(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   int            count;
@@ -3927,7 +3927,7 @@ do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
         count = gp_processor_org_to_byte(state.device.class, count);
 
         for (i = 0; (i + 1) < count; i += 2) {
-          emit(state.device.class->core_mask, name);
+          _emit(state.device.class->core_mask, name);
         }
       }
       else {
@@ -3942,12 +3942,12 @@ do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
           }
           for (i = 0; (i + 1) < count; i += 2) {
             /* For some reason program memory is filled with a different value. */
-            emit(state.device.class->core_mask, name);
+            _emit(state.device.class->core_mask, name);
           }
         }
         else {
           for (i = 0; i < count; i++) {
-            emit_byte(0, name);
+            _emit_byte(0, name);
           }
         }
       }
@@ -3958,11 +3958,11 @@ do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_set(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_set(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -3983,7 +3983,7 @@ do_set(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -4016,7 +4016,7 @@ do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_subtitle(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_subtitle(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -4035,7 +4035,7 @@ do_subtitle(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_title(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_title(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   state.lst.line.linetype = LTY_NONE;
 
@@ -4054,7 +4054,7 @@ do_title(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t  *p;
   const char     *symbol_name;
@@ -4098,7 +4098,7 @@ do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_udata(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_udata(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -4139,7 +4139,7 @@ do_udata(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_udata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_udata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -4180,7 +4180,7 @@ do_udata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_udata_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_udata_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -4221,7 +4221,7 @@ do_udata_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_udata_shr(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_udata_shr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
@@ -4262,11 +4262,11 @@ do_udata_shr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_undefine(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_undefine(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -4290,12 +4290,12 @@ do_undefine(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   gp_boolean     first;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -4339,11 +4339,11 @@ do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
 }
 
 static gpasmVal
-do_while(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_while(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   macro_head_t *head;
 
-  if (check_processor_select(name)) {
+  if (_check_processor_select(name)) {
     return r;
   }
 
@@ -4378,7 +4378,7 @@ asm_enabled(void)
 }
 
 static gp_boolean
-core_sfr_or_common_ram(int file)
+_core_sfr_or_common_ram(int file)
 {
   if (gp_processor_find_sfr(state.device.class, file) != NULL) {
     /* This is a core SFR. */
@@ -4429,7 +4429,7 @@ file_ok(unsigned int file)
   }
 
   /* Don't check bank if common ram or core SFR is addressed. */
-  if (core_sfr_or_common_ram(file)) {
+  if (_core_sfr_or_common_ram(file)) {
     return;
   }
 
@@ -4461,7 +4461,7 @@ file_ok(unsigned int file)
 }
 
 static void
-emit_check(int insn, int argument, int mask, const char *name)
+_emit_check(int insn, int argument, int mask, const char *name)
 {
   int test = argument;
   int v = argument & mask;
@@ -4475,7 +4475,7 @@ emit_check(int insn, int argument, int mask, const char *name)
     gpvwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", argument, argument, v, v);
   }
 
-  emit(insn | v, name);
+  _emit(insn | v, name);
 }
 
 /*
@@ -4483,7 +4483,7 @@ emit_check(int insn, int argument, int mask, const char *name)
    argument is greater than range.
 */
 static void
-emit_check_relative(int insn, int argument, int mask, int range, const char *name)
+_emit_check_relative(int insn, int argument, int mask, int range, const char *name)
 {
   char full_message[BUFSIZ];
 
@@ -4495,11 +4495,11 @@ emit_check_relative(int insn, int argument, int mask, int range, const char *nam
     gperror(GPE_RANGE, full_message);
   }
 
-  emit(insn | (argument & mask), name);
+  _emit(insn | (argument & mask), name);
 }
 
 static int
-check_flag(int flag)
+_check_flag(int flag)
 {
   if ((flag != 0) && (flag != 1)) {
     gpvwarning(GPW_RANGE, "%i (%#x)", flag, flag);
@@ -4519,7 +4519,7 @@ check_flag(int flag)
                                  * Offset Mode */
 
 static gp_boolean
-check_16e_arg_types(const pnode_t *parms, int arity, unsigned int types)
+_check_16e_arg_types(const pnode_t *parms, int arity, unsigned int types)
 {
   const pnode_t *p;
   int            i;
@@ -4567,7 +4567,7 @@ check_16e_arg_types(const pnode_t *parms, int arity, unsigned int types)
 }
 
 static gp_boolean
-check_and_set_bank_bit(enum common_insn Icode, int Bit, int BankSel0, int BankSel1, int BankSel2)
+_check_and_set_bank_bit(enum common_insn Icode, int Bit, int BankSel0, int BankSel1, int BankSel2)
 {
   variable_t *var;
   int         addr;
@@ -4643,7 +4643,7 @@ check_and_set_bank_bit(enum common_insn Icode, int Bit, int BankSel0, int BankSe
 }
 
 static gp_boolean
-check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageSel1, int PageSel2)
+_check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageSel1, int PageSel2)
 {
   variable_t *var;
   int         addr;
@@ -4763,7 +4763,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         if (enforce_arity(arity, 1)) {
           p = HEAD(Parameters);
-          emit_check(ins->opcode, (reloc_evaluate(p, RELOCT_F) >> 5), SX_BMSK_BANK, sym_name);
+          _emit_check(ins->opcode, (reloc_evaluate(p, RELOCT_F) >> 5), SX_BMSK_BANK, sym_name);
         }
         break;
 
@@ -4776,7 +4776,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         if (enforce_arity(arity, 1)) {
           p = HEAD(Parameters);
-          emit_check(ins->opcode, (reloc_evaluate(p, RELOCT_F) >> PIC12_SHIFT_PAGE_ADDR), SX_BMSK_PAGE, sym_name);
+          _emit_check(ins->opcode, (reloc_evaluate(p, RELOCT_F) >> PIC12_SHIFT_PAGE_ADDR), SX_BMSK_PAGE, sym_name);
         }
         break;
 
@@ -4791,13 +4791,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           flag = 0;
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
 
           switch (arity) {
           case 1:
-            flag = check_flag(reloc_evaluate(HEAD(Parameters), RELOCT_F));
+            flag = _check_flag(reloc_evaluate(HEAD(Parameters), RELOCT_F));
           case 0:
-            emit(ins->opcode | flag, sym_name);
+            _emit(ins->opcode | flag, sym_name);
             break;
 
           default:
@@ -4816,7 +4816,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (enforce_arity(arity, 1)) {
           p = HEAD(Parameters);
           r = reloc_evaluate(p, RELOCT_MOVLB);
-          emit_check(ins->opcode, r, PIC12E_BMSK_BANK, sym_name);
+          _emit_check(ins->opcode, r, PIC12E_BMSK_BANK, sym_name);
 
           if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
             /* Set the selection of RAM Banks. */
@@ -4837,7 +4837,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         if (enforce_arity(arity, 1)) {
           p = HEAD(Parameters);
-          emit_check(ins->opcode, reloc_evaluate(p, RELOCT_F), SX_BMSK_MODE, sym_name);
+          _emit_check(ins->opcode, reloc_evaluate(p, RELOCT_F), SX_BMSK_MODE, sym_name);
         }
         break;
 
@@ -4849,11 +4849,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
 
         if (enforce_arity(arity, 1)) {
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
           p = HEAD(Parameters);
           coerce_str1(p); /* literal instructions can coerce string literals */
           r = reloc_evaluate(p, RELOCT_MOVLB);
-          emit_check(ins->opcode, r, PIC16E_BMSK_MOVLB, sym_name);
+          _emit_check(ins->opcode, r, PIC16E_BMSK_MOVLB, sym_name);
 
           if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
             /* Set the selection of RAM Banks. */
@@ -4874,7 +4874,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         if (enforce_arity(arity, 1)) {
           p = HEAD(Parameters);
-          emit_check(ins->opcode, (reloc_evaluate(p, RELOCT_MOVLR) << 4), PIC16_BMSK_MOVLR, sym_name);
+          _emit_check(ins->opcode, (reloc_evaluate(p, RELOCT_MOVLR) << 4), PIC16_BMSK_MOVLR, sym_name);
         }
         break;
 
@@ -4888,7 +4888,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (enforce_arity(arity, 1)) {
           p = HEAD(Parameters);
           r = reloc_evaluate(p, RELOCT_MOVLB);
-          emit_check(ins->opcode, r, PIC14E_BMSK_MOVLB, sym_name);
+          _emit_check(ins->opcode, r, PIC14E_BMSK_MOVLB, sym_name);
 
           if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
             /* Set the selection of RAM Banks. */
@@ -4910,7 +4910,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (enforce_arity(arity, 1)) {
           p = HEAD(Parameters);
           r = reloc_evaluate(p, RELOCT_MOVLB);
-          emit_check(ins->opcode, r, PIC14EX_BMSK_MOVLB, sym_name);
+          _emit_check(ins->opcode, r, PIC14EX_BMSK_MOVLB, sym_name);
 
           if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
             /* Set the selection of RAM Banks. */
@@ -4930,10 +4930,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
 
         if (enforce_arity(arity, 1)) {
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
           p = HEAD(Parameters);
           /* The literal cannot be a relocatable address. */
-          emit_check(ins->opcode, maybe_evaluate(p), PIC16EX_BMSK_xxxULNK, sym_name);
+          _emit_check(ins->opcode, maybe_evaluate(p), PIC16EX_BMSK_xxxULNK, sym_name);
         }
         break;
 
@@ -4949,7 +4949,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           p = HEAD(Parameters);
           page = reloc_evaluate(p, RELOCT_PAGESEL_MOVLP);
-          emit_check(ins->opcode, page, PIC14E_BMSK_PAGE512, sym_name);
+          _emit_check(ins->opcode, page, PIC14E_BMSK_PAGE512, sym_name);
 
           if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
             set_global(GLOBAL_ACT_PAGE_ADDR,
@@ -4970,16 +4970,16 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
 
         if (enforce_arity(arity, 1)) {
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
 
           p = HEAD(Parameters);
           coerce_str1(p); /* literal instructions can coerce string literals */
 
           if (icode == ICODE_MOVLB) {
-            emit_check(ins->opcode, reloc_evaluate(p, RELOCT_MOVLB), PIC16_BMSK_MOVLB, sym_name);
+            _emit_check(ins->opcode, reloc_evaluate(p, RELOCT_MOVLB), PIC16_BMSK_MOVLB, sym_name);
           }
           else {
-            emit_check(ins->opcode, reloc_evaluate(p, RELOCT_LOW), 0xff, sym_name);
+            _emit_check(ins->opcode, reloc_evaluate(p, RELOCT_LOW), 0xff, sym_name);
           }
         }
         break;
@@ -5011,7 +5011,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             }
           }
 
-          emit(ins->opcode | (reloc_evaluate(p, RELOCT_CALL) & PIC12_BMSK_CALL), sym_name);
+          _emit(ins->opcode | (reloc_evaluate(p, RELOCT_CALL) & PIC12_BMSK_CALL), sym_name);
         }
         break;
 
@@ -5033,7 +5033,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             gpverror(GPE_RANGE, "Address{%#x} > 0xffff.", value);
           }
 
-          emit(ins->opcode | (value & 0xff), sym_name);
+          _emit(ins->opcode | (value & 0xff), sym_name);
         }
         break;
 
@@ -5060,7 +5060,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             }
           }
 
-          emit(ins->opcode | (reloc_evaluate(p, RELOCT_GOTO) & PIC12_BMSK_GOTO), sym_name);
+          _emit(ins->opcode | (reloc_evaluate(p, RELOCT_GOTO) & PIC12_BMSK_GOTO), sym_name);
         }
         break;
 
@@ -5099,7 +5099,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             }
           }
 
-          emit(ins->opcode |
+          _emit(ins->opcode |
 	                   (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
 	                       PIC14_BMSK_BRANCH),
 	       sym_name);
@@ -5129,7 +5129,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             }
           }
 
-          emit(ins->opcode |
+          _emit(ins->opcode |
 	                   (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
 		               PIC16_BMSK_BRANCH),
 	       sym_name);
@@ -5163,7 +5163,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               gpverror(GPE_RANGE, "%ins > 31", value);
             }
 
-            emit(ins->opcode | fsr | (value & 0x3f), sym_name);
+            _emit(ins->opcode | fsr | (value & 0x3f), sym_name);
           }
           else {
             gpverror(GPE_RANGE, "FSR = %ins.", fsr);
@@ -5182,7 +5182,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           int value;
           int fsr;
 
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
 
           p = HEAD(Parameters);
           fsr = maybe_evaluate(p);
@@ -5202,7 +5202,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             gpverror(GPE_RANGE, "%ins (%#x) > 0x3f", value, value);
           }
 
-          emit(ins->opcode | ((fsr & 0x3) << 6) | (value & 0x3f), sym_name);
+          _emit(ins->opcode | ((fsr & 0x3) << 6) | (value & 0x3f), sym_name);
         }
         break;
 
@@ -5216,7 +5216,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (enforce_arity(arity, 1)) {
           int offset;
 
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
 
           p = HEAD(Parameters);
 
@@ -5235,7 +5235,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           /* The offset for the relative branch must be
              between -127 <= offset <= 127. */
-          emit_check_relative(ins->opcode, offset, PIC16E_BMSK_RBRA8, 127, sym_name);
+          _emit_check_relative(ins->opcode, offset, PIC16E_BMSK_RBRA8, 127, sym_name);
         }
         break;
 
@@ -5262,7 +5262,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           /* The offset for the relative branch must be
              between -256 <= offset <= 255. */
-          emit_check_relative(ins->opcode, offset, PIC14E_BMSK_RBRA9, 255, sym_name);
+          _emit_check_relative(ins->opcode, offset, PIC14E_BMSK_RBRA9, 255, sym_name);
         }
         break;
 
@@ -5276,7 +5276,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (enforce_arity(arity, 1)) {
           int offset;
 
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
 
           p = HEAD(Parameters);
 
@@ -5295,7 +5295,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           /* The offset for the relative branch must be
              between -1024 <= offset <= 1023. */
-          emit_check_relative(ins->opcode, offset, PIC16E_BMSK_RBRA11, 1023, sym_name);
+          _emit_check_relative(ins->opcode, offset, PIC16E_BMSK_RBRA11, 1023, sym_name);
         }
         break;
 
@@ -5309,22 +5309,22 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (enforce_arity(arity, 1)) {
           int dest;
 
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
 
           p = HEAD(Parameters);
           dest = reloc_evaluate(p, RELOCT_GOTO);
           dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
-          emit(ins->opcode | (dest & PIC16E_BMSK_BRANCH_LOWER), sym_name);
+          _emit(ins->opcode | (dest & PIC16E_BMSK_BRANCH_LOWER), sym_name);
           reloc_evaluate(p, RELOCT_GOTO2);     /* add the second relocation */
-          emit_check(0xf000, dest >> 8, PIC16E_BMSK_BRANCH_HIGHER, sym_name);
+          _emit_check(0xf000, dest >> 8, PIC16E_BMSK_BRANCH_HIGHER, sym_name);
         }
         break;
 
       case INSN_CLASS_CALL20:
         /* PIC16E call */
         {
-          int dest;
-          int flag;
+          int            dest;
+          int            flag;
           const pnode_t *p2; /* second parameter */
 
           if (state.processor == NULL) {
@@ -5338,7 +5338,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             enforce_arity(arity, 2);
           }
           else {
-            check_16e_arg_types(Parameters, arity, 0);
+            _check_16e_arg_types(Parameters, arity, 0);
 
             p = HEAD(Parameters);
 
@@ -5350,7 +5350,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
                 flag = 1;
               }
               else {
-                flag = check_flag(maybe_evaluate(p2));
+                flag = _check_flag(maybe_evaluate(p2));
               }
               break;
 
@@ -5364,9 +5364,9 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
             dest = reloc_evaluate(p, RELOCT_CALL);
             dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
-            emit(ins->opcode | (flag << 8) | (dest & PIC16E_BMSK_BRANCH_LOWER), sym_name);
+            _emit(ins->opcode | (flag << 8) | (dest & PIC16E_BMSK_BRANCH_LOWER), sym_name);
             reloc_evaluate(p, RELOCT_CALL2);     /* add the second relocation */
-            emit_check(0xf000, (dest >> 8), PIC16E_BMSK_BRANCH_HIGHER, sym_name);
+            _emit_check(0xf000, (dest >> 8), PIC16E_BMSK_BRANCH_HIGHER, sym_name);
           }
         }
         break;
@@ -5381,7 +5381,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (enforce_arity(arity, 2)) {
           int k;
 
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
 
           p = HEAD(Parameters);
           file = maybe_evaluate(p);
@@ -5392,9 +5392,9 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           p = HEAD(TAIL(Parameters));
           k = reloc_evaluate(p, RELOCT_LFSR1);
-          emit_check(ins->opcode | ((file & 3) << 4), (k >> 8), 0xf, sym_name);
+          _emit_check(ins->opcode | ((file & 3) << 4), (k >> 8), 0xf, sym_name);
           reloc_evaluate(p, RELOCT_LFSR2); /* add the second relocation */
-          emit(0xf000 | (k & 0xff), sym_name);
+          _emit(0xf000 | (k & 0xff), sym_name);
         }
         break;
 
@@ -5408,7 +5408,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (enforce_arity(arity, 2)) {
           int dest;
 
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
 
           dest = maybe_evaluate(HEAD(TAIL(Parameters)));
 
@@ -5426,8 +5426,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             gperror(GPE_UNKNOWN, "The destination cannot be the TOSL.");
           }
 
-          emit_check(ins->opcode, reloc_evaluate(HEAD(Parameters), RELOCT_FF1), 0xfff, sym_name);
-          emit_check(0xf000, reloc_evaluate(HEAD(TAIL(Parameters)), RELOCT_FF2), 0xfff, sym_name);
+          _emit_check(ins->opcode, reloc_evaluate(HEAD(Parameters), RELOCT_FF1), 0xfff, sym_name);
+          _emit_check(0xf000, reloc_evaluate(HEAD(TAIL(Parameters)), RELOCT_FF2), 0xfff, sym_name);
         }
         break;
 
@@ -5449,7 +5449,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             gpvwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
           }
 
-          emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
@@ -5464,14 +5464,14 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           int reg = 0;
 
           file = reloc_evaluate(HEAD(TAIL(Parameters)), RELOCT_F);
-          reg = reloc_evaluate(HEAD(Parameters), RELOCT_P);
+          reg  = reloc_evaluate(HEAD(Parameters), RELOCT_P);
           file_ok(file);
 
           if (reg & ~0xf1f) {
             gpvwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
           }
 
-          emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
@@ -5486,7 +5486,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           int source;
           int dest;
 
-          check_16e_arg_types(Parameters, arity, AR_INDEX);
+          _check_16e_arg_types(Parameters, arity, AR_INDEX);
 
           p = HEAD(Parameters);
           source = maybe_evaluate(p);
@@ -5508,8 +5508,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             gperror(GPE_UNKNOWN, "The destination cannot be the TOSL.");
           }
 
-          emit_check(ins->opcode, source, 0x7f, sym_name);
-          emit_check(0xf000, reloc_evaluate(HEAD(TAIL(Parameters)), RELOCT_FF2), 0xfff, sym_name);
+          _emit_check(ins->opcode, source, 0x7f, sym_name);
+          _emit_check(0xf000, reloc_evaluate(HEAD(TAIL(Parameters)), RELOCT_FF2), 0xfff, sym_name);
         }
         break;
 
@@ -5524,7 +5524,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           int source;
           int dest;
 
-          check_16e_arg_types(Parameters, arity, (AR_INDEX << AR_BITS) | AR_INDEX);
+          _check_16e_arg_types(Parameters, arity, (AR_INDEX << AR_BITS) | AR_INDEX);
 
           p = HEAD(Parameters);
           source = maybe_evaluate(p);
@@ -5532,8 +5532,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           p = HEAD(TAIL(Parameters));
           dest = maybe_evaluate(p);
 
-          emit_check(ins->opcode, source, 0x7f, sym_name);
-          emit_check(0xf000, dest, 0x7f, sym_name);
+          _emit_check(ins->opcode, source, 0x7f, sym_name);
+          _emit_check(0xf000, dest, 0x7f, sym_name);
         }
         break;
 
@@ -5548,7 +5548,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           p = HEAD(Parameters);
           file = reloc_evaluate(p, RELOCT_TRIS_3BIT);
           file_ok(file);
-          emit(ins->opcode | (file & PIC12_BMSK_TRIS), sym_name);
+          _emit(ins->opcode | (file & PIC12_BMSK_TRIS), sym_name);
         }
         break;
 
@@ -5570,7 +5570,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           file_ok(file);
-          emit(ins->opcode | (file & PIC12_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (file & PIC12_BMSK_FILE), sym_name);
         }
         break;
 
@@ -5604,7 +5604,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               d = 0;
             }
             else {
-              d = check_flag(maybe_evaluate(p2));
+              d = _check_flag(maybe_evaluate(p2));
             }
             break;
 
@@ -5619,7 +5619,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(ins->opcode | (d << 5) | (file & PIC12_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (d << 5) | (file & PIC12_BMSK_FILE), sym_name);
         }
         break;
 
@@ -5628,7 +5628,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         {
           const pnode_t *b;
           const pnode_t *f;
-          int bit;
+          int            bit;
 
           if (state.processor == NULL) {
             gpverror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5636,10 +5636,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           if (enforce_arity(arity, 2)) {
-            f = HEAD(Parameters);
-            b = HEAD(TAIL(Parameters));
+            f    = HEAD(Parameters);
+            b    = HEAD(TAIL(Parameters));
             file = reloc_evaluate(f, RELOCT_F);
-            bit = maybe_evaluate(b);
+            bit  = maybe_evaluate(b);
 
             if (bit < 0) {
               gpvwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
@@ -5655,7 +5655,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               is_btfsx = true;
             }
 
-            emit(ins->opcode | (bit << 5) | (file & PIC12_BMSK_FILE), sym_name);
+            _emit(ins->opcode | (bit << 5) | (file & PIC12_BMSK_FILE), sym_name);
 
             if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
               if (IS_PIC12_CORE) {
@@ -5663,13 +5663,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
                 if (reg == PIC12_REG_STATUS) {
                   /* This code monitors the change of ROM Pages. */
-                  if (!check_and_set_page_bit(icode, bit, PIC12_BIT_STATUS_PA0, PIC12_BIT_STATUS_PA1, PIC12_BIT_STATUS_PA2)) {
+                  if (!_check_and_set_page_bit(icode, bit, PIC12_BIT_STATUS_PA0, PIC12_BIT_STATUS_PA1, PIC12_BIT_STATUS_PA2)) {
                     return 0;
                   }
                 }
                 else if (reg == PIC12_REG_FSR) {
                   /* This code monitors the change of RAM Banks. */
-                  if (!check_and_set_bank_bit(icode, bit, PIC14_BIT_FSR_RP0, PIC14_BIT_FSR_RP1, PIC14_BIT_FSR_RP2)) {
+                  if (!_check_and_set_bank_bit(icode, bit, PIC14_BIT_FSR_RP0, PIC14_BIT_FSR_RP1, PIC14_BIT_FSR_RP2)) {
                     return 0;
                   }
                 }
@@ -5684,7 +5684,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         {
           const pnode_t *b;
           const pnode_t *f;
-          int bit;
+          int            bit;
 
           if (state.processor == NULL) {
             gpverror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5692,10 +5692,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           if (enforce_arity(arity, 2)) {
-            f = HEAD(Parameters);
-            b = HEAD(TAIL(Parameters));
+            f    = HEAD(Parameters);
+            b    = HEAD(TAIL(Parameters));
             file = reloc_evaluate(f, RELOCT_F);
-            bit = maybe_evaluate(b);
+            bit  = maybe_evaluate(b);
 
             if (bit < 0) {
               gpvwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
@@ -5710,7 +5710,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               is_btfsx = true;
             }
 
-            emit(ins->opcode | ((bit & 7) << 8) | (file & PIC16_BMSK_FILE), sym_name);
+            _emit(ins->opcode | ((bit & 7) << 8) | (file & PIC16_BMSK_FILE), sym_name);
           }
         }
         break;
@@ -5734,7 +5734,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           file_ok(file);
-          emit(ins->opcode | (file & PIC14_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (file & PIC14_BMSK_FILE), sym_name);
         }
         break;
 
@@ -5746,10 +5746,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
 
         if (enforce_arity(arity, 1)) {
-          p = HEAD(Parameters);
+          p    = HEAD(Parameters);
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(ins->opcode | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
@@ -5784,7 +5784,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               d = 0;
             }
             else {
-              d = check_flag(maybe_evaluate(p2));
+              d = _check_flag(maybe_evaluate(p2));
             }
             break;
 
@@ -5799,7 +5799,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(ins->opcode | (d << 7) | (file & PIC14_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (d << 7) | (file & PIC14_BMSK_FILE), sym_name);
         }
         break;
 
@@ -5834,7 +5834,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               d = 0;
             }
             else {
-              d = check_flag(maybe_evaluate(p2));
+              d = _check_flag(maybe_evaluate(p2));
             }
             break;
 
@@ -5849,7 +5849,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(ins->opcode | (d << 8) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (d << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
@@ -5858,7 +5858,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         {
           const pnode_t *b;
           const pnode_t *f;
-          int bit;
+          int            bit;
 
           if (state.processor == NULL) {
             gpverror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5866,10 +5866,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           if (enforce_arity(arity, 2)) {
-            f = HEAD(Parameters);
-            b = HEAD(TAIL(Parameters));
+            f    = HEAD(Parameters);
+            b    = HEAD(TAIL(Parameters));
             file = reloc_evaluate(f, RELOCT_F);
-            bit = maybe_evaluate(b);
+            bit  = maybe_evaluate(b);
 
             if (bit < 0) {
               gpvwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
@@ -5885,7 +5885,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               is_btfsx = true;
             }
 
-            emit(ins->opcode | (bit << 7) | (file & PIC14_BMSK_FILE), sym_name);
+            _emit(ins->opcode | (bit << 7) | (file & PIC14_BMSK_FILE), sym_name);
 
             if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
               if (IS_PIC14_CORE) {
@@ -5893,13 +5893,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
                 if (reg == PIC14_REG_PCLATH) {
                   /* This code monitors the change of ROM Pages. */
-                  if (!check_and_set_page_bit(icode, bit, 3, 4, -1)) {
+                  if (!_check_and_set_page_bit(icode, bit, 3, 4, -1)) {
                     return 0;
                   }
                 }
                 else if (reg == PIC14_REG_STATUS) {
                   /* This code monitors the change of RAM Banks. */
-                  if (!check_and_set_bank_bit(icode, bit, PIC14_BIT_STATUS_RP0, PIC14_BIT_STATUS_RP1, -1)) {
+                  if (!_check_and_set_bank_bit(icode, bit, PIC14_BIT_STATUS_RP0, PIC14_BIT_STATUS_RP1, -1)) {
                     return 0;
                   }
                 }
@@ -5913,8 +5913,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         /* PIC16E (clrf, cpfseq, cpfsgt, cpfslt, movwf, mulwf, negf, setf, tstfsz) */
         {
           const pnode_t *par; /* second parameter */
-          int a; /* Default destination of 0 (access). */
-          gp_boolean isAccess;
+          int            a;   /* Default destination of 0 (access). */
+          gp_boolean     isAccess;
 
           if (state.processor == NULL) {
             gpverror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5926,11 +5926,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             break;
           }
 
-          a = 0;
+          a        = 0;
           isAccess = false;
-          check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
+          _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
 
-          p = HEAD(Parameters);
+          p     = HEAD(Parameters);
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
 
@@ -5984,7 +5984,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               a = 1;
             }
             else {
-              a = check_flag(maybe_evaluate(par));
+              a = _check_flag(maybe_evaluate(par));
             }
             break;
 
@@ -6009,7 +6009,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             enforce_arity(arity, 2);
           }
 
-          emit(ins->opcode | (a << 8) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (a << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
@@ -6019,9 +6019,9 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           const pnode_t *b;
           const pnode_t *f;
           const pnode_t *par;
-          int bit;
-          int a;
-          gp_boolean isAccess;
+          int            bit;
+          int            a;
+          gp_boolean     isAccess;
 
           if (state.processor == NULL) {
             gpverror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6033,11 +6033,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             break;
           }
 
-          a = 0;
+          a        = 0;
           isAccess = false;
-          check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
+          _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
 
-          f = HEAD(Parameters);
+          f    = HEAD(Parameters);
           file = reloc_evaluate(f, RELOCT_F);
 
           if (arity == 3) {
@@ -6052,7 +6052,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               a = 1;
             }
             else {
-              a = check_flag(maybe_evaluate(par));
+              a = _check_flag(maybe_evaluate(par));
             }
           }
           else {
@@ -6126,7 +6126,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             is_btfsx = true;
           }
 
-          emit(ins->opcode | (a << 8) | ((bit & 7) << 9) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (a << 8) | ((bit & 7) << 9) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
@@ -6136,11 +6136,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
                    subwfb, swapf, xorwf) */
         {
           const pnode_t *par; /* second parameter */
-          int d; /* Default destination of 1 (file). */
-          int a;
-          gp_boolean isAccess;
-          gp_boolean thereIsA;
-          gp_boolean thereIsD;
+          int            d;   /* Default destination of 1 (file). */
+          int            a;
+          gp_boolean     isAccess;
+          gp_boolean     thereIsA;
+          gp_boolean     thereIsD;
 
           if (state.processor == NULL) {
             gpverror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6152,13 +6152,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             break;
           }
 
-          d = 1; /* Default destination of 1 (file). */
-          a = 0;
+          d        = 1; /* Default destination of 1 (file). */
+          a        = 0;
           isAccess = false;
           thereIsA = false;
           thereIsD = false;
 
-          check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
+          _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
 
           p = HEAD(Parameters);
           file = reloc_evaluate(p, RELOCT_F);
@@ -6215,7 +6215,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               a = 1;
             }
             else {
-              a = check_flag(maybe_evaluate(par));
+              a = _check_flag(maybe_evaluate(par));
             }
 
             thereIsA = true;
@@ -6231,7 +6231,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               d = 0;
             }
             else {
-              d = check_flag(maybe_evaluate(par));
+              d = _check_flag(maybe_evaluate(par));
             }
 
             thereIsD = true;
@@ -6270,7 +6270,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             }
           }
 
-          emit(ins->opcode | (d << 9) | (a << 8) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (d << 9) | (a << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
@@ -6297,30 +6297,30 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           gpvwarning(GPW_NOT_RECOMMENDED, "\"option\"");
         }
 
-        emit(ins->opcode, sym_name);
+        _emit(ins->opcode, sym_name);
         break;
 
       case INSN_CLASS_TBL:
         /* PIC16E (tblrd, tblwt) */
         if (enforce_arity(arity, 1)) {
-          check_16e_arg_types(Parameters, arity, 0);
+          _check_16e_arg_types(Parameters, arity, 0);
 
           p = HEAD(Parameters);
           switch(maybe_evaluate(p)) {
           case TBL_NO_CHANGE:
-            emit(ins->opcode, sym_name);
+            _emit(ins->opcode, sym_name);
             break;
 
           case TBL_POST_INC:
-            emit(ins->opcode | 1, sym_name);
+            _emit(ins->opcode | 1, sym_name);
             break;
 
           case TBL_POST_DEC:
-            emit(ins->opcode | 2, sym_name);
+            _emit(ins->opcode | 2, sym_name);
             break;
 
           case TBL_PRE_INC:
-            emit(ins->opcode | 3, sym_name);
+            _emit(ins->opcode | 3, sym_name);
             break;
 
           default:
@@ -6338,17 +6338,17 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         if (enforce_arity(arity, 2)) {
           const pnode_t *p2; /* second parameter */
-          int t; /* read low byte by default */
+          int            t;  /* read low byte by default */
 
           /* "0" (lower byte) and "1" (upper byte) */
           p = HEAD(Parameters);
-          t = check_flag(maybe_evaluate(p));
+          t = _check_flag(maybe_evaluate(p));
 
-          p2 = HEAD(TAIL(Parameters));
+          p2   = HEAD(TAIL(Parameters));
           file = reloc_evaluate(p2, RELOCT_F);
 
           file_ok(file);
-          emit(ins->opcode | (t << 9) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (t << 9) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
@@ -6362,22 +6362,22 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (enforce_arity(arity, 3)) {
           const pnode_t *p2; /* second parameter */
           const pnode_t *p3; /* third parameter */
-          int t;
-          int inc;
+          int            t;
+          int            inc;
 
           /* "0" (lower byte) and "1" (upper byte) */
           p = HEAD(Parameters);
-          t = check_flag(maybe_evaluate(p));
+          t = _check_flag(maybe_evaluate(p));
 
           /* "0" (no change) and "1" (postincrement) */
-          p2 = HEAD(TAIL(Parameters));
-          inc = check_flag(maybe_evaluate(p2));
+          p2  = HEAD(TAIL(Parameters));
+          inc = _check_flag(maybe_evaluate(p2));
 
-          p3 = HEAD(TAIL(TAIL(Parameters)));
+          p3   = HEAD(TAIL(TAIL(Parameters)));
           file = reloc_evaluate(p3, RELOCT_F);
 
           file_ok(file);
-          emit(ins->opcode | (t << 9) | (inc << 8) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | (t << 9) | (inc << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
@@ -6395,10 +6395,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         p = HEAD(Parameters);
         switch (arity) {
-          int fsr;
-          int opcode;
-          int k;
-          pnode_t *p2, *p3;
+          int      fsr;
+          int      opcode;
+          int      k;
+          pnode_t *p2;
+          pnode_t *p3;
 
         case 1:
           fsr = maybe_evaluate(p);
@@ -6418,7 +6419,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           if (file >= 0) {
             opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | file;
-            emit(opcode, sym_name);
+            _emit(opcode, sym_name);
           }
           else {
             gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -6426,7 +6427,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           break;
 
         case 2:
-          p2 = HEAD(TAIL(Parameters));
+          p2  = HEAD(TAIL(Parameters));
           fsr = maybe_evaluate(p2);
 
           file = -1;
@@ -6456,7 +6457,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             }
 
             if (k >= 0) {
-              emit(ins->opcode | file | k, sym_name);
+              _emit(ins->opcode | file | k, sym_name);
             }
             else {
               gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -6469,7 +6470,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         case 3:
         case 4:
-          p2 = HEAD(TAIL(Parameters));
+          p2  = HEAD(TAIL(Parameters));
           fsr = maybe_evaluate(p2);
 
           file = -1;
@@ -6488,7 +6489,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             switch (maybe_evaluate(p)) {
             case INDFOFFSET:
               p3 = TAIL(TAIL(Parameters));
-              k = maybe_evaluate(p3); /* Index */
+              k  = maybe_evaluate(p3); /* Index */
 
               if (k < -32) {
                 gpverror(GPE_RANGE, "Index{%ins} < -32.", k);
@@ -6499,7 +6500,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               else {
                 /* New opcode for indexed indirect. */
                 opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | file;
-                emit(opcode | (k & 0x3f), sym_name);
+                _emit(opcode | (k & 0x3f), sym_name);
               }
               break;
 
@@ -6588,98 +6589,98 @@ leave:
 /* Note that instructions within each group are sorted alphabetically. */
 
 const insn_t op_0[] = {
-  { "access_ovr", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_access_ovr },
-  { "bcdirect",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_direct     },
-  { "code",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_code       },
-  { "code_pack",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_code_pack  },
-  { "constant",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_constant   },
-  { "end",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_end        },
-  { "endm",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_endm       },
-  { "endw",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_endw       },
-  { "equ",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_equ        },
-  { "error",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_error      },
-  { "exitm",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_exitm      },
-  { "expand",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_expand     },
-  { "extern",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_extern     },
-  { "errorlevel", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_errlvl     },
-  { "global",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_global     },
-  { "idata",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_idata      },
-  { "idata_acs",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_idata_acs  },
-  { "if",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_if         },
-  { "ifdef",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifdef      },
-  { "ifndef",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifndef     },
-  { "elif",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elif       },
-  { "elifdef",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elifdef    },
-  { "elifndef",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elifndef   },
-  { "else",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_else       },
-  { "endif",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_endif      },
-  { "include",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_include    },
-  { "list",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_list       },
-  { "local",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_local      },
-  { "macro",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_macro      },
-  { "messg",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_messg      },
-  { "noexpand",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_noexpand   },
-  { "nolist",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_nolist     },
-  { "page",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_page       },
-  { "processor",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_processor  },
-  { "radix",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_radix      },
-  { "set",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_set        },
-  { "space",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_space      },
-  { "subtitle",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_subtitle   },
-  { "title",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_title      },
-  { "udata",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_udata      },
-  { "udata_acs",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_udata_acs  },
-  { "udata_ovr",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_udata_ovr  },
-  { "udata_shr",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_udata_shr  },
-  { "variable",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_variable   },
-  { "while",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_while      },
-  { ".def",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_def        },
-  { ".dim",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_dim        },
-  { ".direct",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_direct     },
-  { ".eof",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_eof        },
-  { ".file",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_file       },
-  { ".ident",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_ident      },
-  { ".line",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_line       },
-  { ".set",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_set        },
-  { ".type",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_type       },
-  { "#if",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_if         },
-  { "#ifdef",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifdef      },
-  { "#ifndef",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_ifndef     },
-  { "#elif",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elif       },
-  { "#elifdef",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elifdef    },
-  { "#elifndef",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_elifndef   },
-  { "#else",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_else       },
-  { "#endif",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, do_endif      },
-  { "#define",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_define     },
-  { "#undefine",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_undefine   }
+  { "access_ovr", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_access_ovr },
+  { "bcdirect",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_direct     },
+  { "code",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_code       },
+  { "code_pack",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_code_pack  },
+  { "constant",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_constant   },
+  { "end",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_end        },
+  { "endm",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_endm       },
+  { "endw",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_endw       },
+  { "equ",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_equ        },
+  { "error",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_error      },
+  { "exitm",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_exitm      },
+  { "expand",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_expand     },
+  { "extern",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_extern     },
+  { "errorlevel", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_errlvl     },
+  { "global",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_global     },
+  { "idata",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_idata      },
+  { "idata_acs",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_idata_acs  },
+  { "if",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_if         },
+  { "ifdef",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_ifdef      },
+  { "ifndef",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_ifndef     },
+  { "elif",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_elif       },
+  { "elifdef",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_elifdef    },
+  { "elifndef",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_elifndef   },
+  { "else",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_else       },
+  { "endif",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_endif      },
+  { "include",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_include    },
+  { "list",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_list       },
+  { "local",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_local      },
+  { "macro",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_macro      },
+  { "messg",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_messg      },
+  { "noexpand",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_noexpand   },
+  { "nolist",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_nolist     },
+  { "page",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_page       },
+  { "processor",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_processor  },
+  { "radix",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_radix      },
+  { "set",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_set        },
+  { "space",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_space      },
+  { "subtitle",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_subtitle   },
+  { "title",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_title      },
+  { "udata",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_udata      },
+  { "udata_acs",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_udata_acs  },
+  { "udata_ovr",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_udata_ovr  },
+  { "udata_shr",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_udata_shr  },
+  { "variable",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_variable   },
+  { "while",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_while      },
+  { ".def",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_def        },
+  { ".dim",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_dim        },
+  { ".direct",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_direct     },
+  { ".eof",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_eof        },
+  { ".file",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_file       },
+  { ".ident",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_ident      },
+  { ".line",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_line       },
+  { ".set",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_set        },
+  { ".type",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_type       },
+  { "#if",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_if         },
+  { "#ifdef",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_ifdef      },
+  { "#ifndef",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_ifndef     },
+  { "#elif",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_elif       },
+  { "#elifdef",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_elifdef    },
+  { "#elifndef",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_elifndef   },
+  { "#else",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_else       },
+  { "#endif",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, ATTRIB_COND, _do_endif      },
+  { "#define",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_define     },
+  { "#undefine",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_undefine   }
 };
 
 const int num_op_0 = TABLE_SIZE(op_0);
 
 const insn_t op_1[] = {
-  { "__badram",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_badram       },
-  { "__badrom",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_badrom       },
-  { "__config",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_config       },
-  { "__fuses",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_config       },
-  { "__idlocs",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_idlocs       },
-  { "__maxram",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_maxram       },
-  { "__maxrom",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_maxrom       },
-  { "bankisel",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_bankisel     },
-  { "banksel",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_banksel      },
-  { "config",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_gpasm_config },
-  { "data",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_data         },
-  { "da",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_da           },
-  { "db",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_db           },
-  { "de",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_de           },
-  { "dt",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_dt           },
-  { "dtm",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_dtm          },
-  { "dw",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_dw           },
-  { "fill",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_fill         },
-  { "idlocs",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_16_idlocs    },
-  { "org",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_org          },
-  { "pagesel",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_pagesel      },
-  { "pageselw",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_pageselw     },
-  { "res",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           do_res          }
+  { "__badram",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_badram           },
+  { "__badrom",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_badrom           },
+  { "__config",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_config           },
+  { "__fuses",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_config           },
+  { "__idlocs",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_idlocs           },
+  { "__maxram",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_maxram           },
+  { "__maxrom",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_maxrom           },
+  { "bankisel",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_bankisel         },
+  { "banksel",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_banksel          },
+  { "config",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_gpasm_config     },
+  { "data",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_data             },
+  { "da",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_da               },
+  { "db",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_db               },
+  { "de",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_de               },
+  { "dt",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_dt               },
+  { "dtm",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_dtm              },
+  { "dw",         0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_dw               },
+  { "fill",       0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_fill             },
+  { "idlocs",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_16_idlocs        },
+  { "org",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_org              },
+  { "pagesel",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_pagesel_wrapper  },
+  { "pageselw",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_pageselw_wrapper },
+  { "res",        0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0,           _do_res              }
 };
 
 const int num_op_1 = TABLE_SIZE(op_1);

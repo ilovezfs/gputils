@@ -55,11 +55,11 @@ typedef struct linker_section {
   const char        *shadow_sym;
 } linker_section_t;
 
-extern void gp_link_add_symbol(symbol_table_t *table, gp_symbol_type *symbol, gp_object_type *file);
+extern void gp_cofflink_add_symbol(symbol_table_t *table, gp_symbol_type *symbol, gp_object_type *file);
 
-extern void gp_link_remove_symbol(symbol_table_t *table, char *name);
+extern void gp_cofflink_remove_symbol(symbol_table_t *table, char *name);
 
-extern gp_boolean gp_link_add_symbols(symbol_table_t *, symbol_table_t *missing, gp_object_type *object);
+extern gp_boolean gp_cofflink_add_symbols(symbol_table_t *, symbol_table_t *missing, gp_object_type *object);
 
 extern void gp_cofflink_combine_objects(gp_object_type *object);
 
@@ -75,7 +75,7 @@ extern void gp_cofflink_make_cinit(gp_object_type *object);
 
 extern void gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit);
 
-extern void gp_add_cinit_section(gp_object_type *object);
+extern void gp_cofflink_add_cinit_section(gp_object_type *object);
 
 extern void gp_cofflink_reloc_abs(gp_object_type *object, MemBlock *m, int org_to_byte_shift,
                                   unsigned long flags);

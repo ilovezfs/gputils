@@ -2085,7 +2085,9 @@ _check_ibank_pic14(unsigned int address)
 static int
 _set_ibank_pic14(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
 {
-  /* bcf 3,7 or bsf 3,7 */
+  /* bcf STATUS,7 or bsf STATUS,7  (STATUS: 3) */
+  /* bcf: 01 00bb bfff ffff
+   * bsf: 01 01bb bfff ffff */
   i_memory_put_le(m, byte_address, (bank == 0) ? 0x1383 : 0x1783, (bank == 0) ? "ibank0" : "ibank1", NULL);
   return 2;
 }
@@ -2197,14 +2199,20 @@ _set_ibank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int byte_addres
 {
   /* bcf: 01 00bb bfff ffff
    * bsf: 01 01bb bfff ffff
-   * FSR0H: 0000bbbb bllllllll */
+   *   PIC14E
+   * FSR0H: 0000bbbb
+   * FSR0L: blllllll
+   *   PIC14EX
+   * FSR0H: 000bbbbb
+   * FSR0L: blllllll
+   */
   unsigned int mask;
   unsigned int bit;
   char         buf[BUFSIZ];
 
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
-  num_banks >>= 1;
+  num_banks >>= 1; /* FSR0L bit 7. */
   for (bit = 0, mask = 0x01; mask < num_banks; ++bit, mask <<= 1, byte_address += 2)
     i_memory_put_le(m,
                     byte_address,

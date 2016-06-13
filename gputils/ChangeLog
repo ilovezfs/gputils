@@ -1,3 +1,20 @@
+2016-06-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
+    The names of static functions got '_' prefix.
+
+  * gpasm/lst.c, libgputils/gpopcode.h,
+    libgputils/gpgrocessor.c:
+    Implemented the RELOCT_BANKSEL, RELOCT_PAGESEL_WREG and
+    RELOCT_PAGESEL_BITS types in the _print_reloc() function.
+
+  * gplink/gplink.c, libgputils/gparchive.c, libgputils/gpcofflink.c,
+    libgputils/gpcofflink.h:
+    Renamed these function names:
+	gp_link_add_symbol    --> gp_cofflink_add_symbol
+	gp_link_remove_symbol --> gp_cofflink_remove_symbol
+	gp_link_add_symbols   --> gp_cofflink_add_symbols
+	gp_add_cinit_section  --> gp_cofflink_add_cinit_section
+
 2016-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, configure, configure.ac:
     Changed the gputils version from 1.4.3 to 1.4.4.
