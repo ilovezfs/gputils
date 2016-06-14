@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jun 12
+2016 Jun 13
 \end_layout
 
 \begin_layout Standard
@@ -13320,7 +13320,7 @@ gplink is an optimizing linker.
 \end_layout
 
 \begin_layout Subsection
-Level 0 (default)
+Level 0
 \end_layout
 
 \begin_layout Standard
@@ -13328,7 +13328,7 @@ No optimizations.
 \end_layout
 
 \begin_layout Subsection
-Level 1
+Level 1 (default)
 \end_layout
 
 \begin_layout Subsubsection

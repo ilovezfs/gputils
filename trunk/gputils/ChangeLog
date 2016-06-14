@@ -1,3 +1,90 @@
+2016-06-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gplink/cod.c
+    Use IMemBaseAddr() macro.
+
+  * gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c,
+    gpasm/gperror.c, gpasm/gperror.h, gpasm/macro.c,
+    gpasm/parse.y, gpasm/ppparse.y, gpasm/ppscan.l,
+    gpasm/preprocess.c, gpasm/processor.c, gpasm/scan.l,
+    gpasm/special.c, gpasm/util.c:
+    The members of gperror.c got "gperror_" prefix.
+
+  * gpasm/coff.h, gpasm/deps.h, gpasm/directive.h,
+    gpasm/evaluate.h, gpasm/gpasm.h.in, gpasm/gperror.h,
+    gpasm/libgpasm.h, gpasm/lst.h, gpasm/macro.h,
+    gpasm/preprocess.h, gpasm/processor.h, gplink/cod.h,
+    gplink/gplink.h.in, gplink/lst.h, gplink/map.h,
+    gplink/script.h, gputils/block.h, gputils/dump.h,
+    libgputils/gpcfg.h, libgputils/gpcod.h, libgputils/gpcofflink.h,
+    libgputils/gpdis.h, libgputils/gpmessage.h,
+    libgputils/gpprocessor.h, libgputils/gpreadobj.h,
+    libgputils/gpregister.h, libgputils/gpsystem.h,
+    libgputils/gpwritehex.h, libgputils/gpwriteobj.h:
+    The member declarations got "extern" modifier.
+
+  * gpasm/evaluate.c, gpasm/gperror.c, gpasm/preprocess.c,
+    gpasm/processor.c, gpasm/scan.l, gplink/map.c,
+    gputils/gpdasm.c, gputils/labelset.c, libgputils/gpcfg.c,
+    libgputils/gpprocessor.c, libgputils/gpreadhex.c:
+    The names of static functions got '_' prefix.
+
+  * gplink/gplink.c:
+    Use gp_cofflink_make_linenum_arrays() function.
+
+  * gplink/lst.c:
+    Use gp_cofflink_find_linenum() function.
+
+  * gputils/gpvo.c:
+    Use gp_coffgen_reloc_type_to_str() function.
+
+  * doc/gputils.lyx, gplink/gplink.c, man/gplink.1.in,
+    man/fr/gplink.1.in:
+    The default option the "-O1".
+
+  * gputils/dump.c, gputils/gpvc.c:
+    Move the temp, source_files and SymbolType4 variables
+    from gpvc.c to dump.c.
+
+  * gputils/dump.c, gputils/dump.h:
+    Removed the get_short_int function.
+
+  * libgputils/gpcfg.c, libgputils/gpcfg.h:
+    Changed types:
+        unsigned short --> uint16_t
+
+  * libgputils/gpcoff.h:
+    The gp_section_type got a new member: linenum_array
+
+  * libgputils/gpcoffgen.c, libgputils/gpcoffgen.h:
+    This module got a new function: gp_coffgen_reloc_type_to_str()
+
+  * libgputils/gpcofflink.c, libgputils/gpcofflink.h:
+    This module got a new functions:
+	gp_cofflink_make_linenum_arrays(), gp_cofflink_find_linenum()
+    Deleted the gp_cofflink_reloc_type_to_str() function.
+
+  * libgputils/gpcoffopt.c, libgputils/gpcoffopt.h:
+    Changed the function name from gp_cofflink_reloc_type_to_str to
+    gp_coffgen_reloc_type_to_str.
+
+  * libgputils/gpreadhex.c, libgputils/gpreadhex.h:
+    Added the IHEX_RECTYPE_... definitions.
+
+  * libgputils/gpsymbol.c:
+    A minor optimization.
+
+  * gpasm/lst.c, gpasm/special.c, gplink/cod.c, gplink/lst.c,
+    gplink/map.c, gplink/script.c, gputils/block.c, gputils/gplib.c,
+    gputils/gpstrip.c, gputils/gpstrip.h.in, gputils/gpvc.c,
+    gputils/gpvc.h.in, gputils/gpvo.h.in, gputils/labelset.c,
+    libgputils/gparchive.c, libgputils/gpcfg.c, libgputils/gpcod.c,
+    libgputils/gpcoffgen.c, libgputils/gpcofflink.c,
+    libgputils/gpdis.c, libgputils/gpmessage.c,
+    libgputils/gpprocessor.c, libgputils/gpreadhex.c,
+    libgputils/gpreadobj.c, libgputils/gpsymbol.c,
+    libgputils/gpwritehex.c, libgputils/gpwriteobj.c:
+    Code formatting.    
+
 2016-06-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
     The names of static functions got '_' prefix.

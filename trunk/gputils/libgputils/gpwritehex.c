@@ -35,12 +35,16 @@ static char     *newline;
 static FILE     *hex;
 static MemBlock *memory;
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _new_record(void)
 {
   fprintf(hex, ":");
   sum = 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _write_byte(int b)
@@ -51,7 +55,10 @@ _write_byte(int b)
   fprintf(hex, "%02X", b);
 }
 
-/* Write big-endian word */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Write big-endian word. */
+
 static void
 _write_bg_word(int w)
 {
@@ -59,13 +66,18 @@ _write_bg_word(int w)
   _write_byte(w & 0xff);
 }
 
-/* Write little-endian word */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Write little-endian word. */
+
 static void
 _write_word(int w)
 {
   _write_byte(w & 0xff);
   _write_byte((w >> 8) & 0xff);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _start_record(int start, int len)
@@ -76,12 +88,16 @@ _start_record(int start, int len)
   _write_byte(0);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _end_record(void)
 {
   _write_byte((-sum) & 0xff);
   fprintf(hex, "%s", newline);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _data_line(int start, int stop, enum mode_flags_e mode)
@@ -132,6 +148,8 @@ _data_line(int start, int stop, enum mode_flags_e mode)
   _end_record();
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _seg_address_line(int segment)
 {
@@ -143,6 +161,8 @@ _seg_address_line(int segment)
   _end_record();
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _last_line(void)
 {
@@ -152,6 +172,8 @@ _last_line(void)
   _write_byte(1);
   _end_record();
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_mask)
@@ -192,8 +214,7 @@ _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_
         /* disabled for MPASM compatibility,
          * regression test gpasm.mchip/asmfiles/szee16.asm */
         if (core_mask > 0xFF) {
-          /* Write complete instructions, so move start down and stop up
-             to even address. */
+          /* Write complete instructions, so move start down and stop up to even address. */
           if (j & 1) {
             --j;
           }
@@ -205,8 +226,7 @@ _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_
 #endif
         /* Now we have a run of (i - j) occupied memory locations. */
         /* Write the data to the file */
-        /* To be bug-for-bug compatible with MPASM 5.34 we ignore
-           negative addresses. */
+        /* To be bug-for-bug compatible with MPASM 5.34 we ignore negative addresses. */
         if (j >= 0) {
           _data_line(j, i, mode);
         }
@@ -217,6 +237,8 @@ _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_
 
   _last_line();
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
 writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
@@ -293,7 +315,10 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
   return true;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* scan the memory to see if it exceeds 32kB limit on INHX8M limit */
+
 gp_boolean
 check_writehex(MemBlock *m, enum formats hex_format)
 {

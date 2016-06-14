@@ -24,6 +24,8 @@ Boston, MA 02111-1307, USA.  */
 
 gp_boolean gp_relocate_to_shared = false;
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Two symbol tables are constructed. The first contains the definitions of all
    external symbols in all the object files.  This symbol table is used for
    relocation and linking.  The second table contains all external symbols
@@ -51,6 +53,8 @@ gp_cofflink_add_symbol(symbol_table_t *table, gp_symbol_type *symbol, gp_object_
   sym_annotate_symbol(sym, var);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_cofflink_remove_symbol(symbol_table_t *table, char *name)
 {
@@ -67,6 +71,8 @@ gp_cofflink_remove_symbol(symbol_table_t *table, char *name)
   free(var);
   sym_remove_symbol(table, name);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Add the external symbols from an object file to the appropriate symbol
    tables. NOTE: The missing symbol table is optional. This feature is
@@ -128,6 +134,8 @@ gp_cofflink_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_
   return true;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Combine all sections and symbols from all objects into one object file. */
 
 void
@@ -177,6 +185,8 @@ gp_cofflink_combine_objects(gp_object_type *object)
   /* FIXME: breaking the chain isn't good */
   object->next = NULL;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Cleanup the symbol table after combining objects. */
 
@@ -237,6 +247,8 @@ gp_cofflink_clean_table(gp_object_type *object, symbol_table_t *symbols)
   return;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Update the line number offsets. */
 
 static void
@@ -247,6 +259,8 @@ _update_line_numbers(gp_linenum_type *line_number, unsigned int offset)
     line_number = line_number->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Combine overlay sections in an object file. */
 
@@ -307,6 +321,8 @@ gp_cofflink_combine_overlay(gp_object_type *object, gp_boolean remove_symbol)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Allocate memory for a stack. */
 
 void
@@ -357,6 +373,8 @@ gp_cofflink_make_stack(gp_object_type *object, int num_bytes)
     symbol->class          = C_EXT;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Merge all sections in one object file with the same name. The overlayed
    sections must have been combined first.  */
@@ -478,6 +496,8 @@ gp_cofflink_merge_sections(gp_object_type *object)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* copy data from idata section to the ROM section */
 
 static void
@@ -518,6 +538,8 @@ _copy_rom_section(const gp_object_type *object, const gp_section_type *idata, gp
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static char *
 _create_i_section_name(const char *name)
 {
@@ -529,6 +551,8 @@ _create_i_section_name(const char *name)
   memcpy(name_i + len, "_i", 3);
   return name_i;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* create a program memory section to hold the data */
 
@@ -573,6 +597,8 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
   object->num_sections++;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write a word (16 bit) into four bytes of memory (non PIC16E) */
 
 static void
@@ -583,6 +609,8 @@ _write_table_u16(proc_class_t class, const gp_section_type *section, int address
   class->i_memory_put(section->data, address + 2, insn | (data >> 8),   section->name, symbol_name);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write a long (32 bit) into four bytes of memory (PIC16E) */
 
 static void
@@ -592,6 +620,8 @@ _write_table_u32(const proc_class_t class, const gp_section_type *section, int a
   class->i_memory_put(section->data, address,     data & 0xffff, section->name, symbol_name);
   class->i_memory_put(section->data, address + 2, data >> 16,    section->name, symbol_name);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* read a word from four bytes of memory (non PIC16E) */
 
@@ -605,6 +635,8 @@ _read_table_u16(proc_class_t class, const gp_section_type *section, int address)
 
   return ((data[0] & 0xff) | ((data[1] & 0xff) << 8));
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* create the symbol for the start address of the table */
 
@@ -631,6 +663,8 @@ gp_cofflink_make_cinit(gp_object_type *object)
     symbol->class          = C_EXT;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* create ROM data for initialized data sections */
 
@@ -697,6 +731,8 @@ gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit)
     }
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* load the relocated sections addresses in the table */
 
@@ -785,6 +821,8 @@ gp_cofflink_add_cinit_section(gp_object_type *object)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Set the memory used flags in a block of words. */
 
 static void
@@ -831,6 +869,8 @@ _set_used(const gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsi
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* allocate space for the absolute sections */
 
 void
@@ -870,6 +910,8 @@ gp_cofflink_reloc_abs(gp_object_type *object, MemBlock *m,
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Search through all the sections in the object list. Locate the biggest
    assigned section that has not been relocated. */
 
@@ -894,6 +936,8 @@ _find_big_assigned(gp_section_type *section, unsigned long flags, symbol_table_t
 
   return biggest;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Search through all the sections in the object list.  Locate the biggest
    section that has not been relocated. */
@@ -921,6 +965,8 @@ _find_big_section(gp_section_type *section, unsigned long flags)
 
   return biggest;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Search through the target memory. Locate the smallest block of memory
    that is larger than the requested size. Return the address of that
@@ -1009,6 +1055,8 @@ _search_memory(const MemBlock *m, int org_to_byte_shift,
   return success;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Move data in i_memory. This function assumes the move will be towards
    a higher address. */
 
@@ -1034,6 +1082,8 @@ _move_data(MemBlock *m, unsigned int address, unsigned int size, unsigned int ne
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* map real addres to shadow address */
 
 static unsigned int
@@ -1050,6 +1100,8 @@ _map_to_shadow_address(linker_section_t *section_def, unsigned int address)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* unmap real addres from shadow address */
 
 static unsigned int
@@ -1065,6 +1117,8 @@ _unmap_from_shadow_address(linker_section_t *section_def, unsigned int address)
     return address;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Compare function for sym_clone_symbol_array(). */
 
@@ -1089,6 +1143,8 @@ _sect_addr_cmp(const void *P0, const void *P1)
     return 0;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* allocate memory for relocatable assigned sections */
 
@@ -1176,6 +1232,8 @@ gp_cofflink_reloc_assigned(gp_object_type *object, MemBlock *m, int org_to_byte_
     }
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* allocate memory for cinit section */
 
@@ -1275,6 +1333,8 @@ gp_cofflink_reloc_cinit(gp_object_type *object, MemBlock *m, int org_to_byte_shi
     gp_error("No target memory available for section \"%s\".", cinit_section->name);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* allocate memory for relocatable unassigned sections */
 
@@ -1434,6 +1494,8 @@ next_pass:
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Update all symbols with their new relocated values. */
 
 void
@@ -1474,6 +1536,79 @@ gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
     section = section->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
+
+static int
+_linenum_cmp(const void *P0, const void *P1)
+{
+  const gp_linenum_type *l0 = *(const gp_linenum_type **)P0;
+  const gp_linenum_type *l1 = *(const gp_linenum_type **)P1;
+
+  if (l0->line_number < l1->line_number) {
+    return -1;
+  }
+  else if (l0->line_number > l1->line_number) {
+    return 1;
+  }
+  else {
+    return 0;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+gp_cofflink_make_linenum_arrays(gp_object_type *object)
+{
+  gp_section_type  *section;
+  gp_linenum_type  *linenum;
+  gp_linenum_type **linenum_array;
+  unsigned int      n_linenums;
+  unsigned int      i;
+
+  section = object->sections;
+  while (section != NULL) {
+    n_linenums    = section->num_lineno;
+    linenum_array = (gp_linenum_type **)GP_Calloc(n_linenums, sizeof(gp_linenum_type *));
+    section->linenum_array = linenum_array;
+
+    i       = 0;
+    linenum = section->line_numbers;
+    while (linenum != NULL) {
+      linenum_array[i] = linenum;
+      ++i;
+      linenum = linenum->next;
+    }
+
+    assert(i == n_linenums);
+
+    qsort(linenum_array, n_linenums, sizeof(gp_linenum_type *), _linenum_cmp);
+    section = section->next;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_linenum_type *
+gp_cofflink_find_linenum(const gp_section_type *section, unsigned int line_number)
+{
+  gp_linenum_type   linenum;
+  gp_linenum_type  *ptr;
+  gp_linenum_type **ret;
+
+  if ((section == NULL) || (section->linenum_array == NULL)) {
+    return NULL;
+  }
+
+  linenum.line_number = line_number;
+  ptr = &linenum;
+  ret = (gp_linenum_type **)bsearch(&ptr, section->linenum_array, section->num_lineno,
+                                    sizeof(gp_linenum_type *), _linenum_cmp);
+  return ((ret != NULL) ? *ret : NULL);
+}
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Create sections to fill unused memory in the pages with constant data. */
 
@@ -1555,6 +1690,8 @@ gp_cofflink_fill_pages(gp_object_type *object, MemBlock *m, const symbol_table_t
   free(sym_list);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _check_relative(const gp_section_type *section, int org, int argument, int range)
 {
@@ -1564,47 +1701,7 @@ _check_relative(const gp_section_type *section, int org, int argument, int range
   }
 }
 
-const char *
-gp_cofflink_reloc_type_to_str(unsigned int Reloc_type)
-{
-  switch (Reloc_type) {
-  case RELOCT_ALL:           return "RELOCT_ALL";
-  case RELOCT_CALL:          return "RELOCT_CALL";
-  case RELOCT_GOTO:          return "RELOCT_GOTO";
-  case RELOCT_LOW:           return "RELOCT_LOW";
-  case RELOCT_HIGH:          return "RELOCT_HIGH";
-  case RELOCT_UPPER:         return "RELOCT_UPPER";
-  case RELOCT_P:             return "RELOCT_P";
-  case RELOCT_BANKSEL:       return "RELOCT_BANKSEL";
-  case RELOCT_IBANKSEL:      return "RELOCT_IBANKSEL";
-  case RELOCT_F:             return "RELOCT_F";
-  case RELOCT_TRIS:          return "RELOCT_TRIS";
-  case RELOCT_TRIS_3BIT:     return "RELOCT_TRIS_3BIT";
-  case RELOCT_MOVLR:         return "RELOCT_MOVLR";
-  case RELOCT_MOVLB:         return "RELOCT_MOVLB";
-  case RELOCT_GOTO2:         return "RELOCT_GOTO2";
-  case RELOCT_FF1:           return "RELOCT_FF1";
-  case RELOCT_FF2:           return "RELOCT_FF2";
-  case RELOCT_LFSR1:         return "RELOCT_LFSR1";
-  case RELOCT_LFSR2:         return "RELOCT_LFSR2";
-  case RELOCT_BRA:           return "RELOCT_BRA";
-  case RELOCT_CONDBRA:       return "RELOCT_CONDBRA";
-  case RELOCT_ACCESS:        return "RELOCT_ACCESS";
-  case RELOCT_PAGESEL_WREG:  return "RELOCT_PAGESEL_WREG";
-  case RELOCT_PAGESEL_BITS:  return "RELOCT_PAGESEL_BITS";
-  case RELOCT_PAGESEL_MOVLP: return "RELOCT_PAGESEL_MOVLP";
-  case RELOCT_PAGESEL:       return "RELOCT_PAGESEL";
-  case RELOCT_SCNSZ_LOW:     return "RELOCT_SCNSZ_LOW";
-  case RELOCT_SCNSZ_HIGH:    return "RELOCT_SCNSZ_HIGH";
-  case RELOCT_SCNSZ_UPPER:   return "RELOCT_SCNSZ_UPPER";
-  case RELOCT_SCNEND_LOW:    return "RELOCT_SCNEND_LOW";
-  case RELOCT_SCNEND_HIGH:   return "RELOCT_SCNEND_HIGH";
-  case RELOCT_SCNEND_UPPER:  return "RELOCT_SCNEND_UPPER";
-  case RELOCT_SCNEND_LFSR1:  return "RELOCT_SCNEND_LFSR1";
-  case RELOCT_SCNEND_LFSR2:  return "RELOCT_SCNEND_LFSR2";
-  default:                   return "RELOCT_UNKNOWN";
-  }
-}
+/*------------------------------------------------------------------------------------------------*/
 
 /* patch one word with the relocated address */
 
@@ -1775,12 +1872,12 @@ _patch_addr(proc_class_t class, int num_pages, int num_banks, int bsr_boundary,
   default: {
       if (symbol->name != NULL) {
         gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",
-                 gp_cofflink_reloc_type_to_str(relocation->type),
+                 gp_coffgen_reloc_type_to_str(relocation->type),
                  relocation->type, section->name, symbol->name);
       }
       else {
         gp_error("Unimplemented relocation = %s (%u) in section \"%s\".",
-                 gp_cofflink_reloc_type_to_str(relocation->type),
+                 gp_coffgen_reloc_type_to_str(relocation->type),
                  relocation->type, section->name);
       }
       assert(0);
@@ -1792,6 +1889,8 @@ _patch_addr(proc_class_t class, int num_pages, int num_banks, int bsr_boundary,
     class->i_memory_put(section->data, byte_addr, current_value | data, section->name, symbol->name);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Patch all addresses with the relocated symbols. The relocations are
    stripped from the sections. */
@@ -1838,6 +1937,8 @@ gp_cofflink_patch(gp_object_type *object)
     section = section->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* copy all executable data to new memory */
 

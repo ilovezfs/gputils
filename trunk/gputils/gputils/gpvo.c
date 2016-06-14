@@ -26,14 +26,63 @@ Boston, MA 02111-1307, USA.  */
 
 struct gpvo_state state;
 
+enum {
+  OPT_STRICT_OPTIONS = 0x100
+};
+
+#define GET_OPTIONS "bcfhnstvx:y"
+
+/* Used: himpsv */
+static struct option longopts[] =
+{
+  { "binary",         no_argument,       NULL, 'b' },
+  { "mnemonics",      no_argument,       NULL, 'c' },
+  { "file",           no_argument,       NULL, 'f' },
+  { "help",           no_argument,       NULL, 'h' },
+  { "no-names",       no_argument,       NULL, 'n' },
+  { "section",        no_argument,       NULL, 's' },
+  { "strict-options", no_argument,       NULL, OPT_STRICT_OPTIONS },
+  { "symbol",         no_argument,       NULL, 't' },
+  { "version",        no_argument,       NULL, 'v' },
+  { "export",         required_argument, NULL, 'x' },
+  { "extended",       no_argument,       NULL, 'y' },
+  { NULL,             no_argument,       NULL, '\0'}
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_show_usage(void)
+{
+  printf("Usage: gpvo [options] file\n");
+  printf("Options: [defaults in brackets after descriptions]\n");
+  printf("  -b, --binary            Print binary data.\n");
+  printf("  -c, --mnemonics         Decode special mnemonics.\n");
+  printf("  -f, --file              File header.\n");
+  printf("  -h, --help              Show this usage message.\n");
+  printf("  -n, --no-names          Suppress filenames.\n");
+  printf("  -s, --section           Section data.\n");
+  printf("      --strict-options    If this is set, then an option may not be parameter\n"
+         "                          of an another option. For example: -x --symbol\n");
+  printf("  -t  --symbol            Symbol table.\n");
+  printf("  -v, --version           Show version.\n");
+  printf("  -x FILE, --export FILE  Export symbols to include file.\n");
+  printf("  -y, --extended          Enable 18xx extended mode.\n\n");
+  printf("Report bugs to:\n");
+  printf("%s\n", PACKAGE_BUGREPORT);
+  exit(0);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _print_header(const gp_object_type *object)
 {
 #define NELEM(x)  (sizeof(x) / sizeof(*(x)))
 
   static struct magic_s {
-    unsigned short  magic_num;
-    const char     *magic_name;
+    uint16_t    magic_num;
+    const char *magic_name;
   } magic[] = {
     { 0x1234, "MICROCHIP_MAGIC_v1" },
     { 0x1240, "MICROCHIP_MAGIC_v2" }
@@ -55,11 +104,11 @@ _print_header(const gp_object_type *object)
   }
   printf("COFF version         %#x: %s\n", object->version,
          (i < NELEM(magic)) ? magic[i].magic_name : "unknown");
-  printf("Processor Type       %s\n",   processor_name);
-  printf("Time Stamp           %s\n",   time);
+  printf("Processor Type       %s\n",  processor_name);
+  printf("Time Stamp           %s\n",  time);
   printf("Number of Sections   %u\n",  object->num_sections);
   printf("Number of Symbols    %u\n",  object->num_symbols);
-  printf("Characteristics      %#x\n",  object->flags);
+  printf("Characteristics      %#x\n", object->flags);
 
   if (object->flags & F_RELFLG) {
     printf("  Relocation info has been stripped.\n");
@@ -92,54 +141,16 @@ _print_header(const gp_object_type *object)
   printf("\n");
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static const char *
-_format_reloc_type(unsigned short type, char *buffer, size_t sizeof_buffer)
+_format_reloc_type(uint16_t type, char *buffer, size_t sizeof_buffer)
 {
-  static const char * const type_str[] = {
-    "",
-    "RELOCT_CALL",
-    "RELOCT_GOTO",
-    "RELOCT_HIGH",
-    "RELOCT_LOW",
-    "RELOCT_P",
-    "RELOCT_BANKSEL",
-    "RELOCT_PAGESEL",
-    "RELOCT_ALL",
-    "RELOCT_IBANKSEL",
-    "RELOCT_F",
-    "RELOCT_TRIS",
-    "RELOCT_MOVLR",
-    "RELOCT_MOVLB",
-    "RELOCT_GOTO2/CALL2",
-    "RELOCT_FF1",
-    "RELOCT_FF2",
-    "RELOCT_LFSR1",
-    "RELOCT_LFSR2",
-    "RELOCT_BRA/RCALL",
-    "RELOCT_CONDBRA",
-    "RELOCT_UPPER",
-    "RELOCT_ACCESS",
-    "RELOCT_PAGESEL_WREG",
-    "RELOCT_PAGESEL_BITS",
-    "RELOCT_SCNSZ_LOW",
-    "RELOCT_SCNSZ_HIGH",
-    "RELOCT_SCNSZ_UPPER",
-    "RELOCT_SCNEND_LOW",
-    "RELOCT_SCNEND_HIGH",
-    "RELOCT_SCNEND_UPPER",
-    "RELOCT_SCNEND_LFSR1",
-    "RELOCT_SCNEND_LFSR2",
-    "RELOCT_TRIS_3BIT",
-    "RELOCT_PAGESEL_MOVLP",
-  };
-
-  if (type >= NELEM(type_str)) {
-    type = 0;
-  }
-
-  snprintf(buffer, sizeof_buffer, "%#-4x %-20s", type, type_str[type]);
+  snprintf(buffer, sizeof_buffer, "%#-4x %-20s", type, gp_coffgen_reloc_type_to_str(type));
   return buffer;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _print_reloc_list(proc_class_t class, const gp_reloc_type *relocation)
@@ -161,6 +172,8 @@ _print_reloc_list(proc_class_t class, const gp_reloc_type *relocation)
 
   printf("\n");
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _print_linenum_list(proc_class_t class, const gp_linenum_type *linenumber)
@@ -188,47 +201,45 @@ _print_linenum_list(proc_class_t class, const gp_linenum_type *linenumber)
   printf("\n");
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _print_data(proc_class_t class, const gp_section_type *section)
 {
-  char buffer[BUFSIZ];
-  int  address;
-  int  num_words = 1;
+  char     buffer[BUFSIZ];
+  int      address;
+  int      num_words = 1;
+  uint16_t word;
+  uint8_t  byte;
 
   address = section->address;
 
   buffer[0] = '\0';
 
   printf("Data\n");
-  while (1) {
+  while (true) {
     if ((section->flags & STYP_TEXT) && (class->find_insn != NULL)) {
-      uint16_t memory;
-
-      if (!class->i_memory_get(section->data, address, &memory, NULL, NULL)) {
+      if (!class->i_memory_get(section->data, address, &word, NULL, NULL)) {
         break;
       }
 
       num_words = gp_disassemble(section->data, address, class, 0x80, 0, GPDIS_SHOW_ALL_BRANCH,
                                  buffer, sizeof(buffer), 0);
-      printf("%06x:  %04x  %s\n", gp_processor_byte_to_org(class, address), memory, buffer);
+      printf("%06x:  %04x  %s\n", gp_processor_byte_to_org(class, address), word, buffer);
 
       if (num_words != 1) {
-        class->i_memory_get(section->data, address + 2, &memory, NULL, NULL);
-        printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address + 2), memory);
+        class->i_memory_get(section->data, address + 2, &word, NULL, NULL);
+        printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address + 2), word);
       }
 
       address += 2 * num_words;
     }
     else if ((section->flags & STYP_DATA_ROM) || (class == PROC_CLASS_EEPROM16)) {
-      uint16_t word;
-
       if (class->i_memory_get(section->data, address, &word, NULL, NULL)) {
         printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address), word);
         address += 2;
       }
       else {
-        uint8_t byte;
-
         if (b_memory_get(section->data, address, &byte, NULL, NULL)) {
           printf("%06x:  %02x\n", gp_processor_byte_to_org(class, address), byte);
         }
@@ -237,8 +248,6 @@ _print_data(proc_class_t class, const gp_section_type *section)
     }
     else {
       /* STYP_DATA or STYP_ACTREC, or EEPROM8 */
-      unsigned char byte;
-
       if (!b_memory_get(section->data, address, &byte, NULL, NULL)) {
         break;
       }
@@ -249,6 +258,8 @@ _print_data(proc_class_t class, const gp_section_type *section)
   }
   printf("\n");
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _print_sec_header(proc_class_t class, const gp_section_type *section)
@@ -305,10 +316,12 @@ _print_sec_header(proc_class_t class, const gp_section_type *section)
   printf("\n");
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _print_sec_list(const gp_object_type *object)
 {
-  gp_section_type *section = object->sections;
+  const gp_section_type *section = object->sections;
 
   while (section != NULL) {
     _print_sec_header(object->class, section);
@@ -328,6 +341,8 @@ _print_sec_list(const gp_object_type *object)
     section = section->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _coff_type(int type, char *buffer, size_t sizeof_buffer)
@@ -434,6 +449,8 @@ _coff_type(int type, char *buffer, size_t sizeof_buffer)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static const char *
 _format_sym_type(int type, char *buffer, size_t sizeof_buffer)
 {
@@ -467,6 +484,8 @@ _format_sym_type(int type, char *buffer, size_t sizeof_buffer)
   return buffer;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static const char *
 _format_sym_derived_type(int type, char *buffer, size_t sizeof_buffer)
 {
@@ -486,6 +505,8 @@ _format_sym_derived_type(int type, char *buffer, size_t sizeof_buffer)
   snprintf(buffer, sizeof_buffer, "%d", type);
   return buffer;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static const char *
 _format_sym_class(int cls, char *buffer, size_t sizeof_buffer)
@@ -528,6 +549,8 @@ _format_sym_class(int cls, char *buffer, size_t sizeof_buffer)
     return buffer;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _print_sym_table(const gp_object_type *object)
@@ -583,7 +606,7 @@ _print_sym_table(const gp_object_type *object)
       switch (aux->type) {
       case AUX_DIRECT:
         printf(AUX_INDENT "command = \"%c\"\n", aux->_aux_symbol._aux_direct.command);
-        printf(AUX_INDENT "string = \"%s\"\n", aux->_aux_symbol._aux_direct.string);
+        printf(AUX_INDENT "string  = \"%s\"\n", aux->_aux_symbol._aux_direct.string);
         break;
 
       case AUX_FILE:
@@ -591,7 +614,7 @@ _print_sym_table(const gp_object_type *object)
           printf(AUX_INDENT "file = %s\n", aux->_aux_symbol._aux_file.filename);
         }
         printf(AUX_INDENT "line included = %u\n", aux->_aux_symbol._aux_file.line_number);
-        printf(AUX_INDENT "flags = %x\n", aux->_aux_symbol._aux_file.flags);
+        printf(AUX_INDENT "flags         = %x\n", aux->_aux_symbol._aux_file.flags);
         break;
 
       case AUX_IDENT:
@@ -599,16 +622,15 @@ _print_sym_table(const gp_object_type *object)
         break;
 
       case AUX_SCN:
-        printf(AUX_INDENT "length = %u\n", aux->_aux_symbol._aux_scn.length);
-        printf(AUX_INDENT "number of relocations = %u\n", aux->_aux_symbol._aux_scn.nreloc);
+        printf(AUX_INDENT "length                 = %u\n", aux->_aux_symbol._aux_scn.length);
+        printf(AUX_INDENT "number of relocations  = %u\n", aux->_aux_symbol._aux_scn.nreloc);
         printf(AUX_INDENT "number of line numbers = %u\n", aux->_aux_symbol._aux_scn.nlineno);
         break;
 
       case AUX_FCN_CALLS: {
         struct gp_symbol_type *callee = aux->_aux_symbol._aux_fcn_calls.callee;
 
-        printf(AUX_INDENT "callee = %s\n",
-               callee != NULL ? callee->name : "higher order");
+        printf(AUX_INDENT "callee       = %s\n", (callee != NULL) ? callee->name : "higher order");
         printf(AUX_INDENT "is_interrupt = %u\n",
                aux->_aux_symbol._aux_fcn_calls.is_interrupt);
         break;
@@ -642,6 +664,8 @@ _print_sym_table(const gp_object_type *object)
   printf("\n");
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _export_sym_table(gp_object_type *object)
 {
@@ -661,24 +685,28 @@ _export_sym_table(gp_object_type *object)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
+#define BIN_DATA_LINE_SIZE    16
+
 static void
 _print_binary(const uint8_t *data, long file_size)
 {
-  long i;
-  long j;
-  int  memory;
-  int  c;
+  long         i;
+  long         j;
+  unsigned int memory;
+  int          c;
 
   printf("\nObject file size = %li bytes\n", file_size);
 
   printf("\nBinary object file contents:");
-  for (i = 0; i < file_size; i += 16) {
+  for (i = 0; i < file_size; i += BIN_DATA_LINE_SIZE) {
     printf("\n%06lx", i);
 
-    for(j = 0; j < 16; j += 2) {
-      memory = (data[i + j] << 8) | data[i+j+1];
+    for (j = 0; j < BIN_DATA_LINE_SIZE; j += 2) {
+      memory = (data[i + j] << 8) | data[i + j + 1];
 
-      if ((i+j) >= file_size) {
+      if ((i + j) >= file_size) {
         printf("     ");
       } else {
         printf(" %04x", memory);
@@ -687,8 +715,8 @@ _print_binary(const uint8_t *data, long file_size)
 
     printf(" ");
 
-    for (j = 0; j < 16; j += 2) {
-      if ((i+j) < file_size) {
+    for (j = 0; j < BIN_DATA_LINE_SIZE; j += 2) {
+      if ((i + j) < file_size) {
         c = data[i + j];
         putchar((isprint(c)) ? c : '.');
 
@@ -701,50 +729,7 @@ _print_binary(const uint8_t *data, long file_size)
   printf("\n\n");
 }
 
-static void
-_show_usage(void)
-{
-  printf("Usage: gpvo [options] file\n");
-  printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -b, --binary            Print binary data.\n");
-  printf("  -c, --mnemonics         Decode special mnemonics.\n");
-  printf("  -f, --file              File header.\n");
-  printf("  -h, --help              Show this usage message.\n");
-  printf("  -n, --no-names          Suppress filenames.\n");
-  printf("  -s, --section           Section data.\n");
-  printf("      --strict-options    If this is set, then an option may not be parameter\n"
-         "                          of an another option. For example: -x --symbol\n");
-  printf("  -t  --symbol            Symbol table.\n");
-  printf("  -v, --version           Show version.\n");
-  printf("  -x FILE, --export FILE  Export symbols to include file.\n");
-  printf("  -y, --extended          Enable 18xx extended mode.\n\n");
-  printf("Report bugs to:\n");
-  printf("%s\n", PACKAGE_BUGREPORT);
-  exit(0);
-}
-
-enum {
-  OPT_STRICT_OPTIONS = 0x100
-};
-
-#define GET_OPTIONS "bcfhnstvx:y"
-
-/* Used: himpsv */
-static struct option longopts[] =
-{
-  { "binary",         no_argument,       NULL, 'b' },
-  { "mnemonics",      no_argument,       NULL, 'c' },
-  { "file",           no_argument,       NULL, 'f' },
-  { "help",           no_argument,       NULL, 'h' },
-  { "no-names",       no_argument,       NULL, 'n' },
-  { "section",        no_argument,       NULL, 's' },
-  { "strict-options", no_argument,       NULL, OPT_STRICT_OPTIONS },
-  { "symbol",         no_argument,       NULL, 't' },
-  { "version",        no_argument,       NULL, 'v' },
-  { "export",         required_argument, NULL, 'x' },
-  { "extended",       no_argument,       NULL, 'y' },
-  { NULL,             no_argument,       NULL, '\0'}
-};
+/*------------------------------------------------------------------------------------------------*/
 
 int main(int argc, char *argv[])
 {
@@ -758,7 +743,7 @@ int main(int argc, char *argv[])
   gp_init();
 
   /* initalize */
-  state.dump_flags = 0;
+  state.dump_flags     = 0;
   state.suppress_names = false;
   state.export.enabled = false;
 

@@ -22,6 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* FIXME: member headers always start on an even-byte boundary. A newline
    character is often used to fill the gap. */
 
@@ -43,6 +45,8 @@ gp_archive_count_members(const gp_archive_type *archive)
   return number;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* This function is unused. */
 
 char *
@@ -59,6 +63,8 @@ gp_archive_member_name(const gp_archive_type *archive)
 
   return GP_Strdup(name);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_archive_list_members(const gp_archive_type *archive)
@@ -87,6 +93,8 @@ gp_archive_list_members(const gp_archive_type *archive)
     archive = archive->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 gp_archive_type *
 gp_archive_find_member(gp_archive_type *archive, const char *objectname)
@@ -118,6 +126,8 @@ gp_archive_find_member(gp_archive_type *archive, const char *objectname)
   return found;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_archive_free_member(gp_archive_type *archive)
 {
@@ -129,6 +139,8 @@ gp_archive_free_member(gp_archive_type *archive)
     free(archive);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 gp_archive_type *
 gp_archive_delete_member(gp_archive_type *archive, const char *objectname)
@@ -158,6 +170,8 @@ gp_archive_delete_member(gp_archive_type *archive, const char *objectname)
 
   return archive;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 gp_archive_type *
 gp_archive_add_member(gp_archive_type *archive, const char *filename, const char *objectname)
@@ -217,6 +231,8 @@ gp_archive_add_member(gp_archive_type *archive, const char *filename, const char
   return archive;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_boolean
 gp_archive_extract_member(gp_archive_type *archive, const char *objectname)
 {
@@ -249,6 +265,8 @@ gp_archive_extract_member(gp_archive_type *archive, const char *objectname)
   return true;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_boolean
 gp_archive_write(gp_archive_type *archive, const char *archivename)
 {
@@ -276,8 +294,10 @@ gp_archive_write(gp_archive_type *archive, const char *archivename)
   return true;
 }
 
-/* update the offset numbers for the archive, this is only required
-   if a symbol index is created */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Update the offset numbers for the archive, this is only required
+   if a symbol index is created. */
 
 void
 gp_archive_update_offsets(gp_archive_type *archive)
@@ -293,7 +313,9 @@ gp_archive_update_offsets(gp_archive_type *archive)
   }
 }
 
-/* read a coff archive and store it in memory */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Read a coff archive and store it in memory. */
 
 gp_archive_type *
 gp_archive_read(const char *filename)
@@ -365,7 +387,9 @@ gp_archive_read(const char *filename)
   return archive;
 }
 
-/* Determine if the archive has a symbol index */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Determine if the archive has a symbol index. */
 
 gp_boolean
 gp_archive_have_index(const gp_archive_type *archive)
@@ -373,7 +397,9 @@ gp_archive_have_index(const gp_archive_type *archive)
   return (((archive != NULL) && (archive->header.ar_name[0] == '/')) ? true : false);
 }
 
-/* Remove the symbol index if one exists */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Remove the symbol index if one exists. */
 
 gp_archive_type *
 gp_archive_remove_index(gp_archive_type *archive)
@@ -389,6 +415,8 @@ gp_archive_remove_index(gp_archive_type *archive)
 
   return archive;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Create a symbol index for the archive.  This is always done to make
    sure duplicate symbols don't get into the library.  This data can
@@ -423,7 +451,10 @@ gp_archive_make_index(gp_archive_type *archive, symbol_table_t *definition)
   return 0;
 }
 
-/* add the symbol index to the archive */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Add the symbol index to the archive. */
+
 gp_archive_type *
 gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
 {
@@ -506,7 +537,9 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
   return Archive;
 }
 
-/* place the symbol from the archive symbol index in the archive symbol table */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Place the symbol from the archive symbol index in the archive symbol table. */
 
 gp_boolean
 gp_archive_add_symbol(symbol_table_t *table, const char *name, gp_archive_type *member)
@@ -523,6 +556,8 @@ gp_archive_add_symbol(symbol_table_t *table, const char *name, gp_archive_type *
   sym_annotate_symbol(sym, member);
   return false;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* This function reads the symbol index in the archive.  The symbols are
 placed in the archive symbol table.  This table stores the name of the
@@ -574,7 +609,9 @@ gp_archive_read_index(symbol_table_t *table, gp_archive_type *archive)
   }
 }
 
-/* print the archive symbol table */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Print the archive symbol table. */
 
 void
 gp_archive_print_table(const symbol_table_t *Table)

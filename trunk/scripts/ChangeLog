@@ -1,3 +1,7 @@
+2016-06-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/build-register-db.pl, tools/cfg-import.pl:
+	  Changed types: unsigned short --> uint16_t
+
 2016-06-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* build/mingw/do_setup.sh, build/mingw/make-mingw:
 	  Enabled use the bzip2 source archive.

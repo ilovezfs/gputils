@@ -27,6 +27,8 @@ Boston, MA 02111-1307, USA.  */
 #include "lst.h"
 #include "cod.h"
 
+#define COD_FILE_MAX_NUM            1000
+
 static DirBlockInfo *main_dir;
 
 static DirBlockInfo *
@@ -46,15 +48,12 @@ _init_dir_block(void)
 
   /* Initialize the directory block with known data. It'll be written
    * to the .cod file after everything else. */
-  gp_cod_strncpy(&dir->dir[COD_DIR_SOURCE],
-                 state.codfilename, COD_DIR_DATE - COD_DIR_SOURCE);
+  gp_cod_strncpy(&dir->dir[COD_DIR_SOURCE], state.codfilename, COD_DIR_DATE - COD_DIR_SOURCE);
   gp_cod_date(&dir->dir[COD_DIR_DATE], COD_DIR_TIME - COD_DIR_DATE);
   gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_VERSION - COD_DIR_TIME);
   gp_cod_strncpy(&dir->dir[COD_DIR_VERSION], VERSION, COD_DIR_COMPILER - COD_DIR_VERSION);
-  gp_cod_strncpy(&dir->dir[COD_DIR_COMPILER],
-                 "gpasm", COD_DIR_NOTICE - COD_DIR_COMPILER);
-  gp_cod_strncpy(&dir->dir[COD_DIR_NOTICE], GPUTILS_COPYRIGHT_STRING,
-                 COD_DIR_SYMTAB - COD_DIR_NOTICE);
+  gp_cod_strncpy(&dir->dir[COD_DIR_COMPILER], "gpasm", COD_DIR_NOTICE - COD_DIR_COMPILER);
+  gp_cod_strncpy(&dir->dir[COD_DIR_NOTICE], GPUTILS_COPYRIGHT_STRING, COD_DIR_SYMTAB - COD_DIR_NOTICE);
 
   /* The address is always two shorts or 4 bytes long. */
   dir->dir[COD_DIR_ADDRSIZE] = 0;
@@ -82,11 +81,11 @@ _write_file_block(void)
   fc = state.files;
   id_number = 0;
 
-  while ((fc->prev != NULL) && (id_number++ < 1000)) {
+  while ((fc->prev != NULL) && (id_number++ < COD_FILE_MAX_NUM)) {
     fc = fc->prev;
   }
 
-  if (id_number >= 1000) {
+  if (id_number >= COD_FILE_MAX_NUM) {
     /* Too many files to handle in the .cod file. */
     assert(0);
   }
@@ -189,11 +188,11 @@ _write_code(void)
   rb            = NULL;
   while (m != NULL) {
     mem_base  = m->base << I_MEM_BITS;
-    high_addr = (mem_base >> 16) & 0xffff;
+    high_addr = IMemBaseAddr(mem_base);
 
     if ((dbi == NULL) || (high_addr != _64k_base)) {
       _64k_base = high_addr;
-      dbi = _find_dir_block_by_high_addr(_64k_base);
+      dbi       = _find_dir_block_by_high_addr(_64k_base);
     }
 
     for (i = mem_base; (i - mem_base) <= I_MEM_MAX; i += 2) {
@@ -297,12 +296,12 @@ cod_lst_line(int line_type)
     return;
   }
 
-  address = gp_processor_byte_to_org(state.device.class, state.lst.line.was_byte_addr);
-  high_address = (address >> 16) & 0xffff;
+  address      = gp_processor_byte_to_org(state.device.class, state.lst.line.was_byte_addr);
+  high_address = IMemBaseAddr(address);
 
   if ((dbi == NULL) || (high_address != _64k_base)) {
     _64k_base = high_address;
-    dbi = _find_dir_block_by_high_addr(_64k_base);
+    dbi       = _find_dir_block_by_high_addr(_64k_base);
   }
 
   first_time = (gp_blocks_get_last(&dbi->lst) == NULL) ? true : false;

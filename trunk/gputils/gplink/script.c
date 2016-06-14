@@ -31,6 +31,8 @@ Boston, MA 02111-1307, USA.  */
 
 #define NELEM(x)  (sizeof(x) / sizeof(x)[0])
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 script_error(const char *messg, const char *detail)
 {
@@ -49,6 +51,8 @@ script_error(const char *messg, const char *detail)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
 _enforce_simple(const pnode_t *p)
 {
@@ -60,6 +64,8 @@ _enforce_simple(const pnode_t *p)
     return false;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static long
 _evaluate(const pnode_t *p)
@@ -78,6 +84,8 @@ _evaluate(const pnode_t *p)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _do_files(const char *name, enum section_type type, const pnode_t *parms)
 {
@@ -94,6 +102,8 @@ _do_files(const char *name, enum section_type type, const pnode_t *parms)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _do_include(const char *name, enum section_type type, const pnode_t *parms)
 {
@@ -108,6 +118,8 @@ _do_include(const char *name, enum section_type type, const pnode_t *parms)
 
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 script_add_path(const pnode_t *parms)
@@ -127,6 +139,8 @@ script_add_path(const pnode_t *parms)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 script_add_macro(const char *name, long value)
 {
@@ -144,6 +158,8 @@ script_add_macro(const char *name, long value)
   *val = value;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 long
 script_get_macro(const char *name)
 {
@@ -159,6 +175,8 @@ script_get_macro(const char *name)
   val = sym_get_symbol_annotation(sym);
   return *val;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* FIXME:  These functions were written to allow the user the greatest
    flexibility.  The arguments can appear in any order.  In hind sight
@@ -278,6 +296,8 @@ _do_logsec(const char *name, enum section_type type, const pnode_t *parms)
 
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* general section definition processing */
 static int
@@ -469,6 +489,8 @@ _do_secdef(const char *name, enum section_type type, const pnode_t *parms)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _do_stack(const char *name, enum section_type type, const pnode_t *parms)
 {
@@ -551,6 +573,8 @@ _do_stack(const char *name, enum section_type type, const pnode_t *parms)
 
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 script_execute_command(const char *name, const pnode_t *parms)

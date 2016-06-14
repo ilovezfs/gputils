@@ -43,6 +43,17 @@ Boston, MA 02111-1307, USA.  */
 #define IS_EEPROM (IS_EEPROM8 || IS_EEPROM16)
 #define IS_BYTE   (IS_PIC16E_CORE || IS_EEPROM)
 
+typedef struct {
+  const symbol_t *sym;
+  enum lst_sym_type_e {
+    LST_SYMBOL,
+    LST_DEFINE,
+    LST_MACRO
+  } type;
+} lst_symbol_t;
+
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _lst_check_page_start(void)
 {
@@ -51,6 +62,8 @@ _lst_check_page_start(void)
     lst_page_start();
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
 _lst_spaces(unsigned int n)
@@ -65,6 +78,8 @@ _lst_spaces(unsigned int n)
   return n;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _lst_eol(void)
 {
@@ -76,7 +91,10 @@ _lst_eol(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Print part of a line. Output must not contain newline. Needs call to lst_eol at end of line. */
+
 static unsigned int
 _lst_printf(const char *format, ...)
 {
@@ -94,7 +112,10 @@ _lst_printf(const char *format, ...)
   return (unsigned int)r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* find relocation by address */
+
 static gp_reloc_type *
 _find_reloc_by_address(uint16_t address)
 {
@@ -109,7 +130,10 @@ _find_reloc_by_address(uint16_t address)
   return p;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* get previous relocation type */
+
 static uint16_t
 _prev_reloc_type(void)
 {
@@ -128,6 +152,8 @@ _prev_reloc_type(void)
   return ((p->address == p->next->address) ? p->type : 0);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* print word value with undefined nibbles replaced by "?" */
 /* enable assertions
  * #define DO_ASSERT */
@@ -137,7 +163,7 @@ _prev_reloc_type(void)
 #ifdef DO_ASSERT
 #define ASSERT(expr)    assert(expr)
 #else
-#define ASSERT(expr)    ((void) 0)
+#define ASSERT(expr)    ((void)0)
 #endif
 
 static unsigned int
@@ -461,6 +487,8 @@ _print_reloc(uint16_t type, uint16_t current_value, unsigned int index)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static unsigned int
 _lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr, unsigned int bytes_emitted, uint16_t reloc_type)
 {
@@ -523,6 +551,8 @@ _lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr, unsigned int by
   return lst_bytes;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _cod_symbol_table(void)
 {
@@ -542,6 +572,8 @@ _cod_symbol_table(void)
   free(lst);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 lst_init(void)
 {
@@ -553,7 +585,7 @@ lst_init(void)
   state.lst.symboltable  = true;
   state.lst.lst_state    = LST_IN_MEM;
 
-  /* Determine state.startdate */
+  /* Determine state.startdate. */
   gp_date_string(state.lst.startdate, sizeof(state.lst.startdate));
 
   if (!state.cmd_line.macro_expand){
@@ -564,8 +596,8 @@ lst_init(void)
   state.lst.config_address   = 0;
   state.lst.title_name[0]    = '\0';
   state.lst.subtitle_name[0] = '\0';
-  state.lst.tabstop          = 8;   /* Default tabstop every 8 */
-  state.lst.line_width       = 132; /* Default line width is 132 */
+  state.lst.tabstop          = 8;   /* Default tabstop every 8. */
+  state.lst.line_width       = 132; /* Default line width is 132. */
 
   if (state.lstfile != OUT_NAMED) {
     snprintf(state.lstfilename, sizeof(state.lstfilename), "%s.lst", state.basefilename);
@@ -588,6 +620,8 @@ lst_init(void)
   cod_lst_line(COD_FIRST_LST_LINE);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 lst_close(void)
 {
@@ -606,6 +640,8 @@ lst_close(void)
     fclose(state.lst.f);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 lst_throw(void)
@@ -631,6 +667,8 @@ lst_throw(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 lst_page_start(void)
 {
@@ -654,6 +692,8 @@ lst_page_start(void)
   lst_line(NULL);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 lst_line(const char *format, ...)
 {
@@ -670,6 +710,8 @@ lst_line(const char *format, ...)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 lst_err_line(const char *type, unsigned int code, const char *format, va_list args)
 {
@@ -680,6 +722,8 @@ lst_err_line(const char *type, unsigned int code, const char *format, va_list ar
     _lst_eol();
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 lst_memory_map(MemBlock *m)
@@ -743,7 +787,7 @@ lst_memory_map(MemBlock *m)
 
   lst_line(NULL);
   lst_line("All other memory blocks unused.");
-  lst_line(NULL);
+  lst_line("");
 
   /* it seems that MPASM includes config bytes into program memory usage
    * count for 16 bit cores. See gpasm testsuite:
@@ -755,9 +799,9 @@ lst_memory_map(MemBlock *m)
   }
   else {
     unsigned int used = gp_processor_byte_to_real(state.processor, ((!IS_PIC16) && (state.processor != NULL)) ?
-      b_range_memory_used(state.i_memory, 0,
-                          gp_processor_org_to_byte(state.device.class, state.processor->prog_mem_size)) :
-      b_memory_used(state.i_memory));
+                                b_range_memory_used(state.i_memory, 0,
+                                                    gp_processor_org_to_byte(state.device.class, state.processor->prog_mem_size)) :
+                                b_memory_used(state.i_memory));
 
     lst_line("Program Memory %s Used: %5i", IS_BYTE ? "Bytes" : "Words", used);
 
@@ -767,8 +811,10 @@ lst_memory_map(MemBlock *m)
                (used <= state.processor->prog_mem_size) ? (state.processor->prog_mem_size - used) : 0);
     }
   }
-  lst_line(NULL);
+  lst_line("");
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 lst_format_line(const char *src_line, int value)
@@ -783,6 +829,7 @@ lst_format_line(const char *src_line, int value)
   unsigned int  pos = 0;
   uint16_t      reloc_type;
   MemBlock     *m = state.i_memory;
+  uint16_t      word;
 
   assert(src_line != NULL);
 
@@ -892,10 +939,7 @@ lst_data:
          words in the list file. */
       if (state.lst.config_address == CONFIG4L) {
         /* Special case */
-        uint16_t word;
-
-        state.device.class->i_memory_get(state.c_memory,
-                                         state.lst.config_address, &word, NULL, NULL);
+        state.device.class->i_memory_get(state.c_memory, state.lst.config_address, &word, NULL, NULL);
         pos += _lst_printf(addr_fmt, state.lst.config_address);
         pos += _lst_printf("%04X", word);
         _lst_spaces(LST_LINENUM_POS - pos);
@@ -903,20 +947,14 @@ lst_data:
         /* if it is an even address don't print anything */
         _lst_spaces(LST_LINENUM_POS);
       } else {
-        uint16_t word;
-
-        state.device.class->i_memory_get(state.c_memory,
-                                         state.lst.config_address - 1, &word, NULL, NULL);
+        state.device.class->i_memory_get(state.c_memory, state.lst.config_address - 1, &word, NULL, NULL);
         pos += _lst_printf(addr_fmt, state.lst.config_address - 1);
         pos += _lst_printf("%04X", word);
         _lst_spaces(LST_LINENUM_POS - pos);
       }
     } else {
-      uint16_t word;
-
       state.device.class->i_memory_get(state.c_memory, state.lst.config_address, &word, NULL, NULL);
-      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor,
-                        state.lst.config_address));
+      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.config_address));
       pos += _lst_printf("%04X", word);
       _lst_spaces(LST_LINENUM_POS - pos);
     }
@@ -938,8 +976,8 @@ lst_data:
 
   /* Now copy source line to listing, expanding tabs as required */
   {
-    int src_column = 0;           /* current source line column */
-    int lst_column = LST_SRC_POS; /* current listing column after the SRC_POS */
+    int         src_column = 0;           /* current source line column */
+    int         lst_column = LST_SRC_POS; /* current listing column after the SRC_POS */
     const char *p = src_line;
 
     while (*p != '\0') {
@@ -989,15 +1027,7 @@ lst_data:
   }
 }
 
-/* append the symbol table to the .lst file */
-typedef struct {
-  const symbol_t *sym;
-  enum lst_sym_type_e {
-    LST_SYMBOL,
-    LST_DEFINE,
-    LST_MACRO
-  } type;
-} lst_symbol_t;
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _lst_symbol_verscmp(const void *p0, const void *p1)
@@ -1006,6 +1036,8 @@ _lst_symbol_verscmp(const void *p0, const void *p1)
                     sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _lst_symbol_cmp(const void *p0, const void *p1)
 {
@@ -1013,6 +1045,10 @@ _lst_symbol_cmp(const void *p0, const void *p1)
                 sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
 }
 
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* append the symbol table to the .lst file */
 
 void
 lst_symbol_table(void)
@@ -1110,12 +1146,15 @@ lst_symbol_table(void)
       break;
     }
   }
+
   free(lst);
 }
 
 
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Preprocessed file generator
+ * Preprocessed file generator.
  */
 
 void
@@ -1133,6 +1172,8 @@ preproc_init(void)
     }
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 preproc_emit(void)

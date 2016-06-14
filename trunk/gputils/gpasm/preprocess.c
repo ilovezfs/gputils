@@ -50,8 +50,10 @@ struct arg_list_s {
   struct arg_list_s *next;
 } *arg_list = NULL, *arg_list_tail = NULL;
 
+/*------------------------------------------------------------------------------------------------*/
+
 static const char *
-check_defines(char *symbol, int symlen, pnode_t **param_list_p)
+_check_defines(char *symbol, int symlen, pnode_t **param_list_p)
 {
   symbol_t   *sym;
   pnode_t    *p;
@@ -87,28 +89,36 @@ check_defines(char *symbol, int symlen, pnode_t **param_list_p)
   return subst;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
-is_first_iden(int c)
+_is_first_iden(int c)
 {
   return (!isascii(c) || (c == '_') || (c == '.') || (c == '?') || (c == '@') || (c == '#') || isalpha(c));
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
-is_iden(int c)
+_is_iden(int c)
 {
-  return (is_first_iden(c) || isdigit(c));
+  return (_is_first_iden(c) || isdigit(c));
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static inline void
-skip_spaces(const char *buf, int *i)
+_skip_spaces(const char *buf, int *i)
 {
   while (isspace(buf[*i])) {
     ++(*i);
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
-add_arg(const char *str)
+_add_arg(const char *str)
 {
   struct arg_list_s *new = GP_Malloc(sizeof(struct arg_list_s));
 
@@ -125,26 +135,32 @@ add_arg(const char *str)
   arg_list_tail = new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
-fal(struct arg_list_s *p)
+_fal(struct arg_list_s *p)
 {
   if (p != NULL) {
     if (p->next != NULL) {
-      fal(p->next);
+      _fal(p->next);
       free(p);
     }
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
-free_arg_list(void)
+_free_arg_list(void)
 {
-  fal(arg_list);
+  _fal(arg_list);
   arg_list_tail = arg_list = NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
-substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, int level)
+_substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   struct arg_list_s *argp = arg_list;
   pnode_t           *parp = param_list;
@@ -163,7 +179,7 @@ substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, in
       DBG_printf("@@@substituting parameter %*.*s with %s\n", mlen, mlen, &buf[begin], argp->str);
 
       if ((*n + len - mlen) >= max_size) {
-        gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+        gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return false;
       }
       else {
@@ -178,10 +194,12 @@ substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, in
   return false; /* no substitution */
 }
 
-static gp_boolean preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func_t substitute, int level);
+/*------------------------------------------------------------------------------------------------*/
+
+static gp_boolean _preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func_t substitute, int level);
 
 static gp_boolean
-substitute_define(char *buf, int begin, int *end, int *n, int max_size, int level)
+_substitute_define(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int         mlen = *end - begin;
   const char *sub;
@@ -201,7 +219,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
     return false;
   }
 
-  if ((sub = check_defines(&buf[begin], mlen, &param_list)) != NULL) {
+  if ((sub = _check_defines(&buf[begin], mlen, &param_list)) != NULL) {
     n_params = list_length(param_list);
 
     DBG_printf("define %*.*s has %d parameters\n", mlen, mlen, &buf[begin], n_params);
@@ -210,7 +228,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
       bracket = false;
       n_args = 0;
 
-      skip_spaces(buf, end);
+      _skip_spaces(buf, end);
       if (buf[*end] == '(') {
         ++(*end);
         bracket = true;
@@ -221,7 +239,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         prev_esc = false;
         brackdepth = 0;
 
-        skip_spaces(buf, end);
+        _skip_spaces(buf, end);
         start1 = *end;
 
         while ((*end < *n) &&
@@ -267,7 +285,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         }
         ++end1;
 
-        add_arg(GP_Strndup(&buf[start1], end1 - start1));
+        _add_arg(GP_Strndup(&buf[start1], end1 - start1));
         ++n_args;
 
         if (*end < *n) {
@@ -288,7 +306,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
               /* substitute define parameters */
               if ((*n + len - mlen) >= max_size) {
-                gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+                gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
                 return false;
               }
               else {
@@ -297,12 +315,12 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
                 BUF_REPLACE(buf, begin, *end, *n, sub, len, max_size);
 
                 /* recurse preprocess with increased level */
-                preprocess(buf, begin, end, n, max_size, &substitute_define_param, level + 1);
-                free_arg_list();
+                _preprocess(buf, begin, end, n, max_size, &_substitute_define_param, level + 1);
+                _free_arg_list();
 
                 /* substitute defines */
                 /* recurse preprocess with increased level */
-                preprocess(buf, begin, end, n, max_size, &substitute_define, level + 1);
+                _preprocess(buf, begin, end, n, max_size, &_substitute_define, level + 1);
 
                 size = *end - begin;
                 DBG_printf("with %*.*s\n", size, size, &buf[begin]);
@@ -311,13 +329,13 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
             }
             else {
               /* error n_args != n_params: no substitution */
-              free_arg_list();
+              _free_arg_list();
               return false;
             }
           }
           else if (buf[*end] != ',') {
             /* error unknown delimiter: no substitution */
-            free_arg_list();
+            _free_arg_list();
             return false;
           }
           else {
@@ -326,7 +344,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         }
         if (*end >= *n) {
           /* error no ending bracket or newline: no substitution */
-          free_arg_list();
+          _free_arg_list();
           return false;
         }
       } /* for each argument */
@@ -336,7 +354,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
       /* substitute define */
       if ((*n + len - mlen) >= max_size) {
-        gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+        gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return false;
       }
       else {
@@ -344,7 +362,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
         BUF_REPLACE(buf, begin, *end, *n, sub, len, max_size);
         /* recurse preprocess with increased level */
-        preprocess(buf, begin, end, n, max_size, &substitute_define, level + 1);
+        _preprocess(buf, begin, end, n, max_size, &_substitute_define, level + 1);
 
         size = *end - begin;
         DBG_printf("with %*.*s\n", size, size, &buf[begin]);
@@ -354,10 +372,12 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
   return false;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 #define NELEM(x) (sizeof(x) / sizeof(*x))
 
 static gp_boolean
-no_process_iden(const char *iden, int len)
+_no_process_iden(const char *iden, int len)
 {
   static const char * const iden_tbl[] = {
     "#define",
@@ -382,8 +402,10 @@ no_process_iden(const char *iden, int len)
   return false;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
-preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func_t substitute, int level)
+_preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func_t substitute, int level)
 {
   int        start = -1;
   int        state = 0;             /* '"': in double quotes; '\'': in single quotes; ';': in comment */
@@ -398,7 +420,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func
   int        prev_n;
 
   if (level >= PREPROC_MAX_DEPTH) {
-    gpverror(GPE_STRCPLX, NULL);
+    gperror_verror(GPE_STRCPLX, NULL);
     return false;
   }
 
@@ -436,7 +458,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func
         in_hv = 0;
       }
 
-      if ((start == -1) && is_first_iden(c)) {
+      if ((start == -1) && _is_first_iden(c)) {
         switch (c) {
         case 'a': case 'A':
         case 'b': case 'B':
@@ -453,8 +475,8 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func
         start = i;
       }
       else {
-        if ((start != -1) && !is_iden(c)) {
-          if ((level == 0) && no_process_iden(&buf[start], i - start)) {
+        if ((start != -1) && !_is_iden(c)) {
+          if ((level == 0) && _no_process_iden(&buf[start], i - start)) {
             start = -1;
             break;
           }
@@ -511,8 +533,10 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func
   return substituted;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
-preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
+_preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
 {
   char       res_buf[11];
   gp_boolean substituted = false;
@@ -528,11 +552,11 @@ preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
     DBG_printf("***Parsing chunk: %*.*s\n", size, size, &buf[begin]);
     if (ppparse_chunk(buf, begin, *end)) {
       substituted = true;
-      DBG_printf ("col_begin = %d; col_end = %d; result = %d\n", ppcol_begin, ppcol_end, ppresult);
+      DBG_printf("col_begin = %d; col_end = %d; result = %d\n", ppcol_begin, ppcol_end, ppresult);
       res_len = snprintf(res_buf, sizeof(res_buf), "%d", ppresult);
 
       if ((*n + res_len - (ppcol_end - ppcol_begin)) >= max_size) {
-        gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+        gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return false;
       }
       else {
@@ -542,7 +566,7 @@ preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
 
         BUF_REPLACE(buf, ppcol_begin, ppcol_end, *n, res_buf, res_len, max_size);
         *end += *n - prev_n;
-        DBG_printf ("with %*.*s\n", res_len, res_len, &buf[ppcol_begin]);
+        DBG_printf("with %*.*s\n", res_len, res_len, &buf[ppcol_begin]);
         begin = ppcol_end;
         DBG_printf("buf = %*.*s\n", *n, *n, buf);
       }
@@ -557,8 +581,10 @@ preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
   return substituted;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
-preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
+_preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
 {
   int        start = -1;
   int        state = 0;         /* '"': in double quotes; '\'': in single quotes; ';': in comment; '(' in #v argument */
@@ -587,9 +613,9 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
         if (--hv_parenth <= 0) {
           prev_n = *n;
 
-          preprocess_hv_params(buf, start, &i, n, max_size);
-          preprocess(buf, start, &i, n, max_size, substitute_define, 0);
-          preprocess_hv(buf, start, &i, n, max_size);
+          _preprocess_hv_params(buf, start, &i, n, max_size);
+          _preprocess(buf, start, &i, n, max_size, &_substitute_define, 0);
+          _preprocess_hv(buf, start, &i, n, max_size);
           *end += *n - prev_n;
           start = -1;
           state = 0;
@@ -614,7 +640,7 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
     }
 
     if (state == 0) {
-      if ((start == -1) && is_first_iden(c)) {
+      if ((start == -1) && _is_first_iden(c)) {
         start = i;
       }
     }
@@ -645,8 +671,10 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
   DBG_printf("+++preprocess_hv_params: %*.*s\n", *end, *end, buf);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static const char *
-check_macro_params(char *symbol, int symlen)
+_check_macro_params(char *symbol, int symlen)
 {
   const symbol_t *sym;
   const pnode_t  *p;
@@ -679,8 +707,10 @@ check_macro_params(char *symbol, int symlen)
   return subst;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
-substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int level)
+_substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int         mlen = *end - begin;
   const char *sub;
@@ -690,11 +720,11 @@ substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int
     return false;
   }
 
-  if ((sub = check_macro_params(&buf[begin], mlen)) != NULL) {
+  if ((sub = _check_macro_params(&buf[begin], mlen)) != NULL) {
     int len = strlen(sub);
 
     if ((*n + len - mlen) >= max_size) {
-      gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+      gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
       return false;
     }
     else {
@@ -707,8 +737,10 @@ substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int
   return false;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
-set_source_line(const char *line, int len, src_line_t *src_line)
+_set_source_line(const char *line, int len, src_line_t *src_line)
 {
   if (src_line->line == 0) {
     src_line->size = 128;
@@ -736,8 +768,10 @@ set_source_line(const char *line, int len, src_line_t *src_line)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static inline gp_boolean
-in_macro_expansion(void)
+_in_macro_expansion(void)
 {
   const source_context_t *p;
 
@@ -750,6 +784,8 @@ in_macro_expansion(void)
   return false;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 preprocess_line(char *buf, int *n, int max_size)
 {
@@ -758,40 +794,40 @@ preprocess_line(char *buf, int *n, int max_size)
 
   if (IN_MACRO_WHILE_DEFINITION) {
     /* don't preprocess source line if in macro definition */
-    set_source_line(buf, *n, &state.src->curr_src_line);
+    _set_source_line(buf, *n, &state.src->curr_src_line);
   }
   else {
-    gp_boolean macro_expansion = in_macro_expansion();
+    gp_boolean macro_expansion = _in_macro_expansion();
 
     if (macro_expansion) {
       /* preprocess macro parameters */
-      preprocess(buf, 0, &end, n, max_size, &substitute_macro_param, 1);
+      _preprocess(buf, 0, &end, n, max_size, &_substitute_macro_param, 1);
     }
 
     /* preprocess #v parameters */
-    preprocess_hv_params(buf, 0, &end, n, max_size);
-    preprocess_hv(buf, 0, &end, n, max_size);
+    _preprocess_hv_params(buf, 0, &end, n, max_size);
+    _preprocess_hv(buf, 0, &end, n, max_size);
 
     if (!macro_expansion) {
       /* set only #v processed source line if not in macro expansion */
-      set_source_line(buf, *n, &state.src->curr_src_line);
+      _set_source_line(buf, *n, &state.src->curr_src_line);
     }
 
     /* preprocess line */
     do {
-      res  = preprocess(buf, 0, &end, n, max_size, substitute_define, 0);
-      res |= preprocess_hv(buf, 0, &end, n, max_size);
+      res  = _preprocess(buf, 0, &end, n, max_size, &_substitute_define, 0);
+      res |= _preprocess_hv(buf, 0, &end, n, max_size);
     }
     while (res);
 
     if (macro_expansion) {
       /* set processed source line if in macro expansion */
-      set_source_line(buf, *n, &state.src->curr_src_line);
+      _set_source_line(buf, *n, &state.src->curr_src_line);
     }
   }
 
   if (state.preproc.f != NULL) {
     /* set current preprocessed source line if preprocessed asm file emission enabled */
-    set_source_line(buf, *n, &state.preproc.curr_src_line);
+    _set_source_line(buf, *n, &state.preproc.curr_src_line);
   }
 }

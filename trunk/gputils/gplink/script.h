@@ -58,10 +58,10 @@ typedef struct pnode {
   } value;
 } pnode_t;
 
-void script_error(const char *messg, const char *detail);
-int script_add_path(const pnode_t *parms);
-void script_add_macro(const char *name, long value);
-long script_get_macro(const char *name);
-int script_execute_command(const char *name, const pnode_t *parms);
+extern void script_error(const char *messg, const char *detail);
+extern int script_add_path(const pnode_t *parms);
+extern void script_add_macro(const char *name, long value);
+extern long script_get_macro(const char *name);
+extern int script_execute_command(const char *name, const pnode_t *parms);
 
 #endif

@@ -196,7 +196,7 @@ gpasmVal set_label(const char *label, pnode_t *parms)
   if (asm_enabled()) {
     if ((state.mode == MODE_RELOCATABLE) && !IN_MACRO_WHILE_DEFINITION &&
         !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
-      gpverror(GPE_LABEL_IN_SECTION, NULL);
+      gperror_verror(GPE_LABEL_IN_SECTION, NULL);
 
     value = do_or_append_insn("set", parms);
     if (!IN_MACRO_WHILE_DEFINITION) {
@@ -310,7 +310,7 @@ void yyerror(const char *message)
 {
   if (!IN_MACRO_WHILE_DEFINITION) {
     /* throw error if not in macro definition */
-    gpverror(GPE_PARSER, NULL, message);
+    gperror_verror(GPE_PARSER, NULL, message);
   }
 }
 
@@ -504,7 +504,7 @@ line:
 
               /* It's not an error if macro was defined on pass 1 and we're in pass 2. */
               if ((h != NULL) && !((h->pass == 1) && (state.pass == 2))) {
-                gpverror(GPE_DUPLICATE_MACRO, NULL);
+                gperror_verror(GPE_DUPLICATE_MACRO, NULL);
               } else {
                 if (mac == NULL) {
                   mac = sym_add_symbol(state.stMacros, $1);
@@ -543,7 +543,7 @@ line:
               case LTY_RES:
                 if ((state.mode == MODE_RELOCATABLE) && !IN_MACRO_WHILE_DEFINITION &&
                     !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS))) {
-                  gpverror(GPE_LABEL_IN_SECTION, NULL);
+                  gperror_verror(GPE_LABEL_IN_SECTION, NULL);
                 }
 
                 if (IS_RAM_ORG) {
@@ -555,7 +555,7 @@ line:
                 break;
 
               case LTY_DIR:
-                gpverror(GPE_ILLEGAL_LABEL, NULL, $1);
+                gperror_verror(GPE_ILLEGAL_LABEL, NULL, $1);
                 break;
 
               default:
@@ -571,16 +571,16 @@ line:
           if (state.mac_head != NULL) {
             /* This is a macro definition, but the label was missing. */
             state.mac_head = NULL;
-            gpverror(GPE_NO_MACRO_NAME, NULL);
+            gperror_verror(GPE_NO_MACRO_NAME, NULL);
           } else {
             if (state.found_end) {
               switch (state.src->type) {
               case SRC_WHILE:
-                gperror(GPE_EXPECTED, "Expected (ENDW)");
+                gperror_error(GPE_EXPECTED, "Expected (ENDW)");
                 break;
 
               case SRC_MACRO:
-                gperror(GPW_EXPECTED, "Expected (ENDM)");
+                gperror_error(GPW_EXPECTED, "Expected (ENDM)");
                 /* fall through */
 
               default:
@@ -595,7 +595,7 @@ line:
                   state.astack = state.astack->upper;
                   free(old);
                 }
-                gpwarning(GPW_EXPECTED, "Expected (ENDIF)");
+                gperror_warning(GPW_EXPECTED, "Expected (ENDIF)");
               }
             }
 

@@ -32,7 +32,8 @@ static const char *section_names[SECT_SPEC_MAX_NUM] = { "CODE", "DATA", "EEDATA"
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_init(lset_section_root_t *Root, const char *File_name) {
+lset_init(lset_section_root_t *Root, const char *File_name)
+{
   if (Root == NULL) {
     return;
   }
@@ -52,7 +53,8 @@ lset_init(lset_section_root_t *Root, const char *File_name) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_symbol_list(const lset_symbol_t *Symbol) {
+lset_symbol_list(const lset_symbol_t *Symbol)
+{
   const char *type;
 
   type = (Symbol->attr & CSYM_DATA) ? " (DATA)" : "";
@@ -70,7 +72,8 @@ lset_symbol_list(const lset_symbol_t *Symbol) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_symbol_list_all(const lset_section_t *Section, int Use_table) {
+lset_symbol_list_all(const lset_section_t *Section, int Use_table)
+{
   unsigned int i;
   lset_symbol_t *sym;
 
@@ -99,7 +102,8 @@ lset_symbol_list_all(const lset_section_t *Section, int Use_table) {
 /*------------------------------------------------------------------------------------------------*/
 
 lset_symbol_t *
-lset_symbol_find(const lset_section_t *Section, const char *Name) {
+lset_symbol_find(const lset_section_t *Section, const char *Name)
+{
   lset_symbol_t *sym;
 
   if ((Section == NULL) || (Name == NULL) ||
@@ -124,8 +128,11 @@ lset_symbol_find(const lset_section_t *Section, const char *Name) {
 lset_symbol_t *
 lset_symbol_find_addr(const lset_section_t *Section, long Start_addr, long End_addr, int Use_table)
 {
-  int i_min, i_mid, i_max;
-  long sym_end, tmp;
+  int            i_min;
+  int            i_mid;
+  int            i_max;
+  long           sym_end;
+  long           tmp;
   lset_symbol_t *sym;
 
   if ((Section == NULL) || (Section->symbol_number == 0)) {
@@ -194,7 +201,8 @@ lset_symbol_find_addr(const lset_section_t *Section, long Start_addr, long End_a
 
 lset_symbol_t *
 lset_symbol_new(lset_section_t *Section, const char *Name, long Start, long End, unsigned int Attr,
-                int Line_number) {
+                int Line_number)
+{
   lset_symbol_t *sym;
 
   if (lset_symbol_find(Section, Name) != NULL) {
@@ -251,11 +259,12 @@ lset_symbol_new(lset_section_t *Section, const char *Name, long Start, long End,
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-symbol_cmp(const void *P0, const void *P1) {
-  const lset_symbol_t *sym0 = *(const lset_symbol_t **)P0;
-  const lset_symbol_t *sym1 = *(const lset_symbol_t **)P1;
-  long start0 = sym0->start;
-  long start1 = sym1->start;
+_symbol_cmp(const void *P0, const void *P1)
+{
+  const lset_symbol_t *sym0   = *(const lset_symbol_t **)P0;
+  const lset_symbol_t *sym1   = *(const lset_symbol_t **)P1;
+  long                 start0 = sym0->start;
+  long                 start1 = sym1->start;
 
   if (start0 < start1) {
     return -1;
@@ -270,8 +279,9 @@ symbol_cmp(const void *P0, const void *P1) {
 
 /*------------------------------------------------------------------------------------------------*/
 
-void lset_symbol_make_table(lset_section_t *Section) {
-  unsigned int i;
+void lset_symbol_make_table(lset_section_t *Section)
+{
+  unsigned int   i;
   lset_symbol_t *sym;
 
   if ((Section == NULL) || (Section->symbol_number == 0) || ((sym = Section->symbol_first) == NULL)) {
@@ -297,15 +307,16 @@ void lset_symbol_make_table(lset_section_t *Section) {
     exit(1);
   }
 
-  qsort(Section->symbol_table, Section->symbol_number, sizeof(lset_symbol_t *), symbol_cmp);
+  qsort(Section->symbol_table, Section->symbol_number, sizeof(lset_symbol_t *), _symbol_cmp);
   }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-check_bounds(const lset_section_t *Section, const lset_symbol_t *Symbol) {
-  unsigned int i;
-  unsigned int k;
+_check_bounds(const lset_section_t *Section, const lset_symbol_t *Symbol)
+{
+  unsigned int         i;
+  unsigned int         k;
   const lset_symbol_t *sym;
 
   i = 0;
@@ -372,7 +383,8 @@ check_bounds(const lset_section_t *Section, const lset_symbol_t *Symbol) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_symbol_check_bounds(const lset_section_t *Section) {
+lset_symbol_check_bounds(const lset_section_t *Section)
+{
   unsigned int i;
 
   if ((Section == NULL) || (Section->symbol_number == 0) || (Section->symbol_table == NULL)) {
@@ -381,7 +393,7 @@ lset_symbol_check_bounds(const lset_section_t *Section) {
 
   i = 0;
   do {
-    check_bounds(Section, Section->symbol_table[i]);
+    _check_bounds(Section, Section->symbol_table[i]);
     ++i;
   } while (i < Section->symbol_number);
 }
@@ -389,8 +401,9 @@ lset_symbol_check_bounds(const lset_section_t *Section) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_symbol_check_absolute_limits(const lset_section_t *Section, long Min, long Max) {
-  unsigned int i;
+lset_symbol_check_absolute_limits(const lset_section_t *Section, long Min, long Max)
+{
+  unsigned int         i;
   const lset_symbol_t *sym;
 
   if ((Section == NULL) || (Section->symbol_number == 0) || (Section->symbol_table == NULL)) {
@@ -443,9 +456,10 @@ lset_symbol_check_absolute_limits(const lset_section_t *Section, long Min, long 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_symbol_check_align(const lset_section_t *Section, long Align) {
-  unsigned int i;
-  long aligned;
+lset_symbol_check_align(const lset_section_t *Section, long Align)
+{
+  unsigned int         i;
+  long                 aligned;
   const lset_symbol_t *sym;
 
   if ((Section == NULL) || (Section->symbol_number == 0) || (Section->symbol_table == NULL)) {
@@ -486,8 +500,10 @@ lset_symbol_check_align(const lset_section_t *Section, long Align) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_symbol_free_all(lset_section_t *Section) {
-  lset_symbol_t *sym, *s;
+lset_symbol_free_all(lset_section_t *Section)
+{
+  lset_symbol_t *sym;
+  lset_symbol_t *s;
 
   if (Section == NULL) {
     return;
@@ -520,7 +536,8 @@ lset_symbol_free_all(lset_section_t *Section) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_section_list(const lset_section_root_t *Root) {
+lset_section_list(const lset_section_root_t *Root)
+{
   const lset_section_t *sect;
 
   if ((Root == NULL) || (Root->section_number == 0) || ((sect = Root->section_first) == NULL)) {
@@ -537,7 +554,8 @@ lset_section_list(const lset_section_root_t *Root) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_section_full_list(const lset_section_root_t *Root, int Use_table) {
+lset_section_full_list(const lset_section_root_t *Root, int Use_table)
+{
   const lset_section_t *sect;
 
   if (Root == NULL) {
@@ -564,7 +582,8 @@ lset_section_full_list(const lset_section_root_t *Root, int Use_table) {
 /*------------------------------------------------------------------------------------------------*/
 
 lset_section_t *
-lset_section_find(const lset_section_root_t *Root, const char *Name) {
+lset_section_find(const lset_section_root_t *Root, const char *Name)
+{
   lset_section_t *sect;
 
   if ((Root == NULL) || (Root->section_number == 0) || ((sect = Root->section_first) == NULL)) {
@@ -586,7 +605,8 @@ lset_section_find(const lset_section_root_t *Root, const char *Name) {
 /*------------------------------------------------------------------------------------------------*/
 
 lset_section_t *
-lset_section_make_global(lset_section_root_t *Root) {
+lset_section_make_global(lset_section_root_t *Root)
+{
   lset_section_t *sect;
 
   if (Root == NULL) {
@@ -606,25 +626,28 @@ lset_section_make_global(lset_section_root_t *Root) {
 
 /*------------------------------------------------------------------------------------------------*/
 
-static unsigned int
-find_section_name(const char *Name) {
+static gp_boolean
+_find_section_name(const char *Name)
+{
   unsigned int i;
 
   for (i = 0; i < ARRAY_SIZE(section_names); ++i) {
     if (strcmp(Name, section_names[i]) == 0) {
-      return 1;
+      return true;
     }
   }
 
-  return 0;
+  return false;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-print_section_names(char *Text, unsigned int MaxLen) {
-  unsigned int i, len;
-  const char *fmt;
+_print_section_names(char *Text, unsigned int MaxLen)
+{
+  unsigned int  i;
+  unsigned int  len;
+  const char   *fmt;
 
   len = 0;
   for (i = 0; i < ARRAY_SIZE(section_names); ++i) {
@@ -653,9 +676,10 @@ print_section_names(char *Text, unsigned int MaxLen) {
 /*------------------------------------------------------------------------------------------------*/
 
 lset_section_t *
-lset_section_new(lset_section_root_t *Root, const char *Name, int Line_number) {
+lset_section_new(lset_section_root_t *Root, const char *Name, int Line_number)
+{
   lset_section_t *sect;
-  char buf[BUFSIZ];
+  char            buf[BUFSIZ];
 
   if ((Root == NULL) || (Root->section_number >= DSECTION_MAX) || (Name == NULL)) {
     return NULL;
@@ -666,8 +690,8 @@ lset_section_new(lset_section_root_t *Root, const char *Name, int Line_number) {
     exit(1);
   }
 
-  if (! find_section_name(Name)) {
-    print_section_names(buf, sizeof(buf));
+  if (! _find_section_name(Name)) {
+    _print_section_names(buf, sizeof(buf));
     yyerror("In line %i, the name of section (%s) only can be: %s", Line_number, Name, buf);
     exit(1);
   }
@@ -701,8 +725,10 @@ lset_section_new(lset_section_root_t *Root, const char *Name, int Line_number) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_section_make_symbol_tables(lset_section_root_t *Root) {
-  lset_section_t *sect, *s;
+lset_section_make_symbol_tables(lset_section_root_t *Root)
+{
+  lset_section_t *sect;
+  lset_section_t *s;
 
   if (Root == NULL) {
     return;
@@ -727,7 +753,8 @@ lset_section_make_symbol_tables(lset_section_root_t *Root) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_section_check_bounds(const lset_section_root_t *Root) {
+lset_section_check_bounds(const lset_section_root_t *Root)
+{
   const lset_section_t *sect;
 
   if (Root == NULL) {
@@ -749,7 +776,7 @@ lset_section_check_bounds(const lset_section_root_t *Root) {
 
 void
 lset_sections_choose(lset_section_root_t *Root)
-  {
+{
   unsigned int i;
 
   if (Root == NULL) {
@@ -764,7 +791,8 @@ lset_sections_choose(lset_section_root_t *Root)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-delete_section(lset_section_t *Section) {
+_delete_section(lset_section_t *Section)
+{
   lset_symbol_free_all(Section);
   free(Section->name);
   free(Section);
@@ -773,15 +801,17 @@ delete_section(lset_section_t *Section) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lset_delete(lset_section_root_t *Root) {
-  lset_section_t *sect, *s;
+lset_delete(lset_section_root_t *Root)
+{
+  lset_section_t *sect;
+  lset_section_t *s;
 
   if (Root == NULL) {
     return;
   }
 
   if ((sect = Root->section_global) != NULL) {
-    delete_section(sect);
+    _delete_section(sect);
     Root->section_global = NULL;
   }
 
@@ -789,7 +819,7 @@ lset_delete(lset_section_root_t *Root) {
     if ((sect = Root->section_first) != NULL) {
       do {
         s = sect->next;
-        delete_section(sect);
+        _delete_section(sect);
         sect = s;
       }
       while (sect != NULL);

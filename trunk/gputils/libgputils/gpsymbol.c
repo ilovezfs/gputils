@@ -98,7 +98,7 @@ _hash_find_cmp(const void *P0, const void *P1)
 gp_hash_type *
 gp_symbol_make_hash_table(gp_object_type *Object)
 {
-  gp_symbol_type *current;
+  gp_symbol_type *symbol;
   gp_hash_type   *table;
   gp_hash_type   *tp;
   unsigned int    num_symbols;
@@ -108,14 +108,17 @@ gp_symbol_make_hash_table(gp_object_type *Object)
     return NULL;
   }
 
-  current     = Object->symbols;
   num_symbols = 0;
-  while (current != NULL) {
-    if ((current->class != C_FILE)    && (current->class != C_EOF) &&
-        (current->class != C_SECTION) && (current->section_name != NULL)) {
+  symbol      = Object->symbols;
+  while (symbol != NULL) {
+    symbol->opt_flags = false;
+
+    if ((symbol->class != C_FILE)    && (symbol->class != C_EOF) &&
+        (symbol->class != C_SECTION) && (symbol->section_name != NULL)) {
       ++num_symbols;
+      symbol->opt_flags = true;
     }
-    current = current->next;
+    symbol = symbol->next;
   }
 
   table = (gp_hash_type *)GP_Calloc(num_symbols, sizeof(gp_hash_type));
@@ -123,19 +126,18 @@ gp_symbol_make_hash_table(gp_object_type *Object)
   Object->symbol_hashtable      = table;
   Object->symbol_hashtable_size = num_symbols;
 
-  tp      = table;
-  current = Object->symbols;
-  while (current != NULL) {
-    if ((current->class != C_FILE)    && (current->class != C_EOF) &&
-        (current->class != C_SECTION) && (current->section_name != NULL)) {
+  tp     = table;
+  symbol = Object->symbols;
+  while (symbol != NULL) {
+    if (symbol->opt_flags) {
       h = &tp->hash;
       gp_hash_init(h);
-      gp_hash_str(h, current->section_name, false);
-      gp_hash_mem(h, &current->value, sizeof(current->value));
-      tp->symbol = current;
+      gp_hash_str(h, symbol->section_name, false);
+      gp_hash_mem(h, &symbol->value, sizeof(symbol->value));
+      tp->symbol = symbol;
       ++tp;
     }
-    current = current->next;
+    symbol = symbol->next;
   }
 
   qsort(table, num_symbols, sizeof(gp_hash_type), _hash_sort_cmp);
@@ -175,11 +177,13 @@ _value_cmp(const void *P0, const void *P1)
 {
   const gp_symbol_type *s0 = *(const gp_symbol_type **)P0;
   const gp_symbol_type *s1 = *(const gp_symbol_type **)P1;
+  gp_symvalue_t         v0 = s0->value;
+  gp_symvalue_t         v1 = s1->value;
 
-  if (s0->value < s1->value) {
+  if (v0 < v1) {
     return -1;
   }
-  else if (s0->value > s1->value) {
+  else if (v0 > v1) {
     return 1;
   }
   else {
@@ -192,7 +196,7 @@ _value_cmp(const void *P0, const void *P1)
 gp_symbol_type **
 gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_name, unsigned int *Num_labels)
 {
-  gp_symbol_type  *current;
+  gp_symbol_type  *symbol;
   gp_symbol_type **label_array;
   unsigned int     i;
   unsigned int     n_labels;
@@ -201,24 +205,24 @@ gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_nam
     return NULL;
   }
 
-  current  = First_symbol;
   n_labels = 0;
-  while (current != NULL) {
-    current->opt_flags = false;
+  symbol   = First_symbol;
+  while (symbol != NULL) {
+    symbol->opt_flags = false;
 
-    if ((current->class == C_EXT) || (current->class == C_LABEL)) {
+    if ((symbol->class == C_EXT) || (symbol->class == C_LABEL)) {
       if (Section_name != NULL) {
-        if ((current->section_name != NULL) && (strcmp(current->section_name, Section_name) == 0)) {
+        if ((symbol->section_name != NULL) && (strcmp(symbol->section_name, Section_name) == 0)) {
           ++n_labels;
-          current->opt_flags = true;
+          symbol->opt_flags = true;
         }
       }
       else {
         ++n_labels;
-        current->opt_flags = true;
+        symbol->opt_flags = true;
       }
     }
-    current = current->next;
+    symbol = symbol->next;
   }
 
   if (n_labels == 0) {
@@ -227,14 +231,14 @@ gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_nam
 
   label_array = (gp_symbol_type **)GP_Calloc(n_labels, sizeof(gp_symbol_type *));
 
-  current = First_symbol;
-  i       = 0;
-  while (current != NULL) {
-    if (current->opt_flags) {
-      label_array[i] = current;
+  i      = 0;
+  symbol = First_symbol;
+  while (symbol != NULL) {
+    if (symbol->opt_flags) {
+      label_array[i] = symbol;
       ++i;
     }
-    current = current->next;
+    symbol = symbol->next;
   }
 
   qsort(label_array, n_labels, sizeof(gp_symbol_type *), _value_cmp);

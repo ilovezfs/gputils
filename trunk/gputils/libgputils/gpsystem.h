@@ -31,28 +31,28 @@ extern const char *gp_header_path;
 extern const char *gp_lkr_path;
 extern const char *gp_lib_path;
 
-void gp_init(void);
+extern void gp_init(void);
 
-void     gp_fputl16(int16_t data, FILE *fp);
-void     gp_fputl32(int32_t data, FILE *fp); 
-void     gp_fputvar(const void *data, int number, FILE *fp); 
-int16_t  gp_getl16(const uint8_t *addr);
-uint16_t gp_getu16(const uint8_t *addr);
-int32_t  gp_getl32(const uint8_t *addr);
-uint32_t gp_getu32(const uint8_t *addr);
-void     gp_putl16(uint8_t *addr, uint16_t data);
-void     gp_putl32(uint8_t *addr, uint32_t data);
+extern void     gp_fputl16(int16_t data, FILE *fp);
+extern void     gp_fputl32(int32_t data, FILE *fp); 
+extern void     gp_fputvar(const void *data, int number, FILE *fp); 
+extern int16_t  gp_getl16(const uint8_t *addr);
+extern uint16_t gp_getu16(const uint8_t *addr);
+extern int32_t  gp_getl32(const uint8_t *addr);
+extern uint32_t gp_getu32(const uint8_t *addr);
+extern void     gp_putl16(uint8_t *addr, uint16_t data);
+extern void     gp_putl32(uint8_t *addr, uint32_t data);
 
-int32_t  gp_getb32(const uint8_t *addr);
-void     gp_putb32(uint8_t *addr, uint32_t data);
+extern int32_t  gp_getb32(const uint8_t *addr);
+extern void     gp_putb32(uint8_t *addr, uint32_t data);
 
-void  gp_date_string(char *buffer, size_t sizeof_buffer);
+extern void  gp_date_string(char *buffer, size_t sizeof_buffer);
 
-void *gp_malloc(size_t Size, const char *File, size_t Line, const char *Func);
-void *gp_calloc(size_t Nmemb, size_t Size, const char *File, size_t Line, const char *Func);
-void *gp_realloc(void *Mem, size_t Size, const char *File, size_t Line, const char *Func);
-char *gp_strdup(const char *String, const char *File, size_t Line, const char *Func);
-char *gp_strndup(const char *String, size_t Length, const char *File, size_t Line, const char *Func);
+extern void *gp_malloc(size_t Size, const char *File, size_t Line, const char *Func);
+extern void *gp_calloc(size_t Nmemb, size_t Size, const char *File, size_t Line, const char *Func);
+extern void *gp_realloc(void *Mem, size_t Size, const char *File, size_t Line, const char *Func);
+extern char *gp_strdup(const char *String, const char *File, size_t Line, const char *Func);
+extern char *gp_strndup(const char *String, size_t Length, const char *File, size_t Line, const char *Func);
 
 #define GP_Malloc(Size)                 gp_malloc(Size, __FILE__, __LINE__, __func__)
 #define GP_Calloc(Nmemb, Size)          gp_calloc(Nmemb, Size, __FILE__, __LINE__, __func__)
@@ -60,13 +60,13 @@ char *gp_strndup(const char *String, size_t Length, const char *File, size_t Lin
 #define GP_Strdup(String)               gp_strdup(String, __FILE__, __LINE__, __func__)
 #define GP_Strndup(String, Length)      gp_strndup(String, Length, __FILE__, __LINE__, __func__)
 
-char *gp_lower_case(const char *name);
-char *gp_upper_case(const char *name);
-char *gp_strncpy(char *Dest, const char *Src, size_t Maxlen);
-char *gp_stptoupper(char *Dest, const char *Src, size_t Maxlen);
+extern char *gp_lower_case(const char *name);
+extern char *gp_upper_case(const char *name);
+extern char *gp_strncpy(char *Dest, const char *Src, size_t Maxlen);
+extern char *gp_stptoupper(char *Dest, const char *Src, size_t Maxlen);
 
-size_t gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length);
-size_t gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...);
+extern size_t gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length);
+extern size_t gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...);
 
 typedef struct gp_list {
   void           *annotation;
@@ -76,12 +76,12 @@ typedef struct gp_list {
 
 typedef struct gp_list gp_linked_list;
 
-gp_linked_list *gp_list_make(void);
-void gp_list_annotate(gp_linked_list *link, void *a);
-void *gp_list_get(gp_linked_list *link);
+extern gp_linked_list *gp_list_make(void);
+extern void gp_list_annotate(gp_linked_list *link, void *a);
+extern void *gp_list_get(gp_linked_list *link);
 
-char *gp_absolute_path(char *filename);
+extern char *gp_absolute_path(char *filename);
 
-void gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int opt_index,
-                              const char *opt_string, int opt_char, const char *command);
+extern void gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int opt_index,
+                                     const char *opt_string, int opt_char, const char *command);
 #endif

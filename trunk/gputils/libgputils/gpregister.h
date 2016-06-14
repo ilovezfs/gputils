@@ -25,12 +25,12 @@ typedef struct {
 extern const gp_register_table_t gp_register_db[];
 extern const int gp_register_db_size;
 
-const gp_register_table_t *gp_register_find_mcu(const gp_register_table_t *Table, int Table_size, const char *McuName);
+extern const gp_register_table_t *gp_register_find_mcu(const gp_register_table_t *Table, int Table_size, const char *McuName);
 
-const gp_register_t *gp_register_find_reg(const gp_register_table_t *Mcu, unsigned int Address);
-const char *gp_register_find_reg_name(const gp_register_table_t *Mcu, unsigned int Address);
+extern const gp_register_t *gp_register_find_reg(const gp_register_table_t *Mcu, unsigned int Address);
+extern const char *gp_register_find_reg_name(const gp_register_table_t *Mcu, unsigned int Address);
 
-const gp_bit_t *gp_register_find_bit(const gp_register_t *Reg, unsigned int Address);
-const char *gp_register_find_bit_name(const gp_register_t *Reg, unsigned int Address);
+extern const gp_bit_t *gp_register_find_bit(const gp_register_t *Reg, unsigned int Address);
+extern const char *gp_register_find_bit_name(const gp_register_t *Reg, unsigned int Address);
 
 #endif /* __GPREGISTER_H__ */

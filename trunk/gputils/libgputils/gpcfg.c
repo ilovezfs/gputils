@@ -2,7 +2,7 @@
    Copyright (C) 2006
    Michael Ballbach
 
-    Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
 
 This file is part of gputils.
 
@@ -21,16 +21,15 @@ along with gputils; see the file COPYING. If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#include "stdhdr.h"
-
 #include "gpcfg.h"
 
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-cmp(void const *P1, void const *P2) {
-  gp_cfg_device_t const *d1 = P1;
-  gp_cfg_device_t const *d2 = P2;
+_cmp(void const *P1, void const *P2)
+{
+  gp_cfg_device_t const *d1 = (gp_cfg_device_t const *)P1;
+  gp_cfg_device_t const *d2 = (gp_cfg_device_t const *)P2;
 
   return strcasecmp(d1->name, d2->name);
 }
@@ -40,12 +39,13 @@ cmp(void const *P1, void const *P2) {
 /* Locate a PIC configuration device structure by name. */
 
 const gp_cfg_device_t *
-gp_cfg_find_pic(const char *Pic) {
+gp_cfg_find_pic(const char *Pic)
+{
   gp_cfg_device_t fake_dev = { NULL, 0, NULL };
 
   fake_dev.name = Pic;
   return (const gp_cfg_device_t *)bsearch(&fake_dev, gp_cfg_devices, gp_cfg_device_count,
-                                          sizeof(gp_cfg_device_t), cmp);
+                                          sizeof(gp_cfg_device_t), _cmp);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -53,11 +53,13 @@ gp_cfg_find_pic(const char *Pic) {
 /* Locate a PIC by name, pass a list of names to use, try each in order. */
 
 const gp_cfg_device_t *
-gp_cfg_find_pic_multi_name(const char *const *Pics, unsigned int Count) {
-  unsigned int i;
+gp_cfg_find_pic_multi_name(const char *const *Pics, unsigned int Count)
+{
+  unsigned int           i;
+  const gp_cfg_device_t *dev;
 
   for (i = 0; i < Count; i++) {
-    const gp_cfg_device_t *dev = gp_cfg_find_pic(Pics[i]);
+    dev = gp_cfg_find_pic(Pics[i]);
 
     if (dev != NULL) {
       return dev;
@@ -72,7 +74,8 @@ gp_cfg_find_pic_multi_name(const char *const *Pics, unsigned int Count) {
 /* Give the real boundaries of the config address section. */
 
 void
-gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, int *Address_high) {
+gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, int *Address_high)
+{
   const gp_cfg_addr_t *addr;
 
   addr = Device->addresses;
@@ -86,7 +89,8 @@ gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, i
 
 const gp_cfg_directive_t *
 gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Dname,
-                      unsigned int *Out_config_addr, unsigned short *Out_def_value) {
+                      unsigned int *Out_config_addr, uint16_t *Out_def_value)
+{
   unsigned int              i;
   unsigned int              j;
   const gp_cfg_addr_t      *addr;
@@ -117,7 +121,8 @@ gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Dname,
 
 void
 gp_cfg_brief_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits, int Word_digits,
-                    unsigned int Pic18J) {
+                    gp_boolean Pic18J)
+{
   unsigned int              i;
   unsigned int              j;
   unsigned int              word_mask;
@@ -163,7 +168,8 @@ gp_cfg_brief_device(const gp_cfg_device_t *Device, const char *Head, int Addr_di
 
 void
 gp_cfg_full_list_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
-                        int Word_digits) {
+                        int Word_digits)
+{
   unsigned int               headlen;
   unsigned int               i;
   unsigned int               j;
@@ -225,8 +231,9 @@ gp_cfg_full_list_device(const gp_cfg_device_t *Device, const char *Head, int Add
 /* Locate an option for a directive. Return it or NULL. */
 
 const gp_cfg_option_t *
-gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option) {
-  unsigned int i;
+gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option)
+{
+  unsigned int            i;
   const gp_cfg_option_t **opt;
 
   for (i = Directive->option_count, opt = Directive->options; i; ++opt, --i) {
@@ -243,7 +250,8 @@ gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option) {
 /* Find a configuration in a processor's config db. */
 
 const gp_cfg_addr_t *
-gp_cfg_find_config(const gp_cfg_device_t *Device, unsigned int Address) {
+gp_cfg_find_config(const gp_cfg_device_t *Device, unsigned int Address)
+{
   unsigned int         i;
   const gp_cfg_addr_t *addr;
 
@@ -260,8 +268,9 @@ gp_cfg_find_config(const gp_cfg_device_t *Device, unsigned int Address) {
 
 /* Return 0xffff or the default for the address and device passed. */
 
-unsigned short
-gp_cfg_get_default(const gp_cfg_device_t *Device, unsigned int Address) {
+uint16_t
+gp_cfg_get_default(const gp_cfg_device_t *Device, unsigned int Address)
+{
   const gp_cfg_addr_t *addr;
 
   addr = gp_cfg_find_config(Device, Address);
@@ -272,7 +281,8 @@ gp_cfg_get_default(const gp_cfg_device_t *Device, unsigned int Address) {
 
 unsigned int
 gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, unsigned int Value,
-                        gp_cfg_addr_hit_t *Hit) {
+                        gp_cfg_addr_hit_t *Hit)
+{
   unsigned int               i;
   unsigned int               j;
   unsigned int               count;
@@ -289,7 +299,7 @@ gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, uns
 
   Hit->def_value = addr->def_value;
   count = 0;
-  max = 0;
+  max   = 0;
   for (i = addr->directive_count, dir = addr->directives; i; ++dir, --i) {
     val = Value & dir->mask;
 
@@ -313,6 +323,7 @@ gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, uns
       }
     }
   }
+
 exit_loop:
 
   Hit->pair_count    = count;

@@ -22,6 +22,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef MAP_H
 #define MAP_H
 
-void make_map(void);
+extern void make_map(void);
 
 #endif

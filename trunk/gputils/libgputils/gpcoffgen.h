@@ -36,6 +36,7 @@ extern void gp_coffgen_del_section_symbols(gp_object_type *object, gp_section_ty
 extern gp_section_type *gp_coffgen_del_section(gp_object_type *object, gp_section_type *section);
 extern gp_reloc_type *gp_coffgen_add_reloc(gp_section_type *section);
 extern gp_reloc_type *gp_coffgen_del_reloc(gp_section_type *section, gp_reloc_type *relocation);
+extern const char *gp_coffgen_reloc_type_to_str(uint16_t type);
 extern gp_linenum_type *gp_coffgen_add_linenum(gp_section_type *section);
 extern gp_linenum_type *gp_coffgen_find_linenum_by_address(gp_section_type *section, unsigned int address);
 extern gp_linenum_type *gp_coffgen_del_linenum(gp_section_type *section, gp_linenum_type *linenum);
@@ -61,7 +62,7 @@ extern gp_aux_type *gp_coffgen_make_block_aux(unsigned int number);
 
 extern void gp_coffgen_free_section(gp_section_type *section);
 extern int gp_coffgen_free_symbol(gp_symbol_type *symbol);
-extern int gp_coffgen_free(gp_object_type *object);
+extern gp_boolean gp_coffgen_free(gp_object_type *object);
 
 extern int gp_determine_aux(gp_symbol_type *symbol);
 

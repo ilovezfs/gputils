@@ -28,128 +28,168 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "evaluate.h"
 
-extern pnode_t *mk_constant(int value);
-extern pnode_t *mk_list(pnode_t *head, pnode_t *tail);
+/*------------------------------------------------------------------------------------------------*/
 
-pnode_t *make_constant_list(int value1, int value2)
+static pnode_t *
+_make_constant_list(int value1, int value2)
 {
   return mk_list(mk_constant(value1), mk_list(mk_constant(value2), NULL));
 }
 
-pnode_t *add_symbol_constant(pnode_t *parms, int value)
+/*------------------------------------------------------------------------------------------------*/
+
+static pnode_t *
+_add_symbol_constant(pnode_t *parms, int value)
 {
   return mk_list(HEAD(parms), mk_list(mk_constant(value), NULL));
 }
 
-/**************************************************************************/
+/*------------------------------------------------------------------------------------------------*/
 
-static gpasmVal do_addcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+static gpasmVal
+_do_addcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  gpvmessage(GPM_SPECIAL_MNEMONIC, NULL);
+  gperror_vmessage(GPM_SPECIAL_MNEMONIC, NULL);
 
-  do_insn("btfsc", make_constant_list(3, 0));
+  do_insn("btfsc", _make_constant_list(3, 0));
   do_insn("incf", parms);
 
   return r;
 }
 
-static gpasmVal do_adddcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_adddcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  do_insn("btfsc", make_constant_list(3, 1));
+  do_insn("btfsc", _make_constant_list(3, 1));
   do_insn("incf", parms);
 
   return r;
 }
 
-static gpasmVal do_b(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_b(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   do_insn("goto", parms);
 
   return r;
 }
 
-static gpasmVal do_bc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_bc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  do_insn("btfsc", make_constant_list(3, 0));
+  do_insn("btfsc", _make_constant_list(3, 0));
   do_insn("goto", parms);
 
   return r;
 }
 
-static gpasmVal do_bdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_bdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  do_insn("btfsc", make_constant_list(3, 1));
+  do_insn("btfsc", _make_constant_list(3, 1));
   do_insn("goto", parms);
 
   return r;
 }
 
-static gpasmVal do_bz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_bz(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  do_insn("btfsc", make_constant_list(3, 2));
+  do_insn("btfsc", _make_constant_list(3, 2));
   do_insn("goto", parms);
 
   return r;
 }
 
-static gpasmVal do_bnc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_bnc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  do_insn("btfss", make_constant_list(3, 0));
+  do_insn("btfss", _make_constant_list(3, 0));
   do_insn("goto", parms);
 
   return r;
 }
 
-static gpasmVal do_bndc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_bndc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  do_insn("btfss", make_constant_list(3, 1));
+  do_insn("btfss", _make_constant_list(3, 1));
   do_insn("goto", parms);
 
   return r;
 }
 
-static gpasmVal do_bnz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_bnz(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  do_insn("btfss", make_constant_list(3, 2));
+  do_insn("btfss", _make_constant_list(3, 2));
   do_insn("goto", parms);
 
   return r;
 }
 
-static gpasmVal do_clrc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_clrc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("bcf", make_constant_list(3, 0));
+  do_insn("bcf", _make_constant_list(3, 0));
 
   return r;
 }
 
-static gpasmVal do_clrdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_clrdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("bcf", make_constant_list(3, 1));
+  do_insn("bcf", _make_constant_list(3, 1));
 
   return r;
 }
 
-static gpasmVal do_clrz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_clrz(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("bcf", make_constant_list(3, 2));
+  do_insn("bcf", _make_constant_list(3, 2));
 
   return r;
 }
 
-static gpasmVal do_lcall(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_lcall(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   do_insn("pagesel", parms);
   do_insn("call", parms);
@@ -157,7 +197,10 @@ static gpasmVal do_lcall(gpasmVal r, const char *name, int arity, pnode_t *parms
   return r;
 }
 
-static gpasmVal do_lgoto(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_lgoto(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   do_insn("pagesel", parms);
   do_insn("goto", parms);
@@ -165,19 +208,25 @@ static gpasmVal do_lgoto(gpasmVal r, const char *name, int arity, pnode_t *parms
   return r;
 }
 
-static gpasmVal do_movfw(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_movfw(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (enforce_arity(arity, 1)) {
-    do_insn("movf", add_symbol_constant(parms, 0));
+    do_insn("movf", _add_symbol_constant(parms, 0));
   }
 
   return r;
 }
 
-static gpasmVal do_negf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_negf(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if ((arity == 1) || (arity == 2)) {
-    do_insn("comf", add_symbol_constant(parms, 1));
+    do_insn("comf", _add_symbol_constant(parms, 1));
     do_insn("incf", parms);
   } else {
     enforce_arity(arity, 2);
@@ -186,137 +235,176 @@ static gpasmVal do_negf(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
-static gpasmVal do_setc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_setc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("bsf", make_constant_list(3, 0));
+  do_insn("bsf", _make_constant_list(3, 0));
 
   return r;
 }
 
-static gpasmVal do_setdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_setdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("bsf", make_constant_list(3, 1));
+  do_insn("bsf", _make_constant_list(3, 1));
 
   return r;
 }
 
-static gpasmVal do_setz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_setz(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("bsf", make_constant_list(3, 2));
+  do_insn("bsf", _make_constant_list(3, 2));
 
   return r;
 }
 
-static gpasmVal do_skpc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_skpc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("btfss", make_constant_list(3, 0));
+  do_insn("btfss", _make_constant_list(3, 0));
 
   return r;
 }
 
-static gpasmVal do_skpdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_skpdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("btfss", make_constant_list(3, 1));
+  do_insn("btfss", _make_constant_list(3, 1));
 
   return r;
 }
 
-static gpasmVal do_skpz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_skpz(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("btfss", make_constant_list(3, 2));
+  do_insn("btfss", _make_constant_list(3, 2));
 
   return r;
 }
 
-static gpasmVal do_skpnc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_skpnc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("btfsc", make_constant_list(3, 0));
+  do_insn("btfsc", _make_constant_list(3, 0));
 
   return r;
 }
 
-static gpasmVal do_skpndc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_skpndc(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("btfsc", make_constant_list(3, 1));
+  do_insn("btfsc", _make_constant_list(3, 1));
 
   return r;
 }
 
-static gpasmVal do_skpnz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_skpnz(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (arity) {
-    gpverror(GPE_TOO_MANY_ARGU, NULL);
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  do_insn("btfsc", make_constant_list(3, 2));
+  do_insn("btfsc", _make_constant_list(3, 2));
 
   return r;
 }
 
-static gpasmVal do_subcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_subcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  do_insn("btfsc", make_constant_list(3, 0));
+  do_insn("btfsc", _make_constant_list(3, 0));
   do_insn("decf", parms);
 
   return r;
 }
 
-static gpasmVal do_subdcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_subdcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  do_insn("btfsc", make_constant_list(3, 1));
+  do_insn("btfsc", _make_constant_list(3, 1));
   do_insn("decf", parms);
 
   return r;
 }
 
-static gpasmVal do_tstf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_tstf(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (enforce_arity(arity, 1)) {
-    do_insn("movf", add_symbol_constant(parms, 1));
+    do_insn("movf", _add_symbol_constant(parms, 1));
   }
 
   return r;
 }
 
-static gpasmVal do_mode(gpasmVal r, const char *name, int arity, pnode_t *parms)
+/*------------------------------------------------------------------------------------------------*/
+
+static gpasmVal
+_do_mode(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   if (enforce_arity(arity, 1)) {
     pnode_t* val = HEAD(parms);
 
     if ((val->tag == PTAG_CONSTANT) && (val->value.constant > 0x1f)) {
-      gpvwarning(GPW_RANGE, NULL);
+      gperror_vwarning(GPW_RANGE, NULL);
       val->value.constant &= 0x1f;
     }
     do_insn("movlw", parms);
@@ -325,40 +413,42 @@ static gpasmVal do_mode(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* PIC 12-bit and 14-bit "Special" instruction set. */
 const insn_t special[] = {
-  { "addcf",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_addcf  },
-  { "adddcf", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_adddcf },
-  { "b",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_b      },
-  { "bc",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bc     },
-  { "bdc",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bdc    },
-  { "bz",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bz     },
-  { "bnc",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bnc    },
-  { "bndc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bndc   },
-  { "bnz",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_bnz    },
-  { "clrc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_clrc   },
-  { "clrdc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_clrdc  },
-  { "clrz",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_clrz   },
-  { "lcall",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_lcall  },
-  { "lgoto",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_lgoto  },
-  { "movfw",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_movfw  },
-  { "negf",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_negf   },
-  { "setc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_setc   },
-  { "setdc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_setdc  },
-  { "setz",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_setz   },
-  { "skpc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpc   },
-  { "skpdc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpdc  },
-  { "skpz",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpz   },
-  { "skpnc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpnc  },
-  { "skpndc", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpndc },
-  { "skpnz",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_skpnz  },
-  { "subcf",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_subcf  },
-  { "subdcf", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_subdcf },
-  { "tstf",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_tstf   }
+  { "addcf",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_addcf  },
+  { "adddcf", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_adddcf },
+  { "b",      0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_b      },
+  { "bc",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_bc     },
+  { "bdc",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_bdc    },
+  { "bz",     0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_bz     },
+  { "bnc",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_bnc    },
+  { "bndc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_bndc   },
+  { "bnz",    0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_bnz    },
+  { "clrc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_clrc   },
+  { "clrdc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_clrdc  },
+  { "clrz",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_clrz   },
+  { "lcall",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_lcall  },
+  { "lgoto",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_lgoto  },
+  { "movfw",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_movfw  },
+  { "negf",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_negf   },
+  { "setc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_setc   },
+  { "setdc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_setdc  },
+  { "setz",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_setz   },
+  { "skpc",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_skpc   },
+  { "skpdc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_skpdc  },
+  { "skpz",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_skpz   },
+  { "skpnc",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_skpnc  },
+  { "skpndc", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_skpndc },
+  { "skpnz",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_skpnz  },
+  { "subcf",  0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_subcf  },
+  { "subdcf", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_subdcf },
+  { "tstf",   0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_tstf   }
 };
 
 const int num_op_special = TABLE_SIZE(special);
 
 const insn_t op_sx_mode = { 
-  "mode", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, do_mode
+  "mode", 0, 0, 0, INSN_CLASS_FUNC, INV_MASK_NULL, 0, _do_mode
 };

@@ -34,15 +34,16 @@ Boston, MA 02111-1307, USA.  */
 #endif
 #define LST_SRC_POS     (LST_LINENUM_POS + 6)
 
-void lst_line(const char *format, ...);
-void lst_err_line(const char *type, unsigned int code, const char *format, va_list args);
-void lst_throw(void);
-void lst_init(void);
-void lst_memory_map(MemBlock *m);
-void lst_close(void);
-void lst_format_line(const char *line, int value);
-void lst_symbol_table(void);
-void lst_page_start(void);
-void preproc_init(void);
-void preproc_emit(void);
+extern void lst_line(const char *format, ...);
+extern void lst_err_line(const char *type, unsigned int code, const char *format, va_list args);
+extern void lst_throw(void);
+extern void lst_init(void);
+extern void lst_memory_map(MemBlock *m);
+extern void lst_close(void);
+extern void lst_format_line(const char *line, int value);
+extern void lst_symbol_table(void);
+extern void lst_page_start(void);
+extern void preproc_init(void);
+extern void preproc_emit(void);
+
 #endif

@@ -92,9 +92,11 @@ extern void gp_cofflink_reloc_unassigned(gp_object_type *object, MemBlock *m, in
 
 extern void gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift);
 
-extern void gp_cofflink_fill_pages(gp_object_type *object, MemBlock *m, const symbol_table_t *sections);
+extern void gp_cofflink_make_linenum_arrays(gp_object_type *object);
 
-extern const char *gp_cofflink_reloc_type_to_str(unsigned int Reloc_type);
+extern gp_linenum_type *gp_cofflink_find_linenum(const gp_section_type *section, unsigned int line_number);
+
+extern void gp_cofflink_fill_pages(gp_object_type *object, MemBlock *m, const symbol_table_t *sections);
 
 extern void gp_cofflink_patch(gp_object_type *object);
 

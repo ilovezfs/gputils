@@ -2,7 +2,7 @@
 
 =back
 
-    Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
 
     This file is part of gputils.
 
@@ -1218,7 +1218,7 @@ sub print_device_table()
 sub print_license()
   {
   print $out_handler <<EOT
-/*  Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly\@users.sf.net>
+/*  Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly\@users.sf.net>
 
 This file is part of gputils.
 
@@ -1262,32 +1262,34 @@ EOT
 ;
   print_license();
   print $out_handler <<EOT
+\#include "gptypes.h"
+
 /* A directive value. */
 typedef struct {
   const char *name;                         /* Name of the value. */
-  unsigned short value;                     /* The value. */
+  uint16_t    value;                        /* The value. */
 } $cfg_option_t;
 
 /* A directive, i.e., FOSC. */
 typedef struct {
-  const char *name;                         /* Name of the directive. */
-  unsigned short mask;                      /* Mask of words in the config address that apply to its value. */
-  unsigned int option_count;                /* Number of possible values. */
+  const char             *name;             /* Name of the directive. */
+  uint16_t                mask;             /* Mask of words in the config address that apply to its value. */
+  unsigned int            option_count;     /* Number of possible values. */
   const $cfg_option_t **options;          /* Array of addresses of values. */
 } $cfg_directive_t;
 
 /* One particular configuration address, i.e., 0x300001. */
 typedef struct {
-  unsigned int address;                     /* The address. */
-  unsigned short def_value;                 /* Its default value. */
-  unsigned int directive_count;             /* Count of relevant directives. */
+  unsigned int              address;        /* The address. */
+  uint16_t                  def_value;      /* Its default value. */
+  unsigned int              directive_count;/* Count of relevant directives. */
   const $cfg_directive_t *directives;     /* Array of directives. */
 } $cfg_addr_t;
 
 /* A device - that is, a collection of configuration addresses. */
 typedef struct {
-  const char *name;                         /* Name of the device. */
-  unsigned int address_count;               /* Number of configuration addresses. */
+  const char          *name;                /* Name of the device. */
+  unsigned int         address_count;       /* Number of configuration addresses. */
   const $cfg_addr_t *addresses;           /* Array of configuration addresses. */
 } $cfg_device_t;
 
@@ -1296,40 +1298,48 @@ typedef struct {
 
 typedef struct {
   const $cfg_directive_t *directive;
-  const $cfg_option_t *option;
+  const $cfg_option_t    *option;
 } $cfg_addr_hit_pair_t;
 
 typedef struct {
-  unsigned int max_dir_width;               /* The size of the longest directive name. */
-  unsigned short def_value;                 /* Default value of this $cfg_addr_t. */
-  unsigned int pair_count;                  /* Number of the pairs. */
+  unsigned int           max_dir_width;     /* The size of the longest directive name. */
+  uint16_t               def_value;         /* Default value of this $cfg_addr_t. */
+  unsigned int           pair_count;        /* Number of the pairs. */
   $cfg_addr_hit_pair_t pairs[GP_CFG_ADDR_HIT_MAX];
 } $cfg_addr_hit_t;
 
 typedef struct {
-  unsigned int max_dir_width;               /* The size of the longest directive name. */
-  unsigned int hit_count;                   /* Number of the hits. */
+  unsigned int      max_dir_width;          /* The size of the longest directive name. */
+  unsigned int      hit_count;              /* Number of the hits. */
   $cfg_addr_hit_t hits[GP_CFG_ADDR_PACK_MAX];
 } $cfg_addr_pack_t;
 
 extern const $cfg_device_t ${name_head}devices[];
-extern const int ${name_head}device_count;
+extern const int             ${name_head}device_count;
 
-const $cfg_device_t *${name_head}find_pic(const char *Pic);
+extern const $cfg_device_t *${name_head}find_pic(const char *Pic);
 
-const $cfg_device_t *${name_head}find_pic_multi_name(unsigned int Count, const char *const *Pics);
+extern const $cfg_device_t *${name_head}find_pic_multi_name(const char *const *Pics, unsigned int Count);
 
-const $cfg_directive_t *${name_head}find_directive(const $cfg_device_t *Device, const char *Directive,
-                                                unsigned int *Out_config_addr, unsigned short *Out_def_value);
+extern void ${name_head}real_config_boundaries(const $cfg_device_t *Device, int *Address_low, int *Address_high);
 
-const $cfg_option_t *${name_head}find_option(const $cfg_directive_t *Directive, const char *Option);
+extern const $cfg_directive_t *${name_head}find_directive(const $cfg_device_t *Device, const char *Directive,
+                                                       unsigned int *Out_config_addr, uint16_t *Out_def_value);
 
-const $cfg_addr_t *${name_head}find_config(const $cfg_device_t *Device, unsigned int Address);
+extern void ${name_head}brief_device(const $cfg_device_t *Device, const char *Head, int Addr_digits,
+                                int Word_digits, gp_boolean Pic18J);
 
-unsigned short ${name_head}get_default(const $cfg_device_t *Device, unsigned int Address);
+extern void ${name_head}full_list_device(const $cfg_device_t *Device, const char *Head, int Addr_digits,
+                                    int Word_digits);
 
-unsigned int ${name_head}decode_directive(const $cfg_device_t *Device, unsigned int Address, unsigned int Value,
-                                     $cfg_addr_hit_t *Hit);
+extern const $cfg_option_t *${name_head}find_option(const $cfg_directive_t *Directive, const char *Option);
+
+extern const $cfg_addr_t *${name_head}find_config(const $cfg_device_t *Device, unsigned int Address);
+
+extern uint16_t ${name_head}get_default(const $cfg_device_t *Device, unsigned int Address);
+
+extern unsigned int ${name_head}decode_directive(const $cfg_device_t *Device, unsigned int Address, unsigned int Value,
+                                            $cfg_addr_hit_t *Hit);
 
 \#endif /* $guard */
 EOT

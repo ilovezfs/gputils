@@ -953,13 +953,13 @@ typedef struct {
 extern const $reg_table_t $reg_table\[\];
 extern const int ${reg_table}_size;
 
-const $reg_table_t *gp_register_find_mcu(const $reg_table_t *Table, int Table_size, const char *McuName);
+extern const $reg_table_t *gp_register_find_mcu(const $reg_table_t *Table, int Table_size, const char *McuName);
 
-const $reg_line_t *gp_register_find_reg(const $reg_table_t *Mcu, unsigned int Address);
-const char *gp_register_find_reg_name(const $reg_table_t *Mcu, unsigned int Address);
+extern const $reg_line_t *gp_register_find_reg(const $reg_table_t *Mcu, unsigned int Address);
+extern const char *gp_register_find_reg_name(const $reg_table_t *Mcu, unsigned int Address);
 
-const $bit_line_t *gp_register_find_bit(const $reg_line_t *Reg, unsigned int Address);
-const char *gp_register_find_bit_name(const $reg_line_t *Reg, unsigned int Address);
+extern const $bit_line_t *gp_register_find_bit(const $reg_line_t *Reg, unsigned int Address);
+extern const char *gp_register_find_bit_name(const $reg_line_t *Reg, unsigned int Address);
 
 \#endif /* __GPREGISTER_H__ */
 EOT

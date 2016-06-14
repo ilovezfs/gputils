@@ -29,7 +29,10 @@ static char *linept;
 static int   checksum;
 static FILE *infile;
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Converts a single ASCII character into a number. */
+
 static unsigned int
 _a2n(unsigned char character)
 {
@@ -45,10 +48,12 @@ _a2n(unsigned char character)
   return number;
 }
 
-static unsigned int
+/*------------------------------------------------------------------------------------------------*/
+
+static uint8_t
 _readbyte(void)
 {
-  unsigned int number;
+  uint8_t number;
 
   linept++;
   number  = _a2n(*linept) << 4;
@@ -58,24 +63,30 @@ _readbyte(void)
   return number;
 } 
 
-static unsigned int
+/*------------------------------------------------------------------------------------------------*/
+
+static uint16_t
 _readword(void)
 {
-  unsigned int number;
+  uint16_t number;
 
   number = _readbyte();  
-  number = (_readbyte() << 8) | number;
+  number = ((uint16_t)_readbyte() << 8) | number;
   return number; 
 }
 
-static unsigned int
-_swapword(unsigned int input)
+/*------------------------------------------------------------------------------------------------*/
+
+static uint16_t
+_swapword(uint16_t input)
 {
-  unsigned int number;
+  uint16_t number;
 
   number = ((input & 0xFF) << 8) | ((input & 0xFF00) >> 8);
   return number;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 hex_data_t *
 gp_readhex(const char *filename, MemBlock *m)
@@ -121,8 +132,7 @@ gp_readhex(const char *filename, MemBlock *m)
     }
 
     /* Fetch the address. */
-    address = _readword();
-    address = _swapword(address);
+    address = _swapword(_readword());
 
     if (info->hex_format == INHX16) {
       address *= 2;
@@ -132,7 +142,7 @@ gp_readhex(const char *filename, MemBlock *m)
     /* Read the type of record. */
     type = _readbyte();
 
-    if (type == 4) {
+    if (type == IHEX_RECTYPE_EXT_LIN_ADDR) {
       if (info->hex_format == INHX16) {
         printf("\nHex Format Error\n");
         fclose(infile);

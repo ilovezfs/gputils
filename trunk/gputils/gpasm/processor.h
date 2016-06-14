@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __PROCESSOR_H__
 #define __PROCESSOR_H__
 
-void select_processor(const char *name);
+extern void select_processor(const char *name);
 
 #endif
 

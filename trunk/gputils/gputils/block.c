@@ -27,6 +27,8 @@ Boston, MA 02111-1307, USA.  */
 #include "dump.h"
 #include "block.h"
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 read_block(unsigned char *block, int block_number)
 {
@@ -39,6 +41,8 @@ read_block(unsigned char *block, int block_number)
     gp_error("bad block number %d", block_number);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 DirBlockInfo *
 read_directory(void)

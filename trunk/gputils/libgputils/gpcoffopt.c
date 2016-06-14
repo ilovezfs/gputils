@@ -522,12 +522,12 @@ _reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relo
   default: {
       if (symbol->name != NULL) {
         gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",
-                 gp_cofflink_reloc_type_to_str(Relocation->type),
+                 gp_coffgen_reloc_type_to_str(Relocation->type),
                  Relocation->type, Section->name, symbol->name);
       }
       else {
         gp_error("Unimplemented relocation = %s (%u) in section \"%s\".",
-                 gp_cofflink_reloc_type_to_str(Relocation->type),
+                 gp_coffgen_reloc_type_to_str(Relocation->type),
                  Relocation->type, Section->name);
       }
       assert(0);
@@ -697,8 +697,8 @@ _pagesel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_t
          [0] bra     label_on_current_or_other_page
       */
       gp_warning("Strange relocation = %s (%u) with = %s (%u) in section \"%s\" at symbol \"%s\".",
-                 gp_cofflink_reloc_type_to_str(Opt_state[1].relocation->type), Opt_state[1].relocation->type,
-                 gp_cofflink_reloc_type_to_str(Opt_state[0].relocation->type), Opt_state[0].relocation->type,
+                 gp_coffgen_reloc_type_to_str(Opt_state[1].relocation->type), Opt_state[1].relocation->type,
+                 gp_coffgen_reloc_type_to_str(Opt_state[0].relocation->type), Opt_state[0].relocation->type,
                  Section->name, Opt_state[0].relocation->symbol->name);
       _destroy_pagesel_and_update(Class, First_section, Section, Opt_state, Label_array, Num_labels, 1);
     }

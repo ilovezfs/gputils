@@ -30,13 +30,13 @@ Boston, MA 02111-1307, USA.  */
 #define CORE_14BIT_MASK             0x3fff
 #define CORE_16BIT_MASK             0xffff
 
-gpasmVal do_insn(const char *name, struct pnode *parms);
-void opcode_init(int stage);
-void begin_cblock(const struct pnode *c);
-void continue_cblock(void);
-void cblock_expr(const struct pnode *s);
-void cblock_expr_incr(const struct pnode *s, const struct pnode *incr);
-gp_boolean asm_enabled(void);
-int check_page(int address);
+extern gpasmVal do_insn(const char *name, struct pnode *parms);
+extern void opcode_init(int stage);
+extern void begin_cblock(const struct pnode *c);
+extern void continue_cblock(void);
+extern void cblock_expr(const struct pnode *s);
+extern void cblock_expr_incr(const struct pnode *s, const struct pnode *incr);
+extern gp_boolean asm_enabled(void);
+extern int check_page(int address);
 
 #endif
