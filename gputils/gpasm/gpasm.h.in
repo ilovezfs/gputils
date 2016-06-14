@@ -392,41 +392,41 @@ typedef struct source_context {
   struct source_context  *prev;
 } source_context_t;
 
-void yyerror(const char *s);
+extern void yyerror(const char *s);
 
 /* util.c */
-int stringtolong(const char *string, int radix);
-gp_boolean find_hv_macro(const char *String, const char **Start, const char **End);
-int gpasm_magic(const char *);
-const char *convert_escape_chars(const char *ps, int *value);
-char *convert_escaped_char(char *str, char c);
-void coerce_str1(pnode_t *exp);
-gpasmVal do_or_append_insn(const char *op, pnode_t *parms);
-void set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type, gp_boolean procDependent);
-variable_t *get_global_constant(const char *Name);
-void purge_temp_symbols(symbol_table_t *Table);
-void purge_processor_const_symbols(symbol_table_t *Table);
-void select_errorlevel(int level);
-void select_strictlevel(int level);
-void select_expand(const char *expand);
-void select_hexformat(const char *format_name);
-void select_radix(const char *name);
-file_context_t *add_file(unsigned int type, const char *name);
-void free_files(void);
-void macro_append(void);
-void hex_init(void);
+extern int stringtolong(const char *string, int radix);
+extern gp_boolean find_hv_macro(const char *String, const char **Start, const char **End);
+extern int gpasm_magic(const char *);
+extern const char *convert_escape_chars(const char *ps, int *value);
+extern char *convert_escaped_char(char *str, char c);
+extern void coerce_str1(pnode_t *exp);
+extern gpasmVal do_or_append_insn(const char *op, pnode_t *parms);
+extern void set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type, gp_boolean procDependent);
+extern variable_t *get_global_constant(const char *Name);
+extern void purge_temp_symbols(symbol_table_t *Table);
+extern void purge_processor_const_symbols(symbol_table_t *Table);
+extern void select_errorlevel(int level);
+extern void select_strictlevel(int level);
+extern void select_expand(const char *expand);
+extern void select_hexformat(const char *format_name);
+extern void select_radix(const char *name);
+extern file_context_t *add_file(unsigned int type, const char *name);
+extern void free_files(void);
+extern void macro_append(void);
+extern void hex_init(void);
 
 /* gpasm.c */
-void add_path(const char *path);
+extern void add_path(const char *path);
 
 /* parse.y */
-pnode_t *mk_constant(int value);
-pnode_t *mk_offset(pnode_t *p);
-pnode_t *mk_symbol(char *value);
-pnode_t *mk_string(char *value);
-pnode_t *mk_list(pnode_t *head, pnode_t *tail);
-pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1);
-pnode_t *mk_1op(int op, pnode_t *p0);
+extern pnode_t *mk_constant(int value);
+extern pnode_t *mk_offset(pnode_t *p);
+extern pnode_t *mk_symbol(char *value);
+extern pnode_t *mk_string(char *value);
+extern pnode_t *mk_list(pnode_t *head, pnode_t *tail);
+extern pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1);
+extern pnode_t *mk_1op(int op, pnode_t *p0);
 
 /************************************************************************/
 

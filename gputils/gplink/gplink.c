@@ -130,9 +130,9 @@ _scan_index(symbol_table_t *table, gp_archive_type *archive)
       if (sym_arch != NULL) {
         /* Fetch the archive member, convert its binary data to an object
            file, and add the object to the object list. */
-        member = sym_get_symbol_annotation(sym_arch);
+        member      = sym_get_symbol_annotation(sym_arch);
         object_name = gp_archive_member_name(member);
-        object = gp_convert_file(object_name, &member->data);
+        object      = gp_convert_file(object_name, &member->data);
         /*object_append(object, object_name);*/
         _object_append(object);
         gp_cofflink_add_symbols(state.symbol.definition, state.symbol.missing, object);
@@ -258,7 +258,7 @@ _build_tables(void)
      to symbols, then the archives must contain the missing references. */
   if ((_count_missing() > 0) && (state.archives != NULL)) {
     modified = false;
-    arlist = state.archives;
+    arlist   = state.archives;
     while (true) {
       if (_scan_archive(arlist->archive, arlist->name)) {
         modified = true;
@@ -378,7 +378,7 @@ _set_optimize_level(void)
   /* default */
   state.optimize.pagesel       = false;
   state.optimize.dead_sections = false;
-  state.optimize.weak_symbols  = false;
+  state.optimize.weak_symbols  = true;
 
   switch(state.optimize.level) {
   case 6:
@@ -528,7 +528,7 @@ _show_usage(void)
   printf("  -m, --map                      Output a map file.\n");
   printf("      --mplink-compatible        MPLINK compatibility mode.\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
-  printf("  -O OPT, --optimize OPT         Optimization level [0].\n");
+  printf("  -O OPT, --optimize OPT         Optimization level [1].\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r, --use-shared               Use shared memory if necessary.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
@@ -942,6 +942,8 @@ _linker(void)
   if (state.optimize.pagesel) {
     gp_coffopt_remove_unnecessary_pagesel(state.object);
   }
+
+  gp_cofflink_make_linenum_arrays(state.object);
 
   gp_cofflink_fill_pages(state.object, program, state.section.definition);
 

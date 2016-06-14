@@ -141,10 +141,10 @@ struct list_context {
   struct list_context *prev;
 };
 
-void gplink_error(char *messg);
-void gplink_warning(char *messg);
-void gplink_debug(char *messg);
-void gplink_open_coff(const char *name);
-void gplink_add_path(const char *path);
+extern void gplink_error(char *messg);
+extern void gplink_warning(char *messg);
+extern void gplink_debug(char *messg);
+extern void gplink_open_coff(const char *name);
+extern void gplink_add_path(const char *path);
 
 #endif

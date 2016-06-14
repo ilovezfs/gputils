@@ -24,7 +24,9 @@ Boston, MA 02111-1307, USA.  */
 
 /* String table offsets are 16 bits so this coff has a limit on the
    maximum string table size. */
-#define MAX_STRING_TABLE 0xffff
+#define MAX_STRING_TABLE      0xffff
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* write the symbol or section name into the string table */
 
@@ -54,6 +56,8 @@ _addstring(const char *name, unsigned char *table)
 
   return offset;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _addname(const char *name, FILE *fp, unsigned char *table)
@@ -86,7 +90,10 @@ _addname(const char *name, FILE *fp, unsigned char *table)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write the file header */
+
 static void
 _write_filehdr(const gp_object_type *object, FILE *fp)
 {
@@ -99,7 +106,10 @@ _write_filehdr(const gp_object_type *object, FILE *fp)
   gp_fputl16(object->flags, fp);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write the optional header */
+
 static void
 _write_opthdr(const gp_object_type *object, FILE *fp)
 {
@@ -123,7 +133,10 @@ _write_opthdr(const gp_object_type *object, FILE *fp)
   gp_fputl32(8, fp);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write the section header */
+
 static void
 _write_scnhdr(const gp_section_type *section, int org_to_byte_shift,
               unsigned char *table, FILE *fp)
@@ -145,7 +158,10 @@ _write_scnhdr(const gp_section_type *section, int org_to_byte_shift,
   gp_fputl32(section->flags & ~(STYP_RELOC | STYP_BPACK), fp);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write the section data */
+
 static void
 _write_data(pic_processor_t processor, const gp_section_type *section, FILE *fp)
 {
@@ -167,7 +183,10 @@ _write_data(pic_processor_t processor, const gp_section_type *section, FILE *fp)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write the section relocations */
+
 static void
 _write_reloc(const gp_section_type *section, FILE *fp)
 {
@@ -183,7 +202,10 @@ _write_reloc(const gp_section_type *section, FILE *fp)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write the section linenumbers */
+
 static void
 _write_linenum(const gp_section_type *section, int org_to_byte_shift, FILE *fp)
 {
@@ -204,7 +226,10 @@ _write_linenum(const gp_section_type *section, int org_to_byte_shift, FILE *fp)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write the auxiliary symbols */
+
 static void
 _write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp, gp_boolean isnew)
 {
@@ -285,7 +310,10 @@ _write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp, gp_boo
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write the symbol table */
+
 static void
 _write_symbols(const gp_object_type *object, unsigned char *table, FILE *fp)
 {
@@ -321,7 +349,10 @@ _write_symbols(const gp_object_type *object, unsigned char *table, FILE *fp)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* update all the coff pointers */
+
 static void
 _updateptr(gp_object_type *object)
 {
@@ -387,6 +418,8 @@ _updateptr(gp_object_type *object)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_boolean
 gp_has_data(const gp_section_type *section)
 {
@@ -409,7 +442,10 @@ gp_has_data(const gp_section_type *section)
   return false;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* write the coff file */
+
 gp_boolean
 gp_write_coff(gp_object_type *object, int numerrors)
 {
@@ -487,8 +523,11 @@ gp_write_coff(gp_object_type *object, int numerrors)
   return true;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* check if the object is absolute: all sections are absolute and there
    are no relocations (undefined symbols) */
+
 gp_boolean
 gp_is_absolute_object(const gp_object_type *object)
 {

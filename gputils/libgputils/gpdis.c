@@ -204,7 +204,7 @@ int
 gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t processor,
                            gpdasm_fstate_t *fstate)
 {
-  proc_class_t class;
+  proc_class_t       class;
   int                page_mask;
   int                prog_max_org;
   int                value;

@@ -25,13 +25,13 @@ Boston, MA 02111-1307, USA.  */
 #define GPSTRIP_VERSION_STRING ("gpstrip-" VERSION " #" @REVISION@ " (" __DATE__ ")")
 
 extern struct gpstrip_state {
-  gp_boolean strip_debug;               /* strip debug symbols */
-  gp_boolean preserve_dates;            /* preserve dates */
-  gp_boolean strip_all;                 /* remove all symbols */
-  gp_boolean strip_unneeded;            /* Strip symbols not need for relocations */
-  gp_boolean discard_all;               /* Remove non-global symbols */
-  char *input_file;                     /* input file name */
-  char *output_file;                    /* output file name */
+  gp_boolean      strip_debug;          /* strip debug symbols */
+  gp_boolean      preserve_dates;       /* preserve dates */
+  gp_boolean      strip_all;            /* remove all symbols */
+  gp_boolean      strip_unneeded;       /* Strip symbols not need for relocations */
+  gp_boolean      discard_all;          /* Remove non-global symbols */
+  char           *input_file;           /* input file name */
+  char           *output_file;          /* output file name */
   symbol_table_t *symbol_keep;          /* force these symbols to be keep */
   symbol_table_t *symbol_remove;        /* force these symbols to be removed */
   symbol_table_t *section_remove;       /* remove these sections */

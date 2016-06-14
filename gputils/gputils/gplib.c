@@ -30,7 +30,48 @@ struct gplib_state state = {
 };
 
 static symbol_table_t *definition_tbl = NULL;
-static symbol_table_t *symbol_index = NULL;
+static symbol_table_t *symbol_index   = NULL;
+
+#define GET_OPTIONS "cdhnqrstvx"
+
+static struct option longopts[] =
+{
+  { "create",   no_argument, NULL, 'c' },
+  { "delete",   no_argument, NULL, 'd' },
+  { "extract",  no_argument, NULL, 'x' },
+  { "help",     no_argument, NULL, 'h' },
+  { "no-index", no_argument, NULL, 'n' },
+  { "quiet",    no_argument, NULL, 'q' },
+  { "replace",  no_argument, NULL, 'r' },
+  { "symbols",  no_argument, NULL, 's' },
+  { "list",     no_argument, NULL, 't' },
+  { "version",  no_argument, NULL, 'v' },
+  { NULL,       no_argument, NULL, '\0'}
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_show_usage(void)
+{
+  printf("Usage: gplib [options] library [member]\n");
+  printf("Options: [defaults in brackets after descriptions]\n");
+  printf("  -c, --create       Create a new library.\n");
+  printf("  -d, --delete       Delete member from library.\n");
+  printf("  -h, --help         Show this usage message.\n");
+  printf("  -n, --no-index     Don't add symbol index.\n");
+  printf("  -q, --quiet        Quiet mode.\n");
+  printf("  -r, --replace      Add or replace member from library.\n");
+  printf("  -s, --symbols      List global symbols in library.\n");
+  printf("  -t, --list         List members in library.\n");
+  printf("  -v, --version      Show version.\n");
+  printf("  -x, --extract      Extract member from library.\n\n");
+  printf("Report bugs to:\n");
+  printf("%s\n", PACKAGE_BUGREPORT);
+  exit(0);
+}
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _select_mode(enum lib_modes mode)
@@ -41,6 +82,8 @@ _select_mode(enum lib_modes mode)
     gp_error("multiple library operations selected");
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* return the object name without the path */
 
@@ -67,6 +110,8 @@ _object_name(char *file_name)
 #endif
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
 _has_path(const char *file_name)
 {
@@ -82,42 +127,7 @@ _has_path(const char *file_name)
   return ((name == NULL) ? false : true);
 }
 
-static void
-_show_usage(void)
-{
-  printf("Usage: gplib [options] library [member]\n");
-  printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -c, --create       Create a new library.\n");
-  printf("  -d, --delete       Delete member from library.\n");
-  printf("  -h, --help         Show this usage message.\n");
-  printf("  -n, --no-index     Don't add symbol index.\n");
-  printf("  -q, --quiet        Quiet mode.\n");
-  printf("  -r, --replace      Add or replace member from library.\n");
-  printf("  -s, --symbols      List global symbols in library.\n");
-  printf("  -t, --list         List members in library.\n");
-  printf("  -v, --version      Show version.\n");
-  printf("  -x, --extract      Extract member from library.\n\n");
-  printf("Report bugs to:\n");
-  printf("%s\n", PACKAGE_BUGREPORT);
-  exit(0);
-}
-
-#define GET_OPTIONS "cdhnqrstvx"
-
-static struct option longopts[] =
-{
-  { "create",   no_argument, NULL, 'c' },
-  { "delete",   no_argument, NULL, 'd' },
-  { "extract",  no_argument, NULL, 'x' },
-  { "help",     no_argument, NULL, 'h' },
-  { "no-index", no_argument, NULL, 'n' },
-  { "quiet",    no_argument, NULL, 'q' },
-  { "replace",  no_argument, NULL, 'r' },
-  { "symbols",  no_argument, NULL, 's' },
-  { "list",     no_argument, NULL, 't' },
-  { "version",  no_argument, NULL, 'v' },
-  { NULL,       no_argument, NULL, '\0'}
-};
+/*------------------------------------------------------------------------------------------------*/
 
 int main(int argc, char *argv[])
 {

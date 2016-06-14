@@ -29,19 +29,69 @@ Boston, MA 02111-1307, USA.  */
 
 int number_of_source_files = 0;
 
+static uint8_t  temp[COD_BLOCK_SIZE];
+static FILE    *source_files[MAX_SOURCE_FILES];
+
+static const char *SymbolType4[154] = {
+  "a_reg          ", "x_reg          ", "c_short        ", "c_long         ",
+  "c_ushort       ", "c_ulong        ", "c_pointer      ", "c_upointer     ",
+  "table          ", "m_byte         ", "m_boolean      ", "m_index        ",
+  "byte_array     ", "u_byte_array   ", "word_array     ", "u_word_array   ",
+  "func_void_none ", "func_void_byte ", "funcVoidTwobyte", "func_void_long ",
+  "func_void_undef", "func_int_none  ", "func_int_byte  ", "func_int_twobyt",
+  "func_int_long  ", "func_int_undef ", "func_long_none ", "func_long_byte ",
+  "funcLongTwobyte", "func_long_long ", "func_long_undef", "pfun_void_none ",
+  "pfun_void_byte ", "pfunVoidTwobyte", "pfun_void_long ", "pfun_void_undef",
+  "pfun_int_none  ", "pfun_int_byte  ", "pfunIntTwobyte ", "pfun_int_long  ",
+  "pfun_int_undef ", "pfun_long_none ", "pfun_long_byte ", "pfun_long_twoby",
+  "pfun_long_long ", "pfun_long_undef", "address        ", "constant       ",
+  "bad_und        ", "br_und         ", "upper_und      ", "byte_und       ",
+  "add_und        ", "m_keyword      ", "add_mi_und     ", "vector         ",
+  "port_w         ", "port_r         ", "port_rw        ", "port_rmw       ",
+  "endif          ", "exundef        ", "macro_t        ", "macro_s        ",
+  "macro_a        ", "macro_c        ", "c_keyword      ", "void           ",
+  "c_enum         ", "c_typedef1     ", "c_utypedef1    ", "c_typedef2     ",
+  "c_utypedef2    ", "cp_typedef1    ", "cp_utypedef1   ", "cp_typedef2    ",
+  "cp_utypedef2   ", "c_struct       ", "i_struct       ", "l_const        ",
+  "s_short        ", "s_ushort       ", "s_long         ", "s_ulong        ",
+  "sa_short       ", "sa_ushort      ", "sa_long        ", "sa_ulong       ",
+  "sp_short       ", "sp_ushort      ", "sp_long        ", "sp_ulong       ",
+  "FixedPointer   ", "PointerFunction", "cc_reg         ", "PtrF_void_none ",
+  "PtrF_void_byte ", "PtrF_void_twobyt", "PtrF_void_long ", "PtrF_void_undef",
+  "PtrF_int_none  ", "PtrF_int_byte  ", "PtrF_int_twobyte", "PtrF_int_long  ",
+  "PtrF_int_undef ", "PtrF_long_none ", "PtrF_long_byte ",
+  "PtrF_long_twobyte", "PtrF_long_long ", "PtrF_long_undef",
+  "PfAR_void_none ", "PfAR_void_byte ", "PfAR_void_twobyte",
+  "PfAR_void_long ", "PfAR_void_undef", "PfAR_int_none  ", "PfAR_int_byte  ",
+  "PfAR_int_twobyte", "PfAR_int_long  ", "PfAR_int_undef ", "PfAR_long_none ",
+  "PfAR_long_byte ", "PfAR_long_twobyte", "PfAR_long_long ",
+  "PfAR_long_undef", "FWDlit         ", "Pfunc          ", "mgoto          ",
+  "mcgoto         ", "mcgoto2        ", "mcgoto3        ", "mcgoto4        ",
+  "mcgoto74       ", "mcgoto17       ", "mccall17       ", "mcall          ",
+  "mc_call        ", "res_word       ", "local          ", "unknown        ",
+  "varlabel       ", "external       ", "global         ", "segment        ",
+  "Bankaddr       ", "bit_0          ", "bit_1          ", "bit_2          ",
+  "bit_3          ", "bit_4          ", "bit_5          ", "bit_6          ",
+  "bit_7          ", "debug          "
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
 /*
   substr - copy first n characters from b to a
 */
 
 char *
-substr(char *a, size_t sizeof_a, unsigned char *b, size_t n)
+substr(char *a, size_t sizeof_a, const uint8_t *b, size_t n)
 {
-  int m = (n < sizeof_a) ? n : (sizeof_a - 1);
+  size_t m = (n < sizeof_a) ? n : (sizeof_a - 1);
 
   memcpy(a, b, m);
   a[m] = '\0';
   return a;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /*
   fget_line - read a line from a file.
@@ -51,8 +101,8 @@ char *
 fget_line(int line, char *s, int size, FILE *pFile)
 {
   static FILE *plastFile = NULL;
-  static int   lastline = -1;
-  static long  lastPos = -1;
+  static int   lastline  = -1;
+  static long  lastPos   = -1;
 
   char        *ps;
 
@@ -86,13 +136,14 @@ fget_line(int line, char *s, int size, FILE *pFile)
   return s;
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Dump directory block
+ * Dump directory block.
  */
 
 static void
-_dump_directory_block(unsigned char *block, unsigned block_num)
+_dump_directory_block(uint8_t *block, unsigned block_num)
 {
   char temp_buf[256];
   int  time;
@@ -164,15 +215,16 @@ _dump_directory_block(unsigned char *block, unsigned block_num)
   putchar('\n');
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * dump directory block code index
+ * Dump directory block code index.
  */
 
 static void
-_dump_index(unsigned char *block)
+_dump_index(uint8_t *block)
 {
-  unsigned int _64k_base = gp_getu16(&block[COD_DIR_HIGHADDR]) << 16;
+  unsigned int _64k_base = gp_getu16(&block[COD_DIR_HIGHADDR]) << I_MEM_BITS;
   int          i;
   int          curr_block;
 
@@ -189,16 +241,17 @@ _dump_index(unsigned char *block)
   putchar('\n');
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Dump directory block
+ * Dump directory block.
  */
 
 void
 dump_directory_blocks(void)
 {
   DirBlockInfo *dbi = main_dir;
-  unsigned      block_num = 0;
+  unsigned int  block_num = 0;
 
   do {
     _dump_directory_block(dbi->dir, block_num);
@@ -208,28 +261,29 @@ dump_directory_blocks(void)
   } while (dbi != NULL);
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * ROM usage information
+ * ROM usage information.
  */
 
 void
 dump_memmap(proc_class_t proc_class)
 {
-  unsigned int    _64k_base;
-  DirBlockInfo   *dbi;
-  unsigned short  i;
-  unsigned short  j;
-  unsigned short  start_block;
-  unsigned short  end_block;
-  unsigned short  start;
-  unsigned short  last;
-  gp_boolean      first = true;
+  unsigned int  _64k_base;
+  DirBlockInfo *dbi;
+  uint16_t      i;
+  uint16_t      j;
+  uint16_t      start_block;
+  uint16_t      end_block;
+  uint16_t      start;
+  uint16_t      last;
+  gp_boolean    first = true;
 
   dbi = main_dir;
 
   do {
-    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]) << 16;
+    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]) << I_MEM_BITS;
     start_block = gp_getu16(&dbi->dir[COD_DIR_MEMMAP]);
 
     if (start_block) {
@@ -265,21 +319,22 @@ dump_memmap(proc_class_t proc_class)
   } while (dbi != NULL);
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Dump all of the machine code in the .cod file
+ * Dump all of the machine code in the .cod file.
  */
 
 void
 dump_code(proc_class_t proc_class)
 {
-  unsigned int    _64k_base;
-  unsigned short  i;
-  unsigned short  j;
-  unsigned short  k;
-  unsigned short  index;
-  gp_boolean      all_zero_line;
-  DirBlockInfo   *dbi;
+  unsigned int  _64k_base;
+  uint16_t      i;
+  uint16_t      j;
+  uint16_t      k;
+  uint16_t      index;
+  gp_boolean    all_zero_line;
+  DirBlockInfo *dbi;
 
   dump_memmap(proc_class);
 
@@ -289,7 +344,7 @@ dump_code(proc_class_t proc_class)
   dbi = main_dir;
 
   do {
-    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]) << 16;
+    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]) << I_MEM_BITS;
     for (k = 0; k < COD_CODE_IMAGE_BLOCKS; k++) {
       index = gp_getu16(&dbi->dir[2 * (COD_DIR_CODE + k)]);
 
@@ -328,19 +383,20 @@ dump_code(proc_class_t proc_class)
   } while (dbi != NULL);
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Dump all of the (short) Symbol Table stuff in the .cod file
+ * Dump all of the (short) Symbol Table stuff in the .cod file.
  */
 
 void
 dump_symbols(void)
 {
-  unsigned short i;
-  unsigned short j;
-  unsigned short start_block;
-  unsigned short end_block;
-  char           b[16];
+  uint16_t i;
+  uint16_t j;
+  uint16_t start_block;
+  uint16_t end_block;
+  char     b[16];
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_SYMTAB]);
 
@@ -358,7 +414,7 @@ dump_symbols(void)
           printf("%s = %x, type = %s\n",
                  substr(b, sizeof(b), &temp[i * SSYMBOL_SIZE + COD_SSYMBOL_NAME], 12),
                  gp_getu16(&temp[i * SSYMBOL_SIZE + COD_SSYMBOL_SVALUE]),
-                 SymbolType4[(unsigned char)temp[i * SSYMBOL_SIZE + COD_SSYMBOL_STYPE]]);
+                 SymbolType4[(unsigned int)temp[i * SSYMBOL_SIZE + COD_SSYMBOL_STYPE]]);
         }
       }
     }
@@ -370,23 +426,24 @@ dump_symbols(void)
   putchar('\n');
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Dump all of the Long Symbol Table stuff in the .cod file
+ * Dump all of the Long Symbol Table stuff in the .cod file.
  */
 
 void
 dump_lsymbols(void)
 {
-  unsigned char  *s;
-  unsigned char   length;
-  short           type;
-  unsigned short  i;
-  unsigned short  j;
-  unsigned short  start_block;
-  unsigned short  end_block;
-  unsigned int    value;
-  char            b[256];
+  uint8_t      *s;
+  uint8_t       length;
+  short         type;
+  uint16_t      i;
+  uint16_t      j;
+  uint16_t      start_block;
+  uint16_t      end_block;
+  unsigned int  value;
+  char          b[256];
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB]);
 
@@ -408,7 +465,7 @@ dump_lsymbols(void)
         }
 
         length = *s;
-        type  = gp_getl16(&s[length + 1]);
+        type   = gp_getl16(&s[length + 1]);
 
         if (type > 128) {
           type = 0;
@@ -416,8 +473,7 @@ dump_lsymbols(void)
         /* read big endian */
         value = gp_getb32(&s[length + 3]);
 
-        printf("%s = %x, type = %s\n",
-               substr(b, sizeof(b), &s[1], length), value, SymbolType4[type]);
+        printf("%s = %x, type = %s\n", substr(b, sizeof(b), &s[1], length), value, SymbolType4[type]);
         i += length + 7;
       }
     }
@@ -429,21 +485,22 @@ dump_lsymbols(void)
   putchar('\n');
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Source files
+ * Source files.
  */
 
 void
 dump_source_files(void)
 {
-  unsigned short  i;
-  unsigned short  j;
-  unsigned short  start_block;
-  unsigned short  end_block;
-  unsigned short  offset;
-  char            b[FILE_SIZE];
-  char           *name;
+  uint16_t  i;
+  uint16_t  j;
+  uint16_t  start_block;
+  uint16_t  end_block;
+  uint16_t  offset;
+  char      b[FILE_SIZE];
+  char     *name;
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB]);
 
@@ -482,8 +539,10 @@ dump_source_files(void)
   putchar('\n');
 }
 
-char *
-smod_flags(int smod)
+/*------------------------------------------------------------------------------------------------*/
+
+static char *
+_smod_flags(int smod)
 {
   static char f[9];
 
@@ -500,27 +559,28 @@ smod_flags(int smod)
   return f;
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Line number info from the source files
+ * Line number info from the source files.
  */
 
 void
 dump_line_symbols(void)
 {
-  static int      lst_line_number = 1;
-  static int      last_src_line = 0;
+  static int    lst_line_number = 1;
+  static int    last_src_line = 0;
 
-  char            tline[2048];
-  unsigned short  i;
-  unsigned short  j;
-  unsigned short  start_block;
-  unsigned short  end_block;
-  DirBlockInfo   *dbi = main_dir;
-  gp_boolean      has_line_num_info = false;
-  int             _64k_base;
-  char            nbuf[128];
-  char           *source_file_name;
+  char          tline[2048];
+  uint16_t      i;
+  uint16_t      j;
+  uint16_t      start_block;
+  uint16_t      end_block;
+  DirBlockInfo *dbi = main_dir;
+  gp_boolean    has_line_num_info = false;
+  int           _64k_base;
+  char          nbuf[128];
+  char         *source_file_name;
 
   do {
     _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]);
@@ -544,10 +604,10 @@ dump_line_symbols(void)
         for (i = 0; i < COD_MAX_LINE_SYM; i++) {
           unsigned int offset = i * COD_LINE_SYM_SIZE;
 
-          unsigned char sfile  = temp[offset + COD_LS_SFILE];
-          unsigned char smod   = temp[offset + COD_LS_SMOD];
-          unsigned short sline = gp_getl16(&temp[offset + COD_LS_SLINE]);
-          unsigned short sloc  = gp_getl16(&temp[offset + COD_LS_SLOC]);
+          uint8_t  sfile = temp[offset + COD_LS_SFILE];
+          uint8_t  smod  = temp[offset + COD_LS_SMOD];
+          uint16_t sline = gp_getl16(&temp[offset + COD_LS_SLINE]);
+          uint16_t sloc  = gp_getl16(&temp[offset + COD_LS_SLOC]);
 
           if (((sfile != 0) || (smod != 0) || (sline != 0) || (sloc != 0)) &&
               ((smod & COD_LS_SMOD_FLAG_L) == 0)) {
@@ -562,9 +622,9 @@ dump_line_symbols(void)
             printf(" %5d  %5d  %06X  %2x %s  %-50s\n",
                    lst_line_number++,
                    sline,
-                   (_64k_base << 16) | sloc,
+                   (_64k_base << I_MEM_BITS) | sloc,
                    smod,
-                   smod_flags(smod),
+                   _smod_flags(smod),
                    source_file_name);
 
             if ((sfile < number_of_source_files) && (sline != last_src_line)) {
@@ -592,21 +652,22 @@ dump_line_symbols(void)
   putchar('\n');
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Debug Message area
+ * Debug Message area.
  */
 
 void
 dump_message_area(void)
 {
-  char           DebugType;
-  char           DebugMessage[MAX_STRING_LEN];
-  unsigned short i;
-  unsigned short j;
-  unsigned short start_block;
-  unsigned short end_block;
-  unsigned short laddress;
+  char     DebugType;
+  char     DebugMessage[MAX_STRING_LEN];
+  uint16_t i;
+  uint16_t j;
+  uint16_t start_block;
+  uint16_t end_block;
+  uint16_t laddress;
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_MESSTAB]);
 
@@ -620,9 +681,7 @@ dump_message_area(void)
     for (i = start_block; i <= end_block; i++) {
       read_block(temp, i);
 
-      j = 0;
-
-      while (j < 504) {
+      for (j = 0; j < 504; ) {
         /* read big endian */
         laddress = gp_getb32(&temp[j]);
         j += 4;
@@ -647,21 +706,22 @@ dump_message_area(void)
   putchar('\n');
 }
 
-/*---------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * Display the local symbol table information
+ * Display the local symbol table information.
  */
 
 void
 dump_local_vars(proc_class_t proc_class)
 {
-  unsigned char  *sh; /* scope_head */
-  unsigned short  i;
-  unsigned short  j;
-  unsigned short  start_block;
-  unsigned short  end_block;
-  unsigned int    start;
-  unsigned int    stop;
+  uint8_t      *sh; /* scope_head */
+  uint16_t      i;
+  uint16_t      j;
+  uint16_t      start_block;
+  uint16_t      end_block;
+  unsigned int  start;
+  unsigned int  stop;
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_LOCALVAR]);
 
@@ -688,7 +748,7 @@ dump_local_vars(proc_class_t proc_class)
           } else {
             printf("%.12s = %04x, type = %s\n", &sh[COD_SSYMBOL_NAME],
                    gp_getl16(&sh[COD_SSYMBOL_SVALUE]),
-                   SymbolType4[(int)sh[COD_SSYMBOL_STYPE]]);
+                   SymbolType4[(unsigned int)sh[COD_SSYMBOL_STYPE]]);
           }
         }
       }

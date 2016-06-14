@@ -44,6 +44,8 @@ typedef struct macro_table {
 
 static struct macro_table *macro_table_list = NULL;
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _add_macro_table(symbol_table_t *table)
 {
@@ -67,6 +69,8 @@ _add_macro_table(symbol_table_t *table)
     list->next = new;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Create a new defines table and place the macro parms in it. */
 
@@ -105,6 +109,8 @@ void macro_setup(macro_head_t *h, int arity, const pnode_t *parms)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 symbol_table_t *
 macro_push_symbol_table(symbol_table_t *table)
 {
@@ -115,7 +121,7 @@ macro_push_symbol_table(symbol_table_t *table)
     _add_macro_table(new);
   } else {
     if (macro_table_list == NULL) {
-      gpverror(GPE_UNKNOWN, "An error occurred during a macro execution on pass %i.", state.pass);
+      gperror_verror(GPE_UNKNOWN, "An error occurred during a macro execution on pass %i.", state.pass);
       exit(1);
     }
 
@@ -126,7 +132,7 @@ macro_push_symbol_table(symbol_table_t *table)
        Probably errors will be generated.  Forward references to local
        symbols probably won't be correct.  */
       new = sym_push_table(table, state.case_insensitive);
-      gpwarning(GPW_UNKNOWN, "Macro not executed on pass 1.");
+      gperror_warning(GPW_UNKNOWN, "Macro not executed on pass 1.");
     } else {
       assert(macro_table_list != NULL);
       new = macro_table_list->table;
@@ -137,6 +143,8 @@ macro_push_symbol_table(symbol_table_t *table)
 
   return new;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 macro_list(macro_body_t *p)

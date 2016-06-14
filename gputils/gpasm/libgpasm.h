@@ -22,8 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __LIBGPASM_H__
 #define __LIBGPASM_H__
 
-void process_args( int argc, char *argv[]);
-void init(void);
-int assemble(void);
+extern void process_args( int argc, char *argv[]);
+extern void init(void);
+extern int assemble(void);
 
 #endif

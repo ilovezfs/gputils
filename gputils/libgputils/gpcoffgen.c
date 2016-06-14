@@ -244,6 +244,56 @@ gp_coffgen_del_reloc(gp_section_type *section, gp_reloc_type *relocation)
 
 /*------------------------------------------------------------------------------------------------*/
 
+const char *
+gp_coffgen_reloc_type_to_str(uint16_t type)
+{
+  static const char * const type_str[] = {
+    "",
+    "RELOCT_CALL",
+    "RELOCT_GOTO",
+    "RELOCT_HIGH",
+    "RELOCT_LOW",
+    "RELOCT_P",
+    "RELOCT_BANKSEL",
+    "RELOCT_PAGESEL",
+    "RELOCT_ALL",
+    "RELOCT_IBANKSEL",
+    "RELOCT_F",
+    "RELOCT_TRIS",
+    "RELOCT_MOVLR",
+    "RELOCT_MOVLB",
+    "RELOCT_GOTO2/CALL2",
+    "RELOCT_FF1",
+    "RELOCT_FF2",
+    "RELOCT_LFSR1",
+    "RELOCT_LFSR2",
+    "RELOCT_BRA/RCALL",
+    "RELOCT_CONDBRA",
+    "RELOCT_UPPER",
+    "RELOCT_ACCESS",
+    "RELOCT_PAGESEL_WREG",
+    "RELOCT_PAGESEL_BITS",
+    "RELOCT_SCNSZ_LOW",
+    "RELOCT_SCNSZ_HIGH",
+    "RELOCT_SCNSZ_UPPER",
+    "RELOCT_SCNEND_LOW",
+    "RELOCT_SCNEND_HIGH",
+    "RELOCT_SCNEND_UPPER",
+    "RELOCT_SCNEND_LFSR1",
+    "RELOCT_SCNEND_LFSR2",
+    "RELOCT_TRIS_3BIT",
+    "RELOCT_PAGESEL_MOVLP"
+  };
+
+  if (type >= ARRAY_SIZE(type_str)) {
+    type = 0;
+  }
+
+  return type_str[type];
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 gp_linenum_type *
 gp_coffgen_add_linenum(gp_section_type *section)
 {
@@ -803,6 +853,10 @@ gp_coffgen_free_section(gp_section_type *section)
     free(old_line_number);
   }
 
+  if (section->linenum_array != NULL) {
+    free(section->linenum_array);
+  }
+
   free(section->name);
   free(section);
 }
@@ -838,7 +892,7 @@ gp_coffgen_free_symbol(gp_symbol_type *symbol)
 
 /*------------------------------------------------------------------------------------------------*/
 
-int
+gp_boolean
 gp_coffgen_free(gp_object_type *object)
 {
   gp_section_type *section;
@@ -847,7 +901,7 @@ gp_coffgen_free(gp_object_type *object)
   gp_symbol_type  *old_symbol;
 
   if (object == NULL) {
-    return 1;
+    return false;
   }
 
   free(object->filename);
@@ -866,9 +920,13 @@ gp_coffgen_free(gp_object_type *object)
     gp_coffgen_free_symbol(old_symbol);
   }
 
+  if (object->symbol_hashtable != NULL) {
+    free(object->symbol_hashtable);
+  }
+
   free(object);
 
-  return 0;
+  return true;
 }
 
 /*------------------------------------------------------------------------------------------------*/

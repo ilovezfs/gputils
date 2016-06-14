@@ -26,13 +26,15 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
-gp_boolean gp_quiet = false;
+gp_boolean gp_quiet           = false;
 gp_boolean gp_message_disable = false;
-gp_boolean gp_debug_disable = true;
+gp_boolean gp_debug_disable   = true;
 
-int gp_num_errors = 0;
+int gp_num_errors   = 0;
 int gp_num_warnings = 0;
 int gp_num_messages = 0;
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_error(const char *format, ...)
@@ -57,6 +59,8 @@ gp_error(const char *format, ...)
   printf("error: %s\n", buffer);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_warning(const char *format, ...)
 {
@@ -80,6 +84,8 @@ gp_warning(const char *format, ...)
   printf("warning: %s\n", buffer);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_message(const char *format, ...)
 {
@@ -102,6 +108,8 @@ gp_message(const char *format, ...)
 
   printf("message: %s\n", buffer);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_debug(const char *format, ...)

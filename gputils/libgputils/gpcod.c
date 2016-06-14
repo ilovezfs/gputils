@@ -23,6 +23,8 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* copy a string to a cod block using the pascal convention, i.e. the 
    string length occupies the first string location */
 
@@ -34,6 +36,8 @@ gp_cod_strncpy(unsigned char *dest, const char *src, int max_len)
   dest[-1] = (max_len > len) ? len : max_len;
   memcpy(dest, src, dest[-1]);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_cod_date(unsigned char *buffer, size_t sizeof_buffer)
@@ -55,6 +59,8 @@ gp_cod_date(unsigned char *buffer, size_t sizeof_buffer)
   memcpy(buffer, temp, sizeof_buffer);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_cod_time(unsigned char *buffer, size_t sizeof_buffer)
 {
@@ -72,7 +78,8 @@ gp_cod_time(unsigned char *buffer, size_t sizeof_buffer)
   buffer[2] = now_tm->tm_sec & 0xff;
 }
 
-/*********************************************************************/
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_cod_create(Block *b)
 {
@@ -81,11 +88,15 @@ gp_cod_create(Block *b)
   b->block = GP_Calloc(1, COD_BLOCK_SIZE);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 BlockList *
 gp_blocks_new(void)
 {
   return (BlockList *)GP_Calloc(1, sizeof(BlockList));
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 BlockList *
 gp_blocks_append(Blocks *bl, BlockList *b)
@@ -103,11 +114,15 @@ gp_blocks_append(Blocks *bl, BlockList *b)
   return b;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 BlockList *
 gp_blocks_get_last(Blocks *bl)
 {
   return bl->last;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 BlockList *
 gp_blocks_get_last_or_new(Blocks *bl)
@@ -124,11 +139,15 @@ gp_blocks_get_last_or_new(Blocks *bl)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_blocks_count(const Blocks *bl)
 {
   return ((bl->first == NULL) ? 0 : bl->count);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_blocks_enumerate(DirBlockInfo *dir, unsigned int offset, Blocks *bl, unsigned int *block_num)
@@ -140,6 +159,8 @@ gp_blocks_enumerate(DirBlockInfo *dir, unsigned int offset, Blocks *bl, unsigned
     gp_putl16(&dir->dir[offset + 2], *block_num);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_blocks_enumerate_directory(DirBlockInfo *main_dir)
@@ -188,6 +209,8 @@ gp_blocks_enumerate_directory(DirBlockInfo *main_dir)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_blocks_write(FILE *f, Blocks *bl)
 {
@@ -202,6 +225,8 @@ gp_blocks_write(FILE *f, Blocks *bl)
     p = p->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_blocks_write_directory(FILE *f, DirBlockInfo *main_dir)
@@ -255,6 +280,8 @@ gp_blocks_write_directory(FILE *f, DirBlockInfo *main_dir)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_blocks_free(Blocks *bl)
 {
@@ -272,6 +299,8 @@ gp_blocks_free(Blocks *bl)
   bl->offset = 0;
   bl->count  = 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_blocks_free_directory(DirBlockInfo *main_dir)

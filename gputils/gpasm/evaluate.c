@@ -36,10 +36,10 @@ gp_boolean enforce_arity(int arity, int must_be)
   }
   else {
     if (arity < must_be) {
-      gpverror(GPE_MISSING_ARGU, NULL);
+      gperror_verror(GPE_MISSING_ARGU, NULL);
     }
     else {
-      gpverror(GPE_TOO_MANY_ARGU, NULL);
+      gperror_verror(GPE_TOO_MANY_ARGU, NULL);
     }
     return false;
   }
@@ -53,11 +53,11 @@ gp_boolean enforce_simple(const pnode_t *p)
     break;
 
   case PTAG_STRING:
-    gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
+    gperror_verror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
     break;
 
   default:
-    gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
+    gperror_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
   }
   return false;
 }
@@ -83,7 +83,7 @@ gp_boolean can_evaluate(const pnode_t *p)
 
   case PTAG_OFFSET:
     if (state.extended_pic16e == false) {
-      gpverror(GPE_BADCHAR, NULL, '[');
+      gperror_verror(GPE_BADCHAR, NULL, '[');
     }
     return can_evaluate(p->value.offset);
 
@@ -104,10 +104,10 @@ gp_boolean can_evaluate(const pnode_t *p)
 
         if (s == NULL) {
           if (*p->value.symbol == '\0') {
-            gpverror(GPE_MISSING_ARGU, NULL);
+            gperror_verror(GPE_MISSING_ARGU, NULL);
           }
           else {
-            gpverror(GPE_NOSYM, NULL, p->value.symbol);
+            gperror_verror(GPE_NOSYM, NULL, p->value.symbol);
           }
         }
         else {
@@ -115,7 +115,7 @@ gp_boolean can_evaluate(const pnode_t *p)
 
           if (var == NULL) {
             snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", p->value.symbol);
-            gpwarning(GPW_UNKNOWN, buf);
+            gperror_warning(GPW_UNKNOWN, buf);
           }
         }
 
@@ -130,7 +130,7 @@ gp_boolean can_evaluate(const pnode_t *p)
     return (can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1));
 
   case PTAG_STRING:
-    gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
+    gperror_verror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
     return false;
 
   default:
@@ -148,7 +148,7 @@ gp_boolean can_evaluate_value(const pnode_t *p)
 
   case PTAG_OFFSET:
     if (state.extended_pic16e == false) {
-      gpverror(GPE_BADCHAR, NULL, '[');
+      gperror_verror(GPE_BADCHAR, NULL, '[');
     }
     return can_evaluate_value(p->value.offset);
 
@@ -193,7 +193,7 @@ gp_boolean can_evaluate_value(const pnode_t *p)
     return (can_evaluate_value(p->value.binop.p0) && can_evaluate_value(p->value.binop.p1));
 
   case PTAG_STRING:
-    gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
+    gperror_verror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
     return false;
 
   default:
@@ -206,7 +206,7 @@ gp_boolean can_evaluate_value(const pnode_t *p)
 static int is_program_segment(const pnode_t *p)
 {
   if ((p->tag == PTAG_SYMBOL) && (strcmp(p->value.symbol, "$") != 0)) {
-    const symbol_t *s = sym_get_symbol(state.stTop, p->value.symbol);
+    const symbol_t   *s   = sym_get_symbol(state.stTop, p->value.symbol);
     const variable_t *var = sym_get_symbol_annotation(s);
 
     assert(var != NULL);
@@ -304,7 +304,7 @@ gpasmVal evaluate(const pnode_t *p)
 
     case '/':
       if (p1 == 0){
-        gpverror(GPE_DIVBY0, NULL);
+        gperror_verror(GPE_DIVBY0, NULL);
         return 0;
       }
       else {
@@ -313,7 +313,7 @@ gpasmVal evaluate(const pnode_t *p)
 
     case '%':
       if (p1 == 0){
-        gpverror(GPE_DIVBY0, NULL);
+        gperror_verror(GPE_DIVBY0, NULL);
         return 0;
       }
       else {
@@ -380,7 +380,7 @@ gpasmVal evaluate(const pnode_t *p)
       return (p0 || p1);
 
     case '=':
-      gpverror(GPE_BADCHAR, NULL, '=');
+      gperror_verror(GPE_BADCHAR, NULL, '=');
       return 0;
 
     default:
@@ -470,7 +470,7 @@ int count_reloc(const pnode_t *p)
    [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offs>]) */
 
 static void
-add_reloc(const pnode_t *p, short offs, uint16_t type)
+_add_reloc(const pnode_t *p, short offs, uint16_t type)
 {
   const symbol_t   *s;
   const variable_t *var;
@@ -479,7 +479,7 @@ add_reloc(const pnode_t *p, short offs, uint16_t type)
 
   switch (p->tag) {
   case PTAG_OFFSET:
-    add_reloc(p->value.offset, offs, type);
+    _add_reloc(p->value.offset, offs, type);
     break;
 
   case PTAG_SYMBOL:
@@ -522,15 +522,15 @@ add_reloc(const pnode_t *p, short offs, uint16_t type)
   case PTAG_UNOP:
     switch (p->value.unop.op) {
     case UPPER:
-      add_reloc(p->value.unop.p0, offs, RELOCT_UPPER);
+      _add_reloc(p->value.unop.p0, offs, RELOCT_UPPER);
       return;
 
     case HIGH:
-      add_reloc(p->value.unop.p0, offs, RELOCT_HIGH);
+      _add_reloc(p->value.unop.p0, offs, RELOCT_HIGH);
       return;
 
     case LOW:
-      add_reloc(p->value.unop.p0, offs, RELOCT_LOW);
+      _add_reloc(p->value.unop.p0, offs, RELOCT_LOW);
       return;
 
     case '!':
@@ -539,7 +539,7 @@ add_reloc(const pnode_t *p, short offs, uint16_t type)
     case '~':
     case INCREMENT:
     case DECREMENT:
-      gpverror(GPE_UNRESOLVABLE, NULL);
+      gperror_verror(GPE_UNRESOLVABLE, NULL);
       return;
 
     default:
@@ -551,20 +551,20 @@ add_reloc(const pnode_t *p, short offs, uint16_t type)
     case '+':
       /* The symbol can be in either position */
       if (count_reloc(p->value.binop.p0) == 1) {
-        add_reloc(p->value.binop.p0, offs + maybe_evaluate(p->value.binop.p1), type);
+        _add_reloc(p->value.binop.p0, offs + maybe_evaluate(p->value.binop.p1), type);
       }
       else {
-        add_reloc(p->value.binop.p1, offs + maybe_evaluate(p->value.binop.p0), type);
+        _add_reloc(p->value.binop.p1, offs + maybe_evaluate(p->value.binop.p0), type);
       }
       return;
 
     case '-':
       /* The symbol has to be first */
       if (count_reloc(p->value.binop.p0) == 1) {
-        add_reloc(p->value.binop.p0, offs - maybe_evaluate(p->value.binop.p1), type);
+        _add_reloc(p->value.binop.p0, offs - maybe_evaluate(p->value.binop.p1), type);
       }
       else {
-        gpverror(GPE_UNRESOLVABLE, NULL);
+        gperror_verror(GPE_UNRESOLVABLE, NULL);
       }
       return;
 
@@ -585,7 +585,7 @@ add_reloc(const pnode_t *p, short offs, uint16_t type)
     case LOGICAL_AND:
     case LOGICAL_OR:
     case '=':
-      gpverror(GPE_UNRESOLVABLE, NULL);
+      gperror_verror(GPE_UNRESOLVABLE, NULL);
       return;
 
     default:
@@ -608,7 +608,7 @@ add_reloc(const pnode_t *p, short offs, uint16_t type)
 */
 
 static gp_boolean
-same_section(const pnode_t *p)
+_same_section(const pnode_t *p)
 {
   const pnode_t    *p0;
   const pnode_t    *p1;
@@ -671,20 +671,20 @@ gpasmVal reloc_evaluate(const pnode_t *p, uint16_t type)
       r = maybe_evaluate(p);
     }
     else if (count > 1) {
-      if ((count == 2) && (same_section(p))) {
+      if ((count == 2) && (_same_section(p))) {
         /* It is valid to take the difference between two symbols in the same
            section.  Evaluate, but don't add a relocation. */
         r = maybe_evaluate(p);
       }
       else {
         /* too many relocatable addresses */
-        gpverror(GPE_UNRESOLVABLE, NULL);
+        gperror_verror(GPE_UNRESOLVABLE, NULL);
         r = 0;
       }
     }
     else {
       /* add the coff relocation */
-      add_reloc(p, 0, type);
+      _add_reloc(p, 0, type);
       r = 0;
     }
   }
@@ -700,7 +700,7 @@ int eval_fill_number(const pnode_t *p)
   number = maybe_evaluate(p);
 
   if ((state.device.class->rom_width == 8) && ((number & 0x1) == 1)) {
-    gpverror(GPE_FILL_ODD, NULL);
+    gperror_verror(GPE_FILL_ODD, NULL);
   }
 
   return (gp_processor_org_to_byte(state.device.class, number) >> 1);

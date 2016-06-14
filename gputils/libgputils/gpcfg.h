@@ -8,7 +8,7 @@
    Copyright (C) 2006
    Michael Ballbach */
 
-/*  Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
+/*  Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
 
 This file is part of gputils.
 
@@ -27,16 +27,18 @@ along with gputils; see the file COPYING. If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA. */
 
+#include "gptypes.h"
+
 /* A directive value. */
 typedef struct {
-  const char     *name;                     /* Name of the value. */
-  unsigned short  value;                    /* The value. */
+  const char *name;                         /* Name of the value. */
+  uint16_t    value;                        /* The value. */
 } gp_cfg_option_t;
 
 /* A directive, i.e., FOSC. */
 typedef struct {
   const char             *name;             /* Name of the directive. */
-  unsigned short          mask;             /* Mask of words in the config address that apply to its value. */
+  uint16_t                mask;             /* Mask of words in the config address that apply to its value. */
   unsigned int            option_count;     /* Number of possible values. */
   const gp_cfg_option_t **options;          /* Array of addresses of values. */
 } gp_cfg_directive_t;
@@ -44,7 +46,7 @@ typedef struct {
 /* One particular configuration address, i.e., 0x300001. */
 typedef struct {
   unsigned int              address;        /* The address. */
-  unsigned short            def_value;      /* Its default value. */
+  uint16_t                  def_value;      /* Its default value. */
   unsigned int              directive_count;/* Count of relevant directives. */
   const gp_cfg_directive_t *directives;     /* Array of directives. */
 } gp_cfg_addr_t;
@@ -66,42 +68,42 @@ typedef struct {
 
 typedef struct {
   unsigned int           max_dir_width;     /* The size of the longest directive name. */
-  unsigned short         def_value;         /* Default value of this gp_cfg_addr_t. */
+  uint16_t               def_value;         /* Default value of this gp_cfg_addr_t. */
   unsigned int           pair_count;        /* Number of the pairs. */
   gp_cfg_addr_hit_pair_t pairs[GP_CFG_ADDR_HIT_MAX];
 } gp_cfg_addr_hit_t;
 
 typedef struct {
-  unsigned int max_dir_width;               /* The size of the longest directive name. */
-  unsigned int hit_count;                   /* Number of the hits. */
+  unsigned int      max_dir_width;          /* The size of the longest directive name. */
+  unsigned int      hit_count;              /* Number of the hits. */
   gp_cfg_addr_hit_t hits[GP_CFG_ADDR_PACK_MAX];
 } gp_cfg_addr_pack_t;
 
-extern const     gp_cfg_device_t gp_cfg_devices[];
-extern const int gp_cfg_device_count;
+extern const gp_cfg_device_t gp_cfg_devices[];
+extern const int             gp_cfg_device_count;
 
-const gp_cfg_device_t *gp_cfg_find_pic(const char *Pic);
+extern const gp_cfg_device_t *gp_cfg_find_pic(const char *Pic);
 
-const gp_cfg_device_t *gp_cfg_find_pic_multi_name(const char *const *Pics, unsigned int Count);
+extern const gp_cfg_device_t *gp_cfg_find_pic_multi_name(const char *const *Pics, unsigned int Count);
 
-void gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, int *Address_high);
+extern void gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, int *Address_high);
 
-const gp_cfg_directive_t *gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Directive,
-                                                unsigned int *Out_config_addr, unsigned short *Out_def_value);
+extern const gp_cfg_directive_t *gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Directive,
+                                                       unsigned int *Out_config_addr, uint16_t *Out_def_value);
 
-void gp_cfg_brief_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
-                         int Word_digits, unsigned int Pic18J);
+extern void gp_cfg_brief_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
+                                int Word_digits, gp_boolean Pic18J);
 
-void gp_cfg_full_list_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
-                             int Word_digits);
+extern void gp_cfg_full_list_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
+                                    int Word_digits);
 
-const gp_cfg_option_t *gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option);
+extern const gp_cfg_option_t *gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option);
 
-const gp_cfg_addr_t *gp_cfg_find_config(const gp_cfg_device_t *Device, unsigned int Address);
+extern const gp_cfg_addr_t *gp_cfg_find_config(const gp_cfg_device_t *Device, unsigned int Address);
 
-unsigned short gp_cfg_get_default(const gp_cfg_device_t *Device, unsigned int Address);
+extern uint16_t gp_cfg_get_default(const gp_cfg_device_t *Device, unsigned int Address);
 
-unsigned int gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, unsigned int Value,
-                                     gp_cfg_addr_hit_t *Hit);
+extern unsigned int gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, unsigned int Value,
+                                            gp_cfg_addr_hit_t *Hit);
 
 #endif /* __GPCFG_H__ */

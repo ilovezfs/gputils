@@ -23,25 +23,25 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPERROR_H__
 #define __GPERROR_H__
 
-void gperror_init(void);
+extern void gperror_init(void);
 
-void gperror(unsigned int code, char *message);
-void gpwarning(unsigned int code, char *message);
-void gpmessage(unsigned int code, char *message);
+extern void gperror_error(unsigned int code, const char *message);
+extern void gperror_warning(unsigned int code, const char *message);
+extern void gperror_message(unsigned int code, const char *message);
 
-void gpverror(unsigned int code, const char *message, ...);
-void gpvwarning(unsigned int code, const char *message, ...);
-void gpvmessage(unsigned int code, const char *message, ...);
+extern void gperror_verror(unsigned int code, const char *message, ...);
+extern void gperror_vwarning(unsigned int code, const char *message, ...);
+extern void gperror_vmessage(unsigned int code, const char *message, ...);
 
 /* Alternate message functions. Only the prototypes are provided, the user
    must link their own function into gpasm. */
-void user_error(unsigned int code, char *message);
-void user_warning(unsigned int code, char *message);
-void user_message(unsigned int code, char *message);
+extern void gperror_user_error(unsigned int code, const char *message);
+extern void gperror_user_warning(unsigned int code, const char *message);
+extern void gperror_user_message(unsigned int code, const char *message);
 
-void add_code(int code);
+extern void gperror_add_code(int code);
 
-void gperror_close(void);
+extern void gperror_close(void);
 
 /* Error codes
  *

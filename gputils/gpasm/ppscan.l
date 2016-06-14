@@ -163,12 +163,12 @@ NUMCHAR [0-9a-z]
                            if ((yyleng > 1) && (yytext[yyleng - 1] == '"')) {
                              --yyleng;
                            } else {
-                             gpvwarning(GPW_MISSING_QUOTE, NULL);
+                             gperror_vwarning(GPW_MISSING_QUOTE, NULL);
                            }
 
                            pc = convert_escape_chars(yytext + 1, &pplval.i);
                            if (pc != &yytext[yyleng]) {
-                             gpverror(GPE_ILLEGAL_ARGU, NULL, yytext);
+                             gperror_verror(GPE_ILLEGAL_ARGU, NULL, yytext);
                            }
 
                            return NUMBER;

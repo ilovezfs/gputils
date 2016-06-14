@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
-void read_block(unsigned char *block, int block_number);
-DirBlockInfo *read_directory(void);
+extern void read_block(unsigned char *block, int block_number);
+extern DirBlockInfo *read_directory(void);
 
 #endif

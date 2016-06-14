@@ -22,6 +22,16 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+struct lazy_linking_s {
+  union {
+    gp_symbol_type *symbol;
+    gp_aux_type    *aux;
+  } read;
+  struct lazy_linking_s *next;
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
 static uint16_t
 _check_getl16(const uint8_t *addr, const gp_binary_type *data)
 {
@@ -37,6 +47,8 @@ _check_getl16(const uint8_t *addr, const gp_binary_type *data)
     return 0;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static uint32_t
 _check_getl32(const uint8_t *addr, const gp_binary_type *data)
@@ -54,7 +66,10 @@ _check_getl32(const uint8_t *addr, const gp_binary_type *data)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Return optional header size (0 for no header). */
+
 static unsigned int
 _read_file_header(gp_object_type *object, const uint8_t *file, const gp_binary_type *data)
 {
@@ -86,6 +101,8 @@ _read_file_header(gp_object_type *object, const uint8_t *file, const gp_binary_t
 
   return opt_hdr;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _read_opt_header(gp_object_type *object, const uint8_t *file, const gp_binary_type *data)
@@ -167,6 +184,8 @@ _read_opt_header(gp_object_type *object, const uint8_t *file, const gp_binary_ty
   offset += 4;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _read_section_header(gp_object_type *object, gp_section_type *section,
                      const uint8_t *file, const char *string_table, const gp_binary_type *data)
@@ -222,6 +241,8 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
   section->shadow_address = section->address;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _read_reloc(gp_object_type *object, const gp_section_type *section, gp_reloc_type *relocation,
             const uint8_t *file, const gp_binary_type *data)
@@ -250,6 +271,8 @@ _read_lineno(gp_object_type *object, int org_to_byte_shift, gp_linenum_type *lin
   line_number->l_fcnndx = _check_getl32(&file[12], data);
   */
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _read_sections(gp_object_type *object, const uint8_t *file, const gp_binary_type *data)
@@ -282,7 +305,6 @@ _read_sections(gp_object_type *object, const uint8_t *file, const gp_binary_type
     _read_section_header(object, current, section_ptr, string_table, data);
 
     current->number = i + 1;
-//    section_ptr += (object->isnew) ? SEC_HDR_SIZ_v2 : SEC_HDR_SIZ_v1;
     section_ptr += header_size;
 
     /* read the data */
@@ -340,13 +362,7 @@ _read_sections(gp_object_type *object, const uint8_t *file, const gp_binary_type
   }
 }
 
-struct lazy_linking_s {
-  union {
-    gp_symbol_type *symbol;
-    gp_aux_type    *aux;
-  } read;
-  struct lazy_linking_s *next;
-};
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type, const uint8_t *file,
@@ -401,6 +417,8 @@ _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type, const u
       memcpy(&aux->_aux_symbol.data[0], file, object->symbol_size);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const uint8_t *file,
@@ -470,6 +488,8 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const uint8_
     current_lazy = current_lazy->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_type *data)
@@ -548,8 +568,9 @@ _read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_
   }
 }
 
-/* remove space reserved for auxiliary entries, add section pointers, and
-   setup tail pointer */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Remove space reserved for auxiliary entries, add section pointers, and setup tail pointer. */
 
 static void
 _clean_symbol_table(gp_object_type *object)
@@ -588,6 +609,8 @@ _clean_symbol_table(gp_object_type *object)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_coff_type
 gp_identify_coff_file(const char *filename)
 {
@@ -619,6 +642,8 @@ gp_identify_coff_file(const char *filename)
 
   return GP_COFF_UNKNOWN;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Read a binary file and store it in memory. */
 
@@ -655,6 +680,8 @@ gp_read_file(const char *filename)
   return file;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* free a binary file. */
 
 void
@@ -667,6 +694,8 @@ gp_free_file(gp_binary_type *data)
   free(data->file);
   free(data);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 gp_object_type *
 gp_convert_file(const char *filename, const gp_binary_type *data)
@@ -687,6 +716,8 @@ gp_convert_file(const char *filename, const gp_binary_type *data)
 
   return object;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 gp_object_type *
 gp_read_coff(const char *filename)

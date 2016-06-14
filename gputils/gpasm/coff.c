@@ -136,7 +136,7 @@ _create_config_sections(void)
     }
 
     if (state.debug_info && (state.obj.debug_file == NULL)) {
-      gperror(GPE_UNKNOWN, ".file directive required to generate debug info");
+      gperror_error(GPE_UNKNOWN, ".file directive required to generate debug info");
       return;
     }
 
@@ -217,7 +217,7 @@ coff_close_file(void)
   }
 
   if (!gp_write_coff(state.obj.object, (state.num.errors + gp_num_errors))) {
-    gperror(GPE_UNKNOWN, "system error while writing object file");
+    gperror_error(GPE_UNKNOWN, "system error while writing object file");
     exit(1);
   }
 
@@ -256,11 +256,11 @@ coff_new_section(const char *name, int addr, int flags)
       /* Overlayed sections can be duplicated.  This allows multiple code
          sections in the same source file to share the same data memory. */
       if ((flags != found->flags) || (addr != found->address)) {
-        gpverror(GPE_CONTIG_SECTION, NULL, name);
+        gperror_verror(GPE_CONTIG_SECTION, NULL, name);
         return;
       }
     } else {
-      gpverror(GPE_CONTIG_SECTION, NULL, name);
+      gperror_verror(GPE_CONTIG_SECTION, NULL, name);
       return;
     }
   }
@@ -334,7 +334,7 @@ coff_linenum(int emitted)
 
   if (state.debug_info && (state.obj.debug_file == NULL)) {
     if (show_bad_debug) {
-      gperror(GPE_UNKNOWN, ".file directive required to generate debug info");
+      gperror_error(GPE_UNKNOWN, ".file directive required to generate debug info");
       show_bad_debug = false;
     }
     return;
@@ -420,7 +420,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
         (new->section_number != section_number)) {
       snprintf(message, sizeof(message),
                "Duplicate label or redefining symbol that cannot be redefined. (%s)", name);
-      gperror(GPE_UNKNOWN, message);
+      gperror_error(GPE_UNKNOWN, message);
     }
   }
 
@@ -428,7 +428,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
     snprintf(message, sizeof(message),
              "Duplicate label or redefining symbol that cannot be redefined. (%s)",
              name);
-    gperror(GPE_DUPLAB, message);
+    gperror_error(GPE_DUPLAB, message);
   }
   else {
     new = gp_coffgen_add_symbol(state.obj.object);

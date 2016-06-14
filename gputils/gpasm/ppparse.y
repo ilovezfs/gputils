@@ -82,10 +82,10 @@ exp:
         snprintf(buf, sizeof(buf), "Symbol %s not assigned a value.", $1);
 
         if (state.strict_level == 2) {
-          gpverror(GPE_USER, NULL, buf);
+          gperror_verror(GPE_USER, NULL, buf);
         }
         else {
-          gpvwarning(GPW_USER, NULL, buf);
+          gperror_vwarning(GPW_USER, NULL, buf);
         }
       }
       $$ = 0;

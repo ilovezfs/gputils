@@ -958,6 +958,8 @@ static struct px pics[] = {
 
 #define NUM_PICS        ARRAY_SIZE(pics)
 
+/*------------------------------------------------------------------------------------------------*/
+
 /*
  * Display a list of the processor names.
  */
@@ -1042,6 +1044,8 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class0, proc_class
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_processor_invoke_custom_lister(proc_class_t class0, proc_class_t class1, proc_class_t class2,
                                   void (*custom_lister)(pic_processor_t))
@@ -1063,6 +1067,8 @@ gp_processor_invoke_custom_lister(proc_class_t class0, proc_class_t class1, proc
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 pic_processor_t
 gp_find_processor(const char *name)
 {
@@ -1080,11 +1086,15 @@ gp_find_processor(const char *name)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 proc_class_t
 gp_processor_class(pic_processor_t processor)
 {
   return ((processor != NULL) ? processor->class : PROC_CLASS_UNKNOWN);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 const char *
 gp_processor_class_to_str(proc_class_t class)
@@ -1130,6 +1140,8 @@ gp_processor_class_to_str(proc_class_t class)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* 18xx bsr boundary location */
 
 int
@@ -1142,17 +1154,23 @@ gp_processor_bsr_boundary(pic_processor_t processor)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 unsigned long
 gp_processor_coff_type(pic_processor_t processor)
 {
   return ((processor != NULL) ? processor->coff_type : 0);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_processor_num_pages(pic_processor_t processor)
 {
   return ((processor != NULL) ? processor->num_pages : 0);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_num_banks(pic_processor_t processor)
@@ -1163,6 +1181,8 @@ gp_processor_num_banks(pic_processor_t processor)
 
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 pic_processor_t
 gp_processor_coff_proc(unsigned long coff_type)
@@ -1178,6 +1198,8 @@ gp_processor_coff_proc(unsigned long coff_type)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 const char *
 gp_processor_name(pic_processor_t processor, unsigned int choice)
 {
@@ -1185,6 +1207,8 @@ gp_processor_name(pic_processor_t processor, unsigned int choice)
 
   return ((processor != NULL) ? processor->names[choice] : NULL);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 const char *
 gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
@@ -1206,11 +1230,15 @@ gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 const char *
 gp_processor_header(pic_processor_t processor)
 {
   return ((processor != NULL) ? processor->header : NULL);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 const char *
 gp_processor_script(pic_processor_t processor)
@@ -1218,11 +1246,15 @@ gp_processor_script(pic_processor_t processor)
   return ((processor != NULL) ? processor->script : NULL);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 unsigned int
 gp_processor_id_location(pic_processor_t processor)
 {
   return ((processor->class->id_location != NULL) ? processor->class->id_location(processor) : 0);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_org_to_byte(unsigned int shift, int insn_address)
@@ -1230,11 +1262,15 @@ gp_org_to_byte(unsigned int shift, int insn_address)
   return (insn_address << shift);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_byte_to_org(unsigned int shift, int byte)
 {
   return (byte >> shift);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_reg_offs(pic_processor_t processor, int address)
@@ -1246,6 +1282,8 @@ gp_processor_reg_offs(pic_processor_t processor, int address)
   return (address & (~processor->class->bank_mask));
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_processor_bank_addr(pic_processor_t processor, int address)
 {
@@ -1255,6 +1293,8 @@ gp_processor_bank_addr(pic_processor_t processor, int address)
 
   return (address & processor->bank_bits);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_bank_num(pic_processor_t processor, int address)
@@ -1266,6 +1306,8 @@ gp_processor_bank_num(pic_processor_t processor, int address)
   return ((address & processor->bank_bits) >> processor->class->bank_bits_shift);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_processor_bank_num_to_addr(pic_processor_t processor, int number)
 {
@@ -1275,6 +1317,8 @@ gp_processor_bank_num_to_addr(pic_processor_t processor, int number)
 
   return ((number << processor->class->bank_bits_shift) & processor->bank_bits);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 const int *
 gp_processor_common_ram_exist(pic_processor_t processor)
@@ -1299,6 +1343,8 @@ gp_processor_common_ram_exist(pic_processor_t processor)
 
   return NULL;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_is_common_ram_addr(pic_processor_t processor, int address)
@@ -1340,6 +1386,8 @@ gp_processor_is_common_ram_addr(pic_processor_t processor, int address)
   return -1;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 const int *
 gp_processor_linear_ram_exist(pic_processor_t processor)
 {
@@ -1354,6 +1402,8 @@ gp_processor_linear_ram_exist(pic_processor_t processor)
 
   return NULL;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_is_linear_ram_addr(pic_processor_t processor, int address)
@@ -1374,6 +1424,8 @@ gp_processor_is_linear_ram_addr(pic_processor_t processor, int address)
   return -1;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 const int *
 gp_processor_idlocs_exist(pic_processor_t processor)
 {
@@ -1388,6 +1440,8 @@ gp_processor_idlocs_exist(pic_processor_t processor)
 
   return NULL;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_is_idlocs_org(pic_processor_t processor, int org)
@@ -1406,6 +1460,8 @@ gp_processor_is_idlocs_org(pic_processor_t processor, int org)
 
   return -1;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_is_idlocs_byte_addr(pic_processor_t processor, int byte_address)
@@ -1427,6 +1483,8 @@ gp_processor_is_idlocs_byte_addr(pic_processor_t processor, int byte_address)
   return -1;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 const int *
 gp_processor_config_exist(pic_processor_t processor)
 {
@@ -1441,6 +1499,8 @@ gp_processor_config_exist(pic_processor_t processor)
 
   return NULL;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_is_config_org(pic_processor_t processor, int org)
@@ -1459,6 +1519,8 @@ gp_processor_is_config_org(pic_processor_t processor, int org)
 
   return -1;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_is_config_byte_addr(pic_processor_t processor, int byte_address)
@@ -1480,6 +1542,8 @@ gp_processor_is_config_byte_addr(pic_processor_t processor, int byte_address)
   return -1;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 const int *
 gp_processor_eeprom_exist(pic_processor_t processor)
 {
@@ -1494,6 +1558,8 @@ gp_processor_eeprom_exist(pic_processor_t processor)
 
   return NULL;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_is_eeprom_org(pic_processor_t processor, int org)
@@ -1512,6 +1578,8 @@ gp_processor_is_eeprom_org(pic_processor_t processor, int org)
 
   return -1;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address)
@@ -1533,12 +1601,16 @@ gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address)
   return -1;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_processor_rom_width(proc_class_t class)
 {
   assert(class->rom_width > 0);
   return class->rom_width;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Set the page bits, return the number of instructions required. */
 
@@ -1549,6 +1621,8 @@ gp_processor_set_page(proc_class_t class, int num_pages, int page, MemBlock *m,
   return class->set_page(num_pages, page, m, byte_address, use_wreg);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Mask the page bits, if exists. */
 
 int
@@ -1557,11 +1631,15 @@ gp_processor_page_addr(proc_class_t class, unsigned int address)
   return class->page_addr(address);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_processor_page_bits_to_addr(proc_class_t class, unsigned int bits)
 {
   return class->page_bits_to_addr(bits);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Set the bank bits, return the number of instructions required. */
 
@@ -1572,12 +1650,16 @@ gp_processor_set_bank(proc_class_t class, int num_banks, int bank, MemBlock *m,
   return class->set_bank(num_banks, bank, m, byte_address);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_processor_set_ibank(proc_class_t class, int num_banks, int bank, MemBlock *m,
                        unsigned int byte_address)
 {
   return class->set_ibank(num_banks, bank, m, byte_address);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* determine the value for retlw */
 
@@ -1587,6 +1669,8 @@ gp_processor_retlw(proc_class_t class)
   assert(class->retlw >= 0);
   return class->retlw;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_org_to_byte(proc_class_t class, int insn_address)
@@ -1601,6 +1685,8 @@ gp_processor_org_to_byte(proc_class_t class, int insn_address)
   return gp_org_to_byte(class->org_to_byte_shift, insn_address);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_processor_real_to_byte(pic_processor_t processor, int insn_address)
 {
@@ -1612,6 +1698,8 @@ gp_processor_real_to_byte(pic_processor_t processor, int insn_address)
 
   return gp_org_to_byte(class->org_to_byte_shift, insn_address);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_processor_byte_to_org(proc_class_t class, int byte_address)
@@ -1626,6 +1714,8 @@ gp_processor_byte_to_org(proc_class_t class, int byte_address)
   return gp_byte_to_org(class->org_to_byte_shift, byte_address);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_processor_byte_to_real(pic_processor_t processor, int byte_address)
 {
@@ -1638,28 +1728,40 @@ gp_processor_byte_to_real(pic_processor_t processor, int byte_address)
   return gp_byte_to_org(class->org_to_byte_shift, byte_address);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* determine which page of program memory the byte address is located */
+
 int
 gp_processor_check_page(proc_class_t class, unsigned int insn_address)
 {
   return class->check_page(insn_address);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* determine which bank of data memory the address is located */
+
 int
 gp_processor_check_bank(proc_class_t class, unsigned int address)
 {
   return class->check_bank(address);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* determine which bank of data memory the address is located */
+
 int
 gp_processor_check_ibank(proc_class_t class, unsigned int address)
 {
   return class->check_ibank(address);
 }
 
-/* When unsupported on the class */
+/*------------------------------------------------------------------------------------------------*/
+
+/* When unsupported on the class. */
+
 static int
 _check_xbank_unsupported(unsigned int address)
 {
@@ -1667,6 +1769,8 @@ _check_xbank_unsupported(unsigned int address)
   assert(0);
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_xbank_unsupported(int num_banks, int bank, MemBlock *m, unsigned int address)
@@ -1679,6 +1783,8 @@ _set_xbank_unsupported(int num_banks, int bank, MemBlock *m, unsigned int addres
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_page_unsupported(unsigned int insn_address)
 {
@@ -1686,6 +1792,8 @@ _check_page_unsupported(unsigned int insn_address)
   assert(0);
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_page_unsupported(int num_pages, int page, MemBlock *m, unsigned int byte_address, gp_boolean use_wreg)
@@ -1699,6 +1807,8 @@ _set_page_unsupported(int num_pages, int page, MemBlock *m, unsigned int byte_ad
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _pagesel_byte_length_unsupported(int num_pages, gp_boolean use_wreg)
 {
@@ -1708,6 +1818,8 @@ _pagesel_byte_length_unsupported(int num_pages, gp_boolean use_wreg)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _page_addr_unsupported(unsigned int address)
 {
@@ -1715,6 +1827,8 @@ _page_addr_unsupported(unsigned int address)
   assert(0);
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _page_bits_to_addr_unsupported(unsigned int bits)
@@ -1724,6 +1838,8 @@ _page_bits_to_addr_unsupported(unsigned int bits)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_unsupported(unsigned int address)
 {
@@ -1731,6 +1847,8 @@ _reloc_unsupported(unsigned int address)
   assert(0);
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _reloc_bra_unsupported(gp_section_type *section, unsigned value, unsigned int byte_address)
@@ -1742,6 +1860,8 @@ _reloc_bra_unsupported(gp_section_type *section, unsigned value, unsigned int by
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_high_unsupported(gp_boolean is_code, int value)
 {
@@ -1750,6 +1870,8 @@ _reloc_high_unsupported(gp_boolean is_code, int value)
   assert(0);
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Common to most */
 
@@ -1768,11 +1890,15 @@ _find_insn_generic(proc_class_t cls, unsigned int opcode)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_high_generic(gp_boolean is_code, int value)
 {
   return ((value >> 8) & 0xff);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Common to PIC12 and PIC14 */
 
@@ -1818,6 +1944,8 @@ _set_page_pic12_14(int num_pages, int page, MemBlock *m, unsigned int byte_addre
   return insn_byte_len;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _pagesel_byte_length_pic12_14(int num_pages, gp_boolean use_wreg)
 {
@@ -1832,6 +1960,8 @@ _pagesel_byte_length_pic12_14(int num_pages, gp_boolean use_wreg)
     return ((num_pages > 2) ? 4 : 2);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned int byte_address,
@@ -1872,6 +2002,8 @@ _set_bank_pic12_14(int num_banks, int bank, MemBlock *m, unsigned int byte_addre
   return insn_byte_len;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* PIC12 */
 
 static unsigned int
@@ -1884,11 +2016,15 @@ _id_location_pic12(pic_processor_t processor)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_bank_pic12(unsigned int address)
 {
   return ((address >> PIC12_BANK_SHIFT) & PIC12_BMSK_BANK);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_bank_pic12(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
@@ -1900,11 +2036,15 @@ _set_bank_pic12(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
                             PIC14_BIT_FSR_RP2 << 5);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_page_pic12(unsigned int insn_address)
 {
   return ((insn_address & PIC12_PAGE_BITS) >> PIC12_SHIFT_PAGE_ADDR);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _page_addr_pic12(unsigned int insn_address)
@@ -1912,11 +2052,15 @@ _page_addr_pic12(unsigned int insn_address)
   return (insn_address & PIC12_PAGE_BITS);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _page_bits_to_addr_pic12(unsigned int bits)
 {
   return _page_addr_pic12(bits << PIC12_SHIFT_PAGE_ADDR);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_page_pic12(int num_pages, int page, MemBlock *m, unsigned int byte_address, gp_boolean use_wreg)
@@ -1929,11 +2073,15 @@ _set_page_pic12(int num_pages, int page, MemBlock *m, unsigned int byte_address,
 }
 
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_call_pic12(unsigned int insn_address)
 {
   return (insn_address & PIC12_BMSK_CALL);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _reloc_goto_pic12(unsigned int insn_address)
@@ -1941,11 +2089,15 @@ _reloc_goto_pic12(unsigned int insn_address)
   return (insn_address & PIC12_BMSK_GOTO);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_f_pic12(unsigned int address)
 {
   return (address & PIC12_BMSK_FILE);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _reloc_tris_pic12(unsigned int address)
@@ -1959,6 +2111,8 @@ _reloc_tris_pic12(unsigned int address)
   return (address & PIC12_BMSK_TRIS);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* PIC12E */
 
 static int
@@ -1966,6 +2120,8 @@ _check_bank_pic12e(unsigned int address)
 {
   return ((address >> PIC12_BANK_SHIFT) & PIC12E_BMSK_BANK);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_bank_pic12e(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
@@ -1981,11 +2137,15 @@ _set_bank_pic12e(int num_banks, int bank, MemBlock *m, unsigned int byte_address
   return 2;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_tris_pic12e(unsigned int address)
 {
   return (address & PIC12_BMSK_TRIS);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static const insn_t *
 _find_insn_pic12e(proc_class_t cls, unsigned int opcode)
@@ -2008,6 +2168,8 @@ _find_insn_pic12e(proc_class_t cls, unsigned int opcode)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* SX */
 
 static int
@@ -2016,17 +2178,23 @@ _check_page_sx(unsigned int insn_address)
   return ((insn_address & PIC12_PAGE_BITS) >> PIC12_SHIFT_PAGE_ADDR);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _page_addr_sx(unsigned int insn_address)
 {
   return (insn_address & PIC12_PAGE_BITS);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _page_bits_to_addr_sx(unsigned int bits)
 {
   return _page_addr_sx(bits << PIC12_SHIFT_PAGE_ADDR);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_page_sx(int num_pages, int page, MemBlock *m, unsigned int byte_address, gp_boolean use_wreg)
@@ -2046,6 +2214,8 @@ _set_page_sx(int num_pages, int page, MemBlock *m, unsigned int byte_address, gp
   return 2;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* PIC14 */
 
 static unsigned int
@@ -2058,11 +2228,15 @@ _id_location_pic14(pic_processor_t processor)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_bank_pic14(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & PIC14_BMSK_BANK);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_bank_pic14(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
@@ -2076,11 +2250,15 @@ _set_bank_pic14(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
                             -1);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_ibank_pic14(unsigned int address)
 {
   return ((address >> 8) & 0x0f);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_ibank_pic14(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
@@ -2092,11 +2270,15 @@ _set_ibank_pic14(int num_banks, int bank, MemBlock *m, unsigned int byte_address
   return 2;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_page_pic14(unsigned int insn_address)
 {
   return ((insn_address & PIC14_PAGE_BITS) >> PIC14_SHIFT_PAGE_ADDR);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _page_addr_pic14(unsigned int insn_address)
@@ -2104,11 +2286,15 @@ _page_addr_pic14(unsigned int insn_address)
   return (insn_address & PIC14_PAGE_BITS);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _page_bits_to_addr_pic14(unsigned int bits)
 {
   return _page_addr_pic14(bits << PIC14_SHIFT_PAGE_ADDR);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_page_pic14(int num_pages, int page, MemBlock *m, unsigned int byte_address, gp_boolean use_wreg)
@@ -2127,11 +2313,15 @@ _set_page_pic14(int num_pages, int page, MemBlock *m, unsigned int byte_address,
                             4 << PIC14_INSN_BxF_BITSHIFT);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_call_pic14(unsigned int insn_address)
 {
   return (insn_address & PIC14_BMSK_BRANCH);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _reloc_goto_pic14(unsigned int insn_address)
@@ -2139,11 +2329,15 @@ _reloc_goto_pic14(unsigned int insn_address)
   return (insn_address & PIC14_BMSK_BRANCH);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_f_pic14(unsigned int address)
 {
   return (address & PIC14_BMSK_FILE);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _reloc_tris_pic14(unsigned int address)
@@ -2151,6 +2345,8 @@ _reloc_tris_pic14(unsigned int address)
   /* According to the data sheets, the TRIS instruction does not exist in the PIC14 family. */
   return (address & PIC14_BMSK_TRIS);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _patch_strict_pic14(void)
@@ -2166,6 +2362,8 @@ _patch_strict_pic14(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* PIC14E */
 
 static int
@@ -2173,6 +2371,8 @@ _check_bank_pic14e(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & PIC14E_BMSK_BANK);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_bank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
@@ -2188,11 +2388,15 @@ _set_bank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int byte_address
   return 2;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_ibank_pic14e(unsigned int address)
 {
   return ((address >> 8) & 0x0f);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_ibank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
@@ -2224,11 +2428,15 @@ _set_ibank_pic14e(int num_banks, int bank, MemBlock *m, unsigned int byte_addres
   return (bit * 2);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_page_pic14e(unsigned int insn_address)
 {
   return ((insn_address >> 8) & PIC14E_BMSK_PAGE512);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _page_addr_pic14e(unsigned int insn_address)
@@ -2236,11 +2444,15 @@ _page_addr_pic14e(unsigned int insn_address)
   return (insn_address & PIC14E_PAGE_BITS);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _page_bits_to_addr_pic14e(unsigned int bits)
 {
   return _page_addr_pic14e(bits << 8);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_page_pic14e(int num_pages, int page, MemBlock *m, unsigned int byte_address, gp_boolean use_wreg)
@@ -2274,6 +2486,8 @@ _set_page_pic14e(int num_pages, int page, MemBlock *m, unsigned int byte_address
   return insn_byte_len;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _pagesel_byte_length_pic14e(int num_pages, gp_boolean use_wreg)
 {
@@ -2284,11 +2498,15 @@ _pagesel_byte_length_pic14e(int num_pages, gp_boolean use_wreg)
   return ((use_wreg) ? 4 : 2);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_movlb_pic14e(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & 0xff);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _reloc_bra_pic14e(gp_section_type *section, unsigned int value, unsigned int byte_address)
@@ -2301,12 +2519,16 @@ _reloc_bra_pic14e(gp_section_type *section, unsigned int value, unsigned int byt
   return (offset & PIC14E_BMSK_RBRA9);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_high_pic14e(gp_boolean is_code, int value)
 {
   /* set 7th bit if in is_code */
   return (((value >> 8) & 0xff) | (is_code ? 0x80 : 0));
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static const insn_t *
 _find_insn_pic14e(proc_class_t cls, unsigned int opcode)
@@ -2326,6 +2548,8 @@ _find_insn_pic14e(proc_class_t cls, unsigned int opcode)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* PIC14EX */
 
 static int
@@ -2333,6 +2557,8 @@ _check_bank_pic14ex(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & PIC14EX_BMSK_BANK);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_bank_pic14ex(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
@@ -2347,6 +2573,8 @@ _set_bank_pic14ex(int num_banks, int bank, MemBlock *m, unsigned int byte_addres
   i_memory_put_le(m, byte_address, data, buf, NULL);
   return 2;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static const insn_t *
 _find_insn_pic14ex(proc_class_t cls, unsigned int opcode)
@@ -2366,6 +2594,8 @@ _find_insn_pic14ex(proc_class_t cls, unsigned int opcode)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* PIC16 */
 
 static int
@@ -2380,6 +2610,7 @@ _check_bank_pic16(unsigned int address)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_bank_pic16(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
@@ -2393,11 +2624,15 @@ _set_bank_pic16(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
   return 2;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_page_pic16(unsigned int insn_address)
 {
   return ((insn_address >> 8) & PIC16_BMSK_PAGE);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _page_addr_pic16(unsigned int insn_address)
@@ -2405,11 +2640,15 @@ _page_addr_pic16(unsigned int insn_address)
   return (insn_address & (PIC16_BMSK_PAGE << 8));
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _page_bits_to_addr_pic16(unsigned int bits)
 {
   return _page_addr_pic16(bits << 8);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_page_pic16(int num_pages, int page, MemBlock *m, unsigned int byte_address, gp_boolean use_wreg)
@@ -2427,6 +2666,8 @@ _set_page_pic16(int num_pages, int page, MemBlock *m, unsigned int byte_address,
   return 4;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _pagesel_byte_length_pic16(int num_pages, gp_boolean use_wreg)
 {
@@ -2435,11 +2676,15 @@ _pagesel_byte_length_pic16(int num_pages, gp_boolean use_wreg)
   return 4;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_call_pic16(unsigned int insn_address)
 {
   return (insn_address & PIC16_BMSK_BRANCH);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _reloc_goto_pic16(unsigned int insn_address)
@@ -2447,11 +2692,15 @@ _reloc_goto_pic16(unsigned int insn_address)
   return (insn_address & PIC16_BMSK_BRANCH);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_f_pic16(unsigned int address)
 {
   return (address & PIC16_BMSK_FILE);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* PIC16E */
 
@@ -2464,6 +2713,7 @@ _id_location_pic16e(pic_processor_t processor)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _set_bank_pic16e(int num_banks, int bank, MemBlock *m, unsigned int byte_address)
@@ -2477,17 +2727,23 @@ _set_bank_pic16e(int num_banks, int bank, MemBlock *m, unsigned int byte_address
   return 2;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_call_pic16e(unsigned int insn_address)
 {
   return ((insn_address >> 1) & PIC16E_BMSK_BRANCH_LOWER);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _reloc_goto_pic16e(unsigned int insn_address)
 {
   return ((insn_address >> 1) & PIC16E_BMSK_BRANCH_LOWER);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _reloc_movlb_pic16e(unsigned int address)
@@ -2497,6 +2753,8 @@ _reloc_movlb_pic16e(unsigned int address)
      compatibility with mplink. */
   return ((address >> 8) & 0xff);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_address)
@@ -2514,6 +2772,8 @@ _reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_ad
   }
   return (offset & PIC16E_BMSK_RBRA11);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static const insn_t *
 _find_insn_pic16e(proc_class_t cls, unsigned int opcode)
@@ -2546,6 +2806,8 @@ _find_insn_pic16e(proc_class_t cls, unsigned int opcode)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _core_sfr_cmp(const void *P0, const void *P1)
 {
@@ -2565,6 +2827,8 @@ _core_sfr_cmp(const void *P0, const void *P1)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 const core_sfr_t *
 gp_processor_find_sfr(proc_class_t class, int address)
 {
@@ -2579,6 +2843,8 @@ gp_processor_find_sfr(proc_class_t class, int address)
                                sizeof(core_sfr_t), _core_sfr_cmp);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 const char *
 gp_processor_find_sfr_name(proc_class_t class, int address)
 {
@@ -2587,6 +2853,8 @@ gp_processor_find_sfr_name(proc_class_t class, int address)
   ret = gp_processor_find_sfr(class, address);
   return ((ret != NULL) ? ret->name : NULL);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _vector_cmp(const void *P0, const void *P1)
@@ -2607,6 +2875,8 @@ _vector_cmp(const void *P0, const void *P1)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 const vector_t *
 gp_processor_find_vector(proc_class_t class, int address)
 {
@@ -2621,18 +2891,20 @@ gp_processor_find_vector(proc_class_t class, int address)
                              sizeof(vector_t), _vector_cmp);
 }
 
-static const core_sfr_t core_sfr_table_pic12[] = {
+/*------------------------------------------------------------------------------------------------*/
+
+static const core_sfr_t _core_sfr_table_pic12[] = {
   { 0x000, "INDF"   },
   { 0x002, "PCL"    },
   { 0x003, "STATUS" },
   { 0x004, "FSR"    }
 };
 
-static const vector_t vector_table_pic12[] = {
+static const vector_t _vector_table_pic12[] = {
   { 0x000, "vector_reset" }
 };
 
-static const core_sfr_t core_sfr_table_sx[] = {
+static const core_sfr_t _core_sfr_table_sx[] = {
   { 0x000, "INDF"   },
   { 0x001, "RTCC"   },
   { 0x002, "PC"     },
@@ -2643,16 +2915,16 @@ static const core_sfr_t core_sfr_table_sx[] = {
   { 0x007, "RC"     }
 };
 
-static const vector_t vector_table_sx[] = {
+static const vector_t _vector_table_sx[] = {
   { 0x000, "vector_int" }
 };
 
-static const vector_t vector_table_pic12i[] = {
+static const vector_t _vector_table_pic12i[] = {
   { 0x000, "vector_reset" },
   { 0x004, "vector_int" }
 };
 
-static const core_sfr_t core_sfr_table_pic14[] = {
+static const core_sfr_t _core_sfr_table_pic14[] = {
   { 0x000, "INDF"   },
   { 0x002, "PCL"    },
   { 0x003, "STATUS" },
@@ -2661,12 +2933,12 @@ static const core_sfr_t core_sfr_table_pic14[] = {
   { 0x00B, "INTCON" }
 };
 
-static const vector_t vector_table_pic14[] = {
+static const vector_t _vector_table_pic14[] = {
   { 0x000, "vector_reset" },
   { 0x004, "vector_int"   }
 };
 
-static const core_sfr_t core_sfr_table_pic14e[] = {
+static const core_sfr_t _core_sfr_table_pic14e[] = {
   { 0x000, "INDF0"  },
   { 0x001, "INDF1"  },
   { 0x002, "PCL"    },
@@ -2681,7 +2953,7 @@ static const core_sfr_t core_sfr_table_pic14e[] = {
   { 0x00B, "INTCON" }
 };
 
-static const core_sfr_t core_sfr_table_pic16[] = {
+static const core_sfr_t _core_sfr_table_pic16[] = {
   { 0x000, "INDF0"   },
   { 0x001, "FSR0"    },
   { 0x002, "PCL"     },
@@ -2700,7 +2972,7 @@ static const core_sfr_t core_sfr_table_pic16[] = {
   { 0x00F, "BSR"     }
 };
 
-static const vector_t vector_table_pic16[] = {
+static const vector_t _vector_table_pic16[] = {
   { 0x0000, "vector_reset"     },
   { 0x0008, "vector_int_ext"   },
   { 0x0010, "vector_int_tmr0"  },
@@ -2708,7 +2980,7 @@ static const vector_t vector_table_pic16[] = {
   { 0x0020, "vector_int_peri"  }
 };
 
-static const core_sfr_t core_sfr_table_pic16e[] = {
+static const core_sfr_t _core_sfr_table_pic16e[] = {
   { 0xF80, "PORTA"    },
   { 0xF81, "PORTB"    },
 
@@ -2777,11 +3049,13 @@ static const core_sfr_t core_sfr_table_pic16e[] = {
   { 0xFFF, "TOSU"     }
 };
 
-static const vector_t vector_table_pic16e[] = {
+static const vector_t _vector_table_pic16e[] = {
   { 0x0000, "vector_reset"    },
   { 0x0008, "vector_int_high" },
   { 0x0018, "vector_int_low"  }
 };
+
+/*------------------------------------------------------------------------------------------------*/
 
 const struct proc_class proc_class_eeprom8 = {
   -1,                                   /* retlw */
@@ -2889,10 +3163,10 @@ const struct proc_class proc_class_generic = {
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
   0,                                    /* config_digits */
-  core_sfr_table_pic12,                 /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
-  vector_table_pic12,                   /* vector_table */
-  TABLE_SIZE(vector_table_pic12),       /* vector_number */
+  _core_sfr_table_pic12,                /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_pic12),    /* core_sfr_number */
+  _vector_table_pic12,                  /* vector_table */
+  TABLE_SIZE(_vector_table_pic12),      /* vector_number */
   _id_location_pic12,                   /* id_location */
   _check_bank_pic12,                    /* check_bank */
   _set_bank_pic12,                      /* set_bank */
@@ -2934,10 +3208,10 @@ const struct proc_class proc_class_pic12 = {
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
   3,                                    /* config_digits */
-  core_sfr_table_pic12,                 /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
-  vector_table_pic12,                   /* vector_table */
-  TABLE_SIZE(vector_table_pic12),       /* vector_number */
+  _core_sfr_table_pic12,                /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_pic12),    /* core_sfr_number */
+  _vector_table_pic12,                  /* vector_table */
+  TABLE_SIZE(_vector_table_pic12),      /* vector_number */
   _id_location_pic12,                   /* id_location */
   _check_bank_pic12,                    /* check_bank */
   _set_bank_pic12,                      /* set_bank */
@@ -2979,10 +3253,10 @@ const struct proc_class proc_class_pic12e = {
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
   3,                                    /* config_digits */
-  core_sfr_table_pic12,                 /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
-  vector_table_pic12,                   /* vector_table */
-  TABLE_SIZE(vector_table_pic12),       /* vector_number */
+  _core_sfr_table_pic12,                /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_pic12),    /* core_sfr_number */
+  _vector_table_pic12,                  /* vector_table */
+  TABLE_SIZE(_vector_table_pic12),      /* vector_number */
   _id_location_pic12,                   /* id_location */
   _check_bank_pic12e,                   /* check_bank */
   _set_bank_pic12e,                     /* set_bank */
@@ -3024,10 +3298,10 @@ const struct proc_class proc_class_pic12i = {
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
   3,                                    /* config_digits */
-  core_sfr_table_pic12,                 /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
-  vector_table_pic12i,                  /* vector_table */
-  TABLE_SIZE(vector_table_pic12i),      /* vector_number */
+  _core_sfr_table_pic12,                /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_pic12),    /* core_sfr_number */
+  _vector_table_pic12i,                 /* vector_table */
+  TABLE_SIZE(_vector_table_pic12i),     /* vector_number */
   _id_location_pic12,                   /* id_location */
   _check_bank_pic12e,                   /* check_bank */
   _set_bank_pic12e,                     /* set_bank */
@@ -3069,10 +3343,10 @@ const struct proc_class proc_class_sx = {
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
   3,                                    /* config_digits */
-  core_sfr_table_sx,                    /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_sx),        /* core_sfr_number */
-  vector_table_sx,                      /* vector_table */
-  TABLE_SIZE(vector_table_sx),          /* vector_number */
+  _core_sfr_table_sx,                   /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_sx),       /* core_sfr_number */
+  _vector_table_sx,                     /* vector_table */
+  TABLE_SIZE(_vector_table_sx),         /* vector_number */
   _id_location_pic12,                   /* id_location */
   _check_bank_pic12,                    /* check_bank */
   _set_bank_pic12,                      /* set_bank */
@@ -3114,10 +3388,10 @@ const struct proc_class proc_class_pic14 = {
   4,                                    /* addr_digits */
   4,                                    /* word_digits */
   4,                                    /* config_digits */
-  core_sfr_table_pic14,                 /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_pic14),     /* core_sfr_number */
-  vector_table_pic14,                   /* vector_table */
-  TABLE_SIZE(vector_table_pic14),       /* vector_number */
+  _core_sfr_table_pic14,                /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_pic14),    /* core_sfr_number */
+  _vector_table_pic14,                  /* vector_table */
+  TABLE_SIZE(_vector_table_pic14),      /* vector_number */
   _id_location_pic14,                   /* id_location */
   _check_bank_pic14,                    /* check_bank */
   _set_bank_pic14,                      /* set_bank */
@@ -3159,10 +3433,10 @@ const struct proc_class proc_class_pic14e = {
   4,                                    /* addr_digits */
   4,                                    /* word_digits */
   4,                                    /* config_digits */
-  core_sfr_table_pic14e,                /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_pic14e),    /* core_sfr_number */
-  vector_table_pic14,                   /* vector_table */
-  TABLE_SIZE(vector_table_pic14),       /* vector_number */
+  _core_sfr_table_pic14e,               /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_pic14e),   /* core_sfr_number */
+  _vector_table_pic14,                  /* vector_table */
+  TABLE_SIZE(_vector_table_pic14),      /* vector_number */
   _id_location_pic14,                   /* id_location */
   _check_bank_pic14e,                   /* check_bank */
   _set_bank_pic14e,                     /* set_bank */
@@ -3204,10 +3478,10 @@ const struct proc_class proc_class_pic14ex = {
   4,                                    /* addr_digits */
   4,                                    /* word_digits */
   4,                                    /* config_digits */
-  core_sfr_table_pic14e,                /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_pic14e),    /* core_sfr_number */
-  vector_table_pic14,                   /* vector_table */
-  TABLE_SIZE(vector_table_pic14),       /* vector_number */
+  _core_sfr_table_pic14e,               /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_pic14e),   /* core_sfr_number */
+  _vector_table_pic14,                  /* vector_table */
+  TABLE_SIZE(_vector_table_pic14),      /* vector_number */
   _id_location_pic14,                   /* id_location */
   _check_bank_pic14ex,                  /* check_bank */
   _set_bank_pic14ex,                    /* set_bank */
@@ -3249,10 +3523,10 @@ const struct proc_class proc_class_pic16 = {
   6,                                    /* addr_digits */
   4,                                    /* word_digits */
   2,                                    /* config_digits */
-  core_sfr_table_pic16,                 /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_pic16),     /* core_sfr_number */
-  vector_table_pic16,                   /* vector_table */
-  TABLE_SIZE(vector_table_pic16),       /* vector_number */
+  _core_sfr_table_pic16,                /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_pic16),    /* core_sfr_number */
+  _vector_table_pic16,                  /* vector_table */
+  TABLE_SIZE(_vector_table_pic16),      /* vector_number */
   NULL,                                 /* id_location */
   _check_bank_pic16,                    /* check_bank */
   _set_bank_pic16,                      /* set_bank */
@@ -3294,10 +3568,10 @@ const struct proc_class proc_class_pic16e = {
   6,                                    /* addr_digits */
   4,                                    /* word_digits */
   2,                                    /* config_digits */
-  core_sfr_table_pic16e,                /* core_sfr_table */
-  TABLE_SIZE(core_sfr_table_pic16e),    /* core_sfr_number */
-  vector_table_pic16e,                  /* vector_table */
-  TABLE_SIZE(vector_table_pic16e),      /* vector_number */
+  _core_sfr_table_pic16e,               /* core_sfr_table */
+  TABLE_SIZE(_core_sfr_table_pic16e),   /* core_sfr_number */
+  _vector_table_pic16e,                 /* vector_table */
+  TABLE_SIZE(_vector_table_pic16e),     /* vector_number */
   _id_location_pic16e,                  /* id_location */
   _check_bank_pic16,                    /* check_bank: Same as for pic16 */
   _set_bank_pic16e,                     /* set_bank */

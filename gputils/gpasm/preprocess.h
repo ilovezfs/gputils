@@ -24,15 +24,18 @@ Boston, MA 02111-1307, USA.  */
 #define PREPROC_MAX_DEPTH       16
 
 /* from preprocess.c */
-void preprocess_line(char *buf, int *n, int max_size);
+extern void preprocess_line(char *buf, int *n, int max_size);
 
 /* from ppscan.c */
-int ppparse_chunk(char *buf, int begin, int end);
-int pplex(void);
 extern int ppcol_begin;
 extern int ppcol_end;
 
+extern int ppparse_chunk(char *buf, int begin, int end);
+extern int pplex(void);
+
 /* from ppparse.c */
-int ppparse(void);
 extern int ppresult;
+
+extern int ppparse(void);
+
 #endif

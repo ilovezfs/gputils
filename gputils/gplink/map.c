@@ -35,8 +35,20 @@ Boston, MA 02111-1307, USA.  */
 #define SECTION_IDATA   3
 #define SECTION_UDATA   4
 
-void
-map_line(const char *format, ...)
+struct syms_s {
+  gp_symbol_type *symbol;
+  gp_symbol_type *file;
+};
+
+struct file_stack {
+  gp_symbol_type    *symbol;
+  struct file_stack *previous;
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_map_line(const char *format, ...)
 {
   va_list args;
 
@@ -49,6 +61,8 @@ map_line(const char *format, ...)
     putc('\n', state.map.f);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
 _section_value(gp_section_type *section)
@@ -74,13 +88,15 @@ _section_value(gp_section_type *section)
   return value;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _compare_sections(const void *a, const void *b)
 {
   gp_section_type *section_a = *((gp_section_type **)a);
   gp_section_type *section_b = *((gp_section_type **)b);
-  unsigned int     value_a = _section_value(section_a);
-  unsigned int     value_b = _section_value(section_b);
+  unsigned int     value_a   = _section_value(section_a);
+  unsigned int     value_b   = _section_value(section_b);
 
   if (value_a < value_b)
     return -1;
@@ -96,6 +112,8 @@ _compare_sections(const void *a, const void *b)
 
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _write_sections(void)
@@ -126,9 +144,9 @@ _write_sections(void)
 
   qsort((void *)section_list, num_sections, sizeof(gp_section_type *), _compare_sections);
 
-  map_line("                                 Section Info");
-  map_line("                  Section       Type    Address   Location Size(Bytes)");
-  map_line("                ---------  ---------  ---------  ---------  ---------");
+  _map_line("                                 Section Info");
+  _map_line("                  Section       Type    Address   Location Size(Bytes)");
+  _map_line("                ---------  ---------  ---------  ---------  ---------");
 
   for (i = 0; i < num_sections; i++) {
     org_to_byte_shift = state.class->org_to_byte_shift;
@@ -166,7 +184,7 @@ _write_sections(void)
     assert(section->name != NULL);
 
     if (section->size != 0) {
-      map_line("%25s %10s   0x%06x %10s   0x%06x", section->name, type,
+      _map_line("%25s %10s   0x%06x %10s   0x%06x", section->name, type,
                gp_byte_to_org(org_to_byte_shift, section->address),
                location, section->size);
     }
@@ -174,10 +192,12 @@ _write_sections(void)
 
   free(section_list);
 
-  map_line(NULL);
-  map_line(NULL);
-  map_line(NULL);
+  _map_line(NULL);
+  _map_line(NULL);
+  _map_line(NULL);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _write_program_memory(void)
@@ -185,39 +205,36 @@ _write_program_memory(void)
   gp_section_type *section = NULL;
   int              prog_size = 0;
 
-  map_line("                              Program Memory Usage");
-  map_line("                               Start         End");
-  map_line("                           ---------   ---------");
+  _map_line("                              Program Memory Usage");
+  _map_line("                               Start         End");
+  _map_line("                           ---------   ---------");
   section = state.object->sections;
 
   while (section != NULL) {
     if ((section->flags & (STYP_TEXT | STYP_DATA_ROM)) && (section->size > 0)) {
-      map_line("                            0x%06x    0x%06x",
+      _map_line("                            0x%06x    0x%06x",
                gp_processor_byte_to_org(state.class, section->address),
                gp_processor_byte_to_org(state.class, section->address + section->size - 1));
       prog_size += section->size;
     }
     section = section->next;
   }
-  map_line("                            %d program addresses used",
+  _map_line("                            %d program addresses used",
            gp_processor_byte_to_org(state.class, prog_size));
 /*
-  map_line("                            %d out of %d program addresses used, program memory utilization is %d%%",
+  _map_line("                            %d out of %d program addresses used, program memory utilization is %d%%",
            gp_processor_byte_to_org(state.class, prog_size),
            state.processor->prog_mem_size, state.processor->prog_mem_size * 100 / prog_size);
 */
-  map_line(NULL);
-  map_line(NULL);
-  map_line(NULL);
+  _map_line(NULL);
+  _map_line(NULL);
+  _map_line(NULL);
 }
 
-struct file_stack {
-  gp_symbol_type    *symbol;
-  struct file_stack *previous;
-};
+/*------------------------------------------------------------------------------------------------*/
 
 static struct file_stack *
-push_file(struct file_stack *stack, gp_symbol_type *symbol)
+_push_file(struct file_stack *stack, gp_symbol_type *symbol)
 {
   struct file_stack *new;
 
@@ -230,13 +247,15 @@ push_file(struct file_stack *stack, gp_symbol_type *symbol)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static struct file_stack *
-pop_file(struct file_stack *stack)
+_pop_file(struct file_stack *stack)
 {
   struct file_stack *old;
 
   if (stack != NULL) {
-    old = stack;
+    old   = stack;
     stack = stack->previous;
     free(old);
   }
@@ -244,10 +263,7 @@ pop_file(struct file_stack *stack)
   return stack;
 }
 
-struct syms_s {
-  gp_symbol_type *symbol;
-  gp_symbol_type *file;
-};
+/*------------------------------------------------------------------------------------------------*/
 
 static int
 _cmp_name(const void *p1, const void *p2)
@@ -255,11 +271,15 @@ _cmp_name(const void *p1, const void *p2)
   return strcmp(((struct syms_s *)p1)->symbol->name, ((struct syms_s *)p2)->symbol->name);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _cmp_address(const void *p1, const void *p2)
 {
   return ((struct syms_s *)p1)->symbol->value - ((struct syms_s *)p2)->symbol->value;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _write_symbols(void)
@@ -278,10 +298,10 @@ _write_symbols(void)
 
   while (symbol != NULL) {
     if (symbol->class == C_FILE) {
-      stack = push_file(stack, symbol);
+      stack = _push_file(stack, symbol);
     }
     else if (symbol->class == C_EOF) {
-      stack = pop_file(stack);
+      stack = _pop_file(stack);
     }
     else if ((symbol->section_number > 0) && (symbol->class != C_SECTION)) {
       if (stack == NULL) {
@@ -306,32 +326,32 @@ _write_symbols(void)
 
   qsort(syms, num_syms, sizeof(struct syms_s), _cmp_name);
 
-  map_line("                              Symbols - Sorted by Name");
-  map_line("                     Name    Address   Location    Storage File");
-  map_line("                ---------  ---------  ---------  --------- ---------");
+  _map_line("                              Symbols - Sorted by Name");
+  _map_line("                     Name    Address   Location    Storage File");
+  _map_line("                ---------  ---------  ---------  --------- ---------");
 
   for (i = 0; i < num_syms; ++i) {
     sm = syms[i].symbol;
-    map_line("%25s   0x%06x %10s %10s %s",
+    _map_line("%25s   0x%06x %10s %10s %s",
              sm->name,
              sm->value,
              ((sm->section->flags & STYP_TEXT) || (sm->section->flags & STYP_DATA_ROM)) ? "program" : "data",
              (sm->class == C_EXT) ? "extern" : "static",
              (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
   }
-  map_line(NULL);
-  map_line(NULL);
-  map_line(NULL);
+  _map_line(NULL);
+  _map_line(NULL);
+  _map_line(NULL);
 
-  qsort(syms, num_syms, sizeof (struct syms_s), _cmp_address);
+  qsort(syms, num_syms, sizeof(struct syms_s), _cmp_address);
 
-  map_line("                              Symbols - Sorted by Address");
-  map_line("                     Name    Address   Location    Storage File");
-  map_line("                ---------  ---------  ---------  --------- ---------");
+  _map_line("                              Symbols - Sorted by Address");
+  _map_line("                     Name    Address   Location    Storage File");
+  _map_line("                ---------  ---------  ---------  --------- ---------");
 
   for (i = 0; i < num_syms; ++i) {
     sm = syms[i].symbol;
-    map_line("%25s   0x%06x %10s %10s %s",
+    _map_line("%25s   0x%06x %10s %10s %s",
              sm->name,
              sm->value,
              ((sm->section->flags & STYP_TEXT) || (sm->section->flags & STYP_DATA_ROM)) ? "program" : "data",
@@ -339,9 +359,11 @@ _write_symbols(void)
              (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
   }
   free(syms);
-  map_line(NULL);
-  map_line(NULL);
+  _map_line(NULL);
+  _map_line(NULL);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 make_map(void)
@@ -357,9 +379,9 @@ make_map(void)
     exit(1);
   }
 
-  map_line("%s", GPLINK_VERSION_STRING);
-  map_line("Map File - Created %s", state.startdate);
-  map_line(NULL);
+  _map_line("%s", GPLINK_VERSION_STRING);
+  _map_line("Map File - Created %s", state.startdate);
+  _map_line("");
 
   /* write sections */
   _write_sections();

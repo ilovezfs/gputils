@@ -69,8 +69,8 @@ enum identtype {
 gp_boolean force_decimal; /* Used to force radix to decimal for some directives. */
 gp_boolean force_ident;   /* Used to force numbers to identifiers for processor names. */
 
-static enum identtype identify(const char *);
-static gp_boolean found_eof(void);
+static enum identtype _identify(const char *);
+static gp_boolean _found_eof(void);
 
 static inline size_t
 gp_input(char *buf, size_t max_size)
@@ -96,13 +96,13 @@ gp_input(char *buf, size_t max_size)
           }
 
           if ((c == EOF) && ferror(yyin)) {
-            gpverror(GPE_SCANNER, NULL, "Input in flex scanner failed.");
+            gperror_verror(GPE_SCANNER, NULL, "Input in flex scanner failed.");
           }
           return n;
         }
       else
         {
-          gpverror(GPE_SCANNER, NULL, "Interactive scanner should be used.");
+          gperror_verror(GPE_SCANNER, NULL, "Interactive scanner should be used.");
           return 0;
         }
     }
@@ -166,7 +166,7 @@ NUMCHAR [0-9a-z]
                            return IDENTIFIER;
                          }
 <<EOF>>                  {
-                           if (found_eof()) {
+                           if (_found_eof()) {
                              yyterminate();
                            }
                          }
@@ -325,11 +325,11 @@ processor                {
                              has_collon = 1;
                            }
                            yylval.s = GP_Strdup(yytext);
-                           switch (identify(yytext)) {
+                           switch (_identify(yytext)) {
                              case ID_DIRECTIVES:
-                               gpvwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
+                               gperror_vwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
                                if (has_collon) {
-                                 gpverror(GPE_BADCHAR, NULL, ':');
+                                 gperror_verror(GPE_BADCHAR, NULL, ':');
                                }
                                return IDENTIFIER;
                                break;
@@ -346,18 +346,18 @@ processor                {
                                  return LABEL;
                                }
                                else {
-                                 gpvwarning(GPW_MACRO_COLUMN_ONE, NULL, yytext);
+                                 gperror_vwarning(GPW_MACRO_COLUMN_ONE, NULL, yytext);
                                  if (has_collon) {
-                                   gpverror(GPE_BADCHAR, NULL, ':');
+                                   gperror_verror(GPE_BADCHAR, NULL, ':');
                                  }
                                  return IDENTIFIER;
                                }
                                break;
 
                              case ID_OPCODES:
-                               gpvwarning(GPW_OP_COLUMN_ONE, NULL, yytext);
+                               gperror_vwarning(GPW_OP_COLUMN_ONE, NULL, yytext);
                                if (has_collon)
-                                 gpverror(GPE_BADCHAR, NULL, ':');
+                                 gperror_verror(GPE_BADCHAR, NULL, ':');
                                return IDENTIFIER;
                                break;
 
@@ -475,7 +475,7 @@ h'-?{NUMCHAR}+'          {
                              --yyleng;
                            }
                            else {
-                             gpwarning(GPW_MISSING_QUOTE, NULL);
+                             gperror_warning(GPW_MISSING_QUOTE, NULL);
                            }
                            yylval.s = GP_Strndup(yytext + 1, yyleng - 1);
                            BEGIN(INITIAL);
@@ -484,7 +484,7 @@ h'-?{NUMCHAR}+'          {
 '{STR_QCHAR}'            {
                            const char *pc = convert_escape_chars(yytext + 1, &yylval.i);
                            if (pc != &yytext[yyleng - 1]) {
-                             gpverror(GPE_ILLEGAL_ARGU, NULL, "Expected single character.");
+                             gperror_verror(GPE_ILLEGAL_ARGU, NULL, "Expected single character.");
                            }
                            return NUMBER;
                          }
@@ -641,10 +641,10 @@ a'{STR_QCHAR}'           {
 %%
 
 static void
-search_paths(source_context_t *new, const char *name)
+_search_paths(source_context_t *new, const char *name)
 {
   char tryname[PATH_MAX + 1];
-  int i;
+  int  i;
 
   for (i = 0; i < state.path_num; i++) {
     snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
@@ -660,7 +660,7 @@ search_paths(source_context_t *new, const char *name)
 void
 open_src(const char *name, gp_boolean isinclude)
 {
-  extern FILE *yyin;
+  extern FILE      *yyin;
   source_context_t *new = GP_Calloc(1, sizeof(source_context_t));
 
   if (state.src != NULL) {
@@ -674,7 +674,7 @@ open_src(const char *name, gp_boolean isinclude)
   }
   else if (isinclude && (strchr(name, PATH_SEPARATOR_CHAR) == 0)) {
     /* If include file and no PATH_SEPARATOR_CHAR in name, try searching include path. */
-    search_paths(new, name);
+    _search_paths(new, name);
 
     if (new->f == NULL) {
       /* We didn't find a match so check for lower case. This is mainly for
@@ -682,18 +682,18 @@ open_src(const char *name, gp_boolean isinclude)
          without regard to case. */
       char *lower_case_name = gp_lower_case(name);
 
-      search_paths(new, lower_case_name);
+      _search_paths(new, lower_case_name);
       free(lower_case_name);
 
       if (new->f != NULL) {
-        gpwarning(GPW_UNKNOWN, "Found lower case match for include filename.");
+        gperror_warning(GPW_UNKNOWN, "Found lower case match for include filename.");
       }
     }
   }
 
   if (new->f == NULL) {
     if (state.src != NULL) {
-      gpverror(GPE_NOENT, NULL, name);
+      gperror_verror(GPE_NOENT, NULL, name);
     }
     else {
       perror(name);
@@ -802,7 +802,7 @@ close_file(void)
     state.stMacroParams = sym_pop_table(state.stMacroParams);
 
     if (state.src->astack != state.astack) {
-      gpverror(GPE_ILLEGAL_NESTING, NULL);
+      gperror_verror(GPE_ILLEGAL_NESTING, NULL);
     }
 
     assert(state.stTop != NULL);
@@ -856,15 +856,15 @@ found_end(void)
 }
 
 static gp_boolean
-found_eof(void)
+_found_eof(void)
 {
-  int terminate = false;
+  gp_boolean     terminate = false;
   enum src_types prev_type;
 
   if (IN_WHILE_EXPANSION) {
     if (maybe_evaluate(state.src->mac_head->parms)) {
       if (state.src->loop_number > WHILE_LOOP_COUNT_MAX) {
-        gpverror(GPE_BAD_WHILE_LOOP, NULL);
+        gperror_verror(GPE_BAD_WHILE_LOOP, NULL);
       }
       else {
         /* repeat the while loop */
@@ -894,7 +894,7 @@ found_eof(void)
   }
   else {
     if (!state.found_end) {
-      gperror(GPE_ILLEGAL_COND, "Illegal condition: EOF encountered before END.");
+      gperror_error(GPE_ILLEGAL_COND, "Illegal condition: EOF encountered before END.");
     }
 
     terminate = found_end();
@@ -904,10 +904,10 @@ found_eof(void)
 }
 
 static enum identtype
-identify(const char *text)
+_identify(const char *text)
 {
-  enum identtype type;
-  symbol_t *sym;
+  enum identtype  type;
+  symbol_t       *sym;
 
   if ((sym = sym_get_symbol(state.stMacroParams, text)) != NULL) {
     type = ID_MACRO_PARAMS;

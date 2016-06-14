@@ -24,17 +24,17 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
-gp_boolean enforce_arity(int arity, int must_be);
-gp_boolean enforce_simple(const struct pnode *p);
-int list_length(const struct pnode *L);
+extern gp_boolean enforce_arity(int arity, int must_be);
+extern gp_boolean enforce_simple(const struct pnode *p);
+extern int list_length(const struct pnode *L);
 
-gp_boolean can_evaluate(const struct pnode *p);
-gp_boolean can_evaluate_value(const struct pnode *p);
-gpasmVal evaluate(const struct pnode *p);
-gpasmVal maybe_evaluate(const struct pnode *p);
+extern gp_boolean can_evaluate(const struct pnode *p);
+extern gp_boolean can_evaluate_value(const struct pnode *p);
+extern gpasmVal evaluate(const struct pnode *p);
+extern gpasmVal maybe_evaluate(const struct pnode *p);
 
-int count_reloc(const struct pnode *p);
-gpasmVal reloc_evaluate(const struct pnode *p, uint16_t type);
-int eval_fill_number(const struct pnode *p);
+extern int count_reloc(const struct pnode *p);
+extern gpasmVal reloc_evaluate(const struct pnode *p, uint16_t type);
+extern int eval_fill_number(const struct pnode *p);
 
 #endif

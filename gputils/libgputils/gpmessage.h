@@ -30,9 +30,9 @@ extern int gp_num_errors;
 extern int gp_num_warnings;
 extern int gp_num_messages;
 
-void gp_error(const char *format, ...);
-void gp_warning(const char *format, ...);
-void gp_message(const char *format, ...);
-void gp_debug(const char *format, ...);
+extern void gp_error(const char *format, ...);
+extern void gp_warning(const char *format, ...);
+extern void gp_message(const char *format, ...);
+extern void gp_debug(const char *format, ...);
 
 #endif

@@ -27,6 +27,58 @@ Boston, MA 02111-1307, USA.  */
 struct gpstrip_state state;
 gp_boolean verbose;
 
+enum {
+  OPT_STRICT_OPTIONS = 0x100
+};
+
+#define GET_OPTIONS "ghk:n:o:pr:suvVx"
+
+static struct option longopts[] =
+{
+  { "strip-debug",    no_argument,       NULL, 'g' },
+  { "help",           no_argument,       NULL, 'h' },
+  { "keep-symbol",    required_argument, NULL, 'k' },
+  { "strip-symbol",   required_argument, NULL, 'n' },
+  { "output",         required_argument, NULL, 'o' },
+  { "preserve-dates", no_argument,       NULL, 'p' },
+  { "remove-section", required_argument, NULL, 'r' },
+  { "strict-options", no_argument,       NULL, OPT_STRICT_OPTIONS },
+  { "strip-all",      no_argument,       NULL, 's' },
+  { "strip-unneeded", no_argument,       NULL, 'u' },
+  { "version",        no_argument,       NULL, 'v' },
+  { "verbose",        no_argument,       NULL, 'V' },
+  { "discard-all",    no_argument,       NULL, 'x' },
+  { NULL,             no_argument,       NULL, '\0'}
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_show_usage(void)
+{
+  printf("Usage: gpstrip [options] file(s)\n");
+  printf("Options: [defaults in brackets after descriptions]\n");
+  printf("  -g, --strip-debug                     Strip debug symbols.\n");
+  printf("  -h, --help                            Show this usage message.\n");
+  printf("  -k SYMBOL, --keep-symbol SYMBOL       Keep symbol.\n");
+  printf("  -n SYMBOL, --strip-symbol SYMBOL      Remove symbol.\n");
+  printf("  -o FILE, --output FILE                Alternate name of output file.\n");
+  printf("  -p, --preserve-dates                  Preserve dates.\n");
+  printf("  -r SECTION, --remove-section SECTION  Remove section.\n");
+  printf("      --strict-options                  If this is set, then an option may not be parameter\n"
+         "                                        of an another option. For example: -o --version\n");
+  printf("  -s, --strip-all                       Remove all symbols.\n");
+  printf("  -u, --strip-unneeded                  Strip symbols not need for relocations.\n");
+  printf("  -v, --version                         Show version.\n");
+  printf("  -V, --verbose                         Verbose mode.\n");
+  printf("  -x, --discard-all                     Remove non-global symbols.\n\n");
+  printf("Report bugs to:\n");
+  printf("%s\n", PACKAGE_BUGREPORT);
+  exit(0);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _conditional_remove(gp_symbol_type *symbol)
 {
@@ -40,6 +92,8 @@ _conditional_remove(gp_symbol_type *symbol)
     gp_coffgen_del_symbol(state.object, symbol);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _remove_sections(void)
@@ -67,6 +121,8 @@ _remove_sections(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _remove_symbols(void)
 {
@@ -84,6 +140,8 @@ _remove_symbols(void)
     }
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _strip_all(void)
@@ -115,6 +173,8 @@ _strip_all(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _strip_debug(void)
 {
@@ -143,6 +203,8 @@ _strip_debug(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _strip_unneeded(void)
 {
@@ -161,6 +223,8 @@ _strip_unneeded(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _discard_all(void)
 {
@@ -178,6 +242,8 @@ _discard_all(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void 
 _add_name(symbol_table_t *table, char *name)
 {
@@ -189,53 +255,7 @@ _add_name(symbol_table_t *table, char *name)
   }
 }
 
-static void
-_show_usage(void)
-{
-  printf("Usage: gpstrip [options] file(s)\n");
-  printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -g, --strip-debug                     Strip debug symbols.\n");
-  printf("  -h, --help                            Show this usage message.\n");
-  printf("  -k SYMBOL, --keep-symbol SYMBOL       Keep symbol.\n");
-  printf("  -n SYMBOL, --strip-symbol SYMBOL      Remove symbol.\n");
-  printf("  -o FILE, --output FILE                Alternate name of output file.\n");
-  printf("  -p, --preserve-dates                  Preserve dates.\n");
-  printf("  -r SECTION, --remove-section SECTION  Remove section.\n");
-  printf("      --strict-options                  If this is set, then an option may not be parameter\n"
-         "                                        of an another option. For example: -o --version\n");
-  printf("  -s, --strip-all                       Remove all symbols.\n");
-  printf("  -u, --strip-unneeded                  Strip symbols not need for relocations.\n");
-  printf("  -v, --version                         Show version.\n");
-  printf("  -V, --verbose                         Verbose mode.\n");
-  printf("  -x, --discard-all                     Remove non-global symbols.\n\n");
-  printf("Report bugs to:\n");
-  printf("%s\n", PACKAGE_BUGREPORT);
-  exit(0);
-}
-
-enum {
-  OPT_STRICT_OPTIONS = 0x100
-};
-
-#define GET_OPTIONS "ghk:n:o:pr:suvVx"
-
-static struct option longopts[] =
-{
-  { "strip-debug",    no_argument,       NULL, 'g' },
-  { "help",           no_argument,       NULL, 'h' },
-  { "keep-symbol",    required_argument, NULL, 'k' },
-  { "strip-symbol",   required_argument, NULL, 'n' },
-  { "output",         required_argument, NULL, 'o' },
-  { "preserve-dates", no_argument,       NULL, 'p' },
-  { "remove-section", required_argument, NULL, 'r' },
-  { "strict-options", no_argument,       NULL, OPT_STRICT_OPTIONS },
-  { "strip-all",      no_argument,       NULL, 's' },
-  { "strip-unneeded", no_argument,       NULL, 'u' },
-  { "version",        no_argument,       NULL, 'v' },
-  { "verbose",        no_argument,       NULL, 'V' },
-  { "discard-all",    no_argument,       NULL, 'x' },
-  { NULL,             no_argument,       NULL, '\0'}
-};
+/*------------------------------------------------------------------------------------------------*/
 
 int main(int argc, char *argv[])
 {

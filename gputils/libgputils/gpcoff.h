@@ -552,66 +552,68 @@ typedef struct gp_hash {
 
 typedef struct gp_section_type {
   /* section name */
-  char                   *name;
+  char                    *name;
 
   /* section symbol */
-  struct gp_symbol_type  *symbol;
+  gp_symbol_type          *symbol;
 
   /* flags */
-  uint32_t                flags;
+  uint32_t                 flags;
 
   /* section physical address in bytes */
-  uint32_t                address;
+  uint32_t                 address;
 
   /* section virtual address in bytes */
-  uint32_t                virtual_address;
+  uint32_t                 virtual_address;
 
   /* section shadow address in bytes */
-  uint32_t                shadow_address;
+  uint32_t                 shadow_address;
 
   /* section size in bytes */
-  uint32_t                size;
+  uint32_t                 size;
 
   /* memory linked list */
-  MemBlock               *data;
+  MemBlock                *data;
 
   /* number of relocations */
-  uint16_t                num_reloc;
+  uint16_t                 num_reloc;
 
   /* head of relocations */
-  gp_reloc_type          *relocations;
+  gp_reloc_type           *relocations;
 
   /* tail of relocations */
-  gp_reloc_type          *relocations_tail;
+  gp_reloc_type           *relocations_tail;
 
   /* number of line numbers */
-  uint16_t                num_lineno;
+  uint16_t                 num_lineno;
 
   /* head of line numbers */
-  gp_linenum_type        *line_numbers;
+  gp_linenum_type         *line_numbers;
 
   /* tail of line numbers */
-  gp_linenum_type        *line_numbers_tail;
+  gp_linenum_type         *line_numbers_tail;
+
+  gp_linenum_type        **linenum_array;
 
   /* this section required for symbol resolution, only valid when linking */
-  gp_boolean              is_used;
+  gp_boolean               is_used;
 
   /* section number, only valid when writing coff file */
-  uint32_t                number;
+  uint32_t                 number;
 
   /* data pointer, only valid when writing coff file */
-  uint32_t                data_ptr;
+  uint32_t                 data_ptr;
 
   /* relocations pointer, only valid when writing coff file */
-  uint32_t                reloc_ptr;
+  uint32_t                 reloc_ptr;
 
   /* linenumber pointer, only valid when writing coff file */
-  uint32_t                lineno_ptr;
+  uint32_t                 lineno_ptr;
 
   /* use the optimization */
-  uint32_t                opt_flags;
+  uint32_t                 opt_flags;
 
-  struct gp_section_type *next;
+  struct gp_section_type  *next;
 } gp_section_type;
 
 typedef struct gp_object_type {

@@ -46,27 +46,27 @@ typedef struct {
 #define GPDIS_SHOW_ALL_BRANCH   (1 << 3)
 #define GPDIS_SHOW_EXCLAMATION  (1 << 4)
 
-int gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor_t processor);
+extern int gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor_t processor);
 
-int gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t processor,
-                               gpdasm_fstate_t *fstate);
+extern int gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t processor,
+                                      gpdasm_fstate_t *fstate);
 
-int gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t processor,
-                                  gpdasm_fstate_t *fstate, void (*user_data_finder)(MemArg *));
+extern int gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t processor,
+                                         gpdasm_fstate_t *fstate, void (*user_data_finder)(MemArg *));
 
-void gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int behavior,
-                              char *buffer, size_t buffer_length, size_t current_length);
+extern void gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int behavior,
+                                     char *buffer, size_t buffer_length, size_t current_length);
 
-int gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                   int prog_mem_size, int behavior, char *buffer, size_t buffer_length, size_t current_length);
+extern int gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
+                          int prog_mem_size, int behavior, char *buffer, size_t buffer_length, size_t current_length);
 
-int gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
-                        char *buffer, size_t buffer_length);
+extern int gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
+                               char *buffer, size_t buffer_length);
 
-int gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
-                        char *buffer, size_t buffer_length);
+extern int gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
+                               char *buffer, size_t buffer_length);
 
-int gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                        int prog_mem_size, int behavior, char *buffer, size_t buffer_length,
-                        unsigned int size);
+extern int gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
+                               int prog_mem_size, int behavior, char *buffer, size_t buffer_length,
+                               unsigned int size);
 #endif

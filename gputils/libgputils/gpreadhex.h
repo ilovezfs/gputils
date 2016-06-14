@@ -22,12 +22,37 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPREADHEX_H__
 #define __GPREADHEX_H__
 
+#define IHEX_RECTYPE_DATA               0
+#define IHEX_RECTYPE_EOF                1
+#define IHEX_RECTYPE_EXT_SEG_ADDR       2
+#define IHEX_RECTYPE_START_SEG_ADDR     3
+#define IHEX_RECTYPE_EXT_LIN_ADDR       4
+#define IHEX_RECTYPE_START_LIN_ADDR     5
+
+/*
+  INHX8   Have 16 bit addresses.
+          Used types: IHEX_RECTYPE_DATA
+                      IHEX_RECTYPE_EOF
+
+  INHX16  Have 20 bit addresses.
+          Used types: IHEX_RECTYPE_DATA
+                      IHEX_RECTYPE_EOF
+                      IHEX_RECTYPE_EXT_SEG_ADDR
+                      IHEX_RECTYPE_START_SEG_ADDR
+
+  INHX32  Have 32 bit addresses.
+          Used types: IHEX_RECTYPE_DATA
+                      IHEX_RECTYPE_EOF
+                      IHEX_RECTYPE_EXT_LIN_ADDR
+                      IHEX_RECTYPE_START_LIN_ADDR
+*/
+
 typedef struct hex_data {
   enum formats hex_format;
   int          size;
   gp_boolean   error;
 } hex_data_t;
 
-hex_data_t *gp_readhex(const char *filename, MemBlock *m);
+extern hex_data_t *gp_readhex(const char *filename, MemBlock *m);
 
 #endif

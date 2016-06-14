@@ -32,7 +32,15 @@ struct error_list {
   struct error_list *next;
 };
 
+typedef enum {
+  ET_ERROR,
+  ET_WARNING,
+  ET_MESSAGE
+} err_type_t;
+
 static struct error_list *errorcodes_list = NULL;
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gperror_init(void) {
@@ -55,14 +63,16 @@ gperror_init(void) {
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-add_code(int code)
+gperror_add_code(int code)
 {
   struct error_list *new;
   struct error_list *list;
 
   if ((code <= -100) && (code >= -199)) {
-    gpvwarning(GPW_DISABLE_ERROR, NULL);
+    gperror_vwarning(GPW_DISABLE_ERROR, NULL);
   } else {
     new = (struct error_list *)GP_Malloc(sizeof(*new));
     new->value = code;
@@ -81,8 +91,10 @@ add_code(int code)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
-check_code(int code)
+_check_code(int code)
 {
   const struct error_list *p;
 
@@ -102,14 +114,10 @@ check_code(int code)
   return print;
 }
 
-typedef enum {
-  ET_ERROR,
-  ET_WARNING,
-  ET_MESSAGE
-} err_type_t;
+/*------------------------------------------------------------------------------------------------*/
 
 static void
-verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
+_verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
 {
   va_list                 ap0;
   const char             *type;
@@ -169,8 +177,10 @@ verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
-err(err_type_t err_type, unsigned int code, const char *message)
+_err(err_type_t err_type, unsigned int code, const char *message)
 {
   const char             *type;
   const char             *gap;
@@ -221,8 +231,10 @@ err(err_type_t err_type, unsigned int code, const char *message)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static char *
-gp_geterror(unsigned int code)
+_geterror(unsigned int code)
 {
   switch(code) {
   case GPE_USER:
@@ -344,16 +356,18 @@ gp_geterror(unsigned int code)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-gperror(unsigned int code, char *message)
+gperror_error(unsigned int code, const char *message)
 {
   if (state.pass == 2) {
     if (message == NULL) {
-      message = gp_geterror(code);
+      message = _geterror(code);
     }
 
     /* standard output */
-    err(ET_ERROR, code, message);
+    _err(ET_ERROR, code, message);
 
     /* list file output */
     lst_line("Error[%03d]  : %s", code, message);
@@ -362,14 +376,16 @@ gperror(unsigned int code, char *message)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-gpverror(unsigned int code, const char *message, ...)
+gperror_verror(unsigned int code, const char *message, ...)
 {
   char buf[BUFSIZ];
 
   if (state.pass == 2) {
     va_list(ap);
-    const char *msg = gp_geterror(code);
+    const char *msg = _geterror(code);
 
     if ((message != NULL) && (*message != '\0')) {
       snprintf(buf, sizeof(buf), "%s %s", msg, message);
@@ -378,7 +394,7 @@ gpverror(unsigned int code, const char *message, ...)
 
     /* standard output */
     va_start(ap, message);
-    verr(ET_ERROR, code, msg, ap);
+    _verr(ET_ERROR, code, msg, ap);
     va_end(ap);
 
     /* list file output */
@@ -390,8 +406,10 @@ gpverror(unsigned int code, const char *message, ...)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static char *
-gp_getwarning(unsigned int code)
+_getwarning(unsigned int code)
 {
   switch(code) {
   case GPW_NOT_DEFINED:
@@ -448,17 +466,19 @@ gp_getwarning(unsigned int code)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-gpwarning(unsigned int code, char *message)
+gperror_warning(unsigned int code, const char *message)
 {
   if (state.pass == 2) {
-    if ((state.error_level <= 1) && check_code(code)) {
+    if ((state.error_level <= 1) && _check_code(code)) {
       if (message == NULL) {
-        message = gp_getwarning(code);
+        message = _getwarning(code);
       }
 
       /* standard output */
-      err(ET_WARNING, code, message);
+      _err(ET_WARNING, code, message);
 
       /* list file output */
       lst_line("Warning[%03d]: %s", code, message);
@@ -470,13 +490,15 @@ gpwarning(unsigned int code, char *message)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-gpvwarning(unsigned int code, const char *message, ...)
+gperror_vwarning(unsigned int code, const char *message, ...)
 {
   if (state.pass == 2) {
-    if ((state.error_level <= 1) && check_code(code)) {
+    if ((state.error_level <= 1) && _check_code(code)) {
       va_list(ap);
-      const char *msg = gp_getwarning(code);
+      const char *msg = _getwarning(code);
 
       if ((message != NULL) && (*message != '\0')) {
         char buf[BUFSIZ];
@@ -487,7 +509,7 @@ gpvwarning(unsigned int code, const char *message, ...)
 
       /* standard output */
       va_start(ap, message);
-      verr(ET_WARNING, code, msg, ap);
+      _verr(ET_WARNING, code, msg, ap);
       va_end(ap);
 
       va_start(ap, message);
@@ -501,8 +523,10 @@ gpvwarning(unsigned int code, const char *message, ...)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static char *
-gp_getmessage(unsigned int code)
+_getmessage(unsigned int code)
 {
   switch(code) {
   case GPM_USER:
@@ -545,17 +569,19 @@ gp_getmessage(unsigned int code)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-gpmessage(unsigned int code, char *message)
+gperror_message(unsigned int code, const char *message)
 {
   if (state.pass == 2) {
-    if ((state.error_level == 0) && check_code(code)) {
+    if ((state.error_level == 0) && _check_code(code)) {
       if (message == NULL) {
-        message = gp_getmessage(code);
+        message = _getmessage(code);
       }
 
       /* standard output */
-      err(ET_MESSAGE, code, message);
+      _err(ET_MESSAGE, code, message);
 
       /* list file output */
       lst_line("Message[%03d]: %s", code, message);
@@ -567,13 +593,15 @@ gpmessage(unsigned int code, char *message)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
-gpvmessage(unsigned int code, const char *message, ...)
+gperror_vmessage(unsigned int code, const char *message, ...)
 {
   if (state.pass == 2) {
-    if ((state.error_level == 0) && check_code(code)) {
+    if ((state.error_level == 0) && _check_code(code)) {
       va_list(ap);
-      const char *msg = gp_getmessage(code);
+      const char *msg = _getmessage(code);
 
       if ((message != NULL) && (*message != '\0')) {
         char buf[BUFSIZ];
@@ -583,7 +611,7 @@ gpvmessage(unsigned int code, const char *message, ...)
       }
       /* standard output */
       va_start(ap, message);
-      verr(ET_MESSAGE, code, msg, ap);
+      _verr(ET_MESSAGE, code, msg, ap);
       va_end(ap);
 
       /* list file output */
@@ -597,6 +625,8 @@ gpvmessage(unsigned int code, const char *message, ...)
     }
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gperror_close(void)
