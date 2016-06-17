@@ -91,24 +91,28 @@ _section_value(gp_section_type *section)
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_compare_sections(const void *a, const void *b)
+_cmp_sections(const void *a, const void *b)
 {
   gp_section_type *section_a = *((gp_section_type **)a);
   gp_section_type *section_b = *((gp_section_type **)b);
   unsigned int     value_a   = _section_value(section_a);
   unsigned int     value_b   = _section_value(section_b);
 
-  if (value_a < value_b)
+  if (value_a < value_b) {
     return -1;
+  }
 
-  if (value_a > value_b)
+  if (value_a > value_b) {
     return  1;
+  }
 
-  if (section_a->address < section_b->address)
+  if (section_a->address < section_b->address) {
     return -1;
+  }
 
-  if (section_a->address > section_b->address)
+  if (section_a->address > section_b->address) {
     return  1;
+  }
 
   return 0;
 }
@@ -122,18 +126,12 @@ _write_sections(void)
   gp_section_type **section_list = NULL;
   char             *type;
   char             *location;
-  long              i;
-  long              num_sections;
+  unsigned int      i;
+  unsigned int      num_sections;
   int               org_to_byte_shift;
 
   num_sections = state.object->num_sections;
-
-  /* Some malloc implementations return NULL for malloc(0) */
   section_list = GP_Malloc(sizeof(gp_section_type *) * num_sections);
-  if ((section_list == NULL) && (num_sections > 0)) {
-    fprintf(stderr, "Error: Out of memory.\n");
-    exit(1);
-  }
 
   section = state.object->sections;
   for (i = 0; i < num_sections; i++) {
@@ -142,7 +140,7 @@ _write_sections(void)
     section         = section->next;
   }
 
-  qsort((void *)section_list, num_sections, sizeof(gp_section_type *), _compare_sections);
+  qsort((void *)section_list, num_sections, sizeof(gp_section_type *), _cmp_sections);
 
   _map_line("                                 Section Info");
   _map_line("                  Section       Type    Address   Location Size(Bytes)");
@@ -185,8 +183,7 @@ _write_sections(void)
 
     if (section->size != 0) {
       _map_line("%25s %10s   0x%06x %10s   0x%06x", section->name, type,
-               gp_byte_to_org(org_to_byte_shift, section->address),
-               location, section->size);
+                gp_byte_to_org(org_to_byte_shift, section->address), location, section->size);
     }
   }
 
@@ -213,18 +210,18 @@ _write_program_memory(void)
   while (section != NULL) {
     if ((section->flags & (STYP_TEXT | STYP_DATA_ROM)) && (section->size > 0)) {
       _map_line("                            0x%06x    0x%06x",
-               gp_processor_byte_to_org(state.class, section->address),
-               gp_processor_byte_to_org(state.class, section->address + section->size - 1));
+                gp_processor_byte_to_org(state.class, section->address),
+                gp_processor_byte_to_org(state.class, section->address + section->size - 1));
       prog_size += section->size;
     }
     section = section->next;
   }
   _map_line("                            %d program addresses used",
-           gp_processor_byte_to_org(state.class, prog_size));
+            gp_processor_byte_to_org(state.class, prog_size));
 /*
   _map_line("                            %d out of %d program addresses used, program memory utilization is %d%%",
-           gp_processor_byte_to_org(state.class, prog_size),
-           state.processor->prog_mem_size, state.processor->prog_mem_size * 100 / prog_size);
+            gp_processor_byte_to_org(state.class, prog_size),
+            state.processor->prog_mem_size, state.processor->prog_mem_size * 100 / prog_size);
 */
   _map_line(NULL);
   _map_line(NULL);
@@ -332,12 +329,10 @@ _write_symbols(void)
 
   for (i = 0; i < num_syms; ++i) {
     sm = syms[i].symbol;
-    _map_line("%25s   0x%06x %10s %10s %s",
-             sm->name,
-             sm->value,
-             ((sm->section->flags & STYP_TEXT) || (sm->section->flags & STYP_DATA_ROM)) ? "program" : "data",
-             (sm->class == C_EXT) ? "extern" : "static",
-             (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
+    _map_line("%25s   0x%06x %10s %10s %s", sm->name, sm->value,
+              (sm->section->flags & (STYP_TEXT | STYP_DATA_ROM)) ? "program" : "data",
+              (sm->class == C_EXT) ? "extern" : "static",
+              (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
   }
   _map_line(NULL);
   _map_line(NULL);
@@ -351,13 +346,12 @@ _write_symbols(void)
 
   for (i = 0; i < num_syms; ++i) {
     sm = syms[i].symbol;
-    _map_line("%25s   0x%06x %10s %10s %s",
-             sm->name,
-             sm->value,
-             ((sm->section->flags & STYP_TEXT) || (sm->section->flags & STYP_DATA_ROM)) ? "program" : "data",
-             (sm->class == C_EXT) ? "extern" : "static",
-             (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
+    _map_line("%25s   0x%06x %10s %10s %s", sm->name, sm->value,
+              (sm->section->flags & (STYP_TEXT | STYP_DATA_ROM)) ? "program" : "data",
+              (sm->class == C_EXT) ? "extern" : "static",
+              (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
   }
+
   free(syms);
   _map_line(NULL);
   _map_line(NULL);
@@ -381,7 +375,7 @@ make_map(void)
 
   _map_line("%s", GPLINK_VERSION_STRING);
   _map_line("Map File - Created %s", state.startdate);
-  _map_line("");
+  _map_line(NULL);
 
   /* write sections */
   _write_sections();

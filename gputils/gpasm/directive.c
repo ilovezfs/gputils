@@ -45,6 +45,8 @@ extern pnode_t *mk_constant(int value);
 
 static gp_boolean prev_btfsx = false;
 
+/*------------------------------------------------------------------------------------------------*/
+
 static uint16_t
 _checkwrite(uint16_t value)
 {
@@ -137,6 +139,8 @@ _checkwrite(uint16_t value)
   return value;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
 _check_processor_select(const char *Name)
 {
@@ -155,6 +159,8 @@ _check_processor_select(const char *Name)
   return false;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Write a word into the memory image at the current location. */
 
 static void
@@ -168,6 +174,8 @@ _emit(uint16_t value, const char *name)
 
   state.byte_addr += 2;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _emit_byte(uint16_t value, const char *name)
@@ -226,6 +234,8 @@ _emit_byte(uint16_t value, const char *name)
   ++state.byte_addr;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
 _off_or_on(pnode_t *p)
 {
@@ -251,6 +261,8 @@ _off_or_on(pnode_t *p)
 
   return ret;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* convert an expression list which may consist of strings, constants, labels,
  * etc. into instruction memory.
@@ -326,6 +338,8 @@ _emit_data(pnode_t *L, int char_shift, const char *name)
   return (state.byte_addr - begin_org);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Do the work for beginning a conditional assembly block. Leave it disabled by default.
    This is used by do_if, do_ifdef and do_ifndef. */
 
@@ -349,6 +363,8 @@ _enter_if(void)
   state.astack = new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _enter_elif(void)
 {
@@ -361,6 +377,8 @@ _enter_elif(void)
 
   state.astack->mode = IN_ELIF;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Checking that a macro definition's parameters are correct. */
 
@@ -377,6 +395,8 @@ _macro_parms_simple(pnode_t *parms)
   return true;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
 _macro_parm_unique(pnode_t *M, pnode_t *L)
 {
@@ -392,6 +412,8 @@ _macro_parm_unique(pnode_t *M, pnode_t *L)
   }
   return true;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
 _macro_parms_ok(pnode_t *parms)
@@ -412,7 +434,7 @@ _macro_parms_ok(pnode_t *parms)
   return true;
 }
 
-/************************************************************************/
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -444,7 +466,7 @@ _do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_ACCESS | STYP_ABS | STYP_BSS | STYP_OVERLAY;
+      state.obj.new_sect_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY | STYP_ABS;
       break;
 
     default:
@@ -454,6 +476,8 @@ _do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -523,6 +547,8 @@ _do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_badrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -538,6 +564,8 @@ _do_badrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_bankisel(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -602,6 +630,8 @@ _do_bankisel(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -704,6 +734,8 @@ _do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_code(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -745,6 +777,8 @@ _do_code(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -779,7 +813,7 @@ _do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
         p = HEAD(parms);
         gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
         state.obj.new_sect_addr  = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
-        state.obj.new_sect_flags = STYP_TEXT | STYP_ABS | STYP_BPACK;
+        state.obj.new_sect_flags = STYP_TEXT | STYP_BPACK | STYP_ABS;
         break;
 
       default:
@@ -790,6 +824,8 @@ _do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_constant(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -833,6 +869,8 @@ _do_constant(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /*-------------------------------------------------------------------------
  *
  * configuration memory
@@ -871,6 +909,8 @@ _find_conf_sec_mem(int ca)
   return NULL;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static MemBlock *
 _add_conf_sec_mem(int ca, gp_boolean new_config)
 {
@@ -904,6 +944,8 @@ _add_conf_sec_mem(int ca, gp_boolean new_config)
   return new->m;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static MemBlock *
 _get_config_mem(int ca, gp_boolean new_config)
 {
@@ -921,7 +963,10 @@ _get_config_mem(int ca, gp_boolean new_config)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* helper to write configuration data, grabbing defaults when necessary */
+
 static void
 _config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
                         int ca, uint8_t byte, uint8_t mask)
@@ -938,6 +983,8 @@ _config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
   b_memory_put(config_mem, ca, (old_byte & ~mask) | byte, buf, NULL);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
                         int ca, uint8_t byte, uint8_t mask)
@@ -952,6 +999,8 @@ _config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
   }
   _config_16_set_byte_mem(config_mem, p_dev, ca, byte, mask);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -1055,7 +1104,10 @@ _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Sets defaults over unused portions of configuration memory. */
+
 static void
 _config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 {
@@ -1081,7 +1133,10 @@ _config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC16(E) devices. */
+
 static gpasmVal
 _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 {
@@ -1203,7 +1258,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   return r;
 }
 
-/*-------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
@@ -1225,7 +1280,10 @@ _config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
   state.device.class->i_memory_put(config_mem, ca, word, buf, NULL);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Sets defaults over unused portions of configuration memory. */
+
 static void
 _config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 {
@@ -1244,7 +1302,10 @@ _config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC14(E) and PIC12(E) devices. */
+
 static gpasmVal
 _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 {
@@ -1370,6 +1431,8 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -1426,10 +1489,13 @@ _do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
-/*-------------------------------------------------------------------------
- *  do_da - The 'da' directive. Identical to 'data' directive, except
- *          for 14-bit cores it packs two 7-bit characters into one word.
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+ *  _do_da - The 'da' directive. Identical to 'data' directive, except
+ *           for 14-bit cores it packs two 7-bit characters into one word.
  */
+
 static gpasmVal
 _do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -1453,17 +1519,19 @@ _do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
-/*-------------------------------------------------------------------------
- * do_data - The 'data' directive. Fill words of program memory with data.
- *           Pack strings two characters into one word, first character in
- *           most significant byte of the word except for the pic18cxxx.
- *           Pic18cxxx has byte addressed program memory and strings are
- *           stored directly. Strings are padded to even number of bytes
- *           by adding zero byte to end of string.
- *           Eeprom16 strings have same byte order than pic18cxxx, but
- *           only because all eeprom16 words are stored most significant
- *           byte first (big-endian).
- *           When in idata section, generate initialization data.
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+ * _do_data - The 'data' directive. Fill words of program memory with data.
+ *            Pack strings two characters into one word, first character in
+ *            most significant byte of the word except for the pic18cxxx.
+ *            Pic18cxxx has byte addressed program memory and strings are
+ *            stored directly. Strings are padded to even number of bytes
+ *            by adding zero byte to end of string.
+ *            Eeprom16 strings have same byte order than pic18cxxx, but
+ *            only because all eeprom16 words are stored most significant
+ *            byte first (big-endian).
+ *            When in idata section, generate initialization data.
  */
 
 static gpasmVal
@@ -1484,12 +1552,14 @@ _do_data(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
-/*-------------------------------------------------------------------------
- * do_db  - Reserve program memory words with packed 8-bit values. On the
- *          18cxxx families, dw and db are the same. For the 12 and 14 bit
- *          cores, the upper bits are masked (e.g. the 14-bit core can only
- *          store 14bits at a given program memory address, so the upper 2
- *          in a db directive are meaningless.
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+ * _do_db  - Reserve program memory words with packed 8-bit values. On the
+ *           18cxxx families, dw and db are the same. For the 12 and 14 bit
+ *           cores, the upper bits are masked (e.g. the 14-bit core can only
+ *           store 14bits at a given program memory address, so the upper 2
+ *           in a db directive are meaningless.
  */
 
 static gpasmVal
@@ -1652,6 +1722,8 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -1690,7 +1762,10 @@ _do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Extension to MPASM(X), used at least by LLVM to emit debugging information. */
+
 static gpasmVal
 _do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -1827,6 +1902,8 @@ _do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -1867,7 +1944,10 @@ _do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Extension to MPASM(X), used at least by LLVM to emit debugging information. */
+
 static gpasmVal
 _do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -1953,13 +2033,15 @@ _do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   pnode_t       *p;
   int            value;
-  unsigned char  direct_command = 0;
-  const char    *direct_string = NULL;
+  uint8_t        direct_command = 0;
+  const char    *direct_string  = NULL;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -2009,6 +2091,8 @@ _do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2045,6 +2129,8 @@ _do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2089,12 +2175,15 @@ _do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
-/*-------------------------------------------------------------------------
- *  do_dw - The 'dw' directive. On all families except for the p18cxxx, the
- *          dw directive is the same as the 'data' directive. For the p18cxxx
- *          it's the same as the 'db' directive. (That's strange, but it's
- *          also the way mpasm does it.)
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+ *  _do_dw - The 'dw' directive. On all families except for the p18cxxx, the
+ *           dw directive is the same as the 'data' directive. For the p18cxxx
+ *           it's the same as the 'db' directive. (That's strange, but it's
+ *           also the way mpasm does it.)
  */
+
 static gpasmVal
 _do_dw(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2120,6 +2209,7 @@ _do_dw(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_else(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2144,6 +2234,8 @@ _do_else(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_end(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2152,6 +2244,8 @@ _do_end(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_endif(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2181,6 +2275,8 @@ _do_endif(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_endm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2203,6 +2299,8 @@ _do_endm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_endw(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2233,6 +2331,8 @@ _do_endw(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_eof(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2253,6 +2353,8 @@ _do_eof(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_equ(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2269,7 +2371,10 @@ _do_equ(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Recognize it and decodes the characters which are protects a special (meta) character. */
+
 static int
 _resolve_meta_chars(char *Dst, int Max_size, const char *Src, int Size)
 {
@@ -2321,6 +2426,8 @@ _resolve_meta_chars(char *Dst, int Max_size, const char *Src, int Size)
   *d = '\0';
   return (d - Dst);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static const char *
 _hv_macro_resolver(const char *String)
@@ -2432,6 +2539,8 @@ _hv_macro_resolver(const char *String)
   return out;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_error(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2459,6 +2568,8 @@ _do_error(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /************************************************************************
  * do_errlvl - parse the ERRORLEVEL directive
@@ -2516,6 +2627,8 @@ _do_errlvl(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_exitm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2537,6 +2650,8 @@ _do_exitm(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_expand(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2552,6 +2667,8 @@ _do_expand(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_extern(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2575,6 +2692,8 @@ _do_extern(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_file(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2605,8 +2724,9 @@ _do_file(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
-/* Filling constants is handled here. Filling instructions is handled
-   in the parser. */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Filling constants is handled here. Filling instructions is handled in the parser. */
 
 static gpasmVal
 _do_fill(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2630,6 +2750,8 @@ _do_fill(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_global(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2687,6 +2809,8 @@ _do_global(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_idata(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2731,6 +2855,8 @@ _do_idata(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_idata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -2764,7 +2890,7 @@ _do_idata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_DATA | STYP_ABS | STYP_ACCESS;
+      state.obj.new_sect_flags = STYP_DATA | STYP_ACCESS | STYP_ABS;
       break;
 
     default:
@@ -2774,6 +2900,8 @@ _do_idata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_ident(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2798,6 +2926,8 @@ _do_ident(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -2924,7 +3054,10 @@ _do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Support IDLOCS "abcdef" or IDLOCS 'a', 'b', 'c' syntax for PIC16E devices. */
+
 static gpasmVal
 _do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3080,6 +3213,8 @@ warning:
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_if(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3105,6 +3240,8 @@ _do_if(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_elif(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3139,6 +3276,8 @@ _do_elif(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_ifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3171,6 +3310,8 @@ _do_ifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3212,6 +3353,8 @@ _do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_ifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3244,6 +3387,8 @@ _do_ifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3285,6 +3430,8 @@ _do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_include(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3306,6 +3453,8 @@ _do_include(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_line(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3329,6 +3478,8 @@ _do_line(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /************************************************************************
  * do_list - parse the LIST directive
@@ -3496,6 +3647,8 @@ _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3554,6 +3707,8 @@ _do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_noexpand(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3570,6 +3725,8 @@ _do_noexpand(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_nolist(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3583,6 +3740,8 @@ _do_nolist(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_maxram(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3607,6 +3766,8 @@ _do_maxram(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_maxrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3629,6 +3790,8 @@ _do_maxrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_macro(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3662,6 +3825,8 @@ _do_macro(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_messg(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3689,6 +3854,8 @@ _do_messg(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3737,6 +3904,8 @@ _do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_page(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3749,8 +3918,11 @@ _do_page(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Called by both do_pagesel and do_pageselw, which have a very slight
- * difference between them */
+ * difference between them. */
+
 static gpasmVal
 _do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms, uint16_t reloc_type)
 {
@@ -3835,6 +4007,8 @@ _do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms, uint16_t re
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_pagesel_wrapper(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3849,6 +4023,8 @@ _do_pagesel_wrapper(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_BITS);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_pageselw_wrapper(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3865,6 +4041,8 @@ _do_pageselw_wrapper(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_WREG);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_processor(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3880,6 +4058,8 @@ _do_processor(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_radix(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3898,6 +4078,8 @@ _do_radix(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -3957,6 +4139,8 @@ _do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_set(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -3981,6 +4165,8 @@ _do_set(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -4015,6 +4201,8 @@ _do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_subtitle(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -4034,6 +4222,8 @@ _do_subtitle(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_title(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -4052,6 +4242,8 @@ _do_title(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -4097,6 +4289,8 @@ _do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_udata(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -4138,6 +4332,8 @@ _do_udata(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_udata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -4168,7 +4364,7 @@ _do_udata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_BSS | STYP_ABS | STYP_ACCESS;
+      state.obj.new_sect_flags = STYP_BSS | STYP_ACCESS | STYP_ABS;
       break;
 
     default:
@@ -4178,6 +4374,8 @@ _do_udata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_udata_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -4209,7 +4407,7 @@ _do_udata_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_BSS | STYP_ABS | STYP_OVERLAY;
+      state.obj.new_sect_flags = STYP_BSS | STYP_OVERLAY | STYP_ABS;
       break;
 
     default:
@@ -4219,6 +4417,8 @@ _do_udata_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_udata_shr(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -4250,7 +4450,7 @@ _do_udata_shr(gpasmVal r, const char *name, int arity, pnode_t *parms)
       p = HEAD(parms);
       gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_BSS | STYP_ABS | STYP_SHARED;
+      state.obj.new_sect_flags = STYP_BSS | STYP_SHARED | STYP_ABS;
       break;
 
     default:
@@ -4260,6 +4460,8 @@ _do_udata_shr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_undefine(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -4288,6 +4490,8 @@ _do_undefine(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   return r;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
 _do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
@@ -4338,6 +4542,8 @@ _do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gpasmVal
 _do_while(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
@@ -4371,11 +4577,15 @@ _do_while(gpasmVal r, const char *name, int arity, pnode_t *parms)
   return r;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 gp_boolean
 asm_enabled(void)
 {
   return ((state.astack == NULL) || (state.astack->enabled && state.astack->upper_enabled));
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
 _core_sfr_or_common_ram(int file)
@@ -4393,7 +4603,10 @@ _core_sfr_or_common_ram(int file)
   return false;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Check that a register file address is ok. */
+
 void
 file_ok(unsigned int file)
 {
@@ -4460,6 +4673,8 @@ file_ok(unsigned int file)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _emit_check(int insn, int argument, int mask, const char *name)
 {
@@ -4478,10 +4693,13 @@ _emit_check(int insn, int argument, int mask, const char *name)
   _emit(insn | v, name);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /*
    For relative branches, issue a warning if the absolute value of
    argument is greater than range.
 */
+
 static void
 _emit_check_relative(int insn, int argument, int mask, int range, const char *name)
 {
@@ -4498,6 +4716,8 @@ _emit_check_relative(int insn, int argument, int mask, int range, const char *na
   _emit(insn | (argument & mask), name);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static int
 _check_flag(int flag)
 {
@@ -4507,6 +4727,8 @@ _check_flag(int flag)
 
   return (flag & 0x1);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* values and masks for types_mask */
 #define AR_BITS          1
@@ -4565,6 +4787,8 @@ _check_16e_arg_types(const pnode_t *parms, int arity, unsigned int types)
 
   return ret;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
 _check_and_set_bank_bit(enum common_insn Icode, int Bit, int BankSel0, int BankSel1, int BankSel2)
@@ -4642,6 +4866,8 @@ _check_and_set_bank_bit(enum common_insn Icode, int Bit, int BankSel0, int BankS
   return true;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
 _check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageSel1, int PageSel2)
 {
@@ -4716,6 +4942,8 @@ _check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageS
 
   return true;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 gpasmVal
 do_insn(const char *Op_name, pnode_t *Parameters)
@@ -5669,7 +5897,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
                 }
                 else if (reg == PIC12_REG_FSR) {
                   /* This code monitors the change of RAM Banks. */
-                  if (!_check_and_set_bank_bit(icode, bit, PIC14_BIT_FSR_RP0, PIC14_BIT_FSR_RP1, PIC14_BIT_FSR_RP2)) {
+                  if (!_check_and_set_bank_bit(icode, bit, PIC12_BIT_FSR_RP0, PIC12_BIT_FSR_RP1, PIC12_BIT_FSR_RP2)) {
                     return 0;
                   }
                 }
@@ -6579,7 +6807,7 @@ leave:
   return r;
 }
 
-/************************************************************************/
+/*------------------------------------------------------------------------------------------------*/
 
 /* There are several groups of operations that we handle here.  First
    is op_0: the instructions that can happen before the processor type
@@ -6685,27 +6913,31 @@ const insn_t op_1[] = {
 
 const int num_op_1 = TABLE_SIZE(op_1);
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 opcode_init(int stage)
 {
   const insn_t *base = NULL;
   int           i;
   int           count = 0;
+  const char   *name;
+  symbol_t     *sym;
 
   switch (stage) {
   case 0:
-    base = op_0;
+    base  = op_0;
     count = num_op_0;
     break;
 
   case 1:
-    base = op_1;
+    base  = op_1;
     count = num_op_1;
     break;
 
   case 2:
     state.device.class = gp_processor_class(state.processor);
-    base = state.device.class->instructions;
+    base  = state.device.class->instructions;
     count = (base == NULL) ? 0 : *state.device.class->num_instructions;
 
     if (IS_SX_CORE) {
@@ -6746,7 +6978,7 @@ opcode_init(int stage)
 
   case 3:
     /* add 12 and 14 bit special macros */
-    base = special;
+    base  = special;
     count = num_op_special;
     break;
 
@@ -6768,7 +7000,7 @@ opcode_init(int stage)
 
   case 2:
     if (state.processor != NULL) {
-      const char *name = gp_processor_name(state.processor, 0);
+      name = gp_processor_name(state.processor, 0);
 
       /* Special case, some instructions not available on 17c42 devices. */
       if (strcmp(name, "pic17c42") == 0) {
@@ -6785,17 +7017,17 @@ opcode_init(int stage)
         sym_remove_symbol(state.stBuiltin, "retfie");
       }
       else if ((strcmp(name, "sx48bd") == 0) || (strcmp(name, "sx52bd") == 0)) {
-        symbol_t *mode_sym = sym_get_symbol(state.stBuiltin, "mode");
+        sym = sym_get_symbol(state.stBuiltin, "mode");
 
-        if (mode_sym != NULL) {
-          sym_annotate_symbol(mode_sym, (void *)&op_sx_mode);
+        if (sym != NULL) {
+          sym_annotate_symbol(sym, (void *)&op_sx_mode);
         }
       }
       else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
         sym_remove_symbol(state.stBuiltin, "return");
         for (i = 0; i < num_op_16c5xx_enh; i++) {
           sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16c5xx_enh[i].name),
-                          (void *)&op_16c5xx_enh[i]);
+                              (void *)&op_16c5xx_enh[i]);
         }
 
         if ((strcmp(name, "pic12f529t39a") == 0) || (strcmp(name, "pic12f529t48a") == 0)) {
@@ -6808,7 +7040,7 @@ opcode_init(int stage)
   }
 }
 
-/************************************************************************/
+/*------------------------------------------------------------------------------------------------*/
 
 void
 begin_cblock(const pnode_t *c)
@@ -6818,6 +7050,8 @@ begin_cblock(const pnode_t *c)
     state.cblock = maybe_evaluate(c);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 continue_cblock(void)
@@ -6829,6 +7063,8 @@ continue_cblock(void)
   state.cblock_defined = true;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 cblock_expr(const pnode_t *s)
 {
@@ -6837,6 +7073,8 @@ cblock_expr(const pnode_t *s)
     state.cblock++;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 cblock_expr_incr(const pnode_t *s, const pnode_t *incr)

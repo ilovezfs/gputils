@@ -269,12 +269,12 @@ _symbol_cmp(const void *P0, const void *P1)
   if (start0 < start1) {
     return -1;
   }
-  else if (start0 > start1) {
+
+  if (start0 > start1) {
     return 1;
   }
-  else {
-    return 0;
-  }
+
+  return 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -414,7 +414,7 @@ _mark_false_addresses(MemBlock *memory)
   int            org;
   int            insn_size;
   int            num_words;
-  unsigned short data;
+  uint16_t data;
 
   m = memory;
   while (m != NULL) {
@@ -461,8 +461,8 @@ _recognize_labels_and_spec_words(MemBlock *memory)
   int                    offset;
   int                    insn_size;
   int                    num_words;
-  unsigned char          byte;
-  unsigned short         data;
+  uint8_t                byte;
+  uint16_t               data;
   const vector_t        *vector;
   gpdasm_fstate_t        fstate;
   const gp_cfg_device_t *dev;
@@ -660,7 +660,7 @@ _recognize_registers(MemBlock *memory)
   int              org;
   int              insn_size;
   int              num_words;
-  unsigned short   data;
+  uint16_t   data;
   gpdasm_fstate_t  fstate;
 
   if (state.class == PROC_CLASS_SX) {
@@ -751,7 +751,7 @@ _denominate_labels(MemBlock *memory)
 /*------------------------------------------------------------------------------------------------*/
 
 static size_t
-_byte_exclamation(char *buffer, size_t buffer_length, size_t current_length, unsigned char byte)
+_byte_exclamation(char *buffer, size_t buffer_length, size_t current_length, uint8_t byte)
 {
   int    l;
   size_t length;
@@ -1109,8 +1109,8 @@ _dasm(MemBlock *memory)
   int                  num_words;
   int                  behavior;
   int                  bsr_boundary;
-  unsigned short       data;
-  unsigned char        byte;
+  uint16_t             data;
+  uint8_t              byte;
   unsigned int         type;
   const char          *label_name;
   int                  addr_digits;

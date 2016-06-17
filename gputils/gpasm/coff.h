@@ -31,13 +31,13 @@ extern void coff_close_file(void);
 extern void coff_new_section(const char *name, int byte_addr, int flags);
 extern void coff_close_section(void);
 extern gp_symbol_type *coff_add_sym(const char *name, int value, enum gpasmValTypes type);
-extern void coff_reloc(int symbol, short offset, enum gpasmValTypes type);
+extern void coff_reloc(unsigned int symbol_number, int16_t offset, enum gpasmValTypes type);
 extern void coff_linenum(int emitted);
 extern gp_symbol_type *coff_add_filesym(const char *name, gp_boolean isinclude);
 extern void coff_add_eofsym(void);
 extern void coff_add_listsym(void);
 extern void coff_add_nolistsym(void);
-extern void coff_add_directsym(unsigned char command, const char *string);
+extern void coff_add_directsym(uint8_t command, const char *string);
 extern void coff_add_identsym(const char *string);
 extern char *coff_local_name(const char *name);
 

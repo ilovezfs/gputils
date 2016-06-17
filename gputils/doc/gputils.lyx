@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jun 13
+2016 Jun 16
 \end_layout
 
 \begin_layout Standard
@@ -12599,7 +12599,7 @@ Where options can be one of:
 \begin_layout Standard
 \noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="21" columns="3">
+<lyxtabular version="3" rows="22" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -12977,7 +12977,38 @@ Alternate name of hex output file
 \begin_inset Text
 
 \begin_layout Plain Layout
-Optimization level
+Optimization level.
+ [1]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-p <level>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+–optimize-pagesel <level>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Remove unnecessary Pagesel directives.
+ [0]
 \end_layout
 
 \end_inset
@@ -13364,7 +13395,15 @@ A dead section is any section that doesn't have relocations pointing to
 \end_layout
 
 \begin_layout Subsection
-Level 3
+Pagesel 0
+\end_layout
+
+\begin_layout Standard
+No Pagesel optimizations.
+\end_layout
+
+\begin_layout Subsection
+Pagesel 1
 \end_layout
 
 \begin_layout Subsubsection
@@ -13410,42 +13449,6 @@ label
  
 \series bold
 This option for now experimental.
-\end_layout
-
-\begin_layout Subsection
-Level 4 (Level 3 + Level 1)
-\end_layout
-
-\begin_layout Subsubsection
-Unnecessary Pagesel Directives + Weak Symbols
-\end_layout
-
-\begin_layout Standard
-Combinations of previous levels.
-\end_layout
-
-\begin_layout Subsection
-Level 5
-\end_layout
-
-\begin_layout Subsubsection
-Unnecessary Pagesel Directives + Dead Sections
-\end_layout
-
-\begin_layout Standard
-Combinations of previous levels.
-\end_layout
-
-\begin_layout Subsection
-Level 6 (Level 5 + Level 1)
-\end_layout
-
-\begin_layout Subsubsection
-Unnecessary Pagesel Directives + Dead Sections + Weak Symbols
-\end_layout
-
-\begin_layout Standard
-Combinations of previous levels.
 \end_layout
 
 \begin_layout Chapter

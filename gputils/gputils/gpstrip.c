@@ -134,7 +134,7 @@ _remove_symbols(void)
     sym    = sym_get_symbol_with_index(state.symbol_remove, i);
     symbol = gp_coffgen_find_symbol(state.object, sym_get_symbol_name(sym));
     if (symbol != NULL) {
-      if (!gp_coffgen_has_reloc(state.object, symbol)) {
+      if (!gp_coffgen_symbol_has_reloc(symbol)) {
         _conditional_remove(symbol);
       }
     }
@@ -217,7 +217,7 @@ _strip_unneeded(void)
     list   = list->next;
     
     /* if the symbol has a relocation or is global it can't be removed */
-    if (!gp_coffgen_has_reloc(state.object, symbol) && !gp_coffgen_is_global(symbol)) {
+    if (!gp_coffgen_symbol_has_reloc(symbol) && !gp_coffgen_is_global_symbol(symbol)) {
       _conditional_remove(symbol);
     }
   }
@@ -236,7 +236,7 @@ _discard_all(void)
     symbol = list;
     list   = list->next;
     
-    if (!gp_coffgen_is_global(symbol)) {
+    if (!gp_coffgen_is_global_symbol(symbol)) {
       _conditional_remove(symbol);
     }
   }

@@ -26,6 +26,8 @@ Boston, MA 02111-1307, USA.  */
 #include "gperror.h"
 #include "coff.h"
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _update_section_symbol(gp_section_type *section)
 {
@@ -34,6 +36,8 @@ _update_section_symbol(gp_section_type *section)
   section->symbol->aux_list->_aux_symbol._aux_scn.nreloc  = section->num_reloc;
   section->symbol->aux_list->_aux_symbol._aux_scn.nlineno = section->num_lineno;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _update_reloc_ptr(void)
@@ -62,6 +66,8 @@ l1:
     section = section->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _new_config_section(const char *name, int addr, int flags, MemBlock *data, gp_boolean new_config)
@@ -103,22 +109,21 @@ _new_config_section(const char *name, int addr, int flags, MemBlock *data, gp_bo
   new_aux->type = AUX_SCN;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _create_config_sections(void)
 {
-  conf_mem_block_t *conf_sec_mem;
-  gp_linenum_type  *linenum;
+  const conf_mem_block_t *conf_sec_mem;
+  gp_linenum_type        *linenum;
+  char                    section_name[BUFSIZ];
+  char                   *upper;
 
   for (conf_sec_mem = state.conf_sec_mem; conf_sec_mem != NULL; conf_sec_mem = conf_sec_mem->next) {
-    char section_name[BUFSIZ];
-    char *p;
-
-    snprintf(section_name, sizeof section_name, ".config_%X_%s",
-             gp_processor_byte_to_org(state.device.class, conf_sec_mem->addr), state.objfilename);
-
-    for (p = &section_name[13]; *p != '\0'; ++p) {
-      *p = toupper(*p);
-    }
+    upper = gp_strdup_upper_case(state.objfilename);
+    snprintf(section_name, sizeof(section_name), ".config_%0*X_%s", state.device.class->addr_digits,
+             gp_processor_byte_to_org(state.device.class, conf_sec_mem->addr), upper);
+    free(upper);
 
     _new_config_section(section_name, conf_sec_mem->addr,
                         STYP_ABS | (conf_sec_mem->new_config ? STYP_DATA_ROM : STYP_TEXT),
@@ -128,7 +133,7 @@ _create_config_sections(void)
       return;
     }
 
-    state.obj.section->size = conf_sec_mem->new_config ? gp_processor_org_to_byte(state.device.class, 1) : 2;
+    state.obj.section->size      = conf_sec_mem->new_config ? gp_processor_org_to_byte(state.device.class, 1) : 2;
     state.lst.line.was_byte_addr = conf_sec_mem->addr;
 
     if ((!state.obj.enabled) || (state.obj.section == NULL)) {
@@ -149,6 +154,8 @@ _create_config_sections(void)
     _update_section_symbol(state.obj.section);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 coff_init(void)
@@ -176,6 +183,8 @@ coff_init(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 coff_close_section(void)
 {
@@ -186,6 +195,8 @@ coff_close_section(void)
   state.obj.section->size = state.byte_addr - state.obj.section->address;
   _update_section_symbol(state.obj.section);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 coff_cleanup_before_eof(void)
@@ -209,6 +220,8 @@ coff_cleanup_before_eof(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 coff_close_file(void)
 {
@@ -221,8 +234,10 @@ coff_close_file(void)
     exit(1);
   }
 
-  gp_coffgen_free(state.obj.object);
+  gp_coffgen_free_object(state.obj.object);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 coff_new_section(const char *name, int addr, int flags)
@@ -288,16 +303,18 @@ coff_new_section(const char *name, int addr, int flags)
   state.byte_addr = addr;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* All coff data is generated on the second pass.  To support forward
    references to symbols in the relocation table, the symbol index
    is stored in relocations instead of a pointer to the symbol.  Before
    the coff is written the symbol pointer is updated. */
 
 void
-coff_reloc(int symbol, short offset, enum gpasmValTypes type)
+coff_reloc(unsigned int symbol_number, int16_t offset, enum gpasmValTypes type)
 {
   gp_reloc_type *new;
-  int            origin;
+  unsigned int   origin;
 
   if ((!state.obj.enabled) || (state.obj.section == NULL)) {
     return;
@@ -307,10 +324,12 @@ coff_reloc(int symbol, short offset, enum gpasmValTypes type)
 
   new = gp_coffgen_add_reloc(state.obj.section);
   new->address       = origin;
-  new->symbol_number = symbol;
+  new->symbol_number = symbol_number;
   new->offset        = offset;
   new->type          = type;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 coff_linenum(int emitted)
@@ -358,6 +377,8 @@ coff_linenum(int emitted)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Add a symbol to the coff symbol table.  The calling function must
    increment the global symbol number. */
 
@@ -373,51 +394,46 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
     return NULL;
   }
 
-  new            = NULL;
-  section_number = 0;
-  class          = C_EXT;
-
   switch (type) {
   case GVT_EXTERN:
     section_number = N_UNDEF;
-    class = C_EXT;
+    class          = C_EXT;
     break;
 
   case GVT_GLOBAL:
     section_number = state.obj.section_num;
-    class = C_EXT;
+    class          = C_EXT;
     break;
 
   case GVT_STATIC:
     section_number = state.obj.section_num;
-    class = C_STAT;
+    class          = C_STAT;
     break;
 
   case GVT_ADDRESS:
     section_number = state.obj.section_num;
-    class = C_LABEL;
+    class          = C_LABEL;
     break;
 
   case GVT_DEBUG:
     section_number = N_DEBUG;
-    class = C_NULL;
+    class          = C_NULL;
     break;
 
   case GVT_ABSOLUTE:
     section_number = N_ABS;
-    class = C_NULL;
+    class          = C_NULL;
     break;
 
   default:
-    return new;
+    return NULL;
   }
 
   new = gp_coffgen_find_symbol(state.obj.object, name);
 
   /* verify the duplicate extern has the same properties */
   if ((new != NULL) && (type == GVT_EXTERN))  {
-    if ((new->type != type) || (new->class != class) ||
-        (new->section_number != section_number)) {
+    if ((new->type != type) || (new->class != class) || (new->section_number != section_number)) {
       snprintf(message, sizeof(message),
                "Duplicate label or redefining symbol that cannot be redefined. (%s)", name);
       gperror_error(GPE_UNKNOWN, message);
@@ -426,8 +442,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
 
   if ((new != NULL) && (type != GVT_EXTERN) && (type != GVT_DEBUG))  {
     snprintf(message, sizeof(message),
-             "Duplicate label or redefining symbol that cannot be redefined. (%s)",
-             name);
+             "Duplicate label or redefining symbol that cannot be redefined. (%s)", name);
     gperror_error(GPE_DUPLAB, message);
   }
   else {
@@ -442,6 +457,8 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
 
   return new;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* add a file symbol to the coff symbol table */
 
@@ -481,6 +498,8 @@ coff_add_filesym(const char *name, gp_boolean isinclude)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* add an eof symbol to the coff symbol table */
 
 void
@@ -503,6 +522,8 @@ coff_add_eofsym(void)
   new->type           = T_NULL;
   new->class          = C_EOF;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* add a list symbol to the coff symbol table */
 
@@ -531,6 +552,8 @@ coff_add_listsym(void)
   new->class          = C_LIST;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* add a nolist symbol to the coff symbol table */
 
 void
@@ -558,10 +581,12 @@ coff_add_nolistsym(void)
   new->class          = C_LIST;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* add a direct symbol to the coff symbol table */
 
 void
-coff_add_directsym(unsigned char command, const char *string)
+coff_add_directsym(uint8_t command, const char *string)
 {
   gp_symbol_type *new;
   gp_aux_type    *new_aux;
@@ -584,8 +609,10 @@ coff_add_directsym(unsigned char command, const char *string)
   new_aux = gp_coffgen_add_aux(state.obj.object, new);
   new_aux->type = AUX_DIRECT;
   new_aux->_aux_symbol._aux_direct.command = command;
-  new_aux->_aux_symbol._aux_direct.string = GP_Strdup(string);
+  new_aux->_aux_symbol._aux_direct.string  = GP_Strdup(string);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* add an ident symbol to the coff symbol table */
 
@@ -615,8 +642,9 @@ coff_add_identsym(const char *string)
   new_aux->_aux_symbol._aux_ident.string = GP_Strdup(string);
 }
 
-/* If the symbol is local, generate a modified name for the coff symbol
-   table. */
+/*------------------------------------------------------------------------------------------------*/
+
+/* If the symbol is local, generate a modified name for the coff symbol table. */
 
 char *
 coff_local_name(const char *name)

@@ -68,7 +68,7 @@ _lst_check_page_start(void)
 static unsigned int
 _lst_spaces(unsigned int n)
 {
-  int i = n;
+  unsigned int i = n;
 
   _lst_check_page_start();
   while (i--) {
@@ -143,10 +143,6 @@ _prev_reloc_type(void)
     return 0;
   }
 
-/*  for (p = state.obj.section->relocations;
-       (p->next != NULL) && (p->next != state.obj.section->relocations_tail); p = p->next)
-    ;
-  assert(p->next != NULL);*/
   p = state.obj.section->relocations_tail->prev;
   assert(p != NULL);
   return ((p->address == p->next->address) ? p->type : 0);

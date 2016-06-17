@@ -27,10 +27,10 @@ Boston, MA 02111-1307, USA.  */
 #include "gperror.h"
 #include "lst.h"
 
-struct error_list {
+typedef struct error_list {
   int                value;
   struct error_list *next;
-};
+} error_list_t;
 
 typedef enum {
   ET_ERROR,
@@ -38,12 +38,13 @@ typedef enum {
   ET_MESSAGE
 } err_type_t;
 
-static struct error_list *errorcodes_list = NULL;
+static error_list_t *errorcodes_list = NULL;
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_init(void) {
+gperror_init(void)
+{
   if (state.errfile != OUT_NAMED) {
     snprintf(state.errfilename, sizeof(state.errfilename), "%s.err", state.basefilename);
   }
@@ -68,13 +69,13 @@ gperror_init(void) {
 void
 gperror_add_code(int code)
 {
-  struct error_list *new;
-  struct error_list *list;
+  error_list_t *new;
+  error_list_t *list;
 
   if ((code <= -100) && (code >= -199)) {
     gperror_vwarning(GPW_DISABLE_ERROR, NULL);
   } else {
-    new = (struct error_list *)GP_Malloc(sizeof(*new));
+    new = (error_list_t *)GP_Malloc(sizeof(*new));
     new->value = code;
     new->next  = NULL;
 
@@ -96,7 +97,7 @@ gperror_add_code(int code)
 static gp_boolean
 _check_code(int code)
 {
-  const struct error_list *p;
+  const error_list_t *p;
 
   gp_boolean print = true;
   p = errorcodes_list;

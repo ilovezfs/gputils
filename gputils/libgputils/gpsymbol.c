@@ -36,34 +36,35 @@ _hash_sort_cmp(const void *P0, const void *P1)
   if (h0->hash.high.u64 < h1->hash.high.u64) {
     return -1;
   }
-  else if (h0->hash.high.u64 > h1->hash.high.u64) {
+
+  if (h0->hash.high.u64 > h1->hash.high.u64) {
     return 1;
   }
-  else {
-    if (h0->hash.low.u64 < h1->hash.low.u64) {
-      return -1;
-    }
-    else if (h0->hash.low.u64 > h1->hash.low.u64) {
-      return 1;
-    }
-    else {
-      s0 = (h0->symbol != NULL) ? h0->symbol->name : NULL;
-      s1 = (h1->symbol != NULL) ? h1->symbol->name : NULL;
 
-      if ((s0 == NULL) && (s1 == NULL)) {
-        return 0;
-      }
-      else if ((s0 != NULL) && (s1 != NULL)) {
-        return strcmp(s0, s1);
-      }
-      else if (s0 != NULL) {
-        return 1;
-      }
-      else {
-        return -1;
-      }
-    }
+  if (h0->hash.low.u64 < h1->hash.low.u64) {
+    return -1;
   }
+
+  if (h0->hash.low.u64 > h1->hash.low.u64) {
+    return 1;
+  }
+
+  s0 = (h0->symbol != NULL) ? h0->symbol->name : NULL;
+  s1 = (h1->symbol != NULL) ? h1->symbol->name : NULL;
+
+  if ((s0 == NULL) && (s1 == NULL)) {
+    return 0;
+  }
+
+  if ((s0 != NULL) && (s1 != NULL)) {
+    return strcmp(s0, s1);
+  }
+
+  if (s0 != NULL) {
+    return 1;
+  }
+
+  return -1;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -77,20 +78,20 @@ _hash_find_cmp(const void *P0, const void *P1)
   if (h0->hash.high.u64 < h1->hash.high.u64) {
     return -1;
   }
-  else if (h0->hash.high.u64 > h1->hash.high.u64) {
+
+  if (h0->hash.high.u64 > h1->hash.high.u64) {
     return 1;
   }
-  else {
-    if (h0->hash.low.u64 < h1->hash.low.u64) {
-      return -1;
-    }
-    else if (h0->hash.low.u64 > h1->hash.low.u64) {
-      return 1;
-    }
-    else {
-      return 0;
-    }
+
+  if (h0->hash.low.u64 < h1->hash.low.u64) {
+    return -1;
   }
+
+  if (h0->hash.low.u64 > h1->hash.low.u64) {
+    return 1;
+  }
+
+  return 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -101,35 +102,35 @@ gp_symbol_make_hash_table(gp_object_type *Object)
   gp_symbol_type *symbol;
   gp_hash_type   *table;
   gp_hash_type   *tp;
-  unsigned int    num_symbols;
+  unsigned int    n_symbols;
   hash128_t      *h;
 
   if (Object == NULL) {
     return NULL;
   }
 
-  num_symbols = 0;
-  symbol      = Object->symbols;
+  n_symbols = 0;
+  symbol    = Object->symbols;
   while (symbol != NULL) {
-    symbol->opt_flags = false;
+    FlagClr(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
 
     if ((symbol->class != C_FILE)    && (symbol->class != C_EOF) &&
         (symbol->class != C_SECTION) && (symbol->section_name != NULL)) {
-      ++num_symbols;
-      symbol->opt_flags = true;
+      ++n_symbols;
+      FlagSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
     }
     symbol = symbol->next;
   }
 
-  table = (gp_hash_type *)GP_Calloc(num_symbols, sizeof(gp_hash_type));
+  table = (gp_hash_type *)GP_Calloc(n_symbols, sizeof(gp_hash_type));
 
   Object->symbol_hashtable      = table;
-  Object->symbol_hashtable_size = num_symbols;
+  Object->symbol_hashtable_size = n_symbols;
 
   tp     = table;
   symbol = Object->symbols;
   while (symbol != NULL) {
-    if (symbol->opt_flags) {
+    if (FlagIsSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE)) {
       h = &tp->hash;
       gp_hash_init(h);
       gp_hash_str(h, symbol->section_name, false);
@@ -140,7 +141,7 @@ gp_symbol_make_hash_table(gp_object_type *Object)
     symbol = symbol->next;
   }
 
-  qsort(table, num_symbols, sizeof(gp_hash_type), _hash_sort_cmp);
+  qsort(table, n_symbols, sizeof(gp_hash_type), _hash_sort_cmp);
   return table;
 }
 
@@ -183,12 +184,12 @@ _value_cmp(const void *P0, const void *P1)
   if (v0 < v1) {
     return -1;
   }
-  else if (v0 > v1) {
+
+  if (v0 > v1) {
     return 1;
   }
-  else {
-    return 0;
-  }
+
+  return 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -197,7 +198,7 @@ gp_symbol_type **
 gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_name, unsigned int *Num_labels)
 {
   gp_symbol_type  *symbol;
-  gp_symbol_type **label_array;
+  gp_symbol_type **array;
   unsigned int     i;
   unsigned int     n_labels;
 
@@ -208,18 +209,18 @@ gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_nam
   n_labels = 0;
   symbol   = First_symbol;
   while (symbol != NULL) {
-    symbol->opt_flags = false;
+    FlagClr(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
 
     if ((symbol->class == C_EXT) || (symbol->class == C_LABEL)) {
       if (Section_name != NULL) {
         if ((symbol->section_name != NULL) && (strcmp(symbol->section_name, Section_name) == 0)) {
           ++n_labels;
-          symbol->opt_flags = true;
+          FlagSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
         }
       }
       else {
         ++n_labels;
-        symbol->opt_flags = true;
+        FlagSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
       }
     }
     symbol = symbol->next;
@@ -229,21 +230,21 @@ gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_nam
     return NULL;
   }
 
-  label_array = (gp_symbol_type **)GP_Calloc(n_labels, sizeof(gp_symbol_type *));
+  array = (gp_symbol_type **)GP_Malloc(n_labels * sizeof(gp_symbol_type *));
 
   i      = 0;
   symbol = First_symbol;
   while (symbol != NULL) {
-    if (symbol->opt_flags) {
-      label_array[i] = symbol;
+    if (FlagIsSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE)) {
+      array[i] = symbol;
       ++i;
     }
     symbol = symbol->next;
   }
 
-  qsort(label_array, n_labels, sizeof(gp_symbol_type *), _value_cmp);
+  qsort(array, n_labels, sizeof(gp_symbol_type *), _value_cmp);
   *Num_labels = n_labels;
-  return label_array;
+  return array;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -252,7 +253,7 @@ gp_symbol_type **
 gp_symbol_make_section_array(gp_symbol_type *First_symbol, unsigned int *Num_sections)
 {
   gp_symbol_type  *current;
-  gp_symbol_type **section_array;
+  gp_symbol_type **array;
   unsigned int     i;
   unsigned int     n_sections;
 
@@ -263,11 +264,11 @@ gp_symbol_make_section_array(gp_symbol_type *First_symbol, unsigned int *Num_sec
   current  = First_symbol;
   n_sections = 0;
   while (current != NULL) {
-    current->opt_flags = false;
+    FlagClr(current->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
 
     if (current->class == C_SECTION) {
       ++n_sections;
-      current->opt_flags = true;
+      FlagSet(current->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
     }
     current = current->next;
   }
@@ -276,19 +277,71 @@ gp_symbol_make_section_array(gp_symbol_type *First_symbol, unsigned int *Num_sec
     return NULL;
   }
 
-  section_array = (gp_symbol_type **)GP_Calloc(n_sections, sizeof(gp_symbol_type *));
+  array = (gp_symbol_type **)GP_Malloc(n_sections * sizeof(gp_symbol_type *));
 
   current = First_symbol;
   i       = 0;
   while (current != NULL) {
-    if (current->opt_flags) {
-      section_array[i] = current;
+    if (FlagIsSet(current->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE)) {
+      array[i] = current;
       ++i;
     }
     current = current->next;
   }
 
-  qsort(section_array, n_sections, sizeof(gp_symbol_type *), _value_cmp);
+  qsort(array, n_sections, sizeof(gp_symbol_type *), _value_cmp);
   *Num_sections = n_sections;
-  return section_array;
+  return array;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_symbol_type *
+gp_symbol_find_by_value(gp_symbol_type **Array, unsigned int Num_symbols, gp_symvalue_t Value)
+{
+  gp_symbol_type   symbol;
+  gp_symbol_type  *sptr;
+  gp_symbol_type **ret;
+
+  if ((Array == NULL) || (Num_symbols == 0)) {
+    return NULL;
+  }
+
+  symbol.value = Value;
+  sptr         = &symbol;
+  ret = (gp_symbol_type **)bsearch(&sptr, Array, Num_symbols, sizeof(gp_symbol_type *), _value_cmp);
+  return ((ret != NULL) ? *ret : NULL);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+gp_symbol_delete_by_value(gp_symbol_type **Array, unsigned int *Num_symbols, gp_symvalue_t Value)
+{
+  unsigned int     n_symbols;
+  gp_symbol_type   symbol;
+  gp_symbol_type  *sptr;
+  gp_symbol_type **ret;
+  unsigned int     dst;
+  unsigned int     src;
+  unsigned int     num;
+
+  if ((Array == NULL) || (Num_symbols == NULL) || ((n_symbols = *Num_symbols) == 0)) {
+    return false;
+  }
+
+  symbol.value = Value;
+  sptr         = &symbol;
+  ret = (gp_symbol_type **)bsearch(&sptr, Array, n_symbols, sizeof(gp_symbol_type *), _value_cmp);
+
+  if (ret != NULL) {
+    dst = ret - Array;
+    src = dst + 1;
+    num = n_symbols - src;
+    memmove(&Array[dst], &Array[src], num * sizeof(gp_symbol_type *));
+    *Num_symbols = n_symbols - 1;
+    return true;
+  }
+
+  return false;
 }

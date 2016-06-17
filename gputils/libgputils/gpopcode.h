@@ -124,6 +124,8 @@ enum insn_class {
     /* PIC12_BMSK_BCF == PIC12_BMSK_BSF */
 #define PIC12_BMSK_BxF          PIC12_BMSK_BCF
 
+#define PIC12_INSN_BxF_BITSHIFT 5
+
     /* btfsc : 0110 bbbf ffff
                1111 0000 0000 <-- instruction mask */
 #define PIC12_INSN_BTFSC        0x600
@@ -367,8 +369,6 @@ enum insn_class {
 #define PIC14_BMSK_FILE         0x07F
 #define PIC14_BMSK_TRIS         0x07
 
-#define PIC14_INSN_BxF_BITSHIFT     7
-
     /* addlw : 11 111x kkkk kkkk
                11 1110 0000 0000 <-- instruction mask */
 #define PIC14_INSN_ADDLW        0x3E00
@@ -405,6 +405,8 @@ enum insn_class {
 #define PIC14_MASK_BxF          PIC14_MASK_BCF
     /* PIC14_BMSK_BCF == PIC14_BMSK_BSF */
 #define PIC14_BMSK_BxF          PIC14_BMSK_BCF
+
+#define PIC14_INSN_BxF_BITSHIFT 7
 
     /* btfsc : 01 10bb bfff ffff
                11 1100 0000 0000 <-- instruction mask */
@@ -745,6 +747,8 @@ enum insn_class {
                1111 1000 0000 0000 <-- instruction mask */
 #define PIC16_INSN_BTFSC        0x9800
 #define PIC16_MASK_BTFSC        0xF800
+
+#define PIC16_INSN_BxF_BITSHIFT 8
 
     /* btfss : 1001 0bbb ffff ffff
                1111 1000 0000 0000 <-- instruction mask */

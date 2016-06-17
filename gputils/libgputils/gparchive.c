@@ -27,19 +27,19 @@ Boston, MA 02111-1307, USA.  */
 /* FIXME: member headers always start on an even-byte boundary. A newline
    character is often used to fill the gap. */
 
-int
-gp_archive_count_members(const gp_archive_type *archive)
+unsigned int
+gp_archive_count_members(const gp_archive_type *Archive)
 {
-  int number = 0;
+  unsigned int number = 0;
 
   /* If present, skip the symbol index. */
-  if (gp_archive_have_index(archive)) {
-    archive = archive->next;
+  if (gp_archive_have_index(Archive)) {
+    Archive = Archive->next;
   }
 
-  while (archive != NULL) {
+  while (Archive != NULL) {
     number++;
-    archive = archive->next;
+    Archive = Archive->next;
   }
 
   return number;
@@ -50,12 +50,12 @@ gp_archive_count_members(const gp_archive_type *archive)
 /* This function is unused. */
 
 char *
-gp_archive_member_name(const gp_archive_type *archive)
+gp_archive_member_name(const gp_archive_type *Archive)
 {
   char  name[256];
   char *end;
 
-  sscanf(archive->header.ar_name, "%255s/", name);
+  sscanf(Archive->header.ar_name, "%255s/", name);
   end = strchr(name, '/');
   if (end != NULL) {
     *end = '\0';
@@ -67,7 +67,7 @@ gp_archive_member_name(const gp_archive_type *archive)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_archive_list_members(const gp_archive_type *archive)
+gp_archive_list_members(const gp_archive_type *Archive)
 {
   char    name[256];
   char   *end;
@@ -76,51 +76,51 @@ gp_archive_list_members(const gp_archive_type *archive)
   int     size;
 
   /* If present, skip the symbol index. */
-  if (gp_archive_have_index(archive)) {
-    archive = archive->next;
+  if (gp_archive_have_index(Archive)) {
+    Archive = Archive->next;
   }
 
-  while (archive != NULL) {
-    sscanf(archive->header.ar_name, "%255s/", name);
-    sscanf(archive->header.ar_date, "%il", &date);
-    sscanf(archive->header.ar_size, "%il", &size);
+  while (Archive != NULL) {
+    sscanf(Archive->header.ar_name, "%255s/", name);
+    sscanf(Archive->header.ar_date, "%il", &date);
+    sscanf(Archive->header.ar_size, "%il", &size);
     end = strchr(&name[0], '/');
     if (end != NULL) {
       *end = '\0';
     }
     time = date;
     printf("%-24s  %06i bytes  %s", name, size, ctime(&time));
-    archive = archive->next;
+    Archive = Archive->next;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 gp_archive_type *
-gp_archive_find_member(gp_archive_type *archive, const char *objectname)
+gp_archive_find_member(gp_archive_type *Archive, const char *Object_name)
 {
   char             name[256];
   char            *end;
   gp_archive_type *found;
 
   /* If present, skip the symbol index. */
-  if (gp_archive_have_index(archive)) {
-    archive = archive->next;
+  if (gp_archive_have_index(Archive)) {
+    Archive = Archive->next;
   }
 
   found = NULL;
-  while (archive != NULL) {
-    sscanf(archive->header.ar_name, "%255s/", name);
+  while (Archive != NULL) {
+    sscanf(Archive->header.ar_name, "%255s/", name);
     end = strrchr(name, '/');
     if (end != NULL) {
       *end = '\0';
     }
 
-    if (strcmp(objectname, name) == 0) {
-      found = archive;
+    if (strcmp(Object_name, name) == 0) {
+      found = Archive;
       break;
     }
-    archive = archive->next;
+    Archive = Archive->next;
   }
 
   return found;
@@ -129,34 +129,34 @@ gp_archive_find_member(gp_archive_type *archive, const char *objectname)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_archive_free_member(gp_archive_type *archive)
+gp_archive_free_member(gp_archive_type *Archive)
 {
-  if (archive->data.file != NULL) {
-    free(archive->data.file);
+  if (Archive->data.file != NULL) {
+    free(Archive->data.file);
   }
 
-  if (archive != NULL) {
-    free(archive);
+  if (Archive != NULL) {
+    free(Archive);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 gp_archive_type *
-gp_archive_delete_member(gp_archive_type *archive, const char *objectname)
+gp_archive_delete_member(gp_archive_type *Archive, const char *Object_name)
 {
   gp_archive_type *object;
   gp_archive_type *list;
 
-  object = gp_archive_find_member(archive, objectname);
+  object = gp_archive_find_member(Archive, Object_name);
   assert(object != NULL);
 
-  if (object == archive) {
+  if (object == Archive) {
     /* the first object in the list is being deleted */
-    archive = archive->next;
+    Archive = Archive->next;
   } else {
     /* locate and remove the member */
-    list = archive;
+    list = Archive;
     while (list != NULL) {
       if (list->next == object) {
         list->next = object->next;
@@ -168,90 +168,90 @@ gp_archive_delete_member(gp_archive_type *archive, const char *objectname)
 
   gp_archive_free_member(object);
 
-  return archive;
+  return Archive;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 gp_archive_type *
-gp_archive_add_member(gp_archive_type *archive, const char *filename, const char *objectname)
+gp_archive_add_member(gp_archive_type *Archive, const char *File_name, const char *Object_name)
 {
-  gp_archive_type *oldmember;
-  gp_archive_type *newmember;
+  gp_archive_type *old_member;
+  gp_archive_type *new_member;
   gp_archive_type *list;
-  gp_binary_type  *newobject;
+  gp_binary_type  *new_object;
   char             name[256];
   char             date[12];
   char             size[10];
   int              timer;
 
-  newobject = gp_read_file(filename);
+  new_object = gp_read_file(File_name);
 
-  newmember = (gp_archive_type *)GP_Malloc(sizeof(*newmember));
-  newmember->next = NULL;
+  new_member = (gp_archive_type *)GP_Malloc(sizeof(*new_member));
+  new_member->next = NULL;
 
   /* Point the archive member file to the object file. The object is never
      freed, so this is ok. It will be cleaned up later. */
-  newmember->data = *newobject;
+  new_member->data = *new_object;
 
   /* fill in the archive header */
-  memset(&newmember->header, ' ', AR_HDR_SIZ); /* fill the header with space */
+  memset(&new_member->header, ' ', AR_HDR_SIZ); /* fill the header with space */
 
   timer = (int)time(NULL);
 
-  snprintf(name, sizeof(name), "%s/", objectname);
+  snprintf(name, sizeof(name), "%s/", Object_name);
   snprintf(date, sizeof(date), "%il", timer);
-  snprintf(size, sizeof(size), "%lil", newobject->size);
+  snprintf(size, sizeof(size), "%lil", new_object->size);
 
   /* FIXME: These functions overwrite the ' ' that the header is filled with. */
-  strncpy(newmember->header.ar_name, name,  sizeof(newmember->header.ar_name));
-  strncpy(newmember->header.ar_date, date,  sizeof(newmember->header.ar_date));
-  strncpy(newmember->header.ar_size, size,  sizeof(newmember->header.ar_size));
-  strncpy(newmember->header.ar_fmag, ARMAG, sizeof(newmember->header.ar_fmag));
+  strncpy(new_member->header.ar_name, name,  sizeof(new_member->header.ar_name));
+  strncpy(new_member->header.ar_date, date,  sizeof(new_member->header.ar_date));
+  strncpy(new_member->header.ar_size, size,  sizeof(new_member->header.ar_size));
+  strncpy(new_member->header.ar_fmag, ARMAG, sizeof(new_member->header.ar_fmag));
 
-  oldmember = gp_archive_find_member(archive, objectname);
+  old_member = gp_archive_find_member(Archive, Object_name);
 
-  if (oldmember != NULL) {
+  if (old_member != NULL) {
     /* the object already exists, replace it */
-    archive = gp_archive_delete_member(archive, objectname);
+    Archive = gp_archive_delete_member(Archive, Object_name);
   }
 
-  if (archive == NULL) {
+  if (Archive == NULL) {
     /* the list is empty */
-    archive = newmember;
+    Archive = new_member;
   } else {
     /* append the new object to the end of the list */
-    list = archive;
+    list = Archive;
     while (list->next != NULL) {
       list = list->next;
     }
-    list->next = newmember;
+    list->next = new_member;
   }
 
-  return archive;
+  return Archive;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-gp_archive_extract_member(gp_archive_type *archive, const char *objectname)
+gp_archive_extract_member(gp_archive_type *Archive, const char *Object_name)
 {
   gp_archive_type *object;
-  char             filename[256];
+  char             file_name[256];
   FILE            *output_file;
   int              size;
 
-  object = gp_archive_find_member(archive, objectname);
+  object = gp_archive_find_member(Archive, Object_name);
   assert(object != NULL);
 
   /* if the object doesn't have an extension, add one.  This is done for
      some libs generated with other tools.  It should not be necessary
      for libs generated by gplib. */
-  snprintf(filename, sizeof(filename), "%s%s", objectname, (strrchr(filename, '.') == NULL) ? ".o" : "");
+  snprintf(file_name, sizeof(file_name), "%s%s", Object_name, (strrchr(file_name, '.') == NULL) ? ".o" : "");
 
-  output_file = fopen(filename, "wb");
+  output_file = fopen(file_name, "wb");
   if (output_file == NULL) {
-    perror(filename);
+    perror(file_name);
     return false;
   }
 
@@ -268,26 +268,26 @@ gp_archive_extract_member(gp_archive_type *archive, const char *objectname)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-gp_archive_write(gp_archive_type *archive, const char *archivename)
+gp_archive_write(gp_archive_type *Archive, const char *Archive_name)
 {
   FILE *output_file;
   int   size;
 
-  assert(archive != NULL);
+  assert(Archive != NULL);
 
-  output_file = fopen(archivename, "wb");
+  output_file = fopen(Archive_name, "wb");
   if (output_file == NULL) {
-    perror(archivename);
+    perror(Archive_name);
     return false;
   }
 
   fputs(ARMAG, output_file); /* write the archive magic number */
 
-  while (archive != NULL) {
-    fwrite(&archive->header, 1, AR_HDR_SIZ, output_file);
-    sscanf(archive->header.ar_size, "%il", &size);
-    fwrite(archive->data.file, 1, size, output_file);
-    archive = archive->next;
+  while (Archive != NULL) {
+    fwrite(&Archive->header, 1, AR_HDR_SIZ, output_file);
+    sscanf(Archive->header.ar_size, "%il", &size);
+    fwrite(Archive->data.file, 1, size, output_file);
+    Archive = Archive->next;
   }
 
   fclose(output_file);
@@ -300,16 +300,16 @@ gp_archive_write(gp_archive_type *archive, const char *archivename)
    if a symbol index is created. */
 
 void
-gp_archive_update_offsets(gp_archive_type *archive)
+gp_archive_update_offsets(gp_archive_type *Archive)
 {
   unsigned int offset = SARMAG;
   int          size = 0;
 
-  while (archive != NULL) {
-    archive->offset = offset;
-    sscanf(archive->header.ar_size, "%il", &size);
+  while (Archive != NULL) {
+    Archive->offset = offset;
+    sscanf(Archive->header.ar_size, "%il", &size);
     offset += AR_HDR_SIZ + size;
-    archive = archive->next;
+    Archive = Archive->next;
   }
 }
 
@@ -318,20 +318,20 @@ gp_archive_update_offsets(gp_archive_type *archive)
 /* Read a coff archive and store it in memory. */
 
 gp_archive_type *
-gp_archive_read(const char *filename)
+gp_archive_read(const char *File_name)
 {
   FILE            *infile;
   gp_archive_type *archive;
   gp_archive_type *list;
   gp_archive_type *new;
-  ar_hdr_t         tmpheader;
+  ar_hdr_t         tmp_header;
   fpos_t           position;
   int              object_size;
   char             buffer[SARMAG + 1];
 
-  infile = fopen(filename, "rb");
+  infile = fopen(File_name, "rb");
   if (infile == NULL) {
-    perror(filename);
+    perror(File_name);
     exit(1);
   }
 
@@ -349,15 +349,15 @@ gp_archive_read(const char *filename)
 
     /* read the archive header */
     if (fread(&new->header, 1, AR_HDR_SIZ, infile) != AR_HDR_SIZ) {
-      gp_error("bad archive \"%s\"", filename);
+      gp_error("bad archive \"%s\"", File_name);
     }
 
     /* read the object file or symbol index into memory */
     sscanf(new->header.ar_size, "%il", &object_size);
     new->data.size = object_size;
-    new->data.file = (unsigned char *)GP_Malloc(object_size);
+    new->data.file = (uint8_t *)GP_Malloc(object_size);
     if (fread(new->data.file, sizeof(char), object_size, infile) != object_size) {
-      gp_error("bad archive \"%s\"", filename);
+      gp_error("bad archive \"%s\"", File_name);
     }
 
     /* insert the new member in the archive list */
@@ -374,7 +374,7 @@ gp_archive_read(const char *filename)
        while eof test passes, but there are no other members.  Test for
        it. */
     fgetpos(infile, &position);
-    if (fread(&tmpheader, 1, AR_HDR_SIZ, infile) != AR_HDR_SIZ) {
+    if (fread(&tmp_header, 1, AR_HDR_SIZ, infile) != AR_HDR_SIZ) {
       break;
     }
     fsetpos(infile, &position);
@@ -392,9 +392,9 @@ gp_archive_read(const char *filename)
 /* Determine if the archive has a symbol index. */
 
 gp_boolean
-gp_archive_have_index(const gp_archive_type *archive)
+gp_archive_have_index(const gp_archive_type *Archive)
 {
-  return (((archive != NULL) && (archive->header.ar_name[0] == '/')) ? true : false);
+  return (((Archive != NULL) && (Archive->header.ar_name[0] == '/')) ? true : false);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -402,18 +402,18 @@ gp_archive_have_index(const gp_archive_type *archive)
 /* Remove the symbol index if one exists. */
 
 gp_archive_type *
-gp_archive_remove_index(gp_archive_type *archive)
+gp_archive_remove_index(gp_archive_type *Archive)
 {
   gp_archive_type *member;
 
   /* If present, remove the symbol index. */
-  if (gp_archive_have_index(archive)) {
-    member  = archive;
-    archive = archive->next;
+  if (gp_archive_have_index(Archive)) {
+    member  = Archive;
+    Archive = Archive->next;
     gp_archive_free_member(member);
   }
 
-  return archive;
+  return Archive;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -423,32 +423,30 @@ gp_archive_remove_index(gp_archive_type *archive)
    and should be stored in the file.  The only reason not to is if you
    need compatibility with other tools.  */
 
-int
-gp_archive_make_index(gp_archive_type *archive, symbol_table_t *definition)
+void
+gp_archive_make_index(gp_archive_type *Archive, symbol_table_t *Definition)
 {
   gp_object_type *object;
   char            name[256];
   char           *end;
 
   /* If present, skip the symbol index. */
-  if (gp_archive_have_index(archive)) {
-    archive = archive->next;
+  if (gp_archive_have_index(Archive)) {
+    Archive = Archive->next;
   }
 
-  while (archive != NULL) {
-    sscanf(archive->header.ar_name, "%255s/", name);
+  while (Archive != NULL) {
+    sscanf(Archive->header.ar_name, "%255s/", name);
     end = strchr(&name[0], '/');
     if (end != NULL) {
       *end = '\0';
     }
 
-    object = gp_convert_file(name, &archive->data);
+    object = gp_convert_file(name, &Archive->data);
     assert(object != NULL);
-    gp_cofflink_add_symbols(definition, NULL, object);
-    archive = archive->next;
+    gp_cofflink_add_symbols(Definition, NULL, object);
+    Archive = Archive->next;
   }
-
-  return 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -492,7 +490,7 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
 
   /* create a new member for the index and place it in the archive */
   new_member = (gp_archive_type *)GP_Malloc(sizeof(*new_member));
-  new_member->data.file = (unsigned char *)GP_Malloc(index_size);
+  new_member->data.file = (uint8_t *)GP_Malloc(index_size);
   new_member->data.size = index_size;
   new_member->next      = NULL;
 
@@ -542,18 +540,18 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
 /* Place the symbol from the archive symbol index in the archive symbol table. */
 
 gp_boolean
-gp_archive_add_symbol(symbol_table_t *table, const char *name, gp_archive_type *member)
+gp_archive_add_symbol(symbol_table_t *Table, const char *Name, gp_archive_type *Member)
 {
   symbol_t *sym;
 
   /* Search the for the symbol. If not found, then add it to the global symbol table. */
-  sym = sym_get_symbol(table, name);
+  sym = sym_get_symbol(Table, Name);
   if (sym != NULL) {
     return true;
   }
 
-  sym = sym_add_symbol(table, name);
-  sym_annotate_symbol(sym, member);
+  sym = sym_add_symbol(Table, Name);
+  sym_annotate_symbol(sym, Member);
   return false;
 }
 
@@ -564,7 +562,7 @@ placed in the archive symbol table.  This table stores the name of the
 symbol and the archive member that the symbol is defined in. */
 
 void
-gp_archive_read_index(symbol_table_t *table, gp_archive_type *archive)
+gp_archive_read_index(symbol_table_t *Table, gp_archive_type *Archive)
 {
   unsigned int     number;
   unsigned int     i;
@@ -574,9 +572,9 @@ gp_archive_read_index(symbol_table_t *table, gp_archive_type *archive)
   gp_archive_type *list;
   const uint8_t   *file;
 
-  assert(gp_archive_have_index(archive));
+  assert(gp_archive_have_index(Archive));
 
-  file = archive->data.file;
+  file = Archive->data.file;
 
   /* read the number of symbols */
   number = gp_getl32(file);
@@ -590,7 +588,7 @@ gp_archive_read_index(symbol_table_t *table, gp_archive_type *archive)
     offset_value = gp_getl32(offset);
 
     /* Locate the object file the symbol is defined in. The both should have the same offset. */
-    list = archive;
+    list = Archive;
     while (list != NULL) {
       if (list->offset == offset_value) {
         break;
@@ -601,7 +599,7 @@ gp_archive_read_index(symbol_table_t *table, gp_archive_type *archive)
     assert(list != NULL);
 
     /* add the symbol to the archive symbol table */
-    gp_archive_add_symbol(table, name, list);
+    gp_archive_add_symbol(Table, name, list);
 
     /* increment the pointers to the next symbol */
     name += strlen(name) + 1;

@@ -32,46 +32,139 @@ Boston, MA 02111-1307, USA.  */
 extern int yyparse(void);
 extern int yydebug;
 
+#define OPTIMIZE_LEVEL_DEFAULT          1
+
 struct gplink_state state;
 static gp_boolean   processor_mismatch_warning;
 static gp_boolean   enable_cinit_wanings;
 
+#define GET_OPTIONS "a:cCdf:hI:lmo:O:p:qrs:t:u:vw"
+
+enum {
+  OPT_MPLINK_COMPATIBLE = 0x100,
+  OPT_STRICT_OPTIONS
+};
+
+static struct option longopts[] =
+{
+  { "hex-format",         required_argument, NULL, 'a' },
+  { "object",             no_argument,       NULL, 'c' },
+  { "no-cinit-warnings",  no_argument,       NULL, 'C' },
+  { "debug",              no_argument,       NULL, 'd' },
+  { "fill",               required_argument, NULL, 'f' },
+  { "help",               no_argument,       NULL, 'h' },
+  { "include",            required_argument, NULL, 'I' },
+  { "no-list",            no_argument,       NULL, 'l' },
+  { "map",                no_argument,       NULL, 'm' },
+  { "output",             required_argument, NULL, 'o' },
+  { "optimize",           required_argument, NULL, 'O' },
+  { "optimize-pagesel",   required_argument, NULL, 'p' },
+  { "quiet",              no_argument,       NULL, 'q' },
+  { "use-shared",         no_argument,       NULL, 'r' },
+  { "script",             required_argument, NULL, 's' },
+  { "stack",              required_argument, NULL, 't' },
+  { "strict-options",     no_argument,       NULL, OPT_STRICT_OPTIONS },
+  { "macro",              required_argument, NULL, 'u' },
+  { "version",            no_argument,       NULL, 'v' },
+  { "processor-mismatch", no_argument,       NULL, 'w' },
+  { "mplink-compatible",  no_argument,       NULL, OPT_MPLINK_COMPATIBLE },
+  { NULL,                 no_argument,       NULL, '\0'}
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_show_usage(void)
+{
+  printf("Usage: gplink [options] [objects] [libraries]\n");
+  printf("Options: [defaults in brackets after descriptions]\n");
+  printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
+  printf("  -c, --object                   Output executable object file.\n");
+  printf("  -C, --no-cinit-warnings        Disable this warnings of _cinit section with -O2 option:\n"
+         "                                   \"Relocation symbol _cinit has no section.\"\n");
+  printf("  -d, --debug                    Output debug messages.\n");
+  printf("  -f VALUE, --fill VALUE         Fill unused program memory with value.\n");
+  printf("  -h, --help                     Show this usage message.\n");
+  printf("  -I DIR, --include DIR          Specify include directory.\n");
+  printf("  -l, --no-list                  Disable list file output.\n");
+  printf("  -m, --map                      Output a map file.\n");
+  printf("      --mplink-compatible        MPLINK compatibility mode.\n");
+  printf("  -o FILE, --output FILE         Alternate name of output file.\n");
+  printf("  -O OPT, --optimize OPT         Optimization level. [1]\n");
+  printf("  -p OPT, --optimize-pagesel OPT Remove unnecessary Pagesel directives. [0]\n");
+  printf("  -q, --quiet                    Quiet.\n");
+  printf("  -r, --use-shared               Use shared memory if necessary.\n");
+  printf("  -s FILE, --script FILE         Linker script.\n");
+  printf("  -t SIZE, --stack SIZE          Create a stack section.\n");
+  printf("      --strict-options           If this is set, then an option may not be parameter\n"
+         "                                   of an another option. For example: -s --quiet\n");
+  printf("  -u, --macro symbol[=value]     Add macro value for script.\n");
+  printf("  -v, --version                  Show version.\n");
+  printf("  -w, --processor-mismatch       Disable \"processor mismatch\" warning.\n");
+  printf("\n");
+#ifdef USE_DEFAULT_PATHS
+  if (gp_lkr_path != NULL) {
+    printf("Default linker script path %s\n", gp_lkr_path);
+  } else {
+    printf("Default linker script path NOT SET\n");
+  }
+
+  if (gp_lib_path != NULL) {
+    printf("Default library path %s\n", gp_lib_path);
+  } else {
+    printf("Default library path NOT SET\n");
+  }
+  printf("\n");
+#endif
+  printf("Report bugs to:\n");
+  printf("%s\n", PACKAGE_BUGREPORT);
+  exit(0);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* return the number of missing symbols */
+
 static size_t
 _count_missing(void)
 {
   return sym_get_symbol_count(state.symbol.missing);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
-/*object_append(gp_object_type *file, const char *name)*/
-_object_append(gp_object_type *file)
+_object_append(gp_object_type *object)
 {
+  gp_object_type *list;
+
   /* append the entry to the list */
   if (state.object == NULL) {
-    state.object    = file;
+    state.object    = object;
     /* store the processor type from the first object file */
-    state.processor = file->processor;
-    state.class     = file->class;
+    state.processor = object->processor;
+    state.class     = object->class;
   } else {
-    gp_object_type *list = state.object;
+    list = state.object;
 
     while (list->next != NULL) {
       list = list->next;
     }
-    list->next = file;
+    list->next = object;
 
-    if (file->class != state.class) {
-      gp_error("Processor family mismatch in \"%s\".", file->filename);
-    } else if ((processor_mismatch_warning) && (file->processor != state.processor)) {
-      gp_warning("Processor mismatch in \"%s\".", file->filename);
+    if (object->class != state.class) {
+      gp_error("Processor family mismatch in \"%s\".", object->filename);
+    } else if ((processor_mismatch_warning) && (object->processor != state.processor)) {
+      gp_warning("Processor mismatch in \"%s\".", object->filename);
     }
   }
 
   if (state.optimize.weak_symbols) {
-    gp_coffopt_remove_weak(file);
+    gp_coffopt_remove_weak(object);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _archive_append(gp_archive_type *file, const char *name)
@@ -96,6 +189,8 @@ _archive_append(gp_archive_type *file, const char *name)
     list->next = new;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Scan the archive for missing symbol definitions.  This has to be done
    recursively.  The order of the archive members is unknown and there
@@ -133,7 +228,6 @@ _scan_index(symbol_table_t *table, gp_archive_type *archive)
         member      = sym_get_symbol_annotation(sym_arch);
         object_name = gp_archive_member_name(member);
         object      = gp_convert_file(object_name, &member->data);
-        /*object_append(object, object_name);*/
         _object_append(object);
         gp_cofflink_add_symbols(state.symbol.definition, state.symbol.missing, object);
         /* The symbol tables have been modified. Need to take another
@@ -150,17 +244,18 @@ _scan_index(symbol_table_t *table, gp_archive_type *archive)
   return modified;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
-_scan_archive(gp_archive_type *archive, char *name)
+_scan_archive(gp_archive_type *archive, const char *name)
 {
-  gp_boolean modified;
+  gp_boolean      modified;
+  symbol_table_t *archive_tbl;
 
   state.symbol.archive = sym_push_table(NULL, false);
 
   /* If necessary, build a symbol index for the archive. */
   if (gp_archive_have_index(archive) == 0) {
-    symbol_table_t *archive_tbl = NULL;
-
     archive_tbl = sym_push_table(NULL, true);
     gp_archive_make_index(archive, archive_tbl);
     archive = gp_archive_add_index(archive_tbl, archive);
@@ -171,14 +266,16 @@ _scan_archive(gp_archive_type *archive, char *name)
   /* Read the symbol index. */
   gp_archive_read_index(state.symbol.archive, archive);
 
-  /* Scan the symbol index for symbols in the missing symbol table.  If
-     found, add the object to state.objects. */
+  /* Scan the symbol index for symbols in the missing symbol table.
+     If found, add the object to state.objects. */
   modified = _scan_index(state.symbol.archive, archive);
 
   state.symbol.archive = sym_pop_table(state.symbol.archive);
 
   return modified;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* Remove a symbol the linker created from the missing table. */
 
@@ -193,14 +290,18 @@ _remove_linker_symbol(char *name)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Add a symbol the linker created to the symbol table. */
 
 static void
 _add_linker_symbol(const char *name)
 {
-  gp_symbol_type *current = state.object->symbols;
-  gp_symbol_type *found = NULL;
+  gp_symbol_type *current;
+  gp_symbol_type *found;
 
+  found   = NULL;
+  current = state.object->symbols;
   while (current != NULL) {
     if ((current->name != NULL) && (strcmp(current->name, name) == 0) && (current->section_number > 0)) {
       found = current;
@@ -213,16 +314,19 @@ _add_linker_symbol(const char *name)
   gp_cofflink_add_symbol(state.symbol.definition, found, NULL);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Search the object list for an idata section. */
 
 static void
 _search_idata(void)
 {
-  gp_object_type  *list = state.object;
+  gp_object_type  *object;
   gp_section_type *section;
 
-  while (list != NULL) {
-    section = list->sections;
+  object = state.object;
+  while (object != NULL) {
+    section = object->sections;
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
         state.has_idata = true;
@@ -230,17 +334,18 @@ _search_idata(void)
       }
       section = section->next;
     }
-    list = list->next;
+    object = object->next;
   }
 }
 
-/* Build the symbol tables. Determine which objects from the archives are
-   required for linking. */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Build the symbol tables. Determine which objects from the archives are required for linking. */
 
 static void
 _build_tables(void)
 {
-  gp_object_type     *list = state.object;
+  gp_object_type     *object;
   struct archivelist *arlist;
   gp_boolean          modified;
   size_t              i;
@@ -249,9 +354,10 @@ _build_tables(void)
   gp_coffsymbol_type *var;
 
   /* Create the object file symbol tables. */
-  while (list != NULL) {
-    gp_cofflink_add_symbols(state.symbol.definition, state.symbol.missing, list);
-    list = list->next;
+  object = state.object;
+  while (object != NULL) {
+    gp_cofflink_add_symbols(state.symbol.definition, state.symbol.missing, object);
+    object = object->next;
   }
 
   /* All of the objects have been scanned. If there are remaining references
@@ -308,9 +414,10 @@ _build_tables(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Read a coff object or archive. gplink doesn't care about file extensions.
-   This allows alternate extensions such as .a archives and .obj coff
-   objects. */
+   This allows alternate extensions such as .a archives and .obj coff objects. */
 
 void
 gplink_open_coff(const char *name)
@@ -372,35 +479,19 @@ gplink_open_coff(const char *name)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _set_optimize_level(void)
 {
   /* default */
   state.optimize.pagesel       = false;
   state.optimize.dead_sections = false;
-  state.optimize.weak_symbols  = true;
+  state.optimize.weak_symbols  = false;
 
   switch(state.optimize.level) {
-  case 6:
-    state.optimize.pagesel       = true;
-    state.optimize.dead_sections = true;
-    state.optimize.weak_symbols  = true;
-    break;
-
-  case 5:
-    state.optimize.pagesel       = true;
-    state.optimize.dead_sections = true;
-    break;
-
-  case 4:
-    state.optimize.pagesel       = true;
-    state.optimize.weak_symbols  = true;
-    break;
-
   case 3:
-    state.optimize.pagesel       = true;
-    break;
-
+    /* fall through */
   case 2:
     state.optimize.dead_sections = true;
     /* fall through */
@@ -415,37 +506,7 @@ _set_optimize_level(void)
   }
 }
 
-#define GET_OPTIONS "a:cCdf:hI:lmo:O:qrs:t:u:vw"
-
-enum {
-  OPT_MPLINK_COMPATIBLE = 0x100,
-  OPT_STRICT_OPTIONS
-};
-
-static struct option longopts[] =
-{
-  { "hex-format",         required_argument, NULL, 'a' },
-  { "object",             no_argument,       NULL, 'c' },
-  { "no-cinit-warnings",  no_argument,       NULL, 'C' },
-  { "debug",              no_argument,       NULL, 'd' },
-  { "fill",               required_argument, NULL, 'f' },
-  { "help",               no_argument,       NULL, 'h' },
-  { "include",            required_argument, NULL, 'I' },
-  { "no-list",            no_argument,       NULL, 'l' },
-  { "map",                no_argument,       NULL, 'm' },
-  { "output",             required_argument, NULL, 'o' },
-  { "optimize",           required_argument, NULL, 'O' },
-  { "quiet",              no_argument,       NULL, 'q' },
-  { "use-shared",         no_argument,       NULL, 'r' },
-  { "script",             required_argument, NULL, 's' },
-  { "stack",              required_argument, NULL, 't' },
-  { "strict-options",     no_argument,       NULL, OPT_STRICT_OPTIONS },
-  { "macro",              required_argument, NULL, 'u' },
-  { "version",            no_argument,       NULL, 'v' },
-  { "processor-mismatch", no_argument,       NULL, 'w' },
-  { "mplink-compatible",  no_argument,       NULL, OPT_MPLINK_COMPATIBLE },
-  { NULL,                 no_argument,       NULL, '\0'}
-};
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _init(void)
@@ -454,23 +515,25 @@ _init(void)
 
   /* initialize */
   gp_date_string(state.startdate, sizeof(state.startdate));
-  state.hex_format     = INHX32;
-  state.numpaths       = 0;
-  state.processor      = NULL;
-  state.optimize.level = 1;
-  state.codfile        = OUT_NORMAL;
-  state.hexfile        = OUT_NORMAL;
-  state.lstfile        = OUT_NORMAL;
-  state.mapfile        = OUT_SUPPRESS;
-  state.objfile        = OUT_SUPPRESS;
-  state.fill_enable    = false;
-  state.fill_value     = 0;
-  state.has_stack      = false;
-  state.stack_size     = 0;
-  state.has_idata      = false;
-  state.srcfilenames   = NULL;
-  state.object         = NULL;
-  state.archives       = NULL;
+  state.hex_format        = INHX32;
+  state.numpaths          = 0;
+  state.processor         = NULL;
+  state.optimize.level    = OPTIMIZE_LEVEL_DEFAULT;
+  state.optimize.pagesel  = 0;
+  state.codfile           = OUT_NORMAL;
+  state.hexfile           = OUT_NORMAL;
+  state.lstfile           = OUT_NORMAL;
+  state.mapfile           = OUT_SUPPRESS;
+  state.objfile           = OUT_SUPPRESS;
+  state.fill_enable       = false;
+  state.fill_value        = 0;
+  state.has_stack         = false;
+  state.stack_size        = 0;
+  state.has_idata         = false;
+  state.srcfilenames      = NULL;
+  state.srcfilenames_tail = NULL;
+  state.object            = NULL;
+  state.archives          = NULL;
 
   /* set default output filename to be a.o, a.hex, a.cod, a.map */
   strncpy(state.basefilename, "a", sizeof(state.basefilename));
@@ -485,6 +548,8 @@ _init(void)
   state.section.logical    = sym_push_table(NULL, false);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gplink_add_path(const char *path)
 {
@@ -495,11 +560,14 @@ gplink_add_path(const char *path)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* I have this take the func in anticipation of the option
   printf("  -z, --defsym symbol=value      Add symbol value to symbol table.\n");
 */
+
 static void
-_parse_define(const char *optarg, void (*func)(const char* name, long value))
+_parse_define(const char *optarg, void (*func)(const char *name, long value))
 {
   long  value = 0;
   char *pc = strchr(optarg, '=');
@@ -511,52 +579,7 @@ _parse_define(const char *optarg, void (*func)(const char* name, long value))
   func(optarg, value);
 }
 
-static void
-_show_usage(void)
-{
-  printf("Usage: gplink [options] [objects] [libraries]\n");
-  printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
-  printf("  -c, --object                   Output executable object file.\n");
-  printf("  -C, --no-cinit-warnings        Disable this warnings of _cinit section with -O2 option:\n"
-         "                                   \"Relocation symbol _cinit has no section.\"\n");
-  printf("  -d, --debug                    Output debug messages.\n");
-  printf("  -f VALUE, --fill VALUE         Fill unused program memory with value.\n");
-  printf("  -h, --help                     Show this usage message.\n");
-  printf("  -I DIR, --include DIR          Specify include directory.\n");
-  printf("  -l, --no-list                  Disable list file output.\n");
-  printf("  -m, --map                      Output a map file.\n");
-  printf("      --mplink-compatible        MPLINK compatibility mode.\n");
-  printf("  -o FILE, --output FILE         Alternate name of output file.\n");
-  printf("  -O OPT, --optimize OPT         Optimization level [1].\n");
-  printf("  -q, --quiet                    Quiet.\n");
-  printf("  -r, --use-shared               Use shared memory if necessary.\n");
-  printf("  -s FILE, --script FILE         Linker script.\n");
-  printf("  -t SIZE, --stack SIZE          Create a stack section.\n");
-  printf("      --strict-options           If this is set, then an option may not be parameter\n"
-         "                                   of an another option. For example: -s --quiet\n");
-  printf("  -u, --macro symbol[=value]     Add macro value for script.\n");
-  printf("  -v, --version                  Show version.\n");
-  printf("  -w, --processor-mismatch       Disable \"processor mismatch\" warning.\n");
-  printf("\n");
-#ifdef USE_DEFAULT_PATHS
-  if (gp_lkr_path != NULL) {
-    printf("Default linker script path %s\n", gp_lkr_path);
-  } else {
-    printf("Default linker script path NOT SET\n");
-  }
-
-  if (gp_lib_path != NULL) {
-    printf("Default library path %s\n", gp_lib_path);
-  } else {
-    printf("Default library path NOT SET\n");
-  }
-  printf("\n");
-#endif
-  printf("Report bugs to:\n");
-  printf("%s\n", PACKAGE_BUGREPORT);
-  exit(0);
-}
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _process_args(int argc, char *argv[])
@@ -677,6 +700,14 @@ _process_args(int argc, char *argv[])
       /* do nothing */
       break;
 
+    case 'p':
+      state.optimize.pagesel = (unsigned int)strtol(optarg, &pc, 10);
+
+      if ((pc == NULL) || (*pc != '\0')) {
+        gp_error("Invalid character %#x in number constant.", *pc);
+      }
+      break;
+
     case 'q':
       gp_quiet = true;
       break;
@@ -687,9 +718,9 @@ _process_args(int argc, char *argv[])
 
     case 's':
       {
-        struct srcfns *fn;
+        srcfns_t *fn;
 
-        fn = GP_Malloc(sizeof(struct srcfns));
+        fn = GP_Malloc(sizeof(srcfns_t));
         fn->filename = GP_Strdup(optarg);
         fn->next     = NULL;
 
@@ -697,17 +728,16 @@ _process_args(int argc, char *argv[])
           state.srcfilenames = fn;
         }
         else {
-          struct srcfns *p;
-
-          for (p = state.srcfilenames; p->next != NULL; p = p->next)
-            ;
-          p->next = fn;
+          state.srcfilenames_tail->next = fn;
         }
+
+        state.srcfilenames_tail = fn;
       }
       break;
 
     case 't':
       state.stack_size = strtol(optarg, &pc, 10);
+
       if ((pc == NULL) || (*pc != '\0')) {
         gp_error("Invalid character %#x in number constant.", *pc);
       } else {
@@ -747,9 +777,9 @@ _process_args(int argc, char *argv[])
     pc = strrchr(argv[optind], '.');
 
     if ((pc != NULL) && (strcasecmp(pc, ".lkr") == 0)) {
-      struct srcfns *fn;
+      srcfns_t *fn;
 
-      fn = GP_Malloc(sizeof(struct srcfns));
+      fn = GP_Malloc(sizeof(srcfns_t));
       fn->filename = GP_Strdup(argv[optind++]);
       fn->next     = NULL;
 
@@ -757,12 +787,10 @@ _process_args(int argc, char *argv[])
         state.srcfilenames = fn;
       }
       else {
-        struct srcfns *p;
-
-        for (p = state.srcfilenames; p->next != NULL; p = p->next)
-          ;
-        p->next = fn;
+        state.srcfilenames_tail->next = fn;
       }
+
+      state.srcfilenames_tail = fn;
     }
   }
 
@@ -792,11 +820,14 @@ _process_args(int argc, char *argv[])
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static gp_boolean
 _linker(void)
 {
   MemBlock *data;
   MemBlock *program;
+  srcfns_t *p;
 
   /* setup output filenames */
   snprintf(state.hexfilename, sizeof(state.hexfilename), "%s.hex", state.basefilename);
@@ -805,7 +836,7 @@ _linker(void)
 
   /* Read the script. */
   if (state.srcfilenames != NULL) {
-    struct srcfns *p = state.srcfilenames;
+    p = state.srcfilenames;
 
     do {
       open_src(p->filename, false);
@@ -939,7 +970,7 @@ _linker(void)
 
   gp_cofflink_update_table(state.object, state.class->org_to_byte_shift);
 
-  if (state.optimize.pagesel) {
+  if (state.optimize.pagesel > 0) {
     gp_coffopt_remove_unnecessary_pagesel(state.object);
   }
 
@@ -989,6 +1020,8 @@ _linker(void)
 
   return (gp_num_errors <= 0);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 main(int argc, char *argv[])

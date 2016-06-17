@@ -165,12 +165,12 @@ Boston, MA 02111-1307, USA.  */
 #define MAX_STRING_LEN     255      /* Maximum length of a debug message. */
 
 typedef struct {
-  unsigned char *block;
+  uint8_t *block;
 } Block;
 
 typedef struct block_list_struct {
-  unsigned char block[COD_BLOCK_SIZE];
-  struct        block_list_struct *next;
+  uint8_t                   block[COD_BLOCK_SIZE];
+  struct block_list_struct *next;
 } BlockList;
 
 #define COD_CODE_IMAGE_BLOCKS 128  /* Max # of blocks for the opcodes. */
@@ -183,20 +183,20 @@ typedef struct {
 } Blocks;
 
 typedef struct dir_block_info {
-  unsigned char dir[COD_BLOCK_SIZE];
-  Block         cod_image_blocks[COD_CODE_IMAGE_BLOCKS];
-  Blocks        src;                    /* source files blocks */
-  Blocks        lst;                    /* pointer to the list of line number information blocks */
-  Blocks        sym;                    /* pointer to the list of long symbol blocks */
-  Blocks        rng;                    /* pointer to the list of range blocks */
-  Blocks        dbg;                    /* pointer to the list of debug messages blocks */
-  struct        dir_block_info *next;   /* pointer to the next dirdctory info block */
+  uint8_t                dir[COD_BLOCK_SIZE];
+  Block                  cod_image_blocks[COD_CODE_IMAGE_BLOCKS];
+  Blocks                 src;   /* source files blocks */
+  Blocks                 lst;   /* pointer to the list of line number information blocks */
+  Blocks                 sym;   /* pointer to the list of long symbol blocks */
+  Blocks                 rng;   /* pointer to the list of range blocks */
+  Blocks                 dbg;   /* pointer to the list of debug messages blocks */
+  struct dir_block_info *next;  /* pointer to the next dirdctory info block */
 } DirBlockInfo;
 
 /* common cod functions */
-extern void gp_cod_strncpy(unsigned char *dest, const char *src, int max_len);
-extern void gp_cod_date(unsigned char *buffer, size_t sizeof_buffer);
-extern void gp_cod_time(unsigned char *buffer, size_t sizeof_buffer);
+extern void gp_cod_strncpy(uint8_t *dest, const char *src, int max_len);
+extern void gp_cod_date(uint8_t *buffer, size_t sizeof_buffer);
+extern void gp_cod_time(uint8_t *buffer, size_t sizeof_buffer);
 extern void gp_cod_create(Block *b);
 extern BlockList *gp_blocks_new(void);
 extern BlockList *gp_blocks_append(Blocks *bl, BlockList *b);

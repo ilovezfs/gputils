@@ -132,9 +132,9 @@ _find_line_number(const gp_symbol_type *symbol, unsigned int line_number)
 
   section = state.object->sections;
   while (section != NULL) {
-    linenum = gp_cofflink_find_linenum(section, line_number);
+    linenum = gp_cofflink_find_linenum(section, symbol, line_number);
 
-    if ((linenum != NULL) && (linenum->symbol == symbol)) {
+    if (linenum != NULL) {
       if (section != line_section) {
         /* Switching sections, so update was_org with the new address. */
         state.lst.was_org = linenum->address;

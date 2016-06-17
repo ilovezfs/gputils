@@ -267,13 +267,13 @@ extern struct gpasm_state {
   struct {                              /* Object file state: */
     gp_object_type  *object;            /*   Object file. */
     gp_section_type *section;           /*   Current section. */
-    int              section_num;       /*   Current section number. */
+    unsigned int     section_num;       /*   Current section number. */
     gp_boolean       enabled;           /*   True if object file is enabled. */
     char             new_sect_name[80]; /*   new section name */
-    int              new_sect_addr;     /*   new section name */
-    int              new_sect_flags;    /*   new section name */
-    int              symbol_num;        /*   Current symbol number. */
-    int              flags;             /*   Current section flags. */
+    unsigned int     new_sect_addr;     /*   new section adress */
+    unsigned int     new_sect_flags;    /*   new section flags */
+    unsigned int     symbol_num;        /*   Current symbol number. */
+    unsigned int     flags;             /*   Current section flags. */
     gp_symbol_type  *debug_file;        /*   Debug information for high level langs. */
     unsigned int     debug_line;
     gp_boolean       newcoff;
@@ -306,8 +306,8 @@ enum globalLife {
 
 typedef struct variable {
   int                value;
-  int                coff_num;
-  int                coff_section_num;
+  unsigned int       coff_symbol_num;
+  unsigned int       coff_section_num;
   enum gpasmValTypes type;
   enum gpasmValTypes previous_type;     /* Can change from static to global. */
   enum globalLife    lifetime;
@@ -402,7 +402,10 @@ extern const char *convert_escape_chars(const char *ps, int *value);
 extern char *convert_escaped_char(char *str, char c);
 extern void coerce_str1(pnode_t *exp);
 extern gpasmVal do_or_append_insn(const char *op, pnode_t *parms);
-extern void set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type, gp_boolean procDependent);
+
+extern void set_global(const char *name, gpasmVal value, enum globalLife lifetime,
+                       enum gpasmValTypes type, gp_boolean procDependent);
+
 extern variable_t *get_global_constant(const char *Name);
 extern void purge_temp_symbols(symbol_table_t *Table);
 extern void purge_processor_const_symbols(symbol_table_t *Table);

@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-#define LINESIZ 520
+#define LINESIZ         520
 
 static char  linebuf[LINESIZ];
 static char *linept;
@@ -34,7 +34,7 @@ static FILE *infile;
 /* Converts a single ASCII character into a number. */
 
 static unsigned int
-_a2n(unsigned char character)
+_a2n(uint8_t character)
 {
   unsigned int number;
 

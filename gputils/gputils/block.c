@@ -30,7 +30,7 @@ Boston, MA 02111-1307, USA.  */
 /*------------------------------------------------------------------------------------------------*/
 
 void
-read_block(unsigned char *block, int block_number)
+read_block(uint8_t *block, unsigned int block_number)
 {
   int n;
 
@@ -38,7 +38,7 @@ read_block(unsigned char *block, int block_number)
   n = fread(block, 1, COD_BLOCK_SIZE, codefile);
 
   if (COD_BLOCK_SIZE != n) {
-    gp_error("bad block number %d", block_number);
+    gp_error("bad block number %u", block_number);
   }
 }
 
@@ -47,19 +47,24 @@ read_block(unsigned char *block, int block_number)
 DirBlockInfo *
 read_directory(void)
 {
-  DirBlockInfo *dbi = NULL;
-  DirBlockInfo *start = NULL;
-  int           next_dir_block = 0;
+  DirBlockInfo *dbi;
+  DirBlockInfo *start;
+  DirBlockInfo *p;
+  uint16_t      next_dir_block;
 
+  dbi            = NULL;
+  start          = NULL;
+  next_dir_block = 0;
   do {
-    DirBlockInfo *p = GP_Malloc(sizeof(DirBlockInfo));
+    p = GP_Malloc(sizeof(DirBlockInfo));
 
     if (dbi == NULL) {
-      start = dbi = p;
+      start = p;
+      dbi   = p;
     }
     else {
       dbi->next = p;
-      dbi = p;
+      dbi       = p;
     }
 
     read_block(dbi->dir, next_dir_block);

@@ -204,7 +204,7 @@ _print_linenum_list(proc_class_t class, const gp_linenum_type *linenumber)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_data(proc_class_t class, const gp_section_type *section)
+_print_data(proc_class_t class, pic_processor_t processor, const gp_section_type *section)
 {
   char     buffer[BUFSIZ];
   int      address;
@@ -223,8 +223,9 @@ _print_data(proc_class_t class, const gp_section_type *section)
         break;
       }
 
-      num_words = gp_disassemble(section->data, address, class, 0x80, 0, GPDIS_SHOW_ALL_BRANCH,
-                                 buffer, sizeof(buffer), 0);
+      num_words = gp_disassemble(section->data, address, class,
+                                 gp_processor_bsr_boundary(processor), 0,
+                                 GPDIS_SHOW_ALL_BRANCH, buffer, sizeof(buffer), 0);
       printf("%06x:  %04x  %s\n", gp_processor_byte_to_org(class, address), word, buffer);
 
       if (num_words != 1) {
@@ -327,7 +328,7 @@ _print_sec_list(const gp_object_type *object)
     _print_sec_header(object->class, section);
 
     if ((section->size > 0) && (section->data_ptr > 0)) {
-      _print_data(object->class, section);
+      _print_data(object->class, object->processor, section);
     }
 
     if ((section->num_reloc > 0)) {

@@ -27,6 +27,16 @@ Boston, MA 02111-1307, USA.  */
 #define TABULATOR_SIZE                  8
 #define ARRAY_SIZE(a)                   (sizeof(a) / sizeof((a)[0]))
 
+#define FlagSet(v, f)                   ((v) |= (f))
+#define FlagClr(v, f)                   ((v) &= ~(f))
+#define FlagIsSet(v, f)                 (((v) & (f)) != 0)
+#define FlagIsClr(v, f)                 (((v) & (f)) == 0)
+
+#define FlagsIsAllSet(v, f)             (((v) & (f)) == (f))
+#define FlagsIsNotAllSet(v, f)          (((v) & (f)) != (f))
+#define FlagsIsAllClr(v, f)             (((v) & (f)) == 0)
+#define FlagsIsNotAllClr(v, f)          (((v) & (f)) != 0)
+
 extern const char *gp_header_path;
 extern const char *gp_lkr_path;
 extern const char *gp_lib_path;
@@ -60,8 +70,8 @@ extern char *gp_strndup(const char *String, size_t Length, const char *File, siz
 #define GP_Strdup(String)               gp_strdup(String, __FILE__, __LINE__, __func__)
 #define GP_Strndup(String, Length)      gp_strndup(String, Length, __FILE__, __LINE__, __func__)
 
-extern char *gp_lower_case(const char *name);
-extern char *gp_upper_case(const char *name);
+extern char *gp_strdup_lower_case(const char *name);
+extern char *gp_strdup_upper_case(const char *name);
 extern char *gp_strncpy(char *Dest, const char *Src, size_t Maxlen);
 extern char *gp_stptoupper(char *Dest, const char *Src, size_t Maxlen);
 
