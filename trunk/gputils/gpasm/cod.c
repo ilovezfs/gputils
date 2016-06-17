@@ -31,6 +31,8 @@ Boston, MA 02111-1307, USA.  */
 
 static DirBlockInfo *main_dir;
 
+/*------------------------------------------------------------------------------------------------*/
+
 static DirBlockInfo *
 _new_dir_block(void)
 {
@@ -40,6 +42,8 @@ _new_dir_block(void)
   gp_putl16(&dir->dir[COD_DIR_CODTYPE], 1);
   return dir;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static DirBlockInfo *
 _init_dir_block(void)
@@ -61,10 +65,12 @@ _init_dir_block(void)
   return dir;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /*
- * write_file_block - write a code block that contains a list of the
- * source files.
+ * _write_file_block - Write a code block that contains a list of the source files.
  */
+
 static void
 _write_file_block(void)
 {
@@ -78,7 +84,7 @@ _write_file_block(void)
 
   /* Find the head of the file list: */
 
-  fc = state.files;
+  fc        = state.files;
   id_number = 0;
 
   while ((fc->prev != NULL) && (id_number++ < COD_FILE_MAX_NUM)) {
@@ -90,7 +96,7 @@ _write_file_block(void)
     assert(0);
   }
 
-  fb = NULL;
+  fb        = NULL;
   id_number = 0;
 
   while (fc != NULL) {
@@ -111,6 +117,8 @@ _write_file_block(void)
     fc = fc->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static DirBlockInfo *
 _find_dir_block_by_high_addr(int high_addr)
@@ -135,8 +143,10 @@ _find_dir_block_by_high_addr(int high_addr)
   return dbi;
 }
 
-/* cod_emit_opcode - write one opcode to a cod_image_block
- */
+/*------------------------------------------------------------------------------------------------*/
+
+/* _emit_opcode - write one opcode to a cod_image_block */
+
 static void
 _emit_opcode(DirBlockInfo *dbi, int address, int opcode)
 {
@@ -165,8 +175,10 @@ _emit_opcode(DirBlockInfo *dbi, int address, int opcode)
   gp_putl16(&dbi->cod_image_blocks[block_index].block[address & (COD_BLOCK_SIZE - 1)], opcode);
 }
 
-/* cod_write_code - write all of the assembled pic code to the .cod file
- */
+/*------------------------------------------------------------------------------------------------*/
+
+/* _write_code - write all of the assembled pic code to the .cod file */
+
 static void
 _write_code(void)
 {
@@ -235,9 +247,10 @@ _write_code(void)
   }
 }
 
-/*
- * init_cod - initialize the cod file
- */
+/*------------------------------------------------------------------------------------------------*/
+
+/* cod_init - initialize the cod file */
+
 void
 cod_init(void)
 {
@@ -265,8 +278,10 @@ cod_init(void)
   main_dir = _init_dir_block();
 }
 
-/* cod_lst_line - add a line of information that cross references the
- * the opcode's address, the source file, and the list file.
+/*------------------------------------------------------------------------------------------------*/
+
+/* cod_lst_line - Add a line of information that cross references the
+ *                the opcode's address, the source file, and the list file.
  */
 
 void
@@ -276,7 +291,7 @@ cod_lst_line(int line_type)
   static DirBlockInfo *dbi = NULL;
   static int           _64k_base = 0;
 
-  unsigned char        smod_flag;
+  uint8_t              smod_flag;
   BlockList           *lb;
   gp_boolean           first_time;
   int                  address;
@@ -329,6 +344,8 @@ cod_lst_line(int line_type)
 
   dbi->lst.offset += COD_LINE_SYM_SIZE;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* cod_write_symbols - write the symbol table to the .cod file
  *
@@ -393,6 +410,8 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
     main_dir->sym.offset += len + COD_SYM_EXTRA;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 cod_close_file(void)

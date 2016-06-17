@@ -75,21 +75,30 @@ _read_file_header(gp_object_type *object, const uint8_t *file, const gp_binary_t
 {
   gp_boolean   isnew = false;
   unsigned int opt_hdr;
+  uint16_t     version;
 
-  if (_check_getl16(&file[0], data) == MICROCHIP_MAGIC_v2) {
+  /* 'f_magic'  -- magic number */
+  version = _check_getl16(&file[0], data);
+
+  if (version == MICROCHIP_MAGIC_v2) {
     isnew = true;
   }
-  else if (_check_getl16(&file[0], data) != MICROCHIP_MAGIC_v1) {
+  else if (version != MICROCHIP_MAGIC_v1) {
     gp_error("Invalid magic number in \"%s\".", object->filename);
   }
 
   object->isnew        = isnew;
-  object->version      = _check_getl16(&file[0], data);
+  object->version      = version;
+  /* 'f_nscns'  -- number of sections */
   object->num_sections = _check_getl16(&file[2], data);
+  /* 'f_timdat' -- time and date stamp */
   object->time         = _check_getl32(&file[4], data);
+  /* 'f_symptr' -- file ptr to symtab */
   object->symbol_ptr   = _check_getl32(&file[8], data);
+  /* 'f_nsyms'  -- # symtab entries */
   object->num_symbols  = _check_getl32(&file[12], data);
 
+  /* 'f_opthdr' -- sizeof(opt hdr) */
   opt_hdr = _check_getl16(&file[16], data);
 
   if ((opt_hdr != 0) && (opt_hdr != (isnew ? OPT_HDR_SIZ_v2 : OPT_HDR_SIZ_v1))) {
@@ -97,6 +106,7 @@ _read_file_header(gp_object_type *object, const uint8_t *file, const gp_binary_t
   }
 
   object->symbol_size = (object->version == MICROCHIP_MAGIC_v1) ? SYMBOL_SIZE_v1 : SYMBOL_SIZE_v2;
+  /* 'f_flags'  -- flags */
   object->flags       = _check_getl16(&file[18], data);
 
   return opt_hdr;
@@ -114,6 +124,7 @@ _read_opt_header(gp_object_type *object, const uint8_t *file, const gp_binary_ty
   uint32_t ram_width;
   size_t   offset;
 
+  /* 'opt_magic' */
   optmagic = _check_getl16(&file[0], data);
 
   if (optmagic != ((object->isnew) ? OPTMAGIC_v2 : OPTMAGIC_v1)) {
@@ -123,10 +134,12 @@ _read_opt_header(gp_object_type *object, const uint8_t *file, const gp_binary_ty
   offset = 2;
 
   if (object->isnew) {
+    /* 'vstamp' -- version stamp of compiler */
     vstamp = _check_getl32(&file[offset], data);
     offset += 4;
   }
   else {
+    /* 'vstamp' -- version stamp of compiler */
     vstamp = _check_getl16(&file[offset], data);
     offset += 2;
   }
@@ -135,9 +148,11 @@ _read_opt_header(gp_object_type *object, const uint8_t *file, const gp_binary_ty
     gp_error("Invalid assembler version (%ld) in \"%s\".", vstamp, object->filename);
   }
 
+  /* 'proc_type'      -- processor type */
   proc_code = _check_getl32(&file[offset], data);
   offset += 4;
 
+  /* 'rom_width_bits' -- ROM width bits */
   rom_width = _check_getl32(&file[offset], data);
   offset += 4;
 
@@ -153,11 +168,10 @@ _read_opt_header(gp_object_type *object, const uint8_t *file, const gp_binary_ty
     }
 
     if (object->processor == NULL) {
-      gp_error("Invalid processor type (%#04lx) in \"%s\".",
-               proc_code, object->filename);
+      gp_error("Invalid processor type (%#04x) in \"%s\".", proc_code, object->filename);
     }
     else {
-      gp_warning("Unknown processor type (%#04lx) in \"%s\" defaulted to %s.",
+      gp_warning("Unknown processor type (%#04x) in \"%s\" defaulted to %s.",
                  proc_code, object->filename, gp_processor_name(object->processor, 0));
     }
   }
@@ -170,15 +184,16 @@ _read_opt_header(gp_object_type *object, const uint8_t *file, const gp_binary_ty
       object->class     = gp_processor_class(object->processor);
     }
     else {
-      gp_error("Invalid rom width for selected processor (%ld) in \"%s\".",
+      gp_error("Invalid rom width for selected processor (%u) in \"%s\".",
                rom_width, object->filename);
     }
   }
 
+  /* 'ram_width_bits' -- RAM width bits */
   ram_width = _check_getl32(&file[offset], data);
 
   if (ram_width != 8) {
-    gp_error("Invalid ram width (%ld) in \"%s\".", ram_width, object->filename);
+    gp_error("Invalid ram width (%u) in \"%s\".", ram_width, object->filename);
   }
 
   offset += 4;
@@ -191,35 +206,44 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
                      const uint8_t *file, const char *string_table, const gp_binary_type *data)
 {
   char     buffer[9];
-  uint32_t offset;
+  uint32_t string_offset;
 
   if (_check_getl32(&file[0], data) == 0) {
-    /* read name from the string table */
-    offset        = _check_getl32(&file[4], data);
-    section->name = GP_Strdup(&string_table[offset]);
+    /* Long name, read this from the string table. */
+    string_offset = _check_getl32(&file[4], data);
+    section->name = GP_Strdup(&string_table[string_offset]);
   }
   else {
     memcpy(buffer, &file[0], sizeof(buffer) - 1);
-    /* the name can occupy all 8 chars without a null terminator */
+    /* The name can occupy all 8 chars without a null terminator. */
     buffer[8]     = '\0';
     section->name = GP_Strdup(buffer);
   }
 
   section->symbol = gp_coffgen_find_section_symbol(object, section->name);
 
+  /* 's_paddr'   -- physical address */
   section->address         = _check_getl32(&file[8], data);
+  /* 's_vaddr'   -- virtual address */
   section->virtual_address = _check_getl32(&file[12], data);
 
   if (section->address != section->virtual_address) {
     gp_error("Virtual address does not equal physical address in \"%s\".", object->filename);
   }
 
+  /* 's_size'    -- section size */
   section->size       = _check_getl32(&file[16], data);
+  /* 's_scnptr'  -- file ptr to raw data */
   section->data_ptr   = _check_getl32(&file[20], data);
+  /* 's_relptr'  -- file ptr to relocation */
   section->reloc_ptr  = _check_getl32(&file[24], data);
+  /* 's_lnnoptr' -- file ptr to line numbers */
   section->lineno_ptr = _check_getl32(&file[28], data);
+  /* 's_nreloc'  -- # reloc entries */
   section->num_reloc  = _check_getl16(&file[32], data);
+  /* 's_nlnno'   -- # line number entries */
   section->num_lineno = _check_getl16(&file[34], data);
+  /* 's_flags'   -- section flags */
   section->flags      = _check_getl32(&file[36], data);
   section->data       = (section->data_ptr != 0) ? i_memory_create() : NULL;
 
@@ -247,10 +271,20 @@ static void
 _read_reloc(gp_object_type *object, const gp_section_type *section, gp_reloc_type *relocation,
             const uint8_t *file, const gp_binary_type *data)
 {
+  uint32_t symbol_index;
+
+  /* 'r_vaddr'  -- entry relative virtual address */
   relocation->address = _check_getl32(&file[0], data);
-  relocation->symbol  = &object->symbols[_check_getl32(&file[4], data)];
+  /* 'r_symndx' -- index into symbol table */
+  symbol_index        = _check_getl32(&file[4], data);
+  relocation->symbol  = &object->symbols[symbol_index];
+  /* 'r_offset' -- offset to be added to address of symbol 'r_symndx' */
   relocation->offset  = _check_getl16(&file[8], data);
+  /* 'r_type'   -- relocation type */
   relocation->type    = _check_getl16(&file[10], data);
+
+  /* Increase the number of relocation links. */
+  (relocation->symbol->num_reloc_link)++;
 
   if (relocation->address >= section->size) {
     gp_error("Relocation at address %#x in section \"%s\" of \"%s\" exceeds the section size.",
@@ -258,16 +292,28 @@ _read_reloc(gp_object_type *object, const gp_section_type *section, gp_reloc_typ
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _read_lineno(gp_object_type *object, int org_to_byte_shift, gp_linenum_type *line_number,
              const uint8_t *file, const gp_binary_type *data)
 {
-  line_number->symbol      = &object->symbols[_check_getl32(&file[0], data)];
+  uint32_t symbol_index;
+  uint32_t insn_address;
+
+  /* 'l_srcndx' -- symbol table index of associated source file */
+  symbol_index             = _check_getl32(&file[0], data);
+  line_number->symbol      = &object->symbols[symbol_index];
+  /* 'l_lnno'   -- line number */
   line_number->line_number = _check_getl16(&file[4], data);
-  line_number->address     = gp_org_to_byte(org_to_byte_shift, _check_getl32(&file[6], data));
+  /* 'l_paddr'  -- address of code for this lineno */
+  insn_address             = _check_getl32(&file[6], data);
+  line_number->address     = gp_org_to_byte(org_to_byte_shift, insn_address);
 
   /* FIXME: function index and flags are unused, so far.
+     'l_flags'  -- bit flags for the line number
   line_number->l_flags  = _check_getl16(&file[10], data);
+     'l_fcnndx' -- symbol table index of associated function, if there is one
   line_number->l_fcnndx = _check_getl32(&file[12], data);
   */
 }
@@ -365,35 +411,49 @@ _read_sections(gp_object_type *object, const uint8_t *file, const gp_binary_type
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type, const uint8_t *file,
+_read_aux(gp_object_type *object, uint32_t i, gp_aux_type *aux, int aux_type, const uint8_t *file,
           const char *string_table, struct lazy_linking_s *lazy_linking, const gp_binary_type *data)
 {
+  uint32_t string_index;
+  uint32_t calleendx;
+
   aux->type = aux_type;
 
   switch (aux_type) {
     case AUX_DIRECT:
       aux->_aux_symbol._aux_direct.command = file[0];
-      aux->_aux_symbol._aux_direct.string  = GP_Strdup(&string_table[_check_getl32(&file[4], data)]);
+      string_index                         = _check_getl32(&file[4], data);
+      aux->_aux_symbol._aux_direct.string  = GP_Strdup(&string_table[string_index]);
       break;
 
     case AUX_FILE:
-      aux->_aux_symbol._aux_file.filename    = GP_Strdup(&string_table[_check_getl32(&file[0], data)]);
+      /* 'x_offset'  -- String table offset for filename. */
+      string_index                           = _check_getl32(&file[0], data);
+      aux->_aux_symbol._aux_file.filename    = GP_Strdup(&string_table[string_index]);
+      /* 'x_incline' -- Line number at which this file was included, 0->not included. */
       aux->_aux_symbol._aux_file.line_number = _check_getl32(&file[4], data);
+      /* 'x_flags' */
       aux->_aux_symbol._aux_file.flags       = file[8];
       break;
 
     case AUX_IDENT:
-      aux->_aux_symbol._aux_ident.string = GP_Strdup(&string_table[_check_getl32(&file[0], data)]);
+      /* 'x_tagndx' -- Symbol index of struct/union/enum tagname. */
+      string_index                       = _check_getl32(&file[0], data);
+      aux->_aux_symbol._aux_ident.string = GP_Strdup(&string_table[string_index]);
       break;
 
     case AUX_SCN:
+      /* 'x_scnlen' -- Section Length. */
       aux->_aux_symbol._aux_scn.length  = _check_getl32(&file[0], data);
+      /* 'x_nreloc' -- Number of relocation entries. */
       aux->_aux_symbol._aux_scn.nreloc  = _check_getl16(&file[4], data);
+      /* 'x_nlinno' -- Number of line numbers. */
       aux->_aux_symbol._aux_scn.nlineno = _check_getl16(&file[6], data);
       break;
 
     case AUX_FCN_CALLS: {
-      uint32_t calleendx = _check_getl32(&file[0], data);
+      /* 'x_calleendx' -- Symbol table entry of callee - 1. */
+      calleendx = _check_getl32(&file[0], data);
 
       /* First symbol index is 0. */
       if (calleendx < i) {
@@ -409,6 +469,7 @@ _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type, const u
         lazy_linking[i].next         = lazy_linking[calleendx].next;
         lazy_linking[calleendx].next = &lazy_linking[i];
       }
+      /* 'x_is_interrupt' -- 0: not, 1: low, 2: high */
       aux->_aux_symbol._aux_fcn_calls.is_interrupt = _check_getl32(&file[4], data);
       break;
     }
@@ -430,12 +491,15 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const uint8_
   uint32_t               file_off;
   struct lazy_linking_s *current_lazy;
 
+  /*   's_zeros'  -- first four characters are 0 */
   if (_check_getl32(&file[0], data) == 0) {
     /* read name from the string table */
     offset       = _check_getl32(&file[4], data);
+    /* 's_offset' -- pointer to the string table */
     symbol->name = GP_Strdup(&string_table[offset]);
   }
   else {
+    /* 'name'     -- symbol name if less than 8 characters */
     memcpy(buffer, &file[0], 8);
     /* the name can occupy all 8 chars without a null terminator */
     buffer[8]    = '\0';
@@ -443,12 +507,15 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const uint8_
   }
 
   file_off  = 8;
+  /* 'value'      -- symbol value */
   symbol->value          = _check_getl32(&file[file_off], data);
   file_off += 4;
+  /* 'sec_num'    -- section number */
   symbol->section_number = _check_getl16(&file[file_off], data);
   file_off += 2;
 
   if (object->isnew) {
+    /* 'type' */
     type = _check_getl32(&file[file_off], data);
     file_off += 4;
 
@@ -457,6 +524,7 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const uint8_
   }
   else {
     /* TODO: Make sure the old format had this alignment. */
+    /* 'type' */
     type = _check_getl16(&file[file_off], data);
     file_off += 2;
 
@@ -464,13 +532,16 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const uint8_
     symbol->derived_type = type >> 4;
   }
 
+  /* 'st_class'   -- storage class */
   symbol->class      = file[file_off];
   file_off += 1;
+  /* 'num_auxsym' -- number of auxiliary symbols */
   symbol->num_auxsym = file[file_off];
   file_off += 1;
 
-  symbol->section  = NULL;
-  symbol->aux_list = NULL;
+  symbol->section       = NULL;
+  symbol->aux_list      = NULL;
+  symbol->aux_list_tail = NULL;
 
   lazy_linking[i].read.symbol = symbol;
   /* update those aux entries that pointed to us */
@@ -517,7 +588,7 @@ _read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_
     lazy_linking = (struct lazy_linking_s *)GP_Calloc(number, sizeof(struct lazy_linking_s));
 
     /* read the symbols */
-    file = &file[object->symbol_ptr];
+    file    = &file[object->symbol_ptr];
     current = object->symbols;
 
     for (i = 0; i < number; i++) {
@@ -536,7 +607,7 @@ _read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_
       if (num_auxsym > 0) {
         current->aux_list = gp_coffgen_make_block_aux(current->num_auxsym);
         current_aux = current->aux_list;
-        aux_type = gp_determine_aux(current);
+        aux_type = gp_determine_aux_symbol(current);
 
         /* read the aux symbols */
         for (j = 0; j < num_auxsym; j++) {
@@ -546,6 +617,7 @@ _read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_
             aux_type = AUX_FCN_CALLS;
           }
 
+          current->aux_list_tail = current_aux;
           current_aux = current_aux->next;
           file += object->symbol_size;
           i++;
@@ -556,9 +628,8 @@ _read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_
           /* COFF places all symbols inluding auxiliary, in the symbol table.
              However, in memory, gputils attaches auxiliary symbols to their
              associated primary symbol. When reading COFF, space is reserved
-             for the auxiliary symbols but not used. Later the space is
-             freed. This simplifies assigning the pointer in the
-             relocations. */
+             for the auxiliary symbols but not used. Later the space is freed.
+             This simplifies assigning the pointer in the relocations. */
           current = current->next;
         }
       }
@@ -583,7 +654,7 @@ _clean_symbol_table(gp_object_type *object)
   current = object->symbols;
 
   while (current != NULL) {
-    /* assign section pointer, section numbers start at 1 not 0 */
+    /* Assign section pointer, section numbers start at 1 not 0. */
     if (current->section_number > 0) {
       current->section = &object->sections[current->section_number - 1];
     }
@@ -596,8 +667,8 @@ _clean_symbol_table(gp_object_type *object)
       for (i = 0; i < current->num_auxsym; i++) {
         /* old_symbol = next_symbol; */
         next_symbol = next_symbol->next;
-        /* FIXME: Can't free the single symbols because they were allocated
-           in blocks. This won't be a problem once obstacks are used.
+        /* FIXME: Can't free the single symbols because they were allocated in blocks.
+           This won't be a problem once obstacks are used.
         free(old_symbol);
         */
       }

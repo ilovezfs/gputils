@@ -733,8 +733,9 @@ GPUTILS_GCC_DIAG_ON(switch)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
-               int file, int bit_number, void (*user_data_finder)(MemArg *)) {
+_pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
+                int file, int bit_number, void (*user_data_finder)(MemArg *))
+{
   proc_class_t         class;
   MemArgList           args;
   const gp_register_t *reg1;
@@ -796,8 +797,9 @@ pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_proce
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
-               int file, int bit_number, void (*user_data_finder)(MemArg *)) {
+_pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
+                int file, int bit_number, void (*user_data_finder)(MemArg *))
+{
   proc_class_t         class;
   MemArgList           args;
   const gp_register_t *reg1;
@@ -850,8 +852,9 @@ pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_proce
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
-               int file, int bit_number, void (*user_data_finder)(MemArg *)) {
+_pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
+                int file, int bit_number, void (*user_data_finder)(MemArg *))
+{
   proc_class_t         class;
   MemArgList           args;
   const gp_register_t *reg1;
@@ -900,8 +903,9 @@ pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_proce
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-pic16e_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
-                int file, int bit_number, gp_boolean ram_acc, void (*user_data_finder)(MemArg *)) {
+_pic16e_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
+                 int file, int bit_number, gp_boolean ram_acc, void (*user_data_finder)(MemArg *))
+{
   proc_class_t         class;
   MemArgList           args;
   const gp_register_t *reg1;
@@ -1342,7 +1346,7 @@ _insn_class_pf:
     case INSN_CLASS_OPF5:
       /* {PIC12x, SX} (clrf, movwf), SX tris */
       file1 = opcode & PIC12_BMSK_FILE;
-      pic12_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
+      _pic12_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if ((class == PROC_CLASS_PIC12) && (file1 == PIC12_REG_FSR)) {
         if (icode == ICODE_CLRF) {
@@ -1369,7 +1373,7 @@ _insn_class_pf:
       file1 = opcode & PIC12_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 5) & 1;
-      pic12_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
+      _pic12_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if (tmp == 0) {
         /* The destination the WREG. */
@@ -1387,7 +1391,7 @@ _insn_class_pf:
       file1 = opcode & PIC12_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 5) & 7;
-      pic12_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
+      _pic12_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
 
       if ((file1 == PIC12_REG_FSR) && ((tmp >= 5) && (tmp <= 7))) {
         tmp = 1 << (tmp - 5);
@@ -1410,7 +1414,7 @@ _insn_class_pf:
       file1 = opcode & PIC16_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 8) & 7;
-      pic16_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
+      _pic16_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
 
       tmp = 1 << tmp;
 
@@ -1448,7 +1452,7 @@ _insn_class_pf:
       file1 = opcode & PIC14_BMSK_FILE;
 
       if ((icode == ICODE_CLRF) || (icode == ICODE_MOVWF)) {
-        pic14_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
+        _pic14_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
       }
 
       if (class == PROC_CLASS_PIC14) {
@@ -1480,7 +1484,7 @@ _insn_class_pf:
     case INSN_CLASS_OPF8:
       /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
       file1 = opcode & PIC16_BMSK_FILE;
-      pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
+      _pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if ((icode == ICODE_MOVWF) && (file1 == PIC16_REG_BSR)) {
         if (fstate->wreg >= 0) {
@@ -1502,7 +1506,7 @@ _insn_class_pf:
       file1 = opcode & PIC14_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 7) & 1;
-      pic14_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
+      _pic14_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if (tmp == 0) {
         /* The destination the WREG. */
@@ -1519,7 +1523,7 @@ _insn_class_pf:
       file1 = opcode & PIC16_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 8) & 1;
-      pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
+      _pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if ((tmp == 0) || (file1 == PIC16_REG_WREG)) {
         /* The destination the WREG. */
@@ -1537,7 +1541,7 @@ _insn_class_pf:
       file1 = opcode & PIC14_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 7) & 7;
-      pic14_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
+      _pic14_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
 
       if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
         tmp = 1 << tmp;
@@ -1585,7 +1589,7 @@ _insn_class_pf:
       file1   = opcode & PIC16_BMSK_FILE;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode & 0x100) ? true : false;
-      addr    = pic16e_reg_eval(m, byte_address, fstate, processor, file1, -1, ram_acc, user_data_finder);
+      addr    = _pic16e_reg_eval(m, byte_address, fstate, processor, file1, -1, ram_acc, user_data_finder);
 
       if (addr == PIC16E_REG_BSR) {
         /* The address of register is known. */
@@ -1612,7 +1616,7 @@ _insn_class_pf:
       tmp     = (opcode >> 9) & 7;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode & 0x100) ? true : false;
-      addr    = pic16e_reg_eval(m, byte_address, fstate, processor, file1, tmp, ram_acc, user_data_finder);
+      addr    = _pic16e_reg_eval(m, byte_address, fstate, processor, file1, tmp, ram_acc, user_data_finder);
 
       if ((addr == PIC16E_REG_BSR) && IS_VALID_BANK(PIC16_BMSK_BANK)) {
         /* The address of register is known and known the value of. */
@@ -1641,7 +1645,7 @@ _insn_class_pf:
       tmp     = (opcode >> 9) & 1;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode & 0x100) ? true : false;
-      addr    = pic16e_reg_eval(m, byte_address, fstate, processor, file1, -1, ram_acc, user_data_finder);
+      addr    = _pic16e_reg_eval(m, byte_address, fstate, processor, file1, -1, ram_acc, user_data_finder);
 
       if ((addr == PIC16E_REG_BSR) && (tmp != 0)) {
         fstate->bank_valid = 0;
@@ -1653,7 +1657,7 @@ _insn_class_pf:
     case INSN_CLASS_TBL2:
       /* PIC16 (tlrd, tlwt) */
       file1 = opcode & PIC16_BMSK_FILE;
-      pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
+      _pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if (icode == ICODE_TLRD) {
         if (file1 == PIC16_REG_WREG) {
@@ -1670,7 +1674,7 @@ _insn_class_pf:
     case INSN_CLASS_TBL3:
       /* PIC16 (tablrd, tablwt) */
       file1 = opcode & PIC16_BMSK_FILE;
-      pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
+      _pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if (icode == ICODE_TABLRD) {
         if (file1 == PIC16_REG_WREG) {
@@ -1723,7 +1727,7 @@ print_word(char *buffer, size_t buffer_length, size_t current_length,
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-show_word(char *buffer, size_t buffer_length, size_t current_length, const uint8_t *bytes)
+_show_word(char *buffer, size_t buffer_length, size_t current_length, const uint8_t *bytes)
 {
   unsigned int v;
 
@@ -1783,7 +1787,7 @@ gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int 
       length = current_length + l;
 
       if (behavior & GPDIS_SHOW_BYTES) {
-        show_word(buffer, buffer_length, length, bytes);
+        _show_word(buffer, buffer_length, length, bytes);
       }
     }
     else {
@@ -1817,7 +1821,7 @@ gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int 
         length = current_length + l;
 
         if (behavior & GPDIS_SHOW_BYTES) {
-          show_word(buffer, buffer_length, length, bytes);
+          _show_word(buffer, buffer_length, length, bytes);
         }
       }
     }

@@ -317,7 +317,6 @@ struct syment {
 struct aux_file {
   uint32_t x_offset;    /* String table offset for filename. */
   uint32_t x_incline;   /* Line number at which this file was included, 0->not included. */
-                        
   uint8_t  x_flags;
   uint8_t  _unused[11];
 };
@@ -357,7 +356,7 @@ struct aux_fcn {
   uint8_t  _unused[2];
 };
 
-/* Auxiliary symbol table entry for an array */
+/* Auxiliary symbol table entry for an array. */
 struct aux_arr {
   uint32_t x_tagndx;    /* Unused?? Tag Index. */
   uint16_t x_lnno;      /* Unused?? Line number declaration. */
@@ -384,7 +383,7 @@ struct aux_bobf {
 
 /* Auxiliary symbol table entry for a variable of type struct/union/enum. */
 struct aux_var {
-  uint32_t x_tagndx;    /* Symbol Index of struct/union/enum tagname. */
+  uint32_t x_tagndx;    /* Symbol index of struct/union/enum tagname. */
   uint8_t  _unused0[2];
   uint16_t x_size;      /* Size of the struct/union/enum. */
   uint8_t  _unused1[12];
@@ -498,6 +497,12 @@ typedef struct gp_aux_type {
   struct gp_aux_type *next;
 } gp_aux_type;
 
+/* A optimize constant for the gpsymbol.c module. */
+#define OPT_FLAGS_GPSYMBOL_MODULE       (1 << 0)
+
+/* A optimize constant for the gpcoffopt.c module. */
+#define OPT_FLAGS_GPCOFFOPT_MODULE      (1 << 1)
+
 /* symbol linked list */
 
 typedef struct gp_symbol_type {
@@ -529,14 +534,20 @@ typedef struct gp_symbol_type {
   /* number of auxiliary symbols */
   uint8_t                 num_auxsym;
 
-  /* auxiliary symbols */
+  /* head of auxiliary symbols */
   gp_aux_type            *aux_list;
+
+  /* tail of auxiliary symbols */
+  gp_aux_type            *aux_list_tail;
 
   /* symbol number, only valid when writing coff or cod file */
   uint32_t                number;
 
-  /* use the optimization */
-  uint32_t                opt_flags;
+  /* use the optimization -- "OPT_FLAGS_..." */
+  unsigned int            opt_flags;
+
+  /* number of relocation links */
+  unsigned int            num_reloc_link;
 
   struct gp_symbol_type  *next;
 } gp_symbol_type;
@@ -557,7 +568,7 @@ typedef struct gp_section_type {
   /* section symbol */
   gp_symbol_type          *symbol;
 
-  /* flags */
+  /* flags -- "STYP_..." */
   uint32_t                 flags;
 
   /* section physical address in bytes */
@@ -593,7 +604,9 @@ typedef struct gp_section_type {
   /* tail of line numbers */
   gp_linenum_type         *line_numbers_tail;
 
-  gp_linenum_type        **linenum_array;
+  /* Ordered, filtered array unto binary searches. */
+  gp_linenum_type        **line_numbers_array;
+  uint16_t                 line_numbers_array_length;
 
   /* this section required for symbol resolution, only valid when linking */
   gp_boolean               is_used;
@@ -610,7 +623,7 @@ typedef struct gp_section_type {
   /* linenumber pointer, only valid when writing coff file */
   uint32_t                 lineno_ptr;
 
-  /* use the optimization */
+  /* use the optimization -- "OPT_FLAGS_..." */
   uint32_t                 opt_flags;
 
   struct gp_section_type  *next;

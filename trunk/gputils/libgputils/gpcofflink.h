@@ -94,7 +94,8 @@ extern void gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shi
 
 extern void gp_cofflink_make_linenum_arrays(gp_object_type *object);
 
-extern gp_linenum_type *gp_cofflink_find_linenum(const gp_section_type *section, unsigned int line_number);
+extern gp_linenum_type *gp_cofflink_find_linenum(const gp_section_type *section, const gp_symbol_type *symbol,
+                                                 unsigned int line_number);
 
 extern void gp_cofflink_fill_pages(gp_object_type *object, MemBlock *m, const symbol_table_t *sections);
 

@@ -29,7 +29,10 @@ Boston, MA 02111-1307, USA.  */
 #include "parse.h"
 #include "coff.h"
 
-gp_boolean enforce_arity(int arity, int must_be)
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+enforce_arity(int arity, int must_be)
 {
   if (arity == must_be) {
     return true;
@@ -41,11 +44,15 @@ gp_boolean enforce_arity(int arity, int must_be)
     else {
       gperror_verror(GPE_TOO_MANY_ARGU, NULL);
     }
+
     return false;
   }
 }
 
-gp_boolean enforce_simple(const pnode_t *p)
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+enforce_simple(const pnode_t *p)
 {
   switch (p->tag) {
   case PTAG_SYMBOL:
@@ -62,7 +69,10 @@ gp_boolean enforce_simple(const pnode_t *p)
   return false;
 }
 
-int list_length(const pnode_t *L)
+/*------------------------------------------------------------------------------------------------*/
+
+int
+list_length(const pnode_t *L)
 {
   const pnode_t *p = L;
   int            n = 0;
@@ -75,8 +85,15 @@ int list_length(const pnode_t *L)
   return ((p != NULL) ? (n + 1) : n);
 }
 
-gp_boolean can_evaluate(const pnode_t *p)
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+can_evaluate(const pnode_t *p)
 {
+  char              buf[BUFSIZ];
+  const symbol_t   *sym;
+  const variable_t *var;
+
   switch (p->tag) {
   case PTAG_CONSTANT:
     return true;
@@ -89,21 +106,18 @@ gp_boolean can_evaluate(const pnode_t *p)
 
   case PTAG_SYMBOL:
     {
-      char            buf[BUFSIZ];
-      const symbol_t *s;
-
       /* '$' means current org, which we can always evaluate */
       if (strcmp(p->value.symbol, "$") == 0) {
         return true;
       }
       else {
-        const variable_t *var = NULL;
+        /* Otherwise look it up. */
+        sym = sym_get_symbol(state.stTop, p->value.symbol);
 
-        /* Otherwise look it up */
-        s = sym_get_symbol(state.stTop, p->value.symbol);
+        if (sym == NULL) {
+          var = NULL;
 
-        if (s == NULL) {
-          if (*p->value.symbol == '\0') {
+          if (p->value.symbol[0] == '\0') {
             gperror_verror(GPE_MISSING_ARGU, NULL);
           }
           else {
@@ -111,7 +125,7 @@ gp_boolean can_evaluate(const pnode_t *p)
           }
         }
         else {
-          var = sym_get_symbol_annotation(s);
+          var = sym_get_symbol_annotation(sym);
 
           if (var == NULL) {
             snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", p->value.symbol);
@@ -119,7 +133,7 @@ gp_boolean can_evaluate(const pnode_t *p)
           }
         }
 
-        return ((s != NULL) && (var != NULL));
+        return ((sym != NULL) && (var != NULL));
       }
     }
 
@@ -140,8 +154,14 @@ gp_boolean can_evaluate(const pnode_t *p)
   return false;
 }
 
-gp_boolean can_evaluate_value(const pnode_t *p)
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+can_evaluate_value(const pnode_t *p)
 {
+  const symbol_t   *sym;
+  const variable_t *var;
+
   switch (p->tag) {
   case PTAG_CONSTANT:
     return true;
@@ -159,13 +179,13 @@ gp_boolean can_evaluate_value(const pnode_t *p)
     }
     else {
       /* Otherwise look it up */
-      symbol_t *s = sym_get_symbol(state.stTop, p->value.symbol);
+      sym = sym_get_symbol(state.stTop, p->value.symbol);
 
-      if (s == NULL) {
+      if (sym == NULL) {
         return false;
       }
       else {
-        const variable_t *var = sym_get_symbol_annotation(s);
+        var = sym_get_symbol_annotation(sym);
 
         if (NULL == var) {
           return false;
@@ -203,14 +223,21 @@ gp_boolean can_evaluate_value(const pnode_t *p)
   return false;
 }
 
-static int is_program_segment(const pnode_t *p)
-{
-  if ((p->tag == PTAG_SYMBOL) && (strcmp(p->value.symbol, "$") != 0)) {
-    const symbol_t   *s   = sym_get_symbol(state.stTop, p->value.symbol);
-    const variable_t *var = sym_get_symbol_annotation(s);
+/*------------------------------------------------------------------------------------------------*/
 
+static gp_boolean
+_is_program_segment(const pnode_t *p)
+{
+  const symbol_t   *sym;
+  const variable_t *var;
+
+  if ((p->tag == PTAG_SYMBOL) && (strcmp(p->value.symbol, "$") != 0)) {
+    sym = sym_get_symbol(state.stTop, p->value.symbol);
+    assert(sym != NULL);
+
+    var = sym_get_symbol_annotation(sym);
     assert(var != NULL);
-    /* If var type is GVT_ADDRESS return 1, else return 0. */
+    /* If var type is GVT_ADDRESS return true, else return false. */
     return ((var->type == GVT_ADDRESS) ? true : false);
   }
   else {
@@ -218,8 +245,12 @@ static int is_program_segment(const pnode_t *p)
   }
 }
 
-gpasmVal evaluate(const pnode_t *p)
+/*------------------------------------------------------------------------------------------------*/
+
+gpasmVal
+evaluate(const pnode_t *p)
 {
+  const symbol_t   *sym;
   const variable_t *var;
   gpasmVal          p0;
   gpasmVal          p1;
@@ -233,16 +264,17 @@ gpasmVal evaluate(const pnode_t *p)
 
   case PTAG_SYMBOL:
     {
-      const symbol_t *s;
-
       if (strcmp(p->value.symbol, "$") == 0) {
         return (IS_RAM_ORG ? state.byte_addr :
                              gp_processor_byte_to_real(state.processor, state.byte_addr));
       }
       else {
-        s = sym_get_symbol(state.stTop, p->value.symbol);
-        var = sym_get_symbol_annotation(s);
+        sym = sym_get_symbol(state.stTop, p->value.symbol);
+        assert(sym != NULL);
+
+        var = sym_get_symbol_annotation(sym);
         assert(var != NULL);
+
         return var->value;
       }
     }
@@ -267,11 +299,11 @@ gpasmVal evaluate(const pnode_t *p)
     case HIGH:
       {
         gpasmVal val = (evaluate(p->value.unop.p0) >> 8) & 0xff;
-        /* set 7th bit if in absolute mode and PROC_CLASS_PIC14E or PROC_CLASS_PIC14EX and
-         * address relative mode is handled by the linker */
+        /* Set 7th bit if in absolute mode and PROC_CLASS_PIC14E or PROC_CLASS_PIC14EX and
+         * address relative mode is handled by the linker. */
         if ((state.mode == MODE_ABSOLUTE) && (IS_PIC14E_CORE || IS_PIC14EX_CORE) &&
-            is_program_segment(p->value.unop.p0)) {
-          val |= 0x80;
+            _is_program_segment(p->value.unop.p0)) {
+          val |= PIC14E_FSRxH_FLASH_SEL;
         }
         return val;
       }
@@ -338,7 +370,7 @@ gpasmVal evaluate(const pnode_t *p)
         return (p0 << p1);
       }
       else {
-      /* x << n results sign extension for n >= (sizeof(int) * 8) */
+        /* x << n results sign extension for n >= (sizeof(int) * 8) */
         return ((p1 >= (sizeof(int) * 8)) ? ((p0 < 0) ? -1 : 0) : (p0 << p1));
       }
 
@@ -393,10 +425,13 @@ gpasmVal evaluate(const pnode_t *p)
   return 0;    /* Should never reach here. */
 }
 
-/* Attempt to evaluate expression 'p'.  Return its value if
- * successful, otherwise generate an error message and return 0.  */
+/*------------------------------------------------------------------------------------------------*/
 
-gpasmVal maybe_evaluate(const pnode_t *p)
+/* Attempt to evaluate expression 'p'. Return its value if successful,
+ * otherwise generate an error message and return 0.  */
+
+gpasmVal
+maybe_evaluate(const pnode_t *p)
 {
   gpasmVal r;
 
@@ -410,11 +445,14 @@ gpasmVal maybe_evaluate(const pnode_t *p)
   return r;
 }
 
-/* count the number of relocatable addesses in the expression */
+/*------------------------------------------------------------------------------------------------*/
 
-int count_reloc(const pnode_t *p)
+/* Count the number of relocatable addesses in the expression. */
+
+int
+count_reloc(const pnode_t *p)
 {
-  const symbol_t   *s;
+  const symbol_t   *sym;
   const variable_t *var;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -433,9 +471,10 @@ int count_reloc(const pnode_t *p)
       return 1;
     }
     else {
-      s = sym_get_symbol(state.stTop, p->value.symbol);
-      if (s != NULL) {
-        var = sym_get_symbol_annotation(s);
+      sym = sym_get_symbol(state.stTop, p->value.symbol);
+
+      if (sym != NULL) {
+        var = sym_get_symbol_annotation(sym);
 
         if (var != NULL) {
           switch (var->type) {
@@ -457,7 +496,7 @@ int count_reloc(const pnode_t *p)
     return count_reloc(p->value.unop.p0);
 
   case PTAG_BINOP:
-    return count_reloc(p->value.binop.p0) + count_reloc(p->value.binop.p1);
+    return (count_reloc(p->value.binop.p0) + count_reloc(p->value.binop.p1));
 
   default:
     assert(0);
@@ -466,16 +505,20 @@ int count_reloc(const pnode_t *p)
   return 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* When generating object files, operands with relocatable addresses can only be
    [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offs>]) */
 
 static void
 _add_reloc(const pnode_t *p, short offs, uint16_t type)
 {
-  const symbol_t   *s;
+  const symbol_t   *sym;
   const variable_t *var;
   char              buffer[BUFSIZ];
+  int               digits;
   unsigned int      org;
+  enum globalLife   life;
 
   switch (p->tag) {
   case PTAG_OFFSET:
@@ -484,24 +527,31 @@ _add_reloc(const pnode_t *p, short offs, uint16_t type)
 
   case PTAG_SYMBOL:
     if (strcmp(p->value.symbol, "$") == 0) {
-
-      org = IS_RAM_ORG ? state.byte_addr :
-                         gp_processor_byte_to_real(state.processor, state.byte_addr);
-
-      snprintf(buffer, sizeof(buffer), "_%s_%04X", state.obj.new_sect_name, org);
-      /* RELOCT_ACCESS has always also RELOCT_F, which has already
-         created this symbol.*/
-      if (type != RELOCT_ACCESS) {
-        set_global(buffer, org, LFT_PERMANENT, IS_RAM_ORG ? GVT_STATIC : GVT_ADDRESS, false);
+      if (IS_RAM_ORG) {
+        digits = state.device.class->word_digits;
+        org    = state.byte_addr;
+        life   = GVT_STATIC;
+      }
+      else {
+        digits = state.device.class->addr_digits;
+        org    = gp_processor_byte_to_real(state.processor, state.byte_addr);
+        life   = GVT_ADDRESS;
       }
 
-      s = sym_get_symbol(state.stTop, buffer);
+      snprintf(buffer, sizeof(buffer), "_%s_%0*X", state.obj.new_sect_name, digits, org);
+      /* RELOCT_ACCESS has always also RELOCT_F, which has already created this symbol. */
+      if (type != RELOCT_ACCESS) {
+        set_global(buffer, org, LFT_PERMANENT, life, false);
+      }
+
+      sym = sym_get_symbol(state.stTop, buffer);
     }
     else {
-      s = sym_get_symbol(state.stTop, p->value.symbol);
+      sym = sym_get_symbol(state.stTop, p->value.symbol);
     }
-    if (s != NULL) {
-      var = sym_get_symbol_annotation(s);
+
+    if (sym != NULL) {
+      var = sym_get_symbol_annotation(sym);
 
       if (var != NULL) {
         switch(var->type) {
@@ -509,7 +559,7 @@ _add_reloc(const pnode_t *p, short offs, uint16_t type)
         case GVT_GLOBAL:
         case GVT_STATIC:
         case GVT_ADDRESS:
-          coff_reloc(var->coff_num, offs, type);
+          coff_reloc(var->coff_symbol_num, offs, type);
           return;
 
         default:
@@ -549,7 +599,7 @@ _add_reloc(const pnode_t *p, short offs, uint16_t type)
   case PTAG_BINOP:
     switch (p->value.binop.op) {
     case '+':
-      /* The symbol can be in either position */
+      /* The symbol can be in either position. */
       if (count_reloc(p->value.binop.p0) == 1) {
         _add_reloc(p->value.binop.p0, offs + maybe_evaluate(p->value.binop.p1), type);
       }
@@ -559,7 +609,7 @@ _add_reloc(const pnode_t *p, short offs, uint16_t type)
       return;
 
     case '-':
-      /* The symbol has to be first */
+      /* The symbol has to be first. */
       if (count_reloc(p->value.binop.p0) == 1) {
         _add_reloc(p->value.binop.p0, offs - maybe_evaluate(p->value.binop.p1), type);
       }
@@ -589,7 +639,7 @@ _add_reloc(const pnode_t *p, short offs, uint16_t type)
       return;
 
     default:
-      assert(0); /* Unhandled binary operator */
+      assert(0); /* Unhandled binary operator. */
     }
     return;
 
@@ -599,12 +649,12 @@ _add_reloc(const pnode_t *p, short offs, uint16_t type)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* Determine if the expression is the difference between two symbols in
-   the same section.  If so, calculate the offset and don't generate a
-   relocation.
+   the same section. If so, calculate the offset and don't generate a relocation.
 
    [UPPER|HIGH|LOW]([<relocatable symbol>] - [<relocatable symbol>])
-
 */
 
 static gp_boolean
@@ -627,8 +677,7 @@ _same_section(const pnode_t *p)
   }
 
   if ((p->tag != PTAG_BINOP) ||
-      (p->value.binop.op != '-') ||
-      (count_reloc(p->value.binop.p0) != 1)) {
+      (p->value.binop.op != '-') || (count_reloc(p->value.binop.p0) != 1)) {
     return false;
   }
 
@@ -656,7 +705,10 @@ _same_section(const pnode_t *p)
   return true;
 }
 
-gpasmVal reloc_evaluate(const pnode_t *p, uint16_t type)
+/*------------------------------------------------------------------------------------------------*/
+
+gpasmVal
+reloc_evaluate(const pnode_t *p, uint16_t type)
 {
   gpasmVal r = 0;
   int      count = 0;
@@ -692,8 +744,12 @@ gpasmVal reloc_evaluate(const pnode_t *p, uint16_t type)
   return r;
 }
 
-/* evaluate the number of passes for the "fill" directive*/
-int eval_fill_number(const pnode_t *p)
+/*------------------------------------------------------------------------------------------------*/
+
+/* Evaluate the number of passes for the "fill" directive. */
+
+int
+eval_fill_number(const pnode_t *p)
 {
   int number;
 

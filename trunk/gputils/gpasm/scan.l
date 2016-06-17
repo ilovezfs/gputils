@@ -680,7 +680,7 @@ open_src(const char *name, gp_boolean isinclude)
       /* We didn't find a match so check for lower case. This is mainly for
          Microchip examples and some includes in which filenames were written
          without regard to case. */
-      char *lower_case_name = gp_lower_case(name);
+      char *lower_case_name = gp_strdup_lower_case(name);
 
       _search_paths(new, lower_case_name);
       free(lower_case_name);

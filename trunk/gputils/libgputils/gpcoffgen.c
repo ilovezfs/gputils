@@ -217,6 +217,8 @@ gp_coffgen_add_reloc(gp_section_type *section)
 gp_reloc_type *
 gp_coffgen_del_reloc(gp_section_type *section, gp_reloc_type *relocation)
 {
+  gp_symbol_type *symbol;
+
   if ((section->relocations == NULL) || (section->num_reloc == 0)) {
     return NULL;
   }
@@ -238,6 +240,15 @@ gp_coffgen_del_reloc(gp_section_type *section, gp_reloc_type *relocation)
   }
 
   (section->num_reloc)--;
+
+  symbol = relocation->symbol;
+
+  if (symbol->num_reloc_link > 0) {
+    (symbol->num_reloc_link)--;
+  }
+  else {
+    gp_warning("Number of relocation links of symbol is zero: '%s'", symbol->name);
+  }
 
   return relocation;
 }
@@ -497,29 +508,26 @@ gp_coffgen_find_symbol_section_value(gp_object_type *object, const char *section
 /*------------------------------------------------------------------------------------------------*/
 
 gp_aux_type *
-gp_coffgen_add_aux(gp_object_type *object, gp_symbol_type *symbol)
+gp_coffgen_add_aux(gp_object_type *Object, gp_symbol_type *Symbol)
 {
   gp_aux_type *new;
-  gp_aux_type *list;
 
   /* allocate memory for the auxiliary symbol */
   new = (gp_aux_type *)GP_Calloc(1, sizeof(gp_aux_type));
 
-  if (symbol->aux_list == NULL) {
+  if (Symbol->aux_list == NULL) {
     /* the list is empty */
-    symbol->aux_list = new;
+    Symbol->aux_list = new;
   }
   else {
     /* append the new object to the end of the list */
-    list = symbol->aux_list;
-    while (list->next != NULL) {
-      list = list->next;
-    }
-    list->next = new;
+    Symbol->aux_list_tail->next = new;
   }
 
-  (symbol->num_auxsym)++;
-  (object->num_symbols)++;
+  Symbol->aux_list_tail = new;
+
+  (Symbol->num_auxsym)++;
+  (Object->num_symbols)++;
 
   return new;
 }
@@ -527,24 +535,24 @@ gp_coffgen_add_aux(gp_object_type *object, gp_symbol_type *symbol)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_symbol_type *
-gp_coffgen_add_symbol(gp_object_type *object)
+gp_coffgen_add_symbol(gp_object_type *Object)
 {
   gp_symbol_type *new;
 
   /* allocate memory for the symbol */
   new = (gp_symbol_type *)GP_Calloc(1, sizeof(gp_symbol_type));
-  new->number = object->num_symbols;
+  new->number = Object->num_symbols;
 
-  if (object->symbols == NULL) {
+  if (Object->symbols == NULL) {
     /* the list is empty */
-    object->symbols = new;
+    Object->symbols = new;
   }
   else {
-    object->symbols_tail->next = new;
+    Object->symbols_tail->next = new;
   }
 
-  object->symbols_tail = new;
-  (object->num_symbols)++;
+  Object->symbols_tail = new;
+  (Object->num_symbols)++;
 
   return new;
 }
@@ -552,34 +560,34 @@ gp_coffgen_add_symbol(gp_object_type *object)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_symbol_type *
-gp_coffgen_del_symbol(gp_object_type *object, gp_symbol_type *symbol)
+gp_coffgen_del_symbol(gp_object_type *Object, gp_symbol_type *Symbol)
 {
   gp_symbol_type *list;
   gp_symbol_type *previous;
   gp_symbol_type *removed;
 
-  if (object == NULL) {
+  if (Object == NULL) {
     return NULL;
   }
 
-  list     = object->symbols;
+  list     = Object->symbols;
   previous = NULL;
   removed  = NULL;
 
   while (list != NULL) {
-    if (list == symbol) {
-      removed = symbol;
+    if (list == Symbol) {
+      removed = Symbol;
 
       if (previous == NULL) {
         /* removing the first symbol in the list */
-        object->symbols = list->next;
-        if (object->symbols == NULL) {
+        Object->symbols = list->next;
+        if (Object->symbols == NULL) {
           /* there are no symbols in the list */
-          object->symbols_tail = NULL;
+          Object->symbols_tail = NULL;
         }
-        else if (object->symbols->next == NULL) {
+        else if (Object->symbols->next == NULL) {
           /* there is one symbol in the list */
-          object->symbols_tail = object->symbols;
+          Object->symbols_tail = Object->symbols;
         }
       }
       else {
@@ -587,7 +595,7 @@ gp_coffgen_del_symbol(gp_object_type *object, gp_symbol_type *symbol)
 
         if (list->next == NULL) {
           /* The last symbol in the list is being removed, so update the tail. */
-          object->symbols_tail = previous;
+          Object->symbols_tail = previous;
         }
       }
       break;
@@ -596,9 +604,9 @@ gp_coffgen_del_symbol(gp_object_type *object, gp_symbol_type *symbol)
     list = list->next;
   }
 
-  object->num_symbols -= symbol->num_auxsym + 1;
+  Object->num_symbols -= Symbol->num_auxsym + 1;
 
-  /* FIXME: gp_coffgen_free_symbol(symbol); */
+  /* FIXME: gp_coffgen_free_symbol(Symbol); */
 
   return removed;
 }
@@ -608,25 +616,9 @@ gp_coffgen_del_symbol(gp_object_type *object, gp_symbol_type *symbol)
 /* Determine if any relocation uses the symbol. */
 
 gp_boolean
-gp_coffgen_has_reloc(const gp_object_type *object, const gp_symbol_type *symbol)
+gp_coffgen_symbol_has_reloc(const gp_symbol_type *Symbol)
 {
-  gp_section_type *section;
-  gp_reloc_type   *relocation;
-
-  section = object->sections;
-
-  while (section != NULL) {
-    relocation = section->relocations;
-    while (relocation != NULL) {
-      if (relocation->symbol == symbol) {
-        return true;
-      }
-      relocation = relocation->next;
-    }
-    section = section->next;
-  }
-
-  return false;
+  return ((Symbol->num_reloc_link > 0) ? true : false);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -634,7 +626,7 @@ gp_coffgen_has_reloc(const gp_object_type *object, const gp_symbol_type *symbol)
 /* Determine if the symbol is global. */
 
 gp_boolean
-gp_coffgen_is_global(const gp_symbol_type *Symbol)
+gp_coffgen_is_global_symbol(const gp_symbol_type *Symbol)
 {
   return (((Symbol->class == C_EXT) && (Symbol->section_number == N_SCNUM)) ? true : false);
 }
@@ -644,7 +636,7 @@ gp_coffgen_is_global(const gp_symbol_type *Symbol)
 /* Determine if the symbol is external. */
 
 gp_boolean
-gp_coffgen_is_external(const gp_symbol_type *Symbol)
+gp_coffgen_is_external_symbol(const gp_symbol_type *Symbol)
 {
   return (((Symbol->class == C_EXT) && (Symbol->section_number == N_UNDEF)) ? true : false);
 }
@@ -654,9 +646,9 @@ gp_coffgen_is_external(const gp_symbol_type *Symbol)
 /* Determine if the symbol is debug. */
 
 gp_boolean
-gp_coffgen_is_debug(const gp_symbol_type *Symbol)
+gp_coffgen_is_debug_symbol(const gp_symbol_type *Symbol)
 {
-  return ((Symbol->class == N_DEBUG) ? true : false);
+  return (((Symbol->class == C_NULL) && (Symbol->section_number == N_DEBUG)) ? true : false);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -664,9 +656,9 @@ gp_coffgen_is_debug(const gp_symbol_type *Symbol)
 /* Determine if the symbol is absolute. */
 
 gp_boolean
-gp_coffgen_is_absolute(const gp_symbol_type *Symbol)
+gp_coffgen_is_absolute_symbol(const gp_symbol_type *Symbol)
 {
-  return ((Symbol->class == N_ABS) ? true : false);
+  return (((Symbol->class == C_NULL) && (Symbol->section_number == N_ABS)) ? true : false);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -853,8 +845,8 @@ gp_coffgen_free_section(gp_section_type *section)
     free(old_line_number);
   }
 
-  if (section->linenum_array != NULL) {
-    free(section->linenum_array);
+  if (section->line_numbers_array != NULL) {
+    free(section->line_numbers_array);
   }
 
   free(section->name);
@@ -863,12 +855,12 @@ gp_coffgen_free_section(gp_section_type *section)
 
 /*------------------------------------------------------------------------------------------------*/
 
-int
+unsigned int
 gp_coffgen_free_symbol(gp_symbol_type *symbol)
 {
   gp_aux_type *aux;
   gp_aux_type *old_aux;
-  int          num_auxsym;
+  unsigned int num_auxsym;
 
   if (symbol == NULL) {
     return 0;
@@ -893,7 +885,7 @@ gp_coffgen_free_symbol(gp_symbol_type *symbol)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-gp_coffgen_free(gp_object_type *object)
+gp_coffgen_free_object(gp_object_type *object)
 {
   gp_section_type *section;
   gp_symbol_type  *symbol;
@@ -932,7 +924,7 @@ gp_coffgen_free(gp_object_type *object)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_determine_aux(gp_symbol_type *symbol)
+gp_determine_aux_symbol(gp_symbol_type *symbol)
 {
   int aux_type = AUX_NONE;
 

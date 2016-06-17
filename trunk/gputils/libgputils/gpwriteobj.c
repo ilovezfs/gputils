@@ -30,12 +30,12 @@ Boston, MA 02111-1307, USA.  */
 
 /* write the symbol or section name into the string table */
 
-static int
-_addstring(const char *name, unsigned char *table)
+static unsigned int
+_add_string(const char *name, uint8_t *table)
 {
-  int    nbytes;
-  int    offset;
-  size_t sizeof_name;
+  uint32_t nbytes;
+  uint32_t offset;
+  uint32_t sizeof_name;
 
   assert(name != NULL);
 
@@ -60,10 +60,12 @@ _addstring(const char *name, unsigned char *table)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_addname(const char *name, FILE *fp, unsigned char *table)
+_add_name(const char *name, FILE *fp, uint8_t *table)
 {
-  int length;
-  int offset;
+  static const uint8_t zero[8] = { 0, };
+
+  uint32_t             length;
+  uint32_t             offset;
 
   if (name == NULL) {
     return;
@@ -71,22 +73,21 @@ _addname(const char *name, FILE *fp, unsigned char *table)
 
   length = strlen(name);
 
-  if (length < 9) {
-    static const unsigned char zero[8];
+  if (length <= sizeof(zero)) {
     /* The string will fit in the structure. */
     if (length > 0) {
-      gp_fputvar(name, length, fp);
+      gp_fputvar(name, length, fp);     /* section name if less then 8 characters */
     }
 
-    if (length < 8) {
-      gp_fputvar(zero, 8 - length, fp);
+    if (length < sizeof(zero)) {
+      gp_fputvar(zero, sizeof(zero) - length, fp);
     }
   } else {
-    offset = _addstring(name, table);
+    offset = _add_string(name, table);
 
     /* write zeros and offset */
-    gp_fputl32(0, fp);
-    gp_fputl32(offset, fp);
+    gp_fputl32(0, fp);                  /* first four characters are 0 */
+    gp_fputl32(offset, fp);             /* pointer to the string table */
   }
 }
 
@@ -97,12 +98,19 @@ _addname(const char *name, FILE *fp, unsigned char *table)
 static void
 _write_filehdr(const gp_object_type *object, FILE *fp)
 {
+  /* 'f_magic'  -- magic number */
   gp_fputl16((object->isnew ? MICROCHIP_MAGIC_v2 : MICROCHIP_MAGIC_v1), fp);
+  /* 'f_nscns'  -- number of sections */
   gp_fputl16(object->num_sections, fp);
+  /* 'f_timdat' -- time and date stamp */
   gp_fputl32(object->time, fp);
+  /* 'f_symptr' -- file ptr to symtab */
   gp_fputl32(object->symbol_ptr, fp);
+  /* 'f_nsyms'  -- # symtab entries */
   gp_fputl32(object->num_symbols, fp);
+  /* 'f_opthdr' -- sizeof(opt hdr) */
   gp_fputl16((object->isnew ? OPT_HDR_SIZ_v2: OPT_HDR_SIZ_v1), fp);
+  /* 'f_flags'  -- flags */
   gp_fputl16(object->flags, fp);
 }
 
@@ -113,14 +121,16 @@ _write_filehdr(const gp_object_type *object, FILE *fp)
 static void
 _write_opthdr(const gp_object_type *object, FILE *fp)
 {
-  unsigned long coff_type = gp_processor_coff_type(object->processor);
+  uint32_t coff_type = gp_processor_coff_type(object->processor);
 
   /* make sure we catch unfinished processors */
   assert(coff_type != 0);
 
   /* write the data to file */
+  /* 'opt_magic' */
   gp_fputl16(object->isnew ? OPTMAGIC_v2 : OPTMAGIC_v1, fp);
 
+  /* 'vstamp' -- version stamp of compiler */
   if (object->isnew) {
     gp_fputl32(1, fp);
   }
@@ -128,8 +138,11 @@ _write_opthdr(const gp_object_type *object, FILE *fp)
     gp_fputl16(1, fp);
   }
 
+  /* 'proc_type'      -- processor type */
   gp_fputl32(coff_type, fp);
+  /* 'rom_width_bits' -- ROM width bits */
   gp_fputl32(gp_processor_rom_width(object->class), fp);
+  /* 'ram_width_bits' -- RAM width bits */
   gp_fputl32(8, fp);
 }
 
@@ -138,23 +151,33 @@ _write_opthdr(const gp_object_type *object, FILE *fp)
 /* write the section header */
 
 static void
-_write_scnhdr(const gp_section_type *section, int org_to_byte_shift,
-              unsigned char *table, FILE *fp)
+_write_scnhdr(const gp_section_type *section, int org_to_byte_shift, uint8_t *table, FILE *fp)
 {
-  if (!(section->flags & (STYP_TEXT | STYP_DATA_ROM))) {
+  uint32_t section_address;
+
+  if ((section->flags & (STYP_TEXT | STYP_DATA_ROM)) == 0) {
     org_to_byte_shift = 0;
   }
 
-  _addname(section->name, fp, table);
-  gp_fputl32(gp_byte_to_org(org_to_byte_shift, section->address), fp);
-  gp_fputl32(gp_byte_to_org(org_to_byte_shift, section->address), fp);
+  section_address = gp_byte_to_org(org_to_byte_shift, section->address);
+  _add_name(section->name, fp, table);
+  /* 's_paddr'   -- physical address */
+  gp_fputl32(section_address, fp);
+  /* 's_vaddr'   -- virtual address */
+  gp_fputl32(section_address, fp);
+  /* 's_size'    -- section size */
   gp_fputl32(section->size, fp);
+  /* 's_scnptr'  -- file ptr to raw data */
   gp_fputl32(section->data_ptr, fp);
+  /* 's_relptr'  -- file ptr to relocation */
   gp_fputl32(section->reloc_ptr, fp);
+  /* 's_lnnoptr' -- file ptr to line numbers */
   gp_fputl32(section->lineno_ptr, fp);
+  /* 's_nreloc'  -- # reloc entries */
   gp_fputl16(section->num_reloc, fp);
+  /* 's_nlnno'   -- # line number entries */
   gp_fputl16(section->num_lineno, fp);
-  /* Don't write internal section flags. */
+  /* 's_flags'   -- Don't write internal section flags. */
   gp_fputl32(section->flags & ~(STYP_RELOC | STYP_BPACK), fp);
 }
 
@@ -174,7 +197,7 @@ _write_data(pic_processor_t processor, const gp_section_type *section, FILE *fp)
 
 #ifdef GPUTILS_DEBUG
   printf("section \"%s\"\nsize= %li\ndata:\n", section->name, section->size);
-  print_i_memory(section->data, processor);
+  i_memory_print(section->data, processor);
 #endif
 
   for ( ; org < end; org++) {
@@ -193,9 +216,13 @@ _write_reloc(const gp_section_type *section, FILE *fp)
   gp_reloc_type *current = section->relocations;
 
   while (current != NULL) {
+    /* 'r_vaddr'  -- entry relative virtual address */
     gp_fputl32(current->address, fp);
+    /* 'r_symndx' -- index into symbol table */
     gp_fputl32(current->symbol->number, fp);
+    /* 'r_offset' -- offset to be added to address of symbol 'r_symndx' */
     gp_fputl16(current->offset, fp);
+    /* 'r_type'   -- relocation type */
     gp_fputl16(current->type, fp);
 
     current = current->next;
@@ -216,10 +243,15 @@ _write_linenum(const gp_section_type *section, int org_to_byte_shift, FILE *fp)
   }
 
   while (current != NULL) {
+    /* 'l_srcndx' -- symbol table index of associated source file */
     gp_fputl32(current->symbol->number, fp);
+    /* 'l_lnno'   -- line number */
     gp_fputl16(current->line_number, fp);
+    /* 'l_paddr'  -- address of code for this lineno */
     gp_fputl32(gp_byte_to_org(org_to_byte_shift, current->address), fp);
+    /* 'l_flags'  -- bit flags for the line number */
     gp_fputl16(0, fp);
+    /* 'l_fcnndx' -- symbol table index of associated function, if there is one */
     gp_fputl32(0, fp);
 
     current = current->next;
@@ -231,7 +263,7 @@ _write_linenum(const gp_section_type *section, int org_to_byte_shift, FILE *fp)
 /* write the auxiliary symbols */
 
 static void
-_write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp, gp_boolean isnew)
+_write_auxsymbols(const gp_aux_type *aux, uint8_t *table, FILE *fp, gp_boolean isnew)
 {
   unsigned int offset;
 
@@ -239,7 +271,7 @@ _write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp, gp_boo
     switch (aux->type) {
     case AUX_DIRECT:
       /* add the direct string to the string table */
-      offset = _addstring(aux->_aux_symbol._aux_direct.string, table);
+      offset = _add_string(aux->_aux_symbol._aux_direct.string, table);
       gp_fputl32(aux->_aux_symbol._aux_direct.command, fp);
       gp_fputl32(offset, fp);
       gp_fputl32(0, fp);
@@ -255,7 +287,7 @@ _write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp, gp_boo
 
     case AUX_FILE:
       /* add the filename to the string table */
-      offset = _addstring(aux->_aux_symbol._aux_file.filename, table);
+      offset = _add_string(aux->_aux_symbol._aux_file.filename, table);
       gp_fputl32(offset, fp);
       gp_fputl32(aux->_aux_symbol._aux_file.line_number, fp);
       fputc(aux->_aux_symbol._aux_file.flags, fp);
@@ -271,7 +303,7 @@ _write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp, gp_boo
 
     case AUX_IDENT:
       /* add the ident string to the string table */
-      offset = _addstring(aux->_aux_symbol._aux_ident.string, table);
+      offset = _add_string(aux->_aux_symbol._aux_ident.string, table);
       gp_fputl32(offset, fp);
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
@@ -315,14 +347,14 @@ _write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp, gp_boo
 /* write the symbol table */
 
 static void
-_write_symbols(const gp_object_type *object, unsigned char *table, FILE *fp)
+_write_symbols(const gp_object_type *object, uint8_t *table, FILE *fp)
 {
   gp_symbol_type *current;
 
   current = object->symbols;
 
   while (current != NULL) {
-    _addname(current->name, fp, table);
+    _add_name(current->name, fp, table);
     gp_fputl32(current->value, fp);
 
     if (current->section_number < 1) {
@@ -452,7 +484,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   FILE            *coff;
   unsigned int     org_to_byte_shift;
   gp_section_type *section;
-  unsigned char    table[MAX_STRING_TABLE]; /* string table */
+  uint8_t          table[MAX_STRING_TABLE]; /* string table */
 
   if (numerrors > 0) {
     unlink(object->filename);

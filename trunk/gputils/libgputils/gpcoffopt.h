@@ -2,6 +2,8 @@
    Copyright (C) 2005
    Craig Franklin
 
+    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -22,8 +24,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPCOFFOPT_H__
 #define __GPCOFFOPT_H__
 
-extern void gp_coffopt_remove_weak(gp_object_type *object);
-extern void gp_coffopt_remove_dead_sections(gp_object_type *object, int pass, gp_boolean enable_cinit_warns);
-extern void gp_coffopt_remove_unnecessary_pagesel(gp_object_type *object);
+extern void gp_coffopt_remove_weak(gp_object_type *Object);
+extern void gp_coffopt_remove_dead_sections(gp_object_type *Object, int Pass, gp_boolean Enable_cinit_warns);
+extern void gp_coffopt_remove_unnecessary_pagesel(gp_object_type *Object);
 
 #endif

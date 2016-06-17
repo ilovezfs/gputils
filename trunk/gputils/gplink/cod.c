@@ -28,6 +28,8 @@ Boston, MA 02111-1307, USA.  */
 
 static DirBlockInfo *main_dir;
 
+/*------------------------------------------------------------------------------------------------*/
+
 static DirBlockInfo *
 _new_dir_block(void)
 {
@@ -37,6 +39,8 @@ _new_dir_block(void)
   gp_putl16(&dir->dir[COD_DIR_CODTYPE], 1);
   return dir;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static DirBlockInfo *
 _init_dir_block(void)
@@ -58,8 +62,10 @@ _init_dir_block(void)
   return dir;
 }
 
-/* Assign each file name unique file number. A file may appear in the
-   symbol table more than once. */
+/*------------------------------------------------------------------------------------------------*/
+
+/* Assign each file name unique file number. A file may appear in the symbol table more than once. */
+
 static void
 _assign_file_id(void)
 {
@@ -82,10 +88,10 @@ _assign_file_id(void)
 
       if (sym != NULL) {
         /* fetch the file number */
-        value = sym_get_symbol_annotation(sym);
+        value = (int *)sym_get_symbol_annotation(sym);
       } else {
         /* the file hasn't been assigned a value */
-        value = GP_Malloc(sizeof(int));
+        value  = (int *)GP_Malloc(sizeof(int));
         *value = file_id++;
         sym = sym_add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
         sym_annotate_symbol(sym, value);
@@ -99,9 +105,10 @@ _assign_file_id(void)
   file_table = sym_pop_table(file_table);
 }
 
-/*
- * init_cod - initialize the cod file
- */
+/*------------------------------------------------------------------------------------------------*/
+
+/* init_cod - initialize the cod file */
+
 void
 cod_init(void)
 {
@@ -132,10 +139,10 @@ cod_init(void)
   _assign_file_id();
 }
 
-/*
- * write_file_block - Write a code block that contains a list of the
- * source files.
- */
+/*------------------------------------------------------------------------------------------------*/
+
+/* _write_file_block - Write a code block that contains a list of the source files. */
+
 static void
 _write_file_block(void)
 {
@@ -170,6 +177,8 @@ _write_file_block(void)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 static DirBlockInfo *
 _find_dir_block_by_high_addr(int high_addr)
 {
@@ -193,16 +202,19 @@ _find_dir_block_by_high_addr(int high_addr)
   return dbi;
 }
 
-/* cod_lst_line - add a line of information that cross references the
- * the opcode's address, the source file, and the list file.
+/*------------------------------------------------------------------------------------------------*/
+
+/* cod_lst_line - Add a line of information that cross references the
+ *                the opcode's address, the source file, and the list file.
  */
+
 void
 cod_lst_line(int line_type)
 {
   static DirBlockInfo *dbi = NULL;
   static int           _64k_base = 0;
 
-  unsigned char        smod_flag;
+  uint8_t              smod_flag;
   BlockList           *lb;
   gp_boolean           first_time;
   int                  address;
@@ -248,6 +260,8 @@ cod_lst_line(int line_type)
   dbi->lst.offset += COD_LINE_SYM_SIZE;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* cod_write_symbols - write the symbol table to the .cod file
  *
  * This routine will read the symbol table that gplink has created
@@ -255,6 +269,7 @@ cod_lst_line(int line_type)
  * three variable types are supported: address, register, and constants.
  *
  */
+
 void
 cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 {
@@ -265,7 +280,7 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
   const gp_symbol_type     *symbol;
   const gp_section_type    *section;
   const char               *name;
-  BlockList                *sb = NULL;
+  BlockList                *sb;
 
   if ((symbol_list == NULL) || (num_symbols == 0)) {
     return;
@@ -275,6 +290,7 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
     return;
   }
 
+  sb = NULL;
   for (i = 0; i < num_symbols; i++) {
     name = sym_get_symbol_name(symbol_list[i]);
     var  = sym_get_symbol_annotation(symbol_list[i]);
@@ -313,8 +329,10 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
   }
 }
 
-/* cod_emit_opcode - write one opcode to a cod_image_block
- */
+/*------------------------------------------------------------------------------------------------*/
+
+/* _emit_opcode - write one opcode to a cod_image_block */
+
 static void
 _emit_opcode(DirBlockInfo *dbi, int address, int opcode)
 {
@@ -343,8 +361,10 @@ _emit_opcode(DirBlockInfo *dbi, int address, int opcode)
   gp_putl16(&dbi->cod_image_blocks[block_index].block[address & (COD_BLOCK_SIZE - 1)], opcode);
 }
 
-/* cod_write_code - write all of the assembled pic code to the .cod file
- */
+/*------------------------------------------------------------------------------------------------*/
+
+/* _write_code - write all of the assembled pic code to the .cod file */
+
 static void
 _write_code(void)
 {
@@ -414,8 +434,10 @@ _write_code(void)
   }
 }
 
-/* cod_write_debug - write debug symbols to the .cod file
- */
+/*------------------------------------------------------------------------------------------------*/
+
+/* _write_debug - write debug symbols to the .cod file */
+
 static void
 _write_debug(void)
 {
@@ -439,12 +461,11 @@ _write_debug(void)
       assert(aux != NULL);
 
       command = aux->_aux_symbol._aux_direct.command;
-      string = aux->_aux_symbol._aux_direct.string;
+      string  = aux->_aux_symbol._aux_direct.string;
 
       len = strlen(string);
 
-      /* If this message extends past the end of the cod block
-       * then write this block out */
+      /* If this message extends past the end of the cod block then write this block out. */
 
       if ((db == NULL) || ((main_dir->dbg.offset + len + COD_DEBUG_EXTRA) >= COD_BLOCK_SIZE)) {
         db = gp_blocks_append(&main_dir->dbg, gp_blocks_new());
@@ -461,6 +482,8 @@ _write_debug(void)
     symbol = symbol->next;
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 _cod_symbol_table(const symbol_table_t *Table)
@@ -479,6 +502,8 @@ _cod_symbol_table(const symbol_table_t *Table)
   free(lst);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 cod_close_file(void)
 {
@@ -491,8 +516,7 @@ cod_close_file(void)
   gp_cod_strncpy(&main_dir->dir[COD_DIR_PROCESSOR], gp_processor_name(state.processor, 2),
                  COD_DIR_LSYMTAB - COD_DIR_PROCESSOR);
 
-  /* All the global symbols are written.  Need to figure out what to do about
-     the local symbols. */
+  /* All the global symbols are written.  Need to figure out what to do about the local symbols. */
   _cod_symbol_table(state.symbol.definition);
   _write_file_block();
   _write_code();

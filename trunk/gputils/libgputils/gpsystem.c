@@ -324,7 +324,7 @@ gp_strndup(const char *String, size_t Length, const char *File, size_t Line, con
 /*------------------------------------------------------------------------------------------------*/
 
 char *
-gp_lower_case(const char *name)
+gp_strdup_lower_case(const char *name)
 {
   char  ch;
   char *new;
@@ -343,7 +343,7 @@ gp_lower_case(const char *name)
 /*------------------------------------------------------------------------------------------------*/
 
 char *
-gp_upper_case(const char *name)
+gp_strdup_upper_case(const char *name)
 {
   char  ch;
   char *new;

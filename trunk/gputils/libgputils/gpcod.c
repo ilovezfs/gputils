@@ -29,7 +29,7 @@ Boston, MA 02111-1307, USA.  */
    string length occupies the first string location */
 
 void 
-gp_cod_strncpy(unsigned char *dest, const char *src, int max_len)
+gp_cod_strncpy(uint8_t *dest, const char *src, int max_len)
 {
   int len = strlen(src);
 
@@ -40,7 +40,7 @@ gp_cod_strncpy(unsigned char *dest, const char *src, int max_len)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_cod_date(unsigned char *buffer, size_t sizeof_buffer)
+gp_cod_date(uint8_t *buffer, size_t sizeof_buffer)
 {
   char       temp[32];
   time_t     now;
@@ -62,7 +62,7 @@ gp_cod_date(unsigned char *buffer, size_t sizeof_buffer)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_cod_time(unsigned char *buffer, size_t sizeof_buffer)
+gp_cod_time(uint8_t *buffer, size_t sizeof_buffer)
 {
   time_t     now;
   struct tm *now_tm;

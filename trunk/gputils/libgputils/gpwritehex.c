@@ -102,15 +102,15 @@ _end_record(void)
 static void
 _data_line(int start, int stop, enum mode_flags_e mode)
 {
+  uint8_t byte;
+
   if (mode == HMODE_ALL) {
     _start_record(start, stop - start);
     while (start < stop) {
-      unsigned char b;
-
-      if (!b_memory_get(memory, start++, &b, NULL, NULL)) {
-        b = 0xff;
+      if (!b_memory_get(memory, start++, &byte, NULL, NULL)) {
+        byte = 0xff;
       }
-      _write_byte(b);
+      _write_byte(byte);
     }
   }
   else if (mode == HMODE_SWAP) {
@@ -120,12 +120,10 @@ _data_line(int start, int stop, enum mode_flags_e mode)
     assert(((start % 2) == 0) && ((stop % 2) == 0));
     _start_record(start / 2, (stop  - start) / 2);
     while (start < stop) {
-      unsigned char b;
-
-      if (!b_memory_get(memory, (start++) ^ 1, &b, NULL, NULL)) {
-        b = 0xff;
+      if (!b_memory_get(memory, (start++) ^ 1, &byte, NULL, NULL)) {
+        byte = 0xff;
       }
-      _write_byte(b);
+      _write_byte(byte);
     }
   }
   else {
@@ -136,12 +134,10 @@ _data_line(int start, int stop, enum mode_flags_e mode)
     }
 
     while (start < stop) {
-      unsigned char b;
-
-      if (!b_memory_get(memory, start, &b, NULL, NULL)) {
-        b = 0xff;
+      if (!b_memory_get(memory, start, &byte, NULL, NULL)) {
+        byte = 0xff;
       }
-      _write_byte(b);
+      _write_byte(byte);
       start += 2;
     }
   }
@@ -182,6 +178,7 @@ _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_
   int       i;
   int       j;
   int       maximum;
+  uint8_t   byte;
 
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
@@ -197,14 +194,12 @@ _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_
     }
 
     while (i < maximum) {
-      unsigned char b;
-
-      if (!b_memory_get(memory, i, &b, NULL, NULL)) {
+      if (!b_memory_get(memory, i, &byte, NULL, NULL)) {
         ++i;
       }
       else {
         j = i;
-        while (b_memory_get(memory, i, &b, NULL, NULL)) {
+        while (b_memory_get(memory, i, &byte, NULL, NULL)) {
           ++i;
           if ((((mode == HMODE_ALL) || (mode == HMODE_SWAP)) && ((i & 0xf) == 0)) || ((i & 0x1f) == 0)) {
             break;

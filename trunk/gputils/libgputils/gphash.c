@@ -96,7 +96,7 @@ gp_hash_str_len(hash128_t *Hash, const char *String, size_t Length, gp_boolean C
   h.low.u64  = Hash->low.u64;
   h.high.u64 = Hash->high.u64;
 
-  while ((Length > 0) && ((ch = (uint32_t)(*str)) != 0)) {
+  while ((Length > 0) && ((ch = (uint32_t)(*str)) != '\0')) {
     if (Case_insensitive && isupper(ch)) {
       ch = _tolower(ch);
     }

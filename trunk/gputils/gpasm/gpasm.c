@@ -190,6 +190,7 @@ init(void)
 /*------------------------------------------------------------------------------------------------*/
 
 /* This is a sdcc specific helper function. */
+
 static void
 pic14_lister(pic_processor_t processor)
 {
@@ -274,6 +275,7 @@ pic14_lister(pic_processor_t processor)
 /*------------------------------------------------------------------------------------------------*/
 
 /* This is a sdcc specific helper function. */
+
 static void
 pic16e_lister(pic_processor_t processor)
 {

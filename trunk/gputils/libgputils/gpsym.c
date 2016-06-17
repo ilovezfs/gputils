@@ -42,7 +42,8 @@ struct symbol_table {
 
 /*------------------------------------------------------------------------------------------------*/
 
-static symbol_t *_make_symbol(const char *String, hash128_t *Hash)
+static symbol_t *
+_make_symbol(const char *String, hash128_t *Hash)
 {
   symbol_t *sym;
 
@@ -60,7 +61,8 @@ static symbol_t *_make_symbol(const char *String, hash128_t *Hash)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static symbol_t *_get_symbol_from_table(symbol_table_t *Table, hash128_t *Hash)
+static symbol_t *
+_get_symbol_from_table(symbol_table_t *Table, hash128_t *Hash)
 {
   symbol_t **base;
   symbol_t **current;
@@ -68,6 +70,7 @@ static symbol_t *_get_symbol_from_table(symbol_table_t *Table, hash128_t *Hash)
   size_t     len;
 
   assert(Table != NULL);
+  assert(Hash != NULL);
 
   if ((Table->symbol_array == NULL) || (Table->count == 0)) {
     return NULL;
@@ -104,7 +107,8 @@ static symbol_t *_get_symbol_from_table(symbol_table_t *Table, hash128_t *Hash)
 
 /*------------------------------------------------------------------------------------------------*/
 
-symbol_table_t *sym_push_table(symbol_table_t *Table, gp_boolean Case_insensitive)
+symbol_table_t *
+sym_push_table(symbol_table_t *Table, gp_boolean Case_insensitive)
 {
   symbol_table_t *new_table;
 
@@ -116,23 +120,8 @@ symbol_table_t *sym_push_table(symbol_table_t *Table, gp_boolean Case_insensitiv
 
 /*------------------------------------------------------------------------------------------------*/
 
-symbol_table_t *sym_pop_table(symbol_table_t *Table)
-{
-  return Table->prev;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void sym_set_guest_table(symbol_table_t *Table_host, symbol_table_t *Table_guest)
-{
-  assert(Table_host != NULL);
-
-  Table_host->prev = Table_guest;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-symbol_table_t *sym_get_guest_table(symbol_table_t *Table)
+symbol_table_t *
+sym_pop_table(symbol_table_t *Table)
 {
   assert(Table != NULL);
 
@@ -141,7 +130,28 @@ symbol_table_t *sym_get_guest_table(symbol_table_t *Table)
 
 /*------------------------------------------------------------------------------------------------*/
 
-symbol_t *sym_add_symbol(symbol_table_t *Table, const char *Name)
+void
+sym_set_guest_table(symbol_table_t *Table_host, symbol_table_t *Table_guest)
+{
+  assert(Table_host != NULL);
+
+  Table_host->prev = Table_guest;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+symbol_table_t *
+sym_get_guest_table(symbol_table_t *Table)
+{
+  assert(Table != NULL);
+
+  return Table->prev;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+symbol_t *
+sym_add_symbol(symbol_table_t *Table, const char *Name)
 {
   symbol_t  **base;
   symbol_t  **current;
@@ -227,7 +237,8 @@ symbol_t *sym_add_symbol(symbol_table_t *Table, const char *Name)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_boolean sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index)
+gp_boolean
+sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index)
 {
   symbol_t **base;
   symbol_t  *sym;
@@ -266,7 +277,8 @@ gp_boolean sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index)
 /* FIXME: sym_remove_symbol does not search all of the symbol tables in the stack.
 Maybe this is ok, but it seems wrong. */
 
-gp_boolean sym_remove_symbol(symbol_table_t *Table, const char *Name)
+gp_boolean
+sym_remove_symbol(symbol_table_t *Table, const char *Name)
 {
   symbol_t **base;
   symbol_t **current;
@@ -314,18 +326,23 @@ gp_boolean sym_remove_symbol(symbol_table_t *Table, const char *Name)
 
 /*------------------------------------------------------------------------------------------------*/
 
-size_t sym_get_symbol_count(const symbol_table_t *Table)
+size_t
+sym_get_symbol_count(const symbol_table_t *Table)
 {
+  assert(Table != NULL);
+
   return Table->count;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-symbol_t *sym_get_symbol(symbol_table_t *Table, const char *Name)
+symbol_t *
+sym_get_symbol(symbol_table_t *Table, const char *Name)
 {
   symbol_t  *sym;
   hash128_t  hash;
 
+  assert(Table != NULL);
   assert(Name != NULL);
 
   while (Table != NULL) {
@@ -345,11 +362,13 @@ symbol_t *sym_get_symbol(symbol_table_t *Table, const char *Name)
 
 /*------------------------------------------------------------------------------------------------*/
 
-symbol_t *sym_get_symbol_len(symbol_table_t *Table, const char *Name, size_t Len)
+symbol_t *
+sym_get_symbol_len(symbol_table_t *Table, const char *Name, size_t Len)
 {
   symbol_t  *sym;
   hash128_t  hash;
 
+  assert(Table != NULL);
   assert(Name != NULL);
 
   while (Table != NULL) {
@@ -369,7 +388,8 @@ symbol_t *sym_get_symbol_len(symbol_table_t *Table, const char *Name, size_t Len
 
 /*------------------------------------------------------------------------------------------------*/
 
-symbol_t *sym_get_symbol_with_index(symbol_table_t *Table, size_t Index)
+symbol_t *
+sym_get_symbol_with_index(symbol_table_t *Table, size_t Index)
 {
   assert(Table != NULL);
   assert(Index < Table->count);
@@ -379,7 +399,8 @@ symbol_t *sym_get_symbol_with_index(symbol_table_t *Table, size_t Index)
 
 /*------------------------------------------------------------------------------------------------*/
 
-const symbol_t **sym_clone_symbol_array(const symbol_table_t *Table, symbol_compare_t Cmp)
+const symbol_t **
+sym_clone_symbol_array(const symbol_table_t *Table, symbol_compare_t Cmp)
 {
   size_t           size;
   const symbol_t **symbol_array;
@@ -403,28 +424,38 @@ const symbol_t **sym_clone_symbol_array(const symbol_table_t *Table, symbol_comp
 
 /*------------------------------------------------------------------------------------------------*/
 
-void sym_annotate_symbol(symbol_t *Sym, void *Value)
-{
+void
+sym_annotate_symbol(symbol_t *Sym, void *Value)
+{ 
+  assert(Sym != NULL);
+
   Sym->annotation = Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-const char *sym_get_symbol_name(const symbol_t *Sym)
+const char *
+sym_get_symbol_name(const symbol_t *Sym)
 {
+  assert(Sym != NULL);
+
   return Sym->name;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-void *sym_get_symbol_annotation(const symbol_t *Sym)
+void *
+sym_get_symbol_annotation(const symbol_t *Sym)
 {
+  assert(Sym != NULL);
+
   return Sym->annotation;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-int sym_compare_fn(const void *P0, const void *P1)
+int
+sym_compare_fn(const void *P0, const void *P1)
 {
   const symbol_t *sym0 = *(const symbol_t **)P0;
   const symbol_t *sym1 = *(const symbol_t **)P1;

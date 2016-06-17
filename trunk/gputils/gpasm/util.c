@@ -38,6 +38,7 @@ static file_context_t *last = NULL;
  * of representable values (see man strtoul). The behavior is also
  * platform dependent: (int)strtoul("123456789", 16) returns -1 on 32 bit
  * platforms and 0x23456789 on 64 bit platforms. */
+
 static int
 _strtoi(const char *string, char **endptr, int radix)
 {
@@ -89,17 +90,15 @@ stringtolong(const char *string, int radix)
   char *endptr;
   int   value;
   char  ch;
+  char  buf[80];
 
   value = _strtoi(string, &endptr, radix);
   if ((endptr == NULL) || ((ch = *endptr) != '\0')) {
-    char complaint[80];
-
-    snprintf(complaint, sizeof(complaint),
-             isprint(ch) ?
-             "Illegal character '%c' in numeric constant." :
-             "Illegal character %#x in numeric constant.",
+    snprintf(buf, sizeof(buf),
+             isprint(ch) ? "Illegal character '%c' in numeric constant." :
+                           "Illegal character %#x in numeric constant.",
              ch);
-    gperror_error(GPE_UNKNOWN, complaint);
+    gperror_error(GPE_UNKNOWN, buf);
   }
 
   return value;
@@ -279,6 +278,7 @@ gpasm_magic(const char *c)
   This is a escaped quote: "
 
 */
+
 char *
 convert_escaped_char(char *str, char c)
 {
@@ -304,7 +304,7 @@ convert_escaped_char(char *str, char c)
 /*------------------------------------------------------------------------------------------------*/
 
 /* Determine the value of the escape char pointed to by ps.  Return a pointer
-to the next character. */
+   to the next character. */
 
 const char *
 convert_escape_chars(const char *ps, int *value)
@@ -384,6 +384,7 @@ convert_escape_chars(const char *ps, int *value)
  * single-character string literal in an expression can be coerced to a
  * character literal. coerce_str1 converts a string-type pnode to a
  * constant-type pnode in-place. */
+
 void
 coerce_str1(pnode_t *exp)
 {
@@ -424,7 +425,7 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
     /* new symbol */
     var = GP_Malloc(sizeof(*var));
     var->value            = value;
-    var->coff_num         = state.obj.symbol_num;
+    var->coff_symbol_num  = state.obj.symbol_num;
     var->coff_section_num = state.obj.section_num;
     var->type             = type;
     var->previous_type    = type;  /* coff symbols can be changed to global */
@@ -496,7 +497,8 @@ get_global_constant(const char *Name)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-purge_temp_symbols(symbol_table_t *Table) {
+purge_temp_symbols(symbol_table_t *Table)
+{
   size_t      i;
   symbol_t   *sym;
   variable_t *var;
@@ -525,7 +527,8 @@ purge_temp_symbols(symbol_table_t *Table) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-purge_processor_const_symbols(symbol_table_t *Table) {
+purge_processor_const_symbols(symbol_table_t *Table)
+{
   size_t      i;
   symbol_t   *sym;
   variable_t *var;

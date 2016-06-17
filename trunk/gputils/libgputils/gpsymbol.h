@@ -33,4 +33,8 @@ extern gp_symbol_type **gp_symbol_make_label_array(gp_symbol_type *First_symbol,
 
 extern gp_symbol_type **gp_symbol_make_section_array(gp_symbol_type *First_symbol, unsigned int *Num_sections);
 
+extern gp_symbol_type *gp_symbol_find_by_value(gp_symbol_type **Array, unsigned int Num_symbols, gp_symvalue_t Value);
+
+extern gp_boolean gp_symbol_delete_by_value(gp_symbol_type **Array, unsigned int *Num_symbols, gp_symvalue_t Value);
+
 #endif /* __GPSYMBOL_H__ */

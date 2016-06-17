@@ -43,9 +43,9 @@ Boston, MA 02111-1307, USA.  */
 
 #define PIC12_REG_FSR               0x04
 
-#define PIC14_BIT_FSR_RP0           5
-#define PIC14_BIT_FSR_RP1           6
-#define PIC14_BIT_FSR_RP2           7
+#define PIC12_BIT_FSR_RP0           5
+#define PIC12_BIT_FSR_RP1           6
+#define PIC12_BIT_FSR_RP2           7
 
 #define PIC12_IDLOCS_SIZE           4
 
@@ -85,6 +85,9 @@ Boston, MA 02111-1307, USA.  */
 
 #define PIC14_REG_PCLATH            0x0A
 
+#define PIC14_BIT_PCLATH_3          3
+#define PIC14_BIT_PCLATH_4          4
+
 #define PIC14_IDLOCS_SIZE           PIC12_IDLOCS_SIZE
 
 /******************************************
@@ -107,6 +110,9 @@ Boston, MA 02111-1307, USA.  */
 #define PIC14E_REG_FSR1H            0x07
 #define PIC14E_REG_BSR              0x08
 #define PIC14E_REG_WREG             0x09
+
+    /* Flash (program) memory select bit in FSR0H and FSR1H registers. */
+#define PIC14E_FSRxH_FLASH_SEL      0x80
 
 /******************************************
         PIC14EX definitions
@@ -311,7 +317,7 @@ struct px {
   proc_class_t  class;
   const char   *defined_as;
   const char   *names[MAX_NAMES];
-  unsigned int  coff_type;
+  uint32_t      coff_type;
   int           num_pages;
   int           num_banks;
   /* These bank bits exists in the reality. */
@@ -368,18 +374,18 @@ extern pic_processor_t gp_find_processor(const char *name);
 extern proc_class_t gp_processor_class(pic_processor_t);
 extern const char *gp_processor_class_to_str(proc_class_t class);
 extern int gp_processor_bsr_boundary(pic_processor_t processor);
-extern unsigned long gp_processor_coff_type(pic_processor_t processor);
+extern uint32_t gp_processor_coff_type(pic_processor_t processor);
 extern int gp_processor_num_pages(pic_processor_t processor);
 extern int gp_processor_num_banks(pic_processor_t processor);
-extern pic_processor_t gp_processor_coff_proc(unsigned long coff_type);
+extern pic_processor_t gp_processor_coff_proc(uint32_t coff_type);
 extern const char *gp_processor_name(pic_processor_t processor, unsigned int choice);
-extern const char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
+extern const char *gp_processor_coff_name(uint32_t coff_type, unsigned int choice);
 extern const char *gp_processor_header(pic_processor_t processor);
 extern const char *gp_processor_script(pic_processor_t processor);
 extern unsigned int gp_processor_id_location(pic_processor_t processor);
 
-extern int gp_org_to_byte(unsigned int shift, int insn_addr);
-extern int gp_byte_to_org(unsigned int shift, int byte_addr);
+extern unsigned int gp_org_to_byte(unsigned int shift, unsigned int insn_address);
+extern unsigned int gp_byte_to_org(unsigned int shift, unsigned int byte_address);
 
 extern int gp_processor_reg_offs(pic_processor_t processor, int address);
 extern int gp_processor_bank_addr(pic_processor_t processor, int address);

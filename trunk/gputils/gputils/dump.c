@@ -78,27 +78,11 @@ static const char *SymbolType4[154] = {
 /*------------------------------------------------------------------------------------------------*/
 
 /*
-  substr - copy first n characters from b to a
+  _fget_line - read a line from a file.
 */
 
-char *
-substr(char *a, size_t sizeof_a, const uint8_t *b, size_t n)
-{
-  size_t m = (n < sizeof_a) ? n : (sizeof_a - 1);
-
-  memcpy(a, b, m);
-  a[m] = '\0';
-  return a;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/*
-  fget_line - read a line from a file.
-*/
-
-char *
-fget_line(int line, char *s, int size, FILE *pFile)
+static char *
+_fget_line(int line, char *buffer, int size, FILE *pFile)
 {
   static FILE *plastFile = NULL;
   static int   lastline  = -1;
@@ -124,16 +108,32 @@ fget_line(int line, char *s, int size, FILE *pFile)
   }
 
   while (line >= ++lastline) {
-    ps = fgets(s, size, plastFile);
-    assert(ps == s);
+    ps = fgets(buffer, size, plastFile);
+    assert(ps == buffer);
   }
 
-  ps = fgets(s, size, plastFile);
-  assert(ps == s);
+  ps = fgets(buffer, size, plastFile);
+  assert(ps == buffer);
 
   lastPos = ftell(plastFile);
 
-  return s;
+  return buffer;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+  substr - copy first n characters from b to a
+*/
+
+char *
+substr(char *a, size_t sizeof_a, const uint8_t *b, size_t n)
+{
+  size_t m = (n < sizeof_a) ? n : (sizeof_a - 1);
+
+  memcpy(a, b, m);
+  a[m] = '\0';
+  return a;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ fget_line(int line, char *s, int size, FILE *pFile)
  */
 
 static void
-_dump_directory_block(uint8_t *block, unsigned block_num)
+_dump_directory_block(const uint8_t *block, unsigned block_num)
 {
   char temp_buf[256];
   int  time;
@@ -630,7 +630,7 @@ dump_line_symbols(void)
             if ((sfile < number_of_source_files) && (sline != last_src_line)) {
               if (source_files[sfile] != NULL) {
                 /*fgets(tline, sizeof(tline), source_files[sfile]);*/
-                fget_line(sline, tline, sizeof(tline), source_files[sfile]);
+                _fget_line(sline, tline, sizeof(tline), source_files[sfile]);
                 printf("%s", tline);
               }
               else {

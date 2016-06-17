@@ -1,3 +1,67 @@
+2016-06-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gplink/gplink.c, gplink/gplink.h.in,
+    gplink/lst.c, libgputils/gpcoff.h, libgputils/gpcoffgen.c,
+    libgputils/gpcoffgen.h, libgputils/gpcofflink.c,
+    libgputils/gpcofflink.h, libgputils/gpcoffopt.c,
+    libgputils/gpcoffopt.h, libgputils/gpsymbol.c,
+    libgputils/gpsymbol.h libgputils/gpsystem.c,
+    libgputils/gpsystem.h:
+    Repaired and updated during linking pagesel optimization.
+
+  * gpasm/coff.c, libgputils/gpsystem.c, libgputils/gpsystem.h:
+    Changed names:
+	gp_lower_case --> gp_strdup_lower_case
+	gp_upper_case --> gp_strdup_upper_case
+
+  * gpasm/directive.c, libgputils/gpprocessor.c:
+    Renamed this constant:
+	PIC14_BIT_FSR_RPx --> PIC12_BIT_FSR_RPx
+
+  * gpasm/evaluate.c:
+    In _add_reloc() function use the state.device.class->word_digits and
+    state.device.class->addr_digits values.
+
+  * gpasm/gpasm.h.in:
+    Changed some variable types from "int" to "unsigned int".
+
+  * gpasm/gperror.c:
+    Use "error_list_t" instead of "struct error_list".
+
+  * gpasm/scan.l:
+    gp_lower_case --> gp_strdup_lower_case
+
+  * gputils/dump.c, libgputils/gpdis.c:
+    The names of static functions got '_' prefix.
+
+  * gputils/gpdasm.c:
+    Changed types:
+        unsigned char --> uint8_t
+        unsigned short --> uint16_t
+
+  * gputils/gpstrip.c:
+    Changed names:
+	gp_coffgen_has_reloc --> gp_coffgen_symbol_has_reloc
+	gp_coffgen_is_global --> gp_coffgen_is_global_symbol
+
+  * gputils/gpvo.c:
+    Changed _print_data() parameters.
+
+  * libgputils/gparchive.c, libgputils/gparchive.h:
+    Changed return type of functions:
+	gp_archive_count_members
+	gp_archive_make_index
+
+  * gpasm/cod.c, gpasm/coff.c, gpasm/deps.c, gpasm/directive.c,
+    gpasm/evaluate.c, gpasm/gpasm.c, gpasm/lst.c, gpasm/special.c,
+    gpasm/util.c, gplink/cod.c, gplink/gplink.c, gplink/map.c,
+    gputils/block.c, gputils/block.h, gputils/labelset.c,
+    libgputils/gparchive.c, libgputils/gpcod.c,
+    libgputils/gpcofflink.c, libgputils/gphash.c,
+    libgputils/gpprocessor.c, libgputils/gpreadhex.c,
+    libgputils/gpreadobj.c, libgputils/gpsym.c,
+    libgputils/gpwritehex.c, libgputils/gpwriteobj.c:
+    Code formatting.    
+
 2016-06-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gplink/cod.c
     Use IMemBaseAddr() macro.
