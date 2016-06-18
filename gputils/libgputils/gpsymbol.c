@@ -110,7 +110,7 @@ gp_symbol_make_hash_table(gp_object_type *Object)
   }
 
   n_symbols = 0;
-  symbol    = Object->symbols;
+  symbol    = Object->symbol_list;
   while (symbol != NULL) {
     FlagClr(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
 
@@ -128,7 +128,7 @@ gp_symbol_make_hash_table(gp_object_type *Object)
   Object->symbol_hashtable_size = n_symbols;
 
   tp     = table;
-  symbol = Object->symbols;
+  symbol = Object->symbol_list;
   while (symbol != NULL) {
     if (FlagIsSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE)) {
       h = &tp->hash;
@@ -146,6 +146,8 @@ gp_symbol_make_hash_table(gp_object_type *Object)
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+/* Search a symbol on the basis of value and owner section name. */
 
 const gp_symbol_type *
 gp_symbol_find(const gp_object_type *Object, const char *Section_name, gp_symvalue_t Symbol_value)
@@ -194,31 +196,33 @@ _value_cmp(const void *P0, const void *P1)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Collects those labels that belong to the same "Section". */
+
 gp_symbol_type **
-gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_name, unsigned int *Num_labels)
+gp_symbol_make_label_array(gp_section_type *Section, unsigned int Org_to_byte_shift,
+                           unsigned int *Num_labels)
 {
   gp_symbol_type  *symbol;
   gp_symbol_type **array;
+  gp_symvalue_t    start_addr;
+  gp_symvalue_t    end_addr;
   unsigned int     i;
   unsigned int     n_labels;
 
-  if ((First_symbol == NULL) || (Num_labels == NULL)) {
+  if ((Section == NULL) || (Num_labels == NULL)) {
     return NULL;
   }
 
+  start_addr = gp_byte_to_org(Org_to_byte_shift, Section->address);
+  end_addr   = start_addr + gp_byte_to_org(Org_to_byte_shift, Section->size);
+
   n_labels = 0;
-  symbol   = First_symbol;
+  symbol   = Section->symbol;
   while (symbol != NULL) {
     FlagClr(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
 
     if ((symbol->class == C_EXT) || (symbol->class == C_LABEL)) {
-      if (Section_name != NULL) {
-        if ((symbol->section_name != NULL) && (strcmp(symbol->section_name, Section_name) == 0)) {
-          ++n_labels;
-          FlagSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
-        }
-      }
-      else {
+      if ((symbol->value >= start_addr) && (symbol->value < end_addr)) {
         ++n_labels;
         FlagSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
       }
@@ -233,7 +237,7 @@ gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_nam
   array = (gp_symbol_type **)GP_Malloc(n_labels * sizeof(gp_symbol_type *));
 
   i      = 0;
-  symbol = First_symbol;
+  symbol = Section->symbol;
   while (symbol != NULL) {
     if (FlagIsSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE)) {
       array[i] = symbol;
@@ -249,52 +253,7 @@ gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_nam
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_symbol_type **
-gp_symbol_make_section_array(gp_symbol_type *First_symbol, unsigned int *Num_sections)
-{
-  gp_symbol_type  *current;
-  gp_symbol_type **array;
-  unsigned int     i;
-  unsigned int     n_sections;
-
-  if ((First_symbol == NULL) || (Num_sections == NULL)) {
-    return NULL;
-  }
-
-  current  = First_symbol;
-  n_sections = 0;
-  while (current != NULL) {
-    FlagClr(current->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
-
-    if (current->class == C_SECTION) {
-      ++n_sections;
-      FlagSet(current->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
-    }
-    current = current->next;
-  }
-
-  if (n_sections == 0) {
-    return NULL;
-  }
-
-  array = (gp_symbol_type **)GP_Malloc(n_sections * sizeof(gp_symbol_type *));
-
-  current = First_symbol;
-  i       = 0;
-  while (current != NULL) {
-    if (FlagIsSet(current->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE)) {
-      array[i] = current;
-      ++i;
-    }
-    current = current->next;
-  }
-
-  qsort(array, n_sections, sizeof(gp_symbol_type *), _value_cmp);
-  *Num_sections = n_sections;
-  return array;
-}
-
-/*------------------------------------------------------------------------------------------------*/
+/* Search a symbol on the basis of value. */
 
 gp_symbol_type *
 gp_symbol_find_by_value(gp_symbol_type **Array, unsigned int Num_symbols, gp_symvalue_t Value)
@@ -314,6 +273,8 @@ gp_symbol_find_by_value(gp_symbol_type **Array, unsigned int Num_symbols, gp_sym
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+/* Delete a symbol on the basis of value. */
 
 gp_boolean
 gp_symbol_delete_by_value(gp_symbol_type **Array, unsigned int *Num_symbols, gp_symvalue_t Value)

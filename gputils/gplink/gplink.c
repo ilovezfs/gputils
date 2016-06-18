@@ -301,7 +301,7 @@ _add_linker_symbol(const char *name)
   gp_symbol_type *found;
 
   found   = NULL;
-  current = state.object->symbols;
+  current = state.object->symbol_list;
   while (current != NULL) {
     if ((current->name != NULL) && (strcmp(current->name, name) == 0) && (current->section_number > 0)) {
       found = current;
@@ -326,7 +326,7 @@ _search_idata(void)
 
   object = state.object;
   while (object != NULL) {
-    section = object->sections;
+    section = object->section_list;
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
         state.has_idata = true;
@@ -934,7 +934,7 @@ _linker(void)
     /* allocate cinit section to the lowest possible address */
     gp_section_type *cinit_section;
 
-    cinit_section = gp_coffgen_find_section(state.object, state.object->sections, ".cinit");
+    cinit_section = gp_coffgen_find_section(state.object, state.object->section_list, ".cinit");
 
     if (cinit_section != NULL) {
       gp_cofflink_reloc_cinit(state.object, program, state.class->org_to_byte_shift,

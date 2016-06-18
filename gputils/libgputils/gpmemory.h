@@ -32,8 +32,7 @@ Boston, MA 02111-1307, USA.  */
 #define IMemBaseAddr(Addr)      (((Addr) >> I_MEM_BITS) & I_BASE_MASK)
 #define IMemOffsetAddr(Addr)    ((Addr) & I_MEM_MASK)
 
-#define MAX_C_MEM               0x100               /* Maximum configuration memory
-                                                       (only a few bytes are used). */
+#define MAX_C_MEM               0x100               /* Maximum configuration memory (only a few bytes are used). */
 
 #define BYTE_USED_MASK          (1 << 31)           /* Means occupied in MemBlock.memory.data. */
 #define BYTE_LISTED_MASK        (1 << 30)           /* Means already listed. */

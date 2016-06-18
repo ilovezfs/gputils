@@ -153,7 +153,7 @@ _format_reloc_type(uint16_t type, char *buffer, size_t sizeof_buffer)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_reloc_list(proc_class_t class, const gp_reloc_type *relocation)
+_print_relocation_list(proc_class_t class, const gp_reloc_type *relocation)
 {
   char buffer[32];
 
@@ -322,7 +322,7 @@ _print_sec_header(proc_class_t class, const gp_section_type *section)
 static void
 _print_sec_list(const gp_object_type *object)
 {
-  const gp_section_type *section = object->sections;
+  const gp_section_type *section = object->section_list;
 
   while (section != NULL) {
     _print_sec_header(object->class, section);
@@ -332,11 +332,11 @@ _print_sec_list(const gp_object_type *object)
     }
 
     if ((section->num_reloc > 0)) {
-      _print_reloc_list(object->class, section->relocations);
+      _print_relocation_list(object->class, section->relocation_list);
     }
 
     if ((section->num_lineno > 0)) {
-      _print_linenum_list(object->class, section->line_numbers);
+      _print_linenum_list(object->class, section->line_number_list);
     }
 
     section = section->next;
@@ -565,7 +565,7 @@ _print_sym_table(const gp_object_type *object)
   char            buffer_derived_type[8];
   char            buffer_class[8];
 
-  symbol = object->symbols;
+  symbol = object->symbol_list;
 
   printf("Symbol Table\n");
   printf("Idx  Name                     Section          Value      Type     DT           Class     NumAux\n");
@@ -673,7 +673,7 @@ _export_sym_table(gp_object_type *object)
   gp_symbol_type *symbol;
   char buffer[BUFSIZ];
 
-  symbol = object->symbols;
+  symbol = object->symbol_list;
 
   while (symbol != NULL) {
     if ((state.export.enabled) && (symbol->class == C_EXT) &&

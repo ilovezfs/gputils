@@ -46,11 +46,11 @@ _update_reloc_ptr(void)
   gp_symbol_type  *symbol;
   gp_reloc_type   *reloc;
 
-  section = state.obj.object->sections;
+  section = state.obj.object->section_list;
   while (section != NULL) {
-    reloc = section->relocations;
+    reloc = section->relocation_list;
     while (reloc != NULL) {
-      symbol = state.obj.object->symbols;
+      symbol = state.obj.object->symbol_list;
       while (symbol != NULL) {
         if (reloc->symbol_number == symbol->number) {
           reloc->symbol = symbol;
@@ -264,7 +264,7 @@ coff_new_section(const char *name, int addr, int flags)
   /* store data from the last section */
   coff_close_section();
 
-  found = gp_coffgen_find_section(state.obj.object, state.obj.object->sections, name);
+  found = gp_coffgen_find_section(state.obj.object, state.obj.object->section_list, name);
 
   if (found != NULL) {
     if ((flags & STYP_OVERLAY) && (found->flags & STYP_OVERLAY)) {

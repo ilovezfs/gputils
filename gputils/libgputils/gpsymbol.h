@@ -28,10 +28,8 @@ extern gp_hash_type *gp_symbol_make_hash_table(gp_object_type *Object);
 extern const gp_symbol_type *gp_symbol_find(const gp_object_type *Object, const char *Section_name,
                                             gp_symvalue_t Symbol_value);
 
-extern gp_symbol_type **gp_symbol_make_label_array(gp_symbol_type *First_symbol, const char *Section_name,
-                        unsigned int *Num_labels);
-
-extern gp_symbol_type **gp_symbol_make_section_array(gp_symbol_type *First_symbol, unsigned int *Num_sections);
+extern gp_symbol_type **gp_symbol_make_label_array(gp_section_type *Section, unsigned int Org_to_byte_shift,
+                                                   unsigned int *Num_labels);
 
 extern gp_symbol_type *gp_symbol_find_by_value(gp_symbol_type **Array, unsigned int Num_symbols, gp_symvalue_t Value);
 

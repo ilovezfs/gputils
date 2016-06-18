@@ -1,3 +1,23 @@
+2016-06-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/coff.c, gpasm/list.c, gplink/cod.c, gplink/gplink.c,
+    gplink/lst.c, gplink/map.c, gputils/gpstrip.c, gputils/gpvo.c,
+    libgputils/gpcoff.h, libgputils/gpcoffgen.c,
+    libgputils/gpcofflink.c, libgputils/gpreadobj.c,
+    libgputils/gpwriteobj.c:
+    Changed these structure element names:
+	gp_object_type
+	    sections --> section_list
+	    symbols --> symbol_list
+
+	gp_section_type
+	    relocations --> relocation_list
+	    relocations_tail --> relocation_list_tail
+	    line_numbers --> line_number_list
+	    line_numbers_tail --> line_number_list_tail
+
+  * libgputils/gpsymbol.c, libgputils/gpsymbol.h:
+    Deleted the gp_symbol_make_section_array function.
+
 2016-06-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gplink/gplink.c, gplink/gplink.h.in,
     gplink/lst.c, libgputils/gpcoff.h, libgputils/gpcoffgen.c,

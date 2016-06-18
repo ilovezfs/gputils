@@ -133,7 +133,7 @@ _write_sections(void)
   num_sections = state.object->num_sections;
   section_list = GP_Malloc(sizeof(gp_section_type *) * num_sections);
 
-  section = state.object->sections;
+  section = state.object->section_list;
   for (i = 0; i < num_sections; i++) {
     assert(section != NULL);
     section_list[i] = section;
@@ -205,7 +205,7 @@ _write_program_memory(void)
   _map_line("                              Program Memory Usage");
   _map_line("                               Start         End");
   _map_line("                           ---------   ---------");
-  section = state.object->sections;
+  section = state.object->section_list;
 
   while (section != NULL) {
     if ((section->flags & (STYP_TEXT | STYP_DATA_ROM)) && (section->size > 0)) {
@@ -290,7 +290,7 @@ _write_symbols(void)
 
   syms = GP_Malloc(sizeof(struct syms_s) * state.object->num_symbols);
 
-  symbol = state.object->symbols;
+  symbol = state.object->symbol_list;
   num_syms = 0;
 
   while (symbol != NULL) {
