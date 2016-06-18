@@ -79,7 +79,7 @@ _assign_file_id(void)
   /* build a case sensitive file table */
   file_table = sym_push_table(NULL, false);
 
-  symbol = state.object->symbols;
+  symbol = state.object->symbol_list;
   while (symbol != NULL) {
     if (symbol->class == C_FILE) {
       aux = symbol->aux_list;
@@ -150,7 +150,7 @@ _write_file_block(void)
   BlockList            *fb = NULL;
   int                   file_id = 0;
 
-  symbol = state.object->symbols;
+  symbol = state.object->symbol_list;
   while (symbol != NULL) {
     if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * FILE_SIZE))) {
       fb = gp_blocks_append(&main_dir->src, gp_blocks_new());
@@ -453,7 +453,7 @@ _write_debug(void)
   }
 
   db     = NULL;
-  symbol = state.object->symbols;
+  symbol = state.object->symbol_list;
   while (symbol != NULL) {
     if (strcasecmp(".direct", symbol->name) == 0) {
       assert(symbol->num_auxsym == 1);

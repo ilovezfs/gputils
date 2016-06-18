@@ -247,11 +247,11 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
   section->flags      = _check_getl32(&file[36], data);
   section->data       = (section->data_ptr != 0) ? i_memory_create() : NULL;
 
-  section->relocations       = NULL;
-  section->relocations_tail  = NULL;
-  section->line_numbers      = NULL;
-  section->line_numbers_tail = NULL;
-  section->is_used           = false;
+  section->relocation_list       = NULL;
+  section->relocation_list_tail  = NULL;
+  section->line_number_list      = NULL;
+  section->line_number_list_tail = NULL;
+  section->is_used               = false;
 
   if (section->flags & (STYP_TEXT | STYP_DATA_ROM)) {
     section->address = gp_processor_org_to_byte(object->class, section->address);
@@ -277,7 +277,7 @@ _read_reloc(gp_object_type *object, const gp_section_type *section, gp_reloc_typ
   relocation->address = _check_getl32(&file[0], data);
   /* 'r_symndx' -- index into symbol table */
   symbol_index        = _check_getl32(&file[4], data);
-  relocation->symbol  = &object->symbols[symbol_index];
+  relocation->symbol  = &object->symbol_list[symbol_index];
   /* 'r_offset' -- offset to be added to address of symbol 'r_symndx' */
   relocation->offset  = _check_getl16(&file[8], data);
   /* 'r_type'   -- relocation type */
@@ -303,7 +303,7 @@ _read_lineno(gp_object_type *object, int org_to_byte_shift, gp_linenum_type *lin
 
   /* 'l_srcndx' -- symbol table index of associated source file */
   symbol_index             = _check_getl32(&file[0], data);
-  line_number->symbol      = &object->symbols[symbol_index];
+  line_number->symbol      = &object->symbol_list[symbol_index];
   /* 'l_lnno'   -- line number */
   line_number->line_number = _check_getl16(&file[4], data);
   /* 'l_paddr'  -- address of code for this lineno */
@@ -344,8 +344,8 @@ _read_sections(gp_object_type *object, const uint8_t *file, const gp_binary_type
   /* setup pointer to string table */
   string_table = (const char *)&file[object->symbol_ptr + (object->symbol_size * object->num_symbols)];
 
-  object->sections = gp_coffgen_make_block_section(object->num_sections);
-  current = object->sections;
+  object->section_list = gp_coffgen_make_block_section(object->num_sections);
+  current = object->section_list;
 
   for (i = 0; i < object->num_sections; i++) {
     _read_section_header(object, current, section_ptr, string_table, data);
@@ -368,13 +368,13 @@ _read_sections(gp_object_type *object, const uint8_t *file, const gp_binary_type
     if ((current->num_reloc > 0) && (current->reloc_ptr > 0)) {
       loc = &file[current->reloc_ptr];
       number = current->num_reloc;
-      current->relocations = gp_coffgen_make_block_reloc(number);
-      current_reloc = current->relocations;
+      current->relocation_list = gp_coffgen_make_block_reloc(number);
+      current_reloc = current->relocation_list;
 
       for (j = 0; j < number; j++) {
         _read_reloc(object, current, current_reloc, loc, data);
         loc += RELOC_SIZ;
-        current->relocations_tail = current_reloc;
+        current->relocation_list_tail = current_reloc;
         current_reloc = current_reloc->next;
       }
     }
@@ -392,18 +392,18 @@ _read_sections(gp_object_type *object, const uint8_t *file, const gp_binary_type
 
       loc = &file[current->lineno_ptr];
       number = current->num_lineno;
-      current->line_numbers = gp_coffgen_make_block_linenum(number);
-      current_linenum = current->line_numbers;
+      current->line_number_list = gp_coffgen_make_block_linenum(number);
+      current_linenum = current->line_number_list;
 
       for (j = 0; j < number; j++) {
         _read_lineno(object, org_to_byte_shift, current_linenum, loc, data);
         loc += LINENO_SIZ;
-        current->line_numbers_tail = current_linenum;
+        current->line_number_list_tail = current_linenum;
         current_linenum = current_linenum->next;
       }
     }
 
-    object->sections_tail = current;
+    object->section_list_tail = current;
     current = current->next;
   }
 }
@@ -579,7 +579,7 @@ _read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_
   number = object->num_symbols;
   if (number > 0) {
     /* create a block of symbols */
-    object->symbols = gp_coffgen_make_block_symbol(number);
+    object->symbol_list = gp_coffgen_make_block_symbol(number);
 
     /* setup pointer to string table */
     string_table = (const char *)&file[object->symbol_ptr + (object->symbol_size * number)];
@@ -589,7 +589,7 @@ _read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_
 
     /* read the symbols */
     file    = &file[object->symbol_ptr];
-    current = object->symbols;
+    current = object->symbol_list;
 
     for (i = 0; i < number; i++) {
       /* read the symbol */
@@ -607,7 +607,7 @@ _read_symbol_table(gp_object_type *object, const uint8_t *file, const gp_binary_
       if (num_auxsym > 0) {
         current->aux_list = gp_coffgen_make_block_aux(current->num_auxsym);
         current_aux = current->aux_list;
-        aux_type = gp_determine_aux_symbol(current);
+        aux_type = gp_coffgen_determine_aux_symbol(current);
 
         /* read the aux symbols */
         for (j = 0; j < num_auxsym; j++) {
@@ -651,12 +651,12 @@ _clean_symbol_table(gp_object_type *object)
   /* gp_symbol_type *old_symbol; */
   unsigned int    i;
 
-  current = object->symbols;
+  current = object->symbol_list;
 
   while (current != NULL) {
     /* Assign section pointer, section numbers start at 1 not 0. */
     if (current->section_number > 0) {
-      current->section = &object->sections[current->section_number - 1];
+      current->section = &object->section_list[current->section_number - 1];
     }
     else {
       current->section = NULL;
@@ -675,7 +675,7 @@ _clean_symbol_table(gp_object_type *object)
       current->next = next_symbol;
     }
 
-    object->symbols_tail = current;
+    object->symbol_list_tail = current;
     current = current->next;
   }
 }

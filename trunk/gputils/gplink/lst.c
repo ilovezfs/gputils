@@ -130,7 +130,7 @@ _find_line_number(const gp_symbol_type *symbol, unsigned int line_number)
   const gp_section_type *section;
   const gp_linenum_type *linenum;
 
-  section = state.object->sections;
+  section = state.object->section_list;
   while (section != NULL) {
     linenum = gp_cofflink_find_linenum(section, symbol, line_number);
 
@@ -370,7 +370,7 @@ lst_write(void)
     return;
   }
 
-  symbol        = state.object->symbols;
+  symbol        = state.object->symbol_list;
   list_enabled  = true;
   first_time    = true;
   state.lst.src = NULL;

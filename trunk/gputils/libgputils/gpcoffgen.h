@@ -71,6 +71,6 @@ extern void gp_coffgen_free_section(gp_section_type *section);
 extern unsigned int gp_coffgen_free_symbol(gp_symbol_type *symbol);
 extern gp_boolean gp_coffgen_free_object(gp_object_type *object);
 
-extern int gp_determine_aux_symbol(gp_symbol_type *symbol);
+extern unsigned int gp_coffgen_determine_aux_symbol(const gp_symbol_type *symbol);
 
 #endif

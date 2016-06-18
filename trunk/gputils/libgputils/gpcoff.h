@@ -590,19 +590,19 @@ typedef struct gp_section_type {
   uint16_t                 num_reloc;
 
   /* head of relocations */
-  gp_reloc_type           *relocations;
+  gp_reloc_type           *relocation_list;
 
   /* tail of relocations */
-  gp_reloc_type           *relocations_tail;
+  gp_reloc_type           *relocation_list_tail;
 
   /* number of line numbers */
   uint16_t                 num_lineno;
 
   /* head of line numbers */
-  gp_linenum_type         *line_numbers;
+  gp_linenum_type         *line_number_list;
 
   /* tail of line numbers */
-  gp_linenum_type         *line_numbers_tail;
+  gp_linenum_type         *line_number_list_tail;
 
   /* Ordered, filtered array unto binary searches. */
   gp_linenum_type        **line_numbers_array;
@@ -657,20 +657,20 @@ typedef struct gp_object_type {
   /* number of sections */
   uint16_t               num_sections;
 
-  /* head of sections */
-  gp_section_type       *sections;
+  /* head of section list */
+  gp_section_type       *section_list;
 
-  /* tail of sections */
-  gp_section_type       *sections_tail;
+  /* tail of section list */
+  gp_section_type       *section_list_tail;
 
   /* number of symbols */
   uint32_t               num_symbols;
 
-  /* head of symbols */
-  gp_symbol_type        *symbols;
+  /* head of symbol list */
+  gp_symbol_type        *symbol_list;
 
-  /* tail of symbols */
-  gp_symbol_type        *symbols_tail;
+  /* tail of symbol list */
+  gp_symbol_type        *symbol_list_tail;
 
   /* hash table of symbols */
   gp_hash_type          *symbol_hashtable;

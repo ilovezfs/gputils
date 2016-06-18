@@ -213,7 +213,7 @@ _write_data(pic_processor_t processor, const gp_section_type *section, FILE *fp)
 static void
 _write_reloc(const gp_section_type *section, FILE *fp)
 {
-  gp_reloc_type *current = section->relocations;
+  gp_reloc_type *current = section->relocation_list;
 
   while (current != NULL) {
     /* 'r_vaddr'  -- entry relative virtual address */
@@ -236,7 +236,7 @@ _write_reloc(const gp_section_type *section, FILE *fp)
 static void
 _write_linenum(const gp_section_type *section, int org_to_byte_shift, FILE *fp)
 {
-  gp_linenum_type *current = section->line_numbers;
+  gp_linenum_type *current = section->line_number_list;
 
   if (!(section->flags & (STYP_TEXT | STYP_DATA_ROM))) {
     org_to_byte_shift = 0;
@@ -351,7 +351,7 @@ _write_symbols(const gp_object_type *object, uint8_t *table, FILE *fp)
 {
   gp_symbol_type *current;
 
-  current = object->symbols;
+  current = object->symbol_list;
 
   while (current != NULL) {
     _add_name(current->name, fp, table);
@@ -400,7 +400,7 @@ _updateptr(gp_object_type *object)
   section_number = 1;
 
   /* update the data pointers in the section headers */
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     section->number = section_number;
     section_number++;
@@ -414,7 +414,7 @@ _updateptr(gp_object_type *object)
   }
 
   /* update the relocation pointers in the section headers */
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     section->reloc_ptr  = 0;
 
@@ -426,7 +426,7 @@ _updateptr(gp_object_type *object)
   }
 
   /* update the line number pointers in the section headers */
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     section->lineno_ptr = 0;
 
@@ -442,7 +442,7 @@ _updateptr(gp_object_type *object)
 
   /* update the symbol numbers */
   symbol_number = 0;
-  symbol        = object->symbols;
+  symbol        = object->symbol_list;
   while (symbol != NULL) {
     symbol->number = symbol_number;
     symbol_number += 1 + symbol->num_auxsym;
@@ -510,14 +510,14 @@ gp_write_coff(gp_object_type *object, int numerrors)
   _write_opthdr(object, coff);
 
   /* write section headers */
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     _write_scnhdr(section, org_to_byte_shift, &table[0], coff);
     section = section->next;
   }
 
   /* write section data */
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     if (gp_has_data(section)) {
       _write_data(object->processor, section, coff);
@@ -526,7 +526,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   }
 
   /* write section relocations */
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     if (section->num_reloc != 0) {
       _write_reloc(section, coff);
@@ -535,7 +535,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   }
 
   /* write section line numbers */
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     if (section->num_lineno != 0) {
       _write_linenum(section, org_to_byte_shift, coff);
@@ -565,7 +565,7 @@ gp_is_absolute_object(const gp_object_type *object)
 {
   gp_section_type *section;
 
-  for (section = object->sections; section != NULL; section = section->next) {
+  for (section = object->section_list; section != NULL; section = section->next) {
     if ((section->num_reloc != 0) || !(section->flags & STYP_ABS)) {
       return false;
     }

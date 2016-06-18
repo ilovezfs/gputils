@@ -91,7 +91,7 @@ gp_cofflink_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_
 
   /* The gp_convert_file() function has read it the elements of the "object". */
 
-  symbol = object->symbols;
+  symbol = object->symbol_list;
 
   while (symbol != NULL) {
     /* process all external symbols that are not directives */
@@ -141,45 +141,45 @@ gp_cofflink_add_symbols(symbol_table_t *definition, symbol_table_t *missing, gp_
 void
 gp_cofflink_combine_objects(gp_object_type *object)
 {
-  gp_object_type *list;
+  gp_object_type *object_list;
 
   /* assign the time the operation occured */
   object->time = (long)time(NULL);
 
   /* combine the symbol tables */
-  list = object->next;
-  while (list != NULL) {
-    if (list->num_symbols != 0) {
+  object_list = object->next;
+  while (object_list != NULL) {
+    if (object_list->num_symbols != 0) {
       if (object->num_symbols == 0) {
         /* The object has no symbols. */
-        object->symbols = list->symbols;
+        object->symbol_list = object_list->symbol_list;
       }
       else {
         /* Append the symbols from the second object to the first. */
-        object->symbols_tail->next = list->symbols;
+        object->symbol_list_tail->next = object_list->symbol_list;
       }
-      object->symbols_tail = list->symbols_tail;
-      object->num_symbols += list->num_symbols;
+      object->symbol_list_tail = object_list->symbol_list_tail;
+      object->num_symbols += object_list->num_symbols;
     }
-    list = list->next;
+    object_list = object_list->next;
   }
 
   /* append the sections onto the list */
-  list = object->next;
-  while (list != NULL) {
-    if (list->num_sections != 0) {
+  object_list = object->next;
+  while (object_list != NULL) {
+    if (object_list->num_sections != 0) {
       if (object->num_sections == 0) {
         /* The object has no sections. */
-        object->sections = list->sections;
+        object->section_list = object_list->section_list;
       }
       else {
         /* Append the sections from the second object to the first. */
-        object->sections_tail->next = list->sections;
+        object->section_list_tail->next = object_list->section_list;
       }
-      object->sections_tail = list->sections_tail;
-      object->num_sections += list->num_sections;
+      object->section_list_tail = object_list->section_list_tail;
+      object->num_sections += object_list->num_sections;
     }
-    list = list->next;
+    object_list = object_list->next;
   }
 
   /* FIXME: breaking the chain isn't good */
@@ -203,9 +203,9 @@ gp_cofflink_clean_table(gp_object_type *object, symbol_table_t *symbols)
   gp_debug("Cleaning symbol table.");
 
   /* point all relocations to the symbol definitions */
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
-    relocation = section->relocations;
+    relocation = section->relocation_list;
     while (relocation != NULL) {
       symbol = relocation->symbol;
 
@@ -226,14 +226,14 @@ gp_cofflink_clean_table(gp_object_type *object, symbol_table_t *symbols)
     section = section->next;
   }
 
-  symbol   = object->symbols;
+  symbol   = object->symbol_list;
   previous = NULL;
   while (symbol != NULL) {
     if ((symbol->class == C_EXT) && (symbol->section_number == N_UNDEF)) {
       /* This is an external symbol defined elsewhere. */
       if (previous == NULL) {
         /* removing first symbol in the list */
-        object->symbols = object->symbols->next;
+        object->symbol_list = object->symbol_list->next;
       }
       else {
         previous->next = symbol->next;
@@ -275,7 +275,7 @@ gp_cofflink_combine_overlay(gp_object_type *object, gp_boolean remove_symbol)
   gp_section_type *second;
   gp_symbol_type  *symbol;
 
-  first = object->sections;
+  first = object->section_list;
 
   while (first != NULL) {
     if (first->flags & STYP_OVERLAY) {
@@ -305,7 +305,7 @@ gp_cofflink_combine_overlay(gp_object_type *object, gp_boolean remove_symbol)
         }
 
         /* Update the symbol table */
-        symbol = object->symbols;
+        symbol = object->symbol_list;
         while (symbol != NULL) {
           if (symbol->section == second) {
             symbol->section = first;
@@ -395,7 +395,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
   const char      *section_name;
   const char      *symbol_name;
 
-  first = object->sections;
+  first = object->section_list;
   while (first != NULL) {
     second = gp_coffgen_find_section(object, first->next, first->name);
 
@@ -413,7 +413,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
       gp_debug("  merging section \"%s\" with section \"%s\"", first->name, second->name);
 
       /* Update the addresses in the relocation table. */
-      relocation = second->relocations;
+      relocation = second->relocation_list;
       while (relocation != NULL) {
         relocation->address += first->size;
         relocation = relocation->next;
@@ -441,7 +441,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
       }
 
       /* Update the line number offsets. */
-      _update_line_numbers(second->line_numbers, first->size);
+      _update_line_numbers(second->line_number_list, first->size);
 
       if (first->flags & (STYP_TEXT | STYP_DATA_ROM)) {
         section_org = gp_processor_byte_to_org(object->class, first->size);
@@ -451,7 +451,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
       }
 
       /* Update the symbol table. */
-      symbol = object->symbols;
+      symbol = object->symbol_list;
       while (symbol != NULL) {
         if ((symbol->section_number > 0) && (symbol->section == second)) {
           symbol->section = first;
@@ -466,27 +466,27 @@ gp_cofflink_merge_sections(gp_object_type *object)
       /* Append the relocations from the second section to the first. */
       if (second->num_reloc != 0) {
         if (first->num_reloc == 0) {
-          first->relocations = second->relocations;
+          first->relocation_list = second->relocation_list;
         }
         else {
-          first->relocations_tail->next = second->relocations;
-          second->relocations->prev = first->relocations_tail;
+          first->relocation_list_tail->next = second->relocation_list;
+          second->relocation_list->prev = first->relocation_list_tail;
         }
         first->num_reloc += second->num_reloc;
-        first->relocations_tail = second->relocations_tail;
+        first->relocation_list_tail = second->relocation_list_tail;
       }
 
       /* Append the line numbers from the second section to the first. */
       if (second->num_lineno != 0) {
         if (first->num_lineno == 0) {
-          first->line_numbers = second->line_numbers;
+          first->line_number_list = second->line_number_list;
         }
         else {
-          first->line_numbers_tail->next = second->line_numbers;
-          second->line_numbers->prev = first->line_numbers_tail;
+          first->line_number_list_tail->next = second->line_number_list;
+          second->line_number_list->prev = first->line_number_list_tail;
         }
         first->num_lineno += second->num_lineno;
-        first->line_numbers_tail = second->line_numbers_tail;
+        first->line_number_list_tail = second->line_number_list_tail;
       }
 
       /* Remove the second section. */
@@ -592,8 +592,8 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
   _copy_rom_section(object, section, new);
 
   /* insert the new ROM section after the idata section */
-  if (section == object->sections_tail) {
-    object->sections_tail = new;
+  if (section == object->section_list_tail) {
+    object->section_list_tail = new;
   }
   new->next = section->next;
   section->next = new;
@@ -685,7 +685,7 @@ gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit)
   gp_symbol_type  *symbol;
 
   count_sections = 0;
-  section        = object->sections;
+  section        = object->section_list;
   while (section != NULL) {
     if (section->flags & STYP_DATA) {
       _create_rom_section(object, section);
@@ -753,7 +753,7 @@ gp_cofflink_add_cinit_section(gp_object_type *object)
   char                  *prog_name;
   uint16_t               number;
 
-  new = gp_coffgen_find_section(object, object->sections, ".cinit");
+  new = gp_coffgen_find_section(object, object->section_list, ".cinit");
 
   if (new != NULL) {
     /* scan through the sections to determine the addresses */
@@ -772,12 +772,12 @@ gp_cofflink_add_cinit_section(gp_object_type *object)
       insn_retlw = gp_processor_retlw(class);
     }
 
-    section = object->sections;
+    section = object->section_list;
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
         /* locate the rom table */
         prog_name    = _create_i_section_name(section->name);
-        prog_section = gp_coffgen_find_section(object, object->sections, prog_name);
+        prog_section = gp_coffgen_find_section(object, object->section_list, prog_name);
         free(prog_name);
 
         if (class->rom_width == 8) {
@@ -885,7 +885,7 @@ gp_cofflink_reloc_abs(gp_object_type *object, MemBlock *m,
   int              org;
   gp_boolean       p16e_align_needed;
 
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     if ((section->flags & STYP_ABS) && (section->flags & flags)) {
       /* Workaround for the "odd size memory problem" in the PIC16E class.
@@ -1167,7 +1167,7 @@ gp_cofflink_reloc_assigned(gp_object_type *object, MemBlock *m, int org_to_byte_
   int               org;
   gp_boolean        p16e_align_needed;
 
-  section = object->sections;
+  section = object->section_list;
   while (true) {
     current = _find_big_assigned(section, flags, logical_sections);
 
@@ -1225,7 +1225,7 @@ gp_cofflink_reloc_assigned(gp_object_type *object, MemBlock *m, int org_to_byte_
                 section_name, p16e_align_needed);
 
       /* Update the line number offsets. */
-      _update_line_numbers(current->line_numbers, current->address);
+      _update_line_numbers(current->line_number_list, current->address);
 
       /* Set the relocated flag. */
       current->flags |= STYP_RELOC;
@@ -1321,7 +1321,7 @@ gp_cofflink_reloc_cinit(gp_object_type *object, MemBlock *m, int org_to_byte_shi
     _set_used(object, m, 0, smallest_shadow_address, size, "cinit", cinit_section->name, false);
 
     /* Update the line number offsets. */
-    _update_line_numbers(cinit_section->line_numbers, cinit_section->address);
+    _update_line_numbers(cinit_section->line_number_list, cinit_section->address);
 
     /* Set the relocated flag. */
     cinit_section->flags |= STYP_RELOC;
@@ -1364,7 +1364,7 @@ gp_cofflink_reloc_unassigned(gp_object_type *object, MemBlock *m, int org_to_byt
   int                org;
   gp_boolean         p16e_align_needed;
 
-  section = object->sections;
+  section = object->section_list;
   while (true) {
     current = _find_big_section(section, flags);
 
@@ -1472,7 +1472,7 @@ next_pass:
       _set_used(object, m, 0, smallest_shadow_address, size, msg, current->name, p16e_align_needed);
 
       /* Update the line number offsets */
-      _update_line_numbers(current->line_numbers, current->address);
+      _update_line_numbers(current->line_number_list, current->address);
 
       /* Set the relocated flag */
       current->flags |= STYP_RELOC;
@@ -1508,7 +1508,7 @@ gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
 
   gp_debug("Updating symbols with their new relocated values.");
 
-  symbol = object->symbols;
+  symbol = object->symbol_list;
   while (symbol != NULL) {
     if (symbol->section_number > 0) {
       sym_sect = symbol->section;
@@ -1530,7 +1530,7 @@ gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
 
   gp_debug("Stripping section relocated flag.");
 
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     section->flags &= ~(STYP_RELOC);
     section = section->next;
@@ -1580,13 +1580,13 @@ gp_cofflink_make_linenum_arrays(gp_object_type *object)
   unsigned int      prev_num;
   unsigned int      i;
 
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     n_linenums = section->num_lineno;
     array      = (gp_linenum_type **)GP_Calloc(n_linenums, sizeof(gp_linenum_type *));
     i          = 0;
     prev_num   = (unsigned int)(-1);
-    linenum    = section->line_numbers;
+    linenum    = section->line_number_list;
     while (linenum != NULL) {
       /* From among identical line numbers only places the first in the array. */
       if (prev_num != linenum->line_number) {
@@ -1674,7 +1674,7 @@ gp_cofflink_fill_pages(gp_object_type *object, MemBlock *m, const symbol_table_t
           snprintf(fill_name, sizeof(fill_name), ".fill_%i", fill_number++);
           gp_debug("  new section \"%s\" at %#x with size %#x and data %#x",
                    fill_name, current_shadow_address, current_size, section_def->fill);
-          section = gp_coffgen_find_section(object, object->sections, fill_name);
+          section = gp_coffgen_find_section(object, object->section_list, fill_name);
 
           if (section != NULL) {
             gp_error("Fill section \"%s\" already exists.", fill_name);
@@ -1934,11 +1934,11 @@ gp_cofflink_patch(gp_object_type *object)
   gp_debug("Patching data with relocated symbols.");
 
   class   = object->class;
-  section = object->sections;
+  section = object->section_list;
   while (section != NULL) {
     if (gp_has_data(section)) {
       /* patch raw data with relocation entries */
-      relocation = section->relocations;
+      relocation = section->relocation_list;
       while (relocation != NULL) {
         _patch_addr(class, num_pages, num_banks, bsr_boundary, section, relocation);
         relocation = relocation->next;
@@ -1951,9 +1951,9 @@ gp_cofflink_patch(gp_object_type *object)
       }
 
       /* strip the relocations from the section */
-      section->num_reloc        = 0;
-      section->relocations      = NULL;
-      section->relocations_tail = NULL;
+      section->num_reloc            = 0;
+      section->relocation_list      = NULL;
+      section->relocation_list_tail = NULL;
     }
 
     section = section->next;
@@ -1980,7 +1980,7 @@ gp_cofflink_make_memory(gp_object_type *object)
   gp_boolean             not_8_bit;
 
   m         = i_memory_create();
-  section   = object->sections;
+  section   = object->section_list;
   class     = object->class;
   processor = object->processor;
 
