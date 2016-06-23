@@ -38,7 +38,7 @@ struct gplink_state state;
 static gp_boolean   processor_mismatch_warning;
 static gp_boolean   enable_cinit_wanings;
 
-#define GET_OPTIONS "a:cCdf:hI:lmo:O:p:qrs:t:u:vw"
+#define GET_OPTIONS "a:b:cCdf:hI:lmo:O:p:qrs:t:u:vw"
 
 enum {
   OPT_MPLINK_COMPATIBLE = 0x100,
@@ -48,6 +48,7 @@ enum {
 static struct option longopts[] =
 {
   { "hex-format",         required_argument, NULL, 'a' },
+  { "optimize-banksel",   required_argument, NULL, 'b' },
   { "object",             no_argument,       NULL, 'c' },
   { "no-cinit-warnings",  no_argument,       NULL, 'C' },
   { "debug",              no_argument,       NULL, 'd' },
@@ -79,6 +80,7 @@ _show_usage(void)
   printf("Usage: gplink [options] [objects] [libraries]\n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
+  printf("  -b OPT, --optimize-banksel OPT Remove unnecessary Banksel directives. [0]\n");
   printf("  -c, --object                   Output executable object file.\n");
   printf("  -C, --no-cinit-warnings        Disable this warnings of _cinit section with -O2 option:\n"
          "                                   \"Relocation symbol _cinit has no section.\"\n");
@@ -212,7 +214,7 @@ _scan_index(symbol_table_t *table, gp_archive_type *archive)
   gp_boolean       modified;
 
   num_added = 1; /* initalize to 1 so while loop can be entered */
-  modified = false;
+  modified  = false;
   while (num_added != 0) {
     num_added = 0;
     for (i = 0; i < sym_get_symbol_count(state.symbol.missing); ++i) {
@@ -520,6 +522,7 @@ _init(void)
   state.processor         = NULL;
   state.optimize.level    = OPTIMIZE_LEVEL_DEFAULT;
   state.optimize.pagesel  = 0;
+  state.optimize.banksel  = 0;
   state.codfile           = OUT_NORMAL;
   state.hexfile           = OUT_NORMAL;
   state.lstfile           = OUT_NORMAL;
@@ -643,6 +646,14 @@ _process_args(int argc, char *argv[])
         state.hex_format = INHX32;
       } else {
         gp_error("Invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32.", optarg);
+      }
+      break;
+
+    case 'b':
+      state.optimize.banksel = (unsigned int)strtol(optarg, &pc, 10);
+
+      if ((pc == NULL) || (*pc != '\0')) {
+        gp_error("Invalid character %#x in number constant.", *pc);
       }
       break;
 
@@ -825,9 +836,9 @@ _process_args(int argc, char *argv[])
 static gp_boolean
 _linker(void)
 {
-  MemBlock *data;
-  MemBlock *program;
-  srcfns_t *p;
+  MemBlock_t *data;
+  MemBlock_t *program;
+  srcfns_t   *p;
 
   /* setup output filenames */
   snprintf(state.hexfilename, sizeof(state.hexfilename), "%s.hex", state.basefilename);
@@ -925,10 +936,10 @@ _linker(void)
   /* allocate memory for absolute sections */
   gp_debug("Verifying absolute sections.");
   gp_cofflink_reloc_abs(state.object, program, state.class->org_to_byte_shift,
-                        STYP_TEXT | STYP_DATA_ROM);
+                        STYP_ROM_AREA);
 
   gp_cofflink_reloc_abs(state.object, data, 0,
-                        STYP_DATA | STYP_BSS | STYP_SHARED | STYP_OVERLAY | STYP_ACCESS);
+                        STYP_RAM_AREA | STYP_SHARED | STYP_OVERLAY | STYP_ACCESS);
 
   if (state.mplink_compatible) {
     /* allocate cinit section to the lowest possible address */
@@ -947,11 +958,11 @@ _linker(void)
   /* allocate memory for relocatable assigned sections */
   gp_debug("Relocating assigned sections.");
   gp_cofflink_reloc_assigned(state.object, program, state.class->org_to_byte_shift,
-                             STYP_TEXT | STYP_DATA_ROM,
+                             STYP_ROM_AREA,
                              state.section.definition, state.section.logical);
 
   gp_cofflink_reloc_assigned(state.object, data, 0,
-                             STYP_DATA | STYP_BSS | STYP_SHARED | STYP_OVERLAY | STYP_ACCESS,
+                             STYP_RAM_AREA | STYP_SHARED | STYP_OVERLAY | STYP_ACCESS,
                              state.section.definition, state.section.logical);
 
   /* FIXME: allocate unassigned stacks */
@@ -959,10 +970,10 @@ _linker(void)
   /* allocate memory for relocatable unassigned sections */
   gp_debug("Relocating unassigned sections.");
   gp_cofflink_reloc_unassigned(state.object, program, state.class->org_to_byte_shift,
-                               STYP_TEXT | STYP_DATA_ROM, state.section.definition);
+                               STYP_ROM_AREA, state.section.definition);
 
   gp_cofflink_reloc_unassigned(state.object, data, 0,
-                               STYP_DATA | STYP_BSS | STYP_SHARED | STYP_OVERLAY | STYP_ACCESS,
+                               STYP_RAM_AREA | STYP_SHARED | STYP_OVERLAY | STYP_ACCESS,
                                state.section.definition);
 
   /* load the table with the relocated addresses */
@@ -972,6 +983,10 @@ _linker(void)
 
   if (state.optimize.pagesel > 0) {
     gp_coffopt_remove_unnecessary_pagesel(state.object);
+  }
+
+  if (state.optimize.banksel > 0) {
+    gp_coffopt_remove_unnecessary_banksel(state.object);
   }
 
   gp_cofflink_make_linenum_arrays(state.object);

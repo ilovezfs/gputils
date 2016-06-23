@@ -39,20 +39,20 @@ typedef union
 
     This file provides the functions used to manipulate the PIC memory.
     The memory is stored in 'memory blocks' which are implemented
-    with the 'MemBlock' structure:
+    with the 'MemBlock_t' structure:
 
       typedef struct MemArg {
         const char *arg;
         int         val;              The value of the first argument.
         int         offs;             If the argument is area then this the offset of the address.
-      } MemArg;
+      } MemArg_t;
 
       typedef struct MemArgList {
-        MemArg first;
-        MemArg second;
-      } MemArgList;
+        MemArg_t first;
+        MemArg_t second;
+      } MemArgList_t;
 
-      typedef struct MemWord {
+      typedef struct MemByte {
         unsigned int  data;           The data byte and the attributes of.
 
         char         *section_name;   During assembly or linking shows the name of section.
@@ -62,16 +62,16 @@ typedef union
 
         unsigned int  dest_byte_addr; After disassembly shows the target byte-address (not org) of a branch.
 
-        MemArgList args;
-      } MemWord;
+        MemArgList_t  args;
+      } MemByte_t;
 
       typedef struct MemBlock {
-        unsigned int     base;
-        MemWord         *memory;
-        struct MemBlock *next;
-      } MemBlock;
+        unsigned int       base;
+        MemByte_t         *memory;
+        struct MemBlock_t *next;
+      } MemBlock_t;
 
- Each MemBlock can hold up to `I_MEM_MAX' (32k currently) bytes. The `base'
+ Each MemBlock_t can hold up to `I_MEM_MAX' (32k currently) bytes. The `base'
  is the base address of the memory block. If the instruction memory spans
  more than 32k, then additional memory blocks can be allocated and linked
  together in a singly linked list (`next'). The last memory block in a
@@ -88,29 +88,29 @@ typedef union
  *
  *  Inputs:
  *   m            - start of the instruction memory
- *   mpb          - pointer to the memory block structure (MemBlock)
+ *   mpb          - pointer to the memory block structure (MemBlock_t)
  *   base_address - where this new block of memory is based
  *
  **************************************************************************************************/
 
-static MemBlock *
-_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
+static MemBlock_t *
+_memory_new(MemBlock_t *M, MemBlock_t *Mbp, unsigned int Base_address)
 {
-  unsigned int block = IMemBaseAddr(base_address);
+  unsigned int block = IMemBaseFromAddr(Base_address);
 
-  mbp->base   = block;
-  mbp->memory = (MemWord *)GP_Calloc(I_MEM_MAX, sizeof(MemWord));
+  Mbp->base   = block;
+  Mbp->memory = (MemByte_t *)GP_Calloc(I_MEM_MAX, sizeof(MemByte_t));
 
   do {
-    if ((m->next == NULL) || (m->next->base > block)) {
+    if ((M->next == NULL) || (M->next->base > block)) {
       /* Insert after this block. */
-      mbp->next = m->next;
-      m->next   = mbp;
-      return mbp;
+      Mbp->next = M->next;
+      M->next   = Mbp;
+      return Mbp;
     }
 
-    m = m->next;
-  } while (m != NULL);
+    M = M->next;
+  } while (M != NULL);
 
   assert(0);
 
@@ -120,60 +120,64 @@ _memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_store_section_name(MemWord *mw, const char *name)
+_store_section_name(MemByte_t *Mb, const char *Name)
 {
-  if ((name != NULL) && (*name != '\0')) {
-    mw->section_name = GP_Strdup(name);
+  if ((Name != NULL) && (*Name != '\0')) {
+    Mb->section_name = GP_Strdup(Name);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_store_symbol_name(MemWord *mw, const char *name)
+_store_symbol_name(MemByte_t *Mb, const char *Name)
 {
-  if ((name != NULL) && (*name != '\0')) {
-    mw->symbol_name = GP_Strdup(name);
+  if ((Name != NULL) && (*Name != '\0')) {
+    Mb->symbol_name = GP_Strdup(Name);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-MemBlock *
+MemBlock_t *
 i_memory_create(void)
 {
-  return (MemBlock *)GP_Calloc(1, sizeof(MemBlock));
+  return (MemBlock_t *)GP_Calloc(1, sizeof(MemBlock_t));
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_free(MemBlock *m)
+i_memory_free(MemBlock_t *M)
 {
-  MemBlock     *next;
-  MemWord      *w;
+  MemBlock_t   *next;
+  MemByte_t    *b;
   unsigned int  i;
 
+  if (M == NULL) {
+    return;
+  }
+
   do {
-    if (m->memory != NULL) {
-      w = m->memory;
-      for (i = I_MEM_MAX; i; ++w, --i) {
-        if (w->section_name != NULL) {
-          free(w->section_name);
+    if (M->memory != NULL) {
+      b = M->memory;
+      for (i = I_MEM_MAX; i; ++b, --i) {
+        if (b->section_name != NULL) {
+          free(b->section_name);
         }
 
-        if (w->symbol_name != NULL) {
-          free(w->symbol_name);
+        if (b->symbol_name != NULL) {
+          free(b->symbol_name);
         }
       }
 
-      free(m->memory);
+      free(M->memory);
     }
 
-    next = m->next;
-    free(m);
-    m = next;
-  } while (m != NULL);
+    next = M->next;
+    free(M);
+    M = next;
+  } while (M != NULL);
 }
 
 /**************************************************************************************************
@@ -184,26 +188,26 @@ i_memory_free(MemBlock *m)
  * word will be fetched.
  *
  * Inputs:
- *  m - start of the instruction memory
- *  byte_address -
+ *  M - start of the instruction memory
+ *  Byte_address -
  * Returns
  *  true if byte at byte_address is used, false if not
  *
  **************************************************************************************************/
 
 gp_boolean
-b_memory_is_used(MemBlock *m, unsigned int byte_address)
+b_memory_is_used(MemBlock_t *M, unsigned int Byte_address)
 {
-  unsigned int block  = IMemBaseAddr(byte_address);
-  unsigned int offset = IMemOffsetAddr(byte_address);
+  unsigned int block  = IMemBaseFromAddr(Byte_address);
+  unsigned int offset = IMemOffsFromAddr(Byte_address);
 
   do {
-    if (m->base == block) {
-      return (((m->memory != NULL) && (m->memory[offset].data & BYTE_USED_MASK)) ? true : false);
+    if (M->base == block) {
+      return (((M->memory != NULL) && (M->memory[offset].data & BYTE_USED_MASK)) ? true : false);
     }
 
-    m = m->next;
-  } while (m != NULL);
+    M = M->next;
+  } while (M != NULL);
 
   return false;
 }
@@ -217,8 +221,8 @@ b_memory_is_used(MemBlock *m, unsigned int byte_address)
  * returned.
  *
  * Inputs:
- *  m - start of the instruction memory
- *  address -
+ *  M - start of the instruction memory
+ *  Byte_address -
  * Returns
  *  If is used the address the byte at address and true.
  *  Otherwise 0 and false.
@@ -226,56 +230,56 @@ b_memory_is_used(MemBlock *m, unsigned int byte_address)
  **************************************************************************************************/
 
 gp_boolean
-b_memory_get(const MemBlock *m, unsigned int byte_address, uint8_t *byte,
-             const char **section_name, const char **symbol_name)
+b_memory_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
+             const char **Section_name, const char **Symbol_name)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemByte_t    *b;
 
-  while (m != NULL) {
-    if (m->base == block) {
-      if (m->memory != NULL) {
-        w = &m->memory[offset];
-        *byte = w->data & 0xff;
+  while (M != NULL) {
+    if (M->base == block) {
+      if (M->memory != NULL) {
+        b = &M->memory[offset];
+        *Byte = b->data & 0xff;
 
-        if (section_name != NULL) {
-          *section_name = w->section_name;
+        if (Section_name != NULL) {
+          *Section_name = b->section_name;
         }
 
-        if (symbol_name != NULL) {
-          *symbol_name = w->symbol_name;
+        if (Symbol_name != NULL) {
+          *Symbol_name = b->symbol_name;
         }
 
-        return ((w->data & BYTE_USED_MASK) ? true : false);
+        return ((b->data & BYTE_USED_MASK) ? true : false);
       }
       else {
-        *byte = 0;
+        *Byte = 0;
 
-        if (section_name != NULL) {
-          *section_name = NULL;
+        if (Section_name != NULL) {
+          *Section_name = NULL;
         }
 
-        if (symbol_name != NULL) {
-          *symbol_name = NULL;
+        if (Symbol_name != NULL) {
+          *Symbol_name = NULL;
         }
 
         return false;
       }
     }
 
-    m = m->next;
+    M = M->next;
   }
 
-  if (section_name != NULL) {
-    *section_name = NULL;
+  if (Section_name != NULL) {
+    *Section_name = NULL;
   }
 
-  if (symbol_name != NULL) {
-    *symbol_name = NULL;
+  if (Symbol_name != NULL) {
+    *Symbol_name = NULL;
   }
 
-  *byte = 0;
+  *Byte = 0;
   return false;
 }
 
@@ -286,42 +290,42 @@ b_memory_get(const MemBlock *m, unsigned int byte_address, uint8_t *byte,
  * destination memory block is non-existant, a new one will be created.
  *
  * inputs:
- *   i_memory     - start of the instruction memory
- *   byte_address      - destination address of the write
- *   value        - the value to be written at that address
- *   section_name - section_name of the memory block
- *   symbol_name  - symbol_name in the memory block
+ *   I_memory     - start of the instruction memory
+ *   Byte_address - destination address of the write
+ *   Value        - the value to be written at that address
+ *   Section_name - section_name of the memory block
+ *   Symbol_name  - symbol_name in the memory block
  * returns:
  *   none
  *
  **************************************************************************************************/
 
 void
-b_memory_put(MemBlock *i_memory, unsigned int byte_address, uint8_t value,
-	     const char *section_name, const char *symbol_name)
+b_memory_put(MemBlock_t *I_memory, unsigned int Byte_address, uint8_t Value,
+	     const char *Section_name, const char *Symbol_name)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemBlock     *m = i_memory;
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemBlock_t   *m = I_memory;
+  MemByte_t    *b;
 
   while (m != NULL) {
     if (m->base == block) {
       if (m->memory == NULL) {
-        m->memory = (MemWord *)GP_Calloc(I_MEM_MAX, sizeof(MemWord));
+        m->memory = (MemByte_t *)GP_Calloc(I_MEM_MAX, sizeof(MemByte_t));
       }
 
-      w = &m->memory[offset];
+      b = &m->memory[offset];
 
-      if (w->section_name == NULL) {
-        _store_section_name(w, section_name);
+      if (b->section_name == NULL) {
+        _store_section_name(b, Section_name);
       }
 
-      if (w->symbol_name == NULL) {
-        _store_symbol_name(w, symbol_name);
+      if (b->symbol_name == NULL) {
+        _store_symbol_name(b, Symbol_name);
       }
 
-      w->data = value | BYTE_USED_MASK;
+      b->data = Value | BYTE_USED_MASK;
       return;
     }
 
@@ -331,11 +335,11 @@ b_memory_put(MemBlock *i_memory, unsigned int byte_address, uint8_t value,
   /* Couldn't find an address to write this value. This must be
      the first time we've tried to write to high memory some place. */
 
-  m = _memory_new(i_memory, (MemBlock *)GP_Malloc(sizeof(MemBlock)), byte_address);
-  w = &m->memory[offset];
-  w->data = value | BYTE_USED_MASK;
-  _store_section_name(w, section_name);
-  _store_symbol_name(w, symbol_name);
+  m = _memory_new(I_memory, (MemBlock_t *)GP_Malloc(sizeof(MemBlock_t)), Byte_address);
+  b = &m->memory[offset];
+  b->data = Value | BYTE_USED_MASK;
+  _store_section_name(b, Section_name);
+  _store_symbol_name(b, Symbol_name);
 }
 
 /**************************************************************************************************
@@ -344,70 +348,70 @@ b_memory_put(MemBlock *i_memory, unsigned int byte_address, uint8_t value,
  * This function will clear one byte of a pic memory address.
  *
  * inputs:
- *   m       - start of the instruction memory
- *   byte_address - destination address of the clear
+ *   M            - start of the instruction memory
+ *   Byte_address - destination address of the clear
  * returns:
  *   none
  *
  **************************************************************************************************/
 
 void
-b_memory_clear(MemBlock *m, unsigned int byte_address)
+b_memory_clear(MemBlock_t *M, unsigned int Byte_address)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemByte_t    *b;
 
-  while (m != NULL) {
-    if (m->base == block) {
-      if (m->memory != NULL) {
-        w = &m->memory[offset];
-        w->data = 0;
+  while (M != NULL) {
+    if (M->base == block) {
+      if (M->memory != NULL) {
+        b = &M->memory[offset];
+        b->data = 0;
 
-        if (w->section_name != NULL) {
-          free(w->section_name);
+        if (b->section_name != NULL) {
+          free(b->section_name);
         }
 
-        w->section_name = NULL;
+        b->section_name = NULL;
 
-        if (w->symbol_name != NULL) {
-          free(w->symbol_name);
+        if (b->symbol_name != NULL) {
+          free(b->symbol_name);
         }
 
-        w->symbol_name = NULL;
+        b->symbol_name = NULL;
       }
 
       return;
     }
 
-    m = m->next;
+    M = M->next;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-b_memory_move(MemBlock *m, unsigned int from_byte_address, unsigned int to_byte_address,
-              unsigned int byte_size)
+b_memory_move(MemBlock_t *M, unsigned int From_byte_address, unsigned int To_byte_address,
+              unsigned int Byte_size)
 {
-  unsigned int from_block  = IMemBaseAddr(from_byte_address);
-  unsigned int from_offset = IMemOffsetAddr(from_byte_address);
-  unsigned int to_block    = IMemBaseAddr(to_byte_address);
-  unsigned int to_offset   = IMemOffsetAddr(to_byte_address);
+  unsigned int from_block  = IMemBaseFromAddr(From_byte_address);
+  unsigned int from_offset = IMemOffsFromAddr(From_byte_address);
+  unsigned int to_block    = IMemBaseFromAddr(To_byte_address);
+  unsigned int to_offset   = IMemOffsFromAddr(To_byte_address);
   size_t       size;
 
-  if ((from_byte_address == to_byte_address) || (byte_size == 0)) {
+  if ((From_byte_address == To_byte_address) || (Byte_size == 0)) {
     return;
   }
 
   assert(from_block == to_block);
-  assert((from_offset + byte_size) <= I_MEM_MAX);
-  assert((to_offset + byte_size) <= I_MEM_MAX);
+  assert((from_offset + Byte_size) <= I_MEM_MAX);
+  assert((to_offset + Byte_size) <= I_MEM_MAX);
 
-  while (m != NULL) {
-    if (m->base == from_block) {
-      size = byte_size * sizeof(MemWord);
-      memmove(&m->memory[to_offset], &m->memory[from_offset], size);
+  while (M != NULL) {
+    if (M->base == from_block) {
+      size = Byte_size * sizeof(MemByte_t);
+      memmove(&M->memory[to_offset], &M->memory[from_offset], size);
 
       /* Clear the unused area. */
       if (from_offset > to_offset) {
@@ -429,8 +433,8 @@ b_memory_move(MemBlock *m, unsigned int from_byte_address, unsigned int to_byte_
          *   |       |XXXX|
          *   +-------+----+
          */
-        size = (from_offset - to_offset) * sizeof(MemWord);
-        memset(&m->memory[to_offset + byte_size], 0, size);
+        size = (from_offset - to_offset) * sizeof(MemByte_t);
+        memset(&M->memory[to_offset + Byte_size], 0, size);
       }
       else {
         /*
@@ -453,87 +457,88 @@ b_memory_move(MemBlock *m, unsigned int from_byte_address, unsigned int to_byte_
          *    |XXXX|       |
          *    +----+-------+ 
          */
-        size = (to_offset - from_offset) * sizeof(MemWord);
-        memset(&m->memory[from_offset], 0, size);
+        size = (to_offset - from_offset) * sizeof(MemByte_t);
+        memset(&M->memory[from_offset], 0, size);
       }
 
       return;
     }
 
-    m = m->next;
+    M = M->next;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-b_memory_delete(MemBlock *m, unsigned int byte_address)
+b_memory_delete(MemBlock_t *M, unsigned int Byte_address)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemByte_t    *b;
   size_t        size;
 
-  while (m != NULL) {
-    if (m->base == block) {
-      if (m->memory != NULL) {
-        w = &m->memory[offset];
+  while (M != NULL) {
+    if (M->base == block) {
+      if (M->memory != NULL) {
+        b = &M->memory[offset];
 
-        if (w->section_name != NULL) {
-          free(w->section_name);
+        if (b->section_name != NULL) {
+          free(b->section_name);
         }
 
-        if (w->symbol_name != NULL) {
-          free(w->symbol_name);
+        if (b->symbol_name != NULL) {
+          free(b->symbol_name);
         }
 
-        size = (I_MEM_MAX - offset) * sizeof(MemWord);
+        size = (I_MEM_MAX - offset) * sizeof(MemByte_t);
 
         if (size != 0) {
-	  memmove(w, &m->memory[offset + 1], size);
+	  memmove(b, &M->memory[offset + 1], size);
 	}
 
-	memset(&m->memory[I_MEM_MAX], 0, sizeof(MemWord));
+	memset(&M->memory[I_MEM_MAX], 0, sizeof(MemByte_t));
       }
 
       return;
     }
 
-    m = m->next;
+    M = M->next;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-b_memory_delete_area(MemBlock *m, unsigned int byte_address, unsigned int byte_number)
+b_memory_delete_area(MemBlock_t *M, unsigned int Byte_address, unsigned int Byte_number)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemByte_t    *b;
   unsigned int  remnant_byte_num;
+  unsigned int  i;
 
-  if (byte_number == 0) {
+  if (Byte_number == 0) {
     return;
   }
 
-  while (m != NULL) {
-    if (m->base == block) {
-      if (m->memory != NULL) {
-        w = &m->memory[offset];
-
-        if (w->section_name != NULL) {
-          free(w->section_name);
-        }
-
-        if (w->symbol_name != NULL) {
-          free(w->symbol_name);
-        }
-
+  while (M != NULL) {
+    if (M->base == block) {
+      if (M->memory != NULL) {
         remnant_byte_num = I_MEM_MAX - offset;
-        assert(byte_number <= remnant_byte_num);
+        assert(Byte_number <= remnant_byte_num);
 
-        remnant_byte_num -= byte_number;
+        remnant_byte_num -= Byte_number;
+
+        for (b = &M->memory[offset], i = Byte_number; i > 0; ++b, --i) {
+          if (b->section_name != NULL) {
+            free(b->section_name);
+          }
+
+          if (b->symbol_name != NULL) {
+            free(b->symbol_name);
+          }
+        }
 
 	/*
 	 *  Before the deleting.
@@ -551,7 +556,7 @@ b_memory_delete_area(MemBlock *m, unsigned int byte_address, unsigned int byte_n
 	 */
         if (remnant_byte_num != 0) {
           /* Delete the designated area. */
-          memmove(w, &m->memory[offset + byte_number], remnant_byte_num * sizeof(MemWord));
+          memmove(&M->memory[offset], &M->memory[offset + Byte_number], remnant_byte_num * sizeof(MemByte_t));
         }
 
 	/*
@@ -569,58 +574,58 @@ b_memory_delete_area(MemBlock *m, unsigned int byte_address, unsigned int byte_n
          *                I_MEM_MAX
 	 */
 	/* Clear the empty area. */
-        memset(&m->memory[offset + remnant_byte_num], 0, byte_number * sizeof(MemWord));
+        memset(&M->memory[offset + remnant_byte_num], 0, Byte_number * sizeof(MemByte_t));
       }
 
       return;
     }
 
-    m = m->next;
+    M = M->next;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_range_memory_used(const MemBlock *m, unsigned int from_byte_address, unsigned int to_byte_address)
+b_range_memory_used(const MemBlock_t *M, unsigned int From_byte_address, unsigned int To_byte_address)
 {
   unsigned int i;
   unsigned int j;
   unsigned int starting_block;
   unsigned int block;
-  unsigned int bytes;
+  unsigned int n_bytes;
 
   j              = 0;
   block          = 0;
-  starting_block = IMemBaseAddr(from_byte_address);
+  starting_block = IMemBaseFromAddr(From_byte_address);
   /* find the starting block */
-  while ((m != NULL) && (block < starting_block)) {
+  while ((M != NULL) && (block < starting_block)) {
     j += I_MEM_MAX;
-    m = m->next;
+    M = M->next;
     ++block;
   }
 
-  bytes = 0;
+  n_bytes = 0;
   /* count used bytes */
-  while ((m != NULL) && (j < to_byte_address)) {
-    for (i = 0; (i < I_MEM_MAX) && (j < to_byte_address); ++i) {
-      if ((m->memory != NULL) && (m->memory[i].data & BYTE_USED_MASK)) {
-        ++bytes;
+  while ((M != NULL) && (j < To_byte_address)) {
+    for (i = 0; (i < I_MEM_MAX) && (j < To_byte_address); ++i) {
+      if ((M->memory != NULL) && (M->memory[i].data & BYTE_USED_MASK)) {
+        ++n_bytes;
       }
       ++j;
     }
-    m = m->next;
+    M = M->next;
   }
 
-  return bytes;
+  return n_bytes;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_used(const MemBlock *m)
+b_memory_used(const MemBlock_t *M)
 {
-  return b_range_memory_used(m, 0, UINT_MAX);
+  return b_range_memory_used(M, 0, UINT_MAX);
 }
 
 /**************************************************************************************************
@@ -632,57 +637,57 @@ b_memory_used(const MemBlock *m)
  **************************************************************************************************/
 
 unsigned int
-i_memory_get_le(const MemBlock *m, unsigned int byte_address, uint16_t *word,
-                const char **section_name, const char **symbol_name)
+i_memory_get_le(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
+                const char **Section_name, const char **Symbol_name)
 {
   unsigned int ret;
   bword_t      bw;
 
-  ret  = (b_memory_get(m, byte_address,     &bw.b[0], section_name, symbol_name)) ? W_USED_L : 0;
-  ret |= (b_memory_get(m, byte_address + 1, &bw.b[1], NULL,         NULL))        ? W_USED_H : 0;
-  *word = bw.w;
+  ret  = (b_memory_get(M, Byte_address,     &bw.b[0], Section_name, Symbol_name)) ? W_USED_L : 0;
+  ret |= (b_memory_get(M, Byte_address + 1, &bw.b[1], NULL,         NULL))        ? W_USED_H : 0;
+  *Word = bw.w;
   return ret;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_put_le(MemBlock *m, unsigned int byte_address, uint16_t word,
-                const char *section_name, const char *symbol_name)
+i_memory_put_le(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
+                const char *Section_name, const char *Symbol_name)
 {
-  b_memory_put(m, byte_address,     word & 0xff, section_name, symbol_name);
-  b_memory_put(m, byte_address + 1, word >> 8,   section_name, symbol_name);
+  b_memory_put(M, Byte_address,     Word & 0xff, Section_name, Symbol_name);
+  b_memory_put(M, Byte_address + 1, Word >> 8,   Section_name, Symbol_name);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-i_memory_get_be(const MemBlock *m, unsigned int byte_address, uint16_t *word,
-                const char **section_name, const char **symbol_name)
+i_memory_get_be(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
+                const char **Section_name, const char **Symbol_name)
 {
   unsigned int ret;
   bword_t      bw;
 
-  ret  = (b_memory_get(m, byte_address,     &bw.b[1], section_name, symbol_name)) ? W_USED_H : 0;
-  ret |= (b_memory_get(m, byte_address + 1, &bw.b[0], NULL,         NULL))        ? W_USED_L : 0;
-  *word = bw.w;
+  ret  = (b_memory_get(M, Byte_address,     &bw.b[1], Section_name, Symbol_name)) ? W_USED_H : 0;
+  ret |= (b_memory_get(M, Byte_address + 1, &bw.b[0], NULL,         NULL))        ? W_USED_L : 0;
+  *Word = bw.w;
   return ret;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_put_be(MemBlock *m, unsigned int byte_address, uint16_t word,
-                const char *section_name, const char *symbol_name)
+i_memory_put_be(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
+                const char *Section_name, const char *Symbol_name)
 {
-  b_memory_put(m, byte_address,     word >> 8,   section_name, symbol_name);
-  b_memory_put(m, byte_address + 1, word & 0xff, section_name, symbol_name);
+  b_memory_put(M, Byte_address,     Word >> 8,   Section_name, Symbol_name);
+  b_memory_put(M, Byte_address + 1, Word & 0xff, Section_name, Symbol_name);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_delete(MemBlock *m, unsigned int byte_address)
+i_memory_delete(MemBlock_t *m, unsigned int byte_address)
 {
   b_memory_delete(m, byte_address);
   b_memory_delete(m, byte_address);
@@ -691,10 +696,10 @@ i_memory_delete(MemBlock *m, unsigned int byte_address)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_print(const MemBlock *m, pic_processor_t processor)
+i_memory_print(const MemBlock_t *M, pic_processor_t Processor)
 {
   proc_class_t class;
-  unsigned int base;
+  unsigned int byte_addr;
   unsigned int i;
   unsigned int j;
   unsigned int org;
@@ -705,33 +710,33 @@ i_memory_print(const MemBlock *m, pic_processor_t processor)
 
 #define WORDS_IN_ROW 8
 
-  class = processor->class;
+  class = Processor->class;
 
-  while (m != NULL) {
-    if (m->memory != NULL) {
-      base = m->base << I_MEM_BITS;
+  while (M != NULL) {
+    if (M->memory != NULL) {
+      byte_addr = IMemAddrFromBase(M->base);
 
       for (i = 0; i < I_MEM_MAX; i += 2 * WORDS_IN_ROW) {
         row_used = false;
 
         for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-          if (m->memory[i + j].data != 0) {
+          if (M->memory[i + j].data != 0) {
             row_used = true;
             break;
           }
         }
 
         if (row_used) {
-          org = gp_processor_byte_to_real(processor, base + i);
+          org = gp_processor_byte_to_real(Processor, byte_addr + i);
           printf("%08X  ", org);
 
-          if ((gp_processor_is_eeprom_org(processor, org) >= 0) ||
+          if ((gp_processor_is_eeprom_org(Processor, org) >= 0) ||
               ((class == PROC_CLASS_PIC16E) &&
-               ((gp_processor_is_idlocs_org(processor, org) >= 0) ||
-                (gp_processor_is_config_org(processor, org) >= 0)))) {
+               ((gp_processor_is_idlocs_org(Processor, org) >= 0) ||
+                (gp_processor_is_config_org(Processor, org) >= 0)))) {
             /* The row should be shown byte by byte. */
             for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-              if (b_memory_get(m, base + i + j, &data.b[0], NULL, NULL)) {
+              if (b_memory_get(M, byte_addr + i + j, &data.b[0], NULL, NULL)) {
                 printf("%02X ", data.b[0]);
               }
               else {
@@ -740,14 +745,14 @@ i_memory_print(const MemBlock *m, pic_processor_t processor)
             }
 
             for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-              c = m->memory[i + j].data & 0xff;
+              c = M->memory[i + j].data & 0xff;
               putchar(isprint(c) ? c : '.');
             }
           }
           else {
             /* The row should be shown word by word. */
             for (j = 0; j < WORDS_IN_ROW; j++) {
-              w_used = class->i_memory_get(m, base + i + (j * 2), &data.w, NULL, NULL);
+              w_used = class->i_memory_get(M, byte_addr + i + (j * 2), &data.w, NULL, NULL);
               switch (w_used & W_USED_ALL) {
               case W_USED_ALL:
                 printf("%04X  ", data.w);
@@ -767,7 +772,7 @@ i_memory_print(const MemBlock *m, pic_processor_t processor)
             }
 
             for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-              c = m->memory[i + j].data & 0xff;
+              c = M->memory[i + j].data & 0xff;
               putchar(isprint(c) ? c : '.');
             }
           }
@@ -777,7 +782,7 @@ i_memory_print(const MemBlock *m, pic_processor_t processor)
       }
     }
 
-    m = m->next;
+    M = M->next;
   }
 }
 
@@ -790,51 +795,51 @@ i_memory_print(const MemBlock *m, pic_processor_t processor)
  **************************************************************************************************/
 
 void
-b_memory_set_listed(MemBlock *m, unsigned int byte_address, unsigned int n_bytes)
+b_memory_set_listed(MemBlock_t *M, unsigned int Byte_address, unsigned int N_bytes)
 {
-  unsigned int block = IMemBaseAddr(byte_address);
+  unsigned int block = IMemBaseFromAddr(Byte_address);
 
-  while (n_bytes--) {
-    while (m != NULL) {
-      if (m->base == block) {
-        if (m->memory == NULL) {
-          m->memory = (MemWord *)GP_Calloc(I_MEM_MAX, sizeof(MemWord));
+  while (N_bytes--) {
+    while (M != NULL) {
+      if (M->base == block) {
+        if (M->memory == NULL) {
+          M->memory = (MemByte_t *)GP_Calloc(I_MEM_MAX, sizeof(MemByte_t));
         }
 
-        m->memory[IMemOffsetAddr(byte_address)].data |= BYTE_LISTED_MASK;
+        M->memory[IMemOffsFromAddr(Byte_address)].data |= BYTE_LISTED_MASK;
         break;
       }
 
-      m = m->next;
+      M = M->next;
     }
 
-    ++byte_address;
+    ++Byte_address;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_unlisted_size(const MemBlock *m, unsigned int byte_address)
+b_memory_get_unlisted_size(const MemBlock_t *M, unsigned int Byte_address)
 {
-  unsigned int block   = IMemBaseAddr(byte_address);
+  unsigned int block   = IMemBaseFromAddr(Byte_address);
   unsigned int n_bytes = 0;
 
-  if ((m != NULL) && (m->memory != NULL)) {
+  if ((M != NULL) && (M->memory != NULL)) {
     while (n_bytes < 4) {
       /* find memory block belonging to the byte_address */
-      while (block != m->base) {
-        m = m->next;
+      while (block != M->base) {
+        M = M->next;
 
-        if (m == NULL) {
+        if (M == NULL) {
           return n_bytes;
         }
       }
 
-      if ((m->memory != NULL) &&
-          ((m->memory[IMemOffsetAddr(byte_address)].data & BYTE_ATTR_MASK) == BYTE_USED_MASK)) {
+      if ((M->memory != NULL) &&
+          ((M->memory[IMemOffsFromAddr(Byte_address)].data & BYTE_ATTR_MASK) == BYTE_USED_MASK)) {
         /* byte at byte_address not listed */
-        ++byte_address;
+        ++Byte_address;
         ++n_bytes;
       }
       else {
@@ -850,22 +855,22 @@ b_memory_get_unlisted_size(const MemBlock *m, unsigned int byte_address)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_set_addr_type(MemBlock *m, unsigned int byte_address, unsigned int type,
-                       unsigned int dest_byte_addr)
+b_memory_set_addr_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type,
+                       unsigned int Dest_byte_addr)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemByte_t    *b;
 
-  while (m != NULL) {
-    if ((m->base == block) && (m->memory != NULL)) {
-      w = &m->memory[offset];
+  while (M != NULL) {
+    if ((M->base == block) && (M->memory != NULL)) {
+      b = &M->memory[offset];
 
-      if (w->data & BYTE_USED_MASK) {
-        w->data |= type & W_ADDR_T_MASK;
+      if (b->data & BYTE_USED_MASK) {
+        b->data |= Type & W_ADDR_T_MASK;
 
-	if (type & W_ADDR_T_BRANCH_SRC) {
-	  w->dest_byte_addr = dest_byte_addr;
+	if (Type & W_ADDR_T_BRANCH_SRC) {
+	  b->dest_byte_addr = Dest_byte_addr;
         }
 
         return true;
@@ -874,7 +879,7 @@ b_memory_set_addr_type(MemBlock *m, unsigned int byte_address, unsigned int type
       break;
     }
 
-    m = m->next;
+    M = M->next;
   }
 
   return false;
@@ -883,37 +888,37 @@ b_memory_set_addr_type(MemBlock *m, unsigned int byte_address, unsigned int type
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_addr_type(const MemBlock *m, unsigned int byte_address, const char **label_name,
-                       unsigned int *dest_byte_addr)
+b_memory_get_addr_type(const MemBlock_t *M, unsigned int Byte_address, const char **Label_name,
+                       unsigned int *Dest_byte_addr)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemByte_t    *b;
 
-  while (m != NULL) {
-    if ((m->base == block) && (m->memory != NULL)) {
-      w = &m->memory[offset];
+  while (M != NULL) {
+    if ((M->base == block) && (M->memory != NULL)) {
+      b = &M->memory[offset];
 
-      if (label_name != NULL) {
-	*label_name = (w->data & (W_ADDR_T_FUNC | W_ADDR_T_LABEL)) ? w->symbol_name : NULL;
+      if (Label_name != NULL) {
+	*Label_name = (b->data & (W_ADDR_T_FUNC | W_ADDR_T_LABEL)) ? b->symbol_name : NULL;
       }
 
-      if (dest_byte_addr != NULL) {
-	*dest_byte_addr = (w->data & W_ADDR_T_BRANCH_SRC) ? w->dest_byte_addr : 0;
+      if (Dest_byte_addr != NULL) {
+	*Dest_byte_addr = (b->data & W_ADDR_T_BRANCH_SRC) ? b->dest_byte_addr : 0;
       }
 
-      return (w->data & W_ADDR_T_MASK);
+      return (b->data & W_ADDR_T_MASK);
     }
 
-    m = m->next;
+    M = M->next;
   }
 
-  if (label_name != NULL) {
-    *label_name = NULL;
+  if (Label_name != NULL) {
+    *Label_name = NULL;
   }
 
-  if (dest_byte_addr != NULL) {
-    *dest_byte_addr = 0;
+  if (Dest_byte_addr != NULL) {
+    *Dest_byte_addr = 0;
   }
 
   return 0;
@@ -922,24 +927,24 @@ b_memory_get_addr_type(const MemBlock *m, unsigned int byte_address, const char 
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_set_addr_name(MemBlock *m, unsigned int byte_address, const char *name)
+b_memory_set_addr_name(MemBlock_t *M, unsigned int Byte_address, const char *Name)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemByte_t    *b;
 
-  while (m != NULL) {
-    if ((m->base == block) && (m->memory != NULL)) {
-      w = &m->memory[offset];
+  while (M != NULL) {
+    if ((M->base == block) && (M->memory != NULL)) {
+      b = &M->memory[offset];
 
-      if (w->symbol_name == NULL) {
-        _store_symbol_name(w, name);
+      if (b->symbol_name == NULL) {
+        _store_symbol_name(b, Name);
       }
 
       return true;
     }
 
-    m = m->next;
+    M = M->next;
   }
 
   return false;
@@ -948,29 +953,29 @@ b_memory_set_addr_name(MemBlock *m, unsigned int byte_address, const char *name)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_set_args(MemBlock *m, unsigned int byte_address, unsigned int type, const MemArgList *Args)
+b_memory_set_args(MemBlock_t *M, unsigned int Byte_address, unsigned int Type, const MemArgList_t *Args)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemByte_t    *b;
 
-  while (m != NULL) {
-    if ((m->base == block) && (m->memory != NULL)) {
-      w = &m->memory[offset];
+  while (M != NULL) {
+    if ((M->base == block) && (M->memory != NULL)) {
+      b = &M->memory[offset];
 
-      if (w->data & BYTE_USED_MASK) {
-        w->data |= type & W_ARG_T_MASK;
+      if (b->data & BYTE_USED_MASK) {
+        b->data |= Type & W_ARG_T_MASK;
 
-        if (type & W_ARG_T_FIRST) {
-          w->args.first.arg  = Args->first.arg;
-          w->args.first.val  = Args->first.val;
-          w->args.first.offs = Args->first.offs;
+        if (Type & W_ARG_T_FIRST) {
+          b->args.first.arg  = Args->first.arg;
+          b->args.first.val  = Args->first.val;
+          b->args.first.offs = Args->first.offs;
         }
 
-        if (type & W_ARG_T_SECOND) {
-          w->args.second.arg  = Args->second.arg;
-          w->args.second.val  = Args->second.val;
-          w->args.second.offs = Args->second.offs;
+        if (Type & W_ARG_T_SECOND) {
+          b->args.second.arg  = Args->second.arg;
+          b->args.second.val  = Args->second.val;
+          b->args.second.offs = Args->second.offs;
         }
 
         return true;
@@ -979,7 +984,7 @@ b_memory_set_args(MemBlock *m, unsigned int byte_address, unsigned int type, con
       break;
     }
 
-    m = m->next;
+    M = M->next;
   }
 
   return false;
@@ -988,22 +993,22 @@ b_memory_set_args(MemBlock *m, unsigned int byte_address, unsigned int type, con
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_args(const MemBlock *m, unsigned int byte_address, MemArgList *Args)
+b_memory_get_args(const MemBlock_t *M, unsigned int Byte_address, MemArgList_t *Args)
 {
-  unsigned int  block  = IMemBaseAddr(byte_address);
-  unsigned int  offset = IMemOffsetAddr(byte_address);
-  MemWord      *w;
+  unsigned int  block  = IMemBaseFromAddr(Byte_address);
+  unsigned int  offset = IMemOffsFromAddr(Byte_address);
+  MemByte_t    *b;
 
-  while (m != NULL) {
-    if ((m->base == block) && (m->memory != NULL)) {
-      w = &m->memory[offset];
+  while (M != NULL) {
+    if ((M->base == block) && (M->memory != NULL)) {
+      b = &M->memory[offset];
 
-      if (w->data & BYTE_USED_MASK) {
+      if (b->data & BYTE_USED_MASK) {
         if (Args != NULL) {
-          if (w->data & W_ARG_T_FIRST) {
-            Args->first.arg  = w->args.first.arg;
-            Args->first.val  = w->args.first.val;
-            Args->first.offs = w->args.first.offs;
+          if (b->data & W_ARG_T_FIRST) {
+            Args->first.arg  = b->args.first.arg;
+            Args->first.val  = b->args.first.val;
+            Args->first.offs = b->args.first.offs;
           }
           else {
             Args->first.arg  = NULL;
@@ -1011,10 +1016,10 @@ b_memory_get_args(const MemBlock *m, unsigned int byte_address, MemArgList *Args
             Args->first.offs = 0;
           }
 
-          if (w->data & W_ARG_T_SECOND) {
-            Args->second.arg  = w->args.second.arg;
-            Args->second.val  = w->args.second.val;
-            Args->second.offs = w->args.second.offs;
+          if (b->data & W_ARG_T_SECOND) {
+            Args->second.arg  = b->args.second.arg;
+            Args->second.val  = b->args.second.val;
+            Args->second.offs = b->args.second.offs;
           }
           else {
             Args->second.arg  = NULL;
@@ -1023,11 +1028,11 @@ b_memory_get_args(const MemBlock *m, unsigned int byte_address, MemArgList *Args
           }
         }
 
-        return (w->data & W_ARG_T_MASK);
+        return (b->data & W_ARG_T_MASK);
       }
     }
 
-    m = m->next;
+    M = M->next;
   }
 
   if (Args != NULL) {
@@ -1045,18 +1050,18 @@ b_memory_get_args(const MemBlock *m, unsigned int byte_address, MemArgList *Args
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_set_type(MemBlock *m, unsigned int byte_address, unsigned int type)
+b_memory_set_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
 {
-  unsigned int block  = IMemBaseAddr(byte_address);
-  unsigned int offset = IMemOffsetAddr(byte_address);
+  unsigned int block  = IMemBaseFromAddr(Byte_address);
+  unsigned int offset = IMemOffsFromAddr(Byte_address);
 
-  while (m != NULL) {
-    if ((m->base == block) && (m->memory != NULL)) {
-      m->memory[offset].data |= type & W_TYPE_MASK;
+  while (M != NULL) {
+    if ((M->base == block) && (M->memory != NULL)) {
+      M->memory[offset].data |= Type & W_TYPE_MASK;
       return true;
     }
 
-    m = m->next;
+    M = M->next;
   }
 
   return false;
@@ -1065,18 +1070,18 @@ b_memory_set_type(MemBlock *m, unsigned int byte_address, unsigned int type)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_clear_type(MemBlock *m, unsigned int byte_address, unsigned int type)
+b_memory_clear_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
 {
-  unsigned int block  = IMemBaseAddr(byte_address);
-  unsigned int offset = IMemOffsetAddr(byte_address);
+  unsigned int block  = IMemBaseFromAddr(Byte_address);
+  unsigned int offset = IMemOffsFromAddr(Byte_address);
 
-  while (m != NULL) {
-    if ((m->base == block) && (m->memory != NULL)) {
-      m->memory[offset].data &= ~(type & W_TYPE_MASK);
+  while (M != NULL) {
+    if ((M->base == block) && (M->memory != NULL)) {
+      M->memory[offset].data &= ~(Type & W_TYPE_MASK);
       return true;
     }
 
-    m = m->next;
+    M = M->next;
   }
 
   return false;
@@ -1085,17 +1090,17 @@ b_memory_clear_type(MemBlock *m, unsigned int byte_address, unsigned int type)
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_type(const MemBlock *m, unsigned int byte_address)
+b_memory_get_type(const MemBlock_t *M, unsigned int Byte_address)
 {
-  unsigned int block  = IMemBaseAddr(byte_address);
-  unsigned int offset = IMemOffsetAddr(byte_address);
+  unsigned int block  = IMemBaseFromAddr(Byte_address);
+  unsigned int offset = IMemOffsFromAddr(Byte_address);
 
-  while (m != NULL) {
-    if ((m->base == block) && (m->memory != NULL)) {
-      return (m->memory[offset].data & W_TYPE_MASK);
+  while (M != NULL) {
+    if ((M->base == block) && (M->memory != NULL)) {
+      return (M->memory[offset].data & W_TYPE_MASK);
     }
 
-    m = m->next;
+    M = M->next;
   }
 
   return 0;

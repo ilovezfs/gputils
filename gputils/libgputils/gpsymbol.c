@@ -221,7 +221,8 @@ gp_symbol_make_label_array(gp_section_type *Section, unsigned int Org_to_byte_sh
   while (symbol != NULL) {
     FlagClr(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
 
-    if ((symbol->class == C_EXT) || (symbol->class == C_LABEL)) {
+    if (((symbol->class == C_EXT) || (symbol->class == C_LABEL)) &&
+        (symbol->section != NULL) && FlagsIsNotAllClr(symbol->section->flags, STYP_ROM_AREA)) {
       if ((symbol->value >= start_addr) && (symbol->value < end_addr)) {
         ++n_labels;
         FlagSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
@@ -246,8 +247,64 @@ gp_symbol_make_label_array(gp_section_type *Section, unsigned int Org_to_byte_sh
     symbol = symbol->next;
   }
 
-  qsort(array, n_labels, sizeof(gp_symbol_type *), _value_cmp);
+  if (n_labels > 1) {
+    qsort(array, n_labels, sizeof(gp_symbol_type *), _value_cmp);
+  }
+
   *Num_labels = n_labels;
+  return array;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Collects those registers that belong to the same "Section". */
+
+gp_symbol_type **
+gp_symbol_make_register_array(gp_object_type *Object, unsigned int *Num_registers)
+{
+  gp_symbol_type  *symbol;
+  gp_symbol_type **array;
+  unsigned int     i;
+  unsigned int     n_registers;
+
+  if ((Object == NULL) || (Num_registers == NULL)) {
+    return NULL;
+  }
+
+  n_registers = 0;
+  symbol      = Object->symbol_list;
+  while (symbol != NULL) {
+    FlagClr(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
+
+    if ((symbol->class != C_FILE) && (symbol->class != C_EOF) && (symbol->class != C_SECTION) &&
+        (symbol->section != NULL) && FlagsIsNotAllClr(symbol->section->flags, STYP_RAM_AREA)) {
+      ++n_registers;
+      FlagSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
+    }
+    symbol = symbol->next;
+  }
+
+  if (n_registers == 0) {
+    return NULL;
+  }
+
+  array = (gp_symbol_type **)GP_Malloc(n_registers * sizeof(gp_symbol_type *));
+
+  i      = 0;
+  symbol = Object->symbol_list;
+  while (symbol != NULL) {
+    if (FlagIsSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE)) {
+      array[i] = symbol;
+      ++i;
+    }
+    symbol = symbol->next;
+  }
+
+  if (n_registers > 1) {
+    qsort(array, n_registers, sizeof(gp_symbol_type *), _value_cmp);
+  }
+
+  *Num_registers = n_registers;
   return array;
 }
 
@@ -299,7 +356,11 @@ gp_symbol_delete_by_value(gp_symbol_type **Array, unsigned int *Num_symbols, gp_
     dst = ret - Array;
     src = dst + 1;
     num = n_symbols - src;
-    memmove(&Array[dst], &Array[src], num * sizeof(gp_symbol_type *));
+
+    if (num != 0) {
+      memmove(&Array[dst], &Array[src], num * sizeof(gp_symbol_type *));
+    }
+
     *Num_symbols = n_symbols - 1;
     return true;
   }

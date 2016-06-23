@@ -31,16 +31,16 @@ extern struct gpdasm_state {
   proc_class_t     class;       /* processor class */
   int              format;      /* format of the output */
   int              pass;        /* 1 or 2 */
-  MemBlock        *i_memory;    /* Instruction memory linked list */
+  MemBlock_t      *i_memory;    /* Instruction memory linked list. */
 
   char *srcfilename,            /* Source (.asm) file name */
-        basefilename[BUFSIZ],   /* basename for generating hex,list,symbol filenames */
+        basefilename[BUFSIZ],   /* Basename for generating hex,list,symbol filenames. */
         hexfilename[BUFSIZ];    /* Hex (.hex) file name */
 
   hex_data_t                *hex_info;    /* information on input hex file */
   const gp_register_table_t *proc_regs;
 
-  struct {                      /* Totals for errors, warnings, messages */
+  struct {                      /* Totals for errors, warnings, messages. */
     int errors;
     int warnings;
     int messages;

@@ -960,7 +960,7 @@ assemble(void)
   symbol_table_t *cmd_defines;
 
   /* store the command line defines to restore on second pass */
-  cmd_defines = state.stDefines;
+  cmd_defines    = state.stDefines;
   state.c_memory = state.i_memory = i_memory_create();
 
   if (state.basefilename[0] == '\0') {
@@ -976,7 +976,8 @@ assemble(void)
   state.stBuiltin     = sym_push_table(NULL, true);
   state.stDirective   = state.stBuiltin;
   state.stMacros      = sym_push_table(NULL, state.case_insensitive);
-  state.stTop         = state.stGlobal = sym_push_table(NULL, state.case_insensitive);
+  state.stTop         = sym_push_table(NULL, state.case_insensitive);
+  state.stGlobal      = state.stTop;
   state.stDefines     = sym_push_table(cmd_defines, state.case_insensitive);
   state.stMacroParams = sym_push_table(NULL, state.case_insensitive);
   opcode_init(0);
@@ -1011,12 +1012,12 @@ assemble(void)
     state.radix = 16;
   }
 
-  state.obj.symbol_num = 0;
+  state.obj.symbol_num  = 0;
   state.obj.section_num = 0;
   /* finish the MACRO and WHILE definition */
-  state.mac_prev = NULL;
-  state.mac_head = state.while_head = NULL;
-  state.while_depth = 0;
+  state.mac_prev        = NULL;
+  state.mac_head        = state.while_head = NULL;
+  state.while_depth     = 0;
 
   state.astack = NULL;
 

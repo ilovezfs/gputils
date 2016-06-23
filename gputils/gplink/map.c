@@ -171,7 +171,7 @@ _write_sections(void)
       type = "UNKNOWN";
     }
 
-    if (section->flags & (STYP_TEXT | STYP_DATA_ROM)) {
+    if (section->flags & STYP_ROM_AREA) {
       location = "program";
     }
     else {
@@ -208,7 +208,7 @@ _write_program_memory(void)
   section = state.object->section_list;
 
   while (section != NULL) {
-    if ((section->flags & (STYP_TEXT | STYP_DATA_ROM)) && (section->size > 0)) {
+    if ((section->flags & STYP_ROM_AREA) && (section->size > 0)) {
       _map_line("                            0x%06x    0x%06x",
                 gp_processor_byte_to_org(state.class, section->address),
                 gp_processor_byte_to_org(state.class, section->address + section->size - 1));
@@ -330,7 +330,7 @@ _write_symbols(void)
   for (i = 0; i < num_syms; ++i) {
     sm = syms[i].symbol;
     _map_line("%25s   0x%06x %10s %10s %s", sm->name, sm->value,
-              (sm->section->flags & (STYP_TEXT | STYP_DATA_ROM)) ? "program" : "data",
+              (sm->section->flags & STYP_ROM_AREA) ? "program" : "data",
               (sm->class == C_EXT) ? "extern" : "static",
               (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
   }
@@ -347,7 +347,7 @@ _write_symbols(void)
   for (i = 0; i < num_syms; ++i) {
     sm = syms[i].symbol;
     _map_line("%25s   0x%06x %10s %10s %s", sm->name, sm->value,
-              (sm->section->flags & (STYP_TEXT | STYP_DATA_ROM)) ? "program" : "data",
+              (sm->section->flags & STYP_ROM_AREA) ? "program" : "data",
               (sm->class == C_EXT) ? "extern" : "static",
               (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
   }

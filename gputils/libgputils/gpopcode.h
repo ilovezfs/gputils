@@ -2,6 +2,8 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -1634,36 +1636,36 @@ typedef struct strict_insn {
 #define TABLE_SIZE(X)       (sizeof(X) / sizeof((X)[0]))
 
 extern const insn_t op_12c5xx[];
-extern const int num_op_12c5xx;
+extern const unsigned int num_op_12c5xx;
 
 extern const insn_t op_16c5xx_enh[];
-extern const int num_op_16c5xx_enh;
+extern const unsigned int num_op_16c5xx_enh;
 
 extern const insn_t op_sx[];
-extern const int num_op_sx;
+extern const unsigned int num_op_sx;
 
 extern insn_t op_16cxx[];
-extern const int num_op_16cxx;
+extern const unsigned int num_op_16cxx;
 
 extern const struct strict_insn op_16cxx_strict_mask[];
-extern const int num_op_16cxx_strict_mask;
+extern const unsigned int num_op_16cxx_strict_mask;
 
 extern const insn_t op_16cxx_enh[];
-extern const int num_op_16cxx_enh;
+extern const unsigned int num_op_16cxx_enh;
 
 extern const insn_t op_16cxx_enhx[];
-extern const int num_op_16cxx_enhx;
+extern const unsigned int num_op_16cxx_enhx;
 
 extern const insn_t op_17cxx[];
-extern const int num_op_17cxx;
+extern const unsigned int num_op_17cxx;
 
 extern const insn_t op_18cxx[];
-extern const int num_op_18cxx;
+extern const unsigned int num_op_18cxx;
 
 extern const insn_t op_18cxx_sp[];
-extern const int num_op_18cxx_sp;
+extern const unsigned int num_op_18cxx_sp;
 
 extern const insn_t op_18cxx_ext[];
-extern const int num_op_18cxx_ext;
+extern const unsigned int num_op_18cxx_ext;
 
 #endif

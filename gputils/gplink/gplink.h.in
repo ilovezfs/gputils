@@ -57,6 +57,7 @@ extern struct gplink_state {
     gp_boolean   dead_sections;
     gp_boolean   weak_symbols;
     unsigned int pagesel;
+    unsigned int banksel;
   } optimize;
 
   enum outfile
@@ -115,7 +116,7 @@ extern struct gplink_state {
 
   struct archivelist    *archives;
   gp_object_type        *object;    /* Object files. */
-  MemBlock              *i_memory;  /* Instruction memory linked list. */
+  MemBlock_t            *i_memory;  /* Instruction memory linked list. */
 } state;
 
 struct source_context {

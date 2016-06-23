@@ -1,3 +1,41 @@
+2016-06-23  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gplink/gplink.c, gplink/gplink.h.in,
+    libgputils/gpcoffopt.c, libgputils/gpcoffopt.h,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h,
+    libgputils/gpsymbol.c, libgputils/gpsymbol.h:
+    New experimental feature:
+        Remove the unnecessary Banksel directives during link time.
+
+  * gpasm/cod.c, gplink/cod.c, gputils/dump.c, gputils/gpdasm.c:
+    Use this macros: IMemAddrFromBase, IMemBaseFromAddr
+
+  * gpasm/coff.c, gpasm/coff.h, libgputils/gpopcode.c,
+    libgputils/gpopcode.h:
+    Changed type from "int" to "unsigned int" in function parameters.
+
+  * gpasm/directive.c, gpasm/gpasm.h.in, gpasm/lst.c, gpasm/lst.h,
+    gputils/gpdasm.h.in, libgputils/gpdis.c, libgputils/gpdis.h:
+    Changed type from MemBlock to MemBlock_t.
+
+  * gpasm/parse.y, gplink/map.c:
+    Use new constant: STYP_RAM_AREA
+
+  * gplink/lst.c:
+    Use the gp_processor_bsr_boundary() function.
+
+  * libgputils/gpcoff.h, libgputils/gpcoffgen.c,
+    libgputils/gpcoffgen.h, libgputils/gpcofflink.c,
+    libgputils/gpcofflink.h, libgputils/gpmemory.c,
+    libgputils/gpmemory.h, libgputils/gpreadobj.c,
+    libgputils/gpreadobj.h:
+    Improved memory management.
+
+  * gpasm/gpasm.c, gputils/gpvo.c, libgputils/gpcod.c,
+    libgputils/gpreadhex.c, libgputils/gpreadhex.h,
+    libgputils/gpsym.c, libgputils/gpwritehex.c,
+    libgputils/gpwritehex.h, libgputils/gpwriteobj.c:
+    Code formatting.
+
 2016-06-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/coff.c, gpasm/list.c, gplink/cod.c, gplink/gplink.c,
     gplink/lst.c, gplink/map.c, gputils/gpstrip.c, gputils/gpvo.c,
@@ -80,7 +118,7 @@
     libgputils/gpprocessor.c, libgputils/gpreadhex.c,
     libgputils/gpreadobj.c, libgputils/gpsym.c,
     libgputils/gpwritehex.c, libgputils/gpwriteobj.c:
-    Code formatting.    
+    Code formatting.
 
 2016-06-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gplink/cod.c
@@ -167,7 +205,7 @@
     libgputils/gpprocessor.c, libgputils/gpreadhex.c,
     libgputils/gpreadobj.c, libgputils/gpsymbol.c,
     libgputils/gpwritehex.c, libgputils/gpwriteobj.c:
-    Code formatting.    
+    Code formatting.
 
 2016-06-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:

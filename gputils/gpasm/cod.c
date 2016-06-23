@@ -185,22 +185,22 @@ _write_code(void)
   static DirBlockInfo *dbi = NULL;
   static int           _64k_base = 0;
 
-  const MemBlock *m;
-  int             i;
-  int             mem_base;
-  int             start_address;
-  gp_boolean      used_flag;
-  BlockList      *rb;
-  int             high_addr;
-  uint16_t        insn;
+  const MemBlock_t *m;
+  int               i;
+  int               mem_base;
+  int               start_address;
+  gp_boolean        used_flag;
+  BlockList        *rb;
+  int               high_addr;
+  uint16_t          insn;
 
   m             = state.i_memory;
   start_address = 0;
   used_flag     = false;
   rb            = NULL;
   while (m != NULL) {
-    mem_base  = m->base << I_MEM_BITS;
-    high_addr = IMemBaseAddr(mem_base);
+    mem_base  = IMemAddrFromBase(m->base);
+    high_addr = IMemBaseFromAddr(mem_base);
 
     if ((dbi == NULL) || (high_addr != _64k_base)) {
       _64k_base = high_addr;
@@ -312,7 +312,7 @@ cod_lst_line(int line_type)
   }
 
   address      = gp_processor_byte_to_org(state.device.class, state.lst.line.was_byte_addr);
-  high_address = IMemBaseAddr(address);
+  high_address = IMemBaseFromAddr(address);
 
   if ((dbi == NULL) || (high_address != _64k_base)) {
     _64k_base = high_address;

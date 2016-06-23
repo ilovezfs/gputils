@@ -123,6 +123,9 @@ struct scnhdr
 /* Section is byte packed on 16bit devices. */
 #define STYP_BPACK              0x00040000
 
+#define STYP_RAM_AREA           (STYP_DATA | STYP_BSS)
+#define STYP_ROM_AREA           (STYP_TEXT | STYP_DATA_ROM)
+
 /* relocation entry */
 struct reloc
 {
@@ -437,6 +440,9 @@ typedef struct gp_reloc_type {
   /* relocation type */
   uint16_t               type;
 
+  /* unique identification number of owner section */
+  unsigned int           section_id;
+
   struct gp_reloc_type  *prev;
   struct gp_reloc_type  *next;
 } gp_reloc_type;
@@ -452,6 +458,9 @@ typedef struct gp_linenum_type {
 
   /* byte address for this line number */
   uint32_t                     address;
+
+  /* unique identification number of owner section */
+  unsigned int                 section_id;
 
   struct gp_linenum_type      *prev;
   struct gp_linenum_type      *next;
@@ -494,14 +503,18 @@ typedef struct gp_aux_type {
     uint8_t data[SYMBOL_SIZE_v2];
   } _aux_symbol;
 
+  struct gp_aux_type *prev;
   struct gp_aux_type *next;
 } gp_aux_type;
 
-/* A optimize constant for the gpsymbol.c module. */
-#define OPT_FLAGS_GPSYMBOL_MODULE       (1 << 0)
+/* A optimize constant for the gpcoffgen.c module. */
+#define OPT_FLAGS_GPCOFFGEN_MODULE      (1 << 0)
 
 /* A optimize constant for the gpcoffopt.c module. */
 #define OPT_FLAGS_GPCOFFOPT_MODULE      (1 << 1)
+
+/* A optimize constant for the gpsymbol.c module. */
+#define OPT_FLAGS_GPSYMBOL_MODULE       (1 << 2)
 
 /* symbol linked list */
 
@@ -543,13 +556,23 @@ typedef struct gp_symbol_type {
   /* symbol number, only valid when writing coff or cod file */
   uint32_t                number;
 
-  /* use the optimization -- "OPT_FLAGS_..." */
-  unsigned int            opt_flags;
-
   /* number of relocation links */
   unsigned int            num_reloc_link;
 
+  /* unique identification number of owner object */
+  unsigned int            object_id;
+
+  struct gp_symbol_type  *prev;
   struct gp_symbol_type  *next;
+
+  /*****************************************************************************
+   *
+   *                    Optimization part of this structure.
+   *
+   *****************************************************************************/
+
+  /* use the optimization -- "OPT_FLAGS_..." */
+  unsigned int            opt_flags;
 } gp_symbol_type;
 
 /* hash table for find symbol name */
@@ -584,7 +607,7 @@ typedef struct gp_section_type {
   uint32_t                 size;
 
   /* memory linked list */
-  MemBlock                *data;
+  MemBlock_t              *data;
 
   /* number of relocations */
   uint16_t                 num_reloc;
@@ -623,64 +646,104 @@ typedef struct gp_section_type {
   /* linenumber pointer, only valid when writing coff file */
   uint32_t                 lineno_ptr;
 
+  /* unique identification number of owner object */
+  unsigned int             object_id;
+
+  /* unique identification number */
+  unsigned int             serial_id;
+
+  struct gp_section_type  *prev;
+  struct gp_section_type  *next;
+
+  /*****************************************************************************
+   *
+   *                    Optimization part of this structure.
+   *
+   *****************************************************************************/
+
+  /* Label array of this section.
+     The "label" mean: A symbol which has type of C_EXT or C_LABEL,
+                       in a STYP_TEXT or STYP_ROM_DATA type of section. */
+  gp_symbol_type         **label_array;
+  unsigned int             num_labels;
+
   /* use the optimization -- "OPT_FLAGS_..." */
   uint32_t                 opt_flags;
-
-  struct gp_section_type  *next;
 } gp_section_type;
 
 typedef struct gp_object_type {
   /* object filename */
-  char                  *filename;
+  char                   *filename;
 
   /* format version/magic number */
-  uint16_t               version;
+  uint16_t                version;
 
   /* to reduce conditionals, store the size of symbols in this object */
-  size_t                 symbol_size;
+  size_t                  symbol_size;
 
   /* new style coff file? */
-  gp_boolean             isnew;
+  gp_boolean              isnew;
 
   /* processor */
-  pic_processor_t        processor;
+  pic_processor_t         processor;
 
   /* processor class */
-  proc_class_t           class;
+  proc_class_t            class;
 
   /* time object was created */
-  time_t                 time;
+  uint32_t                time;
 
   /* flags */
-  uint16_t               flags;
+  uint16_t                flags;
 
   /* number of sections */
-  uint16_t               num_sections;
+  uint16_t                num_sections;
+
+  /* block of section pointers: Created by gp_coffgen_make_block_section function. */
+  gp_section_type       **section_ptr_array;
 
   /* head of section list */
-  gp_section_type       *section_list;
+  gp_section_type        *section_list;
 
   /* tail of section list */
-  gp_section_type       *section_list_tail;
+  gp_section_type        *section_list_tail;
+
+  /* head the list of reserved sections: It is necessary for the gplink. */
+  gp_section_type        *reserved_section_list;
+
+  /* tail the list of reserved sections: It is necessary for the gplink. */
+  gp_section_type        *reserved_section_list_tail;
 
   /* number of symbols */
-  uint32_t               num_symbols;
+  uint32_t                num_symbols;
+
+  /* block of symbol pointers: Created by gp_coffgen_make_block_symbol function. */
+  gp_symbol_type        **symbol_ptr_array;
 
   /* head of symbol list */
-  gp_symbol_type        *symbol_list;
+  gp_symbol_type         *symbol_list;
 
   /* tail of symbol list */
-  gp_symbol_type        *symbol_list_tail;
+  gp_symbol_type         *symbol_list_tail;
+
+  /* head the list of reserved symbols: It is necessary for the gplink. */
+  gp_symbol_type         *reserved_symbol_list;
+
+  /* tail the list of reserved symbols: It is necessary for the gplink. */
+  gp_symbol_type         *reserved_symbol_list_tail;
 
   /* hash table of symbols */
-  gp_hash_type          *symbol_hashtable;
-  unsigned int           symbol_hashtable_size;
+  gp_hash_type           *symbol_hashtable;
+  unsigned int            symbol_hashtable_size;
 
   /* symbol table pointer, only valid when writing coff file */
-  uint32_t               symbol_ptr;
+  uint32_t                symbol_ptr;
+
+  /* unique identification number */
+  unsigned int            serial_id;
 
   /* next object in the linked list */
-  struct gp_object_type *next;
+  struct gp_object_type  *next;
 } gp_object_type;
 
 #endif

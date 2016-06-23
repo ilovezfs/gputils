@@ -53,6 +53,6 @@ typedef struct hex_data {
   gp_boolean   error;
 } hex_data_t;
 
-extern hex_data_t *gp_readhex(const char *filename, MemBlock *m);
+extern hex_data_t *gp_readhex(const char *filename, MemBlock_t *m);
 
 #endif

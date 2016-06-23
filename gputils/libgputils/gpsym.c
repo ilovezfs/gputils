@@ -275,7 +275,7 @@ sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index)
 /*------------------------------------------------------------------------------------------------*/
 
 /* FIXME: sym_remove_symbol does not search all of the symbol tables in the stack.
-Maybe this is ok, but it seems wrong. */
+          Maybe this is ok, but it seems wrong. */
 
 gp_boolean
 sym_remove_symbol(symbol_table_t *Table, const char *Name)

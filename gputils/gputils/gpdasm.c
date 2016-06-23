@@ -406,9 +406,9 @@ _write_org(int org, int addr_digits, const char *title, const char *Address_name
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_mark_false_addresses(MemBlock *memory)
+_mark_false_addresses(MemBlock_t *memory)
 {
-  MemBlock      *m;
+  MemBlock_t    *m;
   int            i;
   int            maximum;
   int            org;
@@ -418,7 +418,7 @@ _mark_false_addresses(MemBlock *memory)
 
   m = memory;
   while (m != NULL) {
-    i = m->base << I_MEM_BITS;
+    i = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
 
     insn_size = 2;
@@ -451,9 +451,9 @@ _mark_false_addresses(MemBlock *memory)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_recognize_labels_and_spec_words(MemBlock *memory)
+_recognize_labels_and_spec_words(MemBlock_t *memory)
 {
-  MemBlock              *m;
+  MemBlock_t            *m;
   int                    i;
   int                    maximum;
   int                    index;
@@ -490,7 +490,7 @@ _recognize_labels_and_spec_words(MemBlock *memory)
   idlocs_pack.number   = 0;
   idlocs_pack.is_print = true;
   while (m != NULL) {
-    i = m->base << I_MEM_BITS;
+    i = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
 
     insn_size = 2;
@@ -631,7 +631,7 @@ _recognize_labels_and_spec_words(MemBlock *memory)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_user_data_finder(MemArg *Argument)
+_user_data_finder(MemArg_t *Argument)
 {
   lset_symbol_t *sym;
 
@@ -652,9 +652,9 @@ _user_data_finder(MemArg *Argument)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_recognize_registers(MemBlock *memory)
+_recognize_registers(MemBlock_t *memory)
 {
-  MemBlock        *m;
+  MemBlock_t      *m;
   int              i;
   int              maximum;
   int              org;
@@ -675,7 +675,7 @@ _recognize_registers(MemBlock *memory)
   fstate.bsr_boundary = gp_processor_bsr_boundary(state.processor);
   fstate.need_sfr_equ = false;
   while (m != NULL) {
-    i = m->base << I_MEM_BITS;
+    i = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
 
     insn_size = 2;
@@ -710,9 +710,9 @@ _recognize_registers(MemBlock *memory)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_denominate_labels(MemBlock *memory)
+_denominate_labels(MemBlock_t *memory)
 {
-  MemBlock     *m;
+  MemBlock_t   *m;
   int           i;
   int           maximum;
   unsigned int  type;
@@ -724,7 +724,7 @@ _denominate_labels(MemBlock *memory)
   func_idx  = 0;
   label_idx = 0;
   while (m != NULL) {
-    i = m->base << I_MEM_BITS;
+    i = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
 
     while (i < maximum) {
@@ -1097,9 +1097,9 @@ _load_processor_constants(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_dasm(MemBlock *memory)
+_dasm(MemBlock_t *memory)
 {
-  MemBlock            *m;
+  MemBlock_t          *m;
   int                  i;
   int                  maximum;
   int                  org;
@@ -1173,7 +1173,7 @@ _dasm(MemBlock *memory)
   m = memory;
   last_loc = 0;
   while (m != NULL) {
-    i = m->base << I_MEM_BITS;
+    i = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
 
     insn_size = 2;

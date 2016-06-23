@@ -155,15 +155,16 @@ _find_line_number(const gp_symbol_type *symbol, unsigned int line_number)
 static char *
 _expand_tabs(const char *buf)
 {
-  static char dest[LINESIZ];
+  static char  dest[LINESIZ];
 
-  int         is;
-  int         id;
-  char        c;
+  unsigned int is;
+  unsigned int id;
+  char         c;
+  unsigned int n;
 
   for (is = 0, id = 0; ((c = buf[is]) != '\0') && (id < (sizeof(dest) - 2)); ++is) {
     if (c == '\t') {
-      unsigned int n = TABULATOR_SIZE - (id % TABULATOR_SIZE);
+      n = TABULATOR_SIZE - (id % TABULATOR_SIZE);
 
       while (n-- && (id < (sizeof(dest) - 2))) {
         dest[id++] = ' ';
@@ -188,7 +189,7 @@ _write_source(int last_line)
   char         *pc;
   const         gp_linenum_type *line;
   gp_boolean    first_time;
-  int           org;
+  unsigned int  org;
   unsigned int  len;
   uint8_t       byte;
   uint16_t      word;
@@ -199,8 +200,7 @@ _write_source(int last_line)
     return;
   }
 
-  org  = 0;
-  line = NULL;
+  org = 0;
 
   while (true) {
     /* When last_line is 0 print all lines, else print to last_line. */
@@ -266,11 +266,12 @@ _write_source(int last_line)
           }
           else {
             state.class->i_memory_get(line_section->data, org, &word, NULL, NULL);
-            num_bytes = gp_disassemble_size(line_section->data, org, state.class, 0x80,
+            num_bytes = gp_disassemble_size(line_section->data, org, state.class,
+                                            gp_processor_bsr_boundary(state.processor),
                                             state.processor->prog_mem_size, GPDIS_SHOW_ALL_BRANCH,
                                             dasmbuf, sizeof(dasmbuf), len);
-            _lst_line("%06lx   %04x     %-24s %s",
-                     gp_processor_byte_to_org(state.class, org), word, _expand_tabs(dasmbuf), linebuf);
+            _lst_line("%06lx   %04x     %-24s %s", gp_processor_byte_to_org(state.class, org),
+                      word, _expand_tabs(dasmbuf), linebuf);
             b_memory_set_listed(line_section->data, org, num_bytes);
             state.lst.was_org = org;
             cod_lst_line(COD_NORMAL_LST_LINE);
@@ -293,7 +294,7 @@ _write_source(int last_line)
 
         first_time = false;
         line = line->next;
-      }
+      } /* while (line != NULL) */
 
       if (first_time) {
         if (linebuf[0] != '\0') {

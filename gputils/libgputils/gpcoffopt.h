@@ -27,5 +27,6 @@ Boston, MA 02111-1307, USA.  */
 extern void gp_coffopt_remove_weak(gp_object_type *Object);
 extern void gp_coffopt_remove_dead_sections(gp_object_type *Object, int Pass, gp_boolean Enable_cinit_warns);
 extern void gp_coffopt_remove_unnecessary_pagesel(gp_object_type *Object);
+extern void gp_coffopt_remove_unnecessary_banksel(gp_object_type *Object);
 
 #endif

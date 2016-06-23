@@ -29,18 +29,19 @@ Boston, MA 02111-1307, USA.  */
    string length occupies the first string location */
 
 void 
-gp_cod_strncpy(uint8_t *dest, const char *src, int max_len)
+gp_cod_strncpy(uint8_t *Dest, const char *Src, int Max_len)
 {
-  int len = strlen(src);
+  int len;
 
-  dest[-1] = (max_len > len) ? len : max_len;
-  memcpy(dest, src, dest[-1]);
+  len = strlen(Src);
+  Dest[-1] = (Max_len > len) ? len : Max_len;
+  memcpy(Dest, Src, Dest[-1]);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_cod_date(uint8_t *buffer, size_t sizeof_buffer)
+gp_cod_date(uint8_t *Buffer, size_t Sizeof_buffer)
 {
   char       temp[32];
   time_t     now;
@@ -56,13 +57,13 @@ gp_cod_date(uint8_t *buffer, size_t sizeof_buffer)
   snprintf(temp, sizeof(temp), "%02d%3s%02d", now_tm->tm_mday, &mon_name[now_tm->tm_mon][0],
            now_tm->tm_year % 100);
 
-  memcpy(buffer, temp, sizeof_buffer);
+  memcpy(Buffer, temp, Sizeof_buffer);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_cod_time(uint8_t *buffer, size_t sizeof_buffer)
+gp_cod_time(uint8_t *Buffer, size_t Sizeof_buffer)
 {
   time_t     now;
   struct tm *now_tm;
@@ -72,20 +73,20 @@ gp_cod_time(uint8_t *buffer, size_t sizeof_buffer)
   now_tm = localtime(&now);
 
   value = (now_tm->tm_hour * 100) + now_tm->tm_min;
-  
-  buffer[0] = value & 0xff;
-  buffer[1] = (value >> 8) & 0xff;
-  buffer[2] = now_tm->tm_sec & 0xff;
+
+  Buffer[0] = value & 0xff;
+  Buffer[1] = (value >> 8) & 0xff;
+  Buffer[2] = now_tm->tm_sec & 0xff;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_cod_create(Block *b)
+gp_cod_create(Block *B)
 {
-  assert(b != NULL);
+  assert(B != NULL);
 
-  b->block = GP_Calloc(1, COD_BLOCK_SIZE);
+  B->block = GP_Calloc(1, COD_BLOCK_SIZE);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -99,83 +100,85 @@ gp_blocks_new(void)
 /*------------------------------------------------------------------------------------------------*/
 
 BlockList *
-gp_blocks_append(Blocks *bl, BlockList *b)
+gp_blocks_append(Blocks *Bl, BlockList *B)
 {
-  if (bl->first == NULL) {
-    bl->first = b;
-    bl->count = 1;
+  if (Bl->first == NULL) {
+    Bl->first = B;
+    Bl->count = 1;
   } else {
-    bl->last->next = b;
-    (bl->count)++;
+    Bl->last->next = B;
+    (Bl->count)++;
   }
 
-  bl->last   = b;
-  bl->offset = 0;
-  return b;
+  Bl->last   = B;
+  Bl->offset = 0;
+  return B;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 BlockList *
-gp_blocks_get_last(Blocks *bl)
+gp_blocks_get_last(Blocks *Bl)
 {
-  return bl->last;
+  return Bl->last;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 BlockList *
-gp_blocks_get_last_or_new(Blocks *bl)
+gp_blocks_get_last_or_new(Blocks *Bl)
 {
-  if (bl->first != NULL) {
-    return gp_blocks_get_last(bl);
+  if (Bl->first != NULL) {
+    return gp_blocks_get_last(Bl);
   }
   else {
-    bl->first  = gp_blocks_new();
-    bl->last   = bl->first;
-    bl->offset = 0;
-    bl->count  = 1;
-    return bl->first;
+    Bl->first  = gp_blocks_new();
+    Bl->last   = Bl->first;
+    Bl->offset = 0;
+    Bl->count  = 1;
+    return Bl->first;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_blocks_count(const Blocks *bl)
+gp_blocks_count(const Blocks *Bl)
 {
-  return ((bl->first == NULL) ? 0 : bl->count);
+  return ((Bl->first == NULL) ? 0 : Bl->count);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_enumerate(DirBlockInfo *dir, unsigned int offset, Blocks *bl, unsigned int *block_num)
+gp_blocks_enumerate(DirBlockInfo *Dir, unsigned int Offset, Blocks *Bl, unsigned int *Block_num)
 {
-  if (bl->first != NULL) {
+  if (Bl->first != NULL) {
     /* enumerate block list */
-    gp_putl16(&dir->dir[offset], ++(*block_num));
-    *block_num += gp_blocks_count(bl) - 1;
-    gp_putl16(&dir->dir[offset + 2], *block_num);
+    gp_putl16(&Dir->dir[Offset], ++(*Block_num));
+    *Block_num += gp_blocks_count(Bl) - 1;
+    gp_putl16(&Dir->dir[Offset + 2], *Block_num);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_enumerate_directory(DirBlockInfo *main_dir)
+gp_blocks_enumerate_directory(DirBlockInfo *Main_dir)
 {
   DirBlockInfo *dbi;
-  unsigned int  block_num = 0;
+  unsigned int  block_num;
   unsigned int  i;
 
+  block_num = 0;
+
   /* enumerate directory blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
     gp_putl16(&dbi->dir[COD_DIR_NEXTDIR], (dbi->next != NULL) ? ++block_num : 0);
   }
 
   /* enumerate code blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
     for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
       if (dbi->cod_image_blocks[i].block != NULL) {
         gp_putl16(&dbi->dir[i * 2], ++block_num);
@@ -184,27 +187,27 @@ gp_blocks_enumerate_directory(DirBlockInfo *main_dir)
   }
 
   /* enumerate surce files blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
     gp_blocks_enumerate(dbi, COD_DIR_NAMTAB, &dbi->src, &block_num);
   }
 
   /* enumerate list lines blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
     gp_blocks_enumerate(dbi, COD_DIR_LSTTAB, &dbi->lst, &block_num);
   }
 
   /* enumerate memory map blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
     gp_blocks_enumerate(dbi, COD_DIR_MEMMAP, &dbi->rng, &block_num);
   }
 
   /* enumerate long symbol table blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
     gp_blocks_enumerate(dbi, COD_DIR_LSYMTAB, &dbi->sym, &block_num);
   }
 
   /* enumerate debug messages table blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
     gp_blocks_enumerate(dbi, COD_DIR_MESSTAB, &dbi->dbg, &block_num);
   }
 }
@@ -212,41 +215,41 @@ gp_blocks_enumerate_directory(DirBlockInfo *main_dir)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_write(FILE *f, Blocks *bl)
+gp_blocks_write(FILE *F, Blocks *Bl)
 {
-  BlockList *p = bl->first;
+  BlockList *curr = Bl->first;
 
   /* write block list */
-  while (p != NULL) {
-    if (fwrite(p->block, 1, COD_BLOCK_SIZE, f) != COD_BLOCK_SIZE) {
+  while (curr != NULL) {
+    if (fwrite(curr->block, 1, COD_BLOCK_SIZE, F) != COD_BLOCK_SIZE) {
       fprintf(stderr, "%s() -- Could not write cod file.\n", __func__);
       exit(1);
     }
-    p = p->next;
+    curr = curr->next;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_write_directory(FILE *f, DirBlockInfo *main_dir)
+gp_blocks_write_directory(FILE *F, DirBlockInfo *Main_dir)
 {
   DirBlockInfo *dbi;
   unsigned int  i;
 
   /* write directory blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    if (fwrite(dbi->dir, 1, COD_BLOCK_SIZE, f) != COD_BLOCK_SIZE) {
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
+    if (fwrite(dbi->dir, 1, COD_BLOCK_SIZE, F) != COD_BLOCK_SIZE) {
       fprintf(stderr, "%s() -- Could not write cod file.\n", __func__);
       exit(1);
     }
   }
 
   /* write code blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
     for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
       if (dbi->cod_image_blocks[i].block != NULL) {
-        if (fwrite(dbi->cod_image_blocks[i].block, 1, COD_BLOCK_SIZE, f) != COD_BLOCK_SIZE) {
+        if (fwrite(dbi->cod_image_blocks[i].block, 1, COD_BLOCK_SIZE, F) != COD_BLOCK_SIZE) {
           fprintf(stderr, "%s() -- Could not write cod file.\n", __func__);
           exit(1);
         }
@@ -255,60 +258,62 @@ gp_blocks_write_directory(FILE *f, DirBlockInfo *main_dir)
   }
 
   /* write source files blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(f, &dbi->src);
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(F, &dbi->src);
   }
 
   /* write list lines blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(f, &dbi->lst);
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(F, &dbi->lst);
   }
 
   /* write memory map blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(f, &dbi->rng);
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(F, &dbi->rng);
   }
 
   /* write long symbol table blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(f, &dbi->sym);
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(F, &dbi->sym);
   }
 
   /* write debug messages table blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(f, &dbi->dbg);
+  for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(F, &dbi->dbg);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_free(Blocks *bl)
+gp_blocks_free(Blocks *Bl)
 {
-  BlockList *b = bl->first;
+  BlockList *curr;
+  BlockList *next;
 
-  while (b != NULL) {
-    BlockList *next = b->next;
-
-    free(b);
-    b = next;
+  curr = Bl->first;
+  while (curr != NULL) {
+    next = curr->next;
+    free(curr);
+    curr = next;
   }
 
-  bl->first  = NULL;
-  bl->last   = NULL;
-  bl->offset = 0;
-  bl->count  = 0;
+  Bl->first  = NULL;
+  Bl->last   = NULL;
+  Bl->offset = 0;
+  Bl->count  = 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_free_directory(DirBlockInfo *main_dir)
+gp_blocks_free_directory(DirBlockInfo *Main_dir)
 {
-  DirBlockInfo *dbi = main_dir;
+  DirBlockInfo *dbi;
   DirBlockInfo *next;
   unsigned int  i;
 
+  dbi = Main_dir;
   while (dbi != NULL) {
     /* free code blocks */
     for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {

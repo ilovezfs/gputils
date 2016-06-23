@@ -24,26 +24,26 @@ Boston, MA 02111-1307, USA.  */
 
 #define LINESIZ         520
 
-static char  linebuf[LINESIZ];
-static char *linept;
-static int   checksum;
-static FILE *infile;
+static char     linebuf[LINESIZ];
+static char    *linept;
+static uint8_t  checksum;
+static FILE    *infile;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /* Converts a single ASCII character into a number. */
 
-static unsigned int
-_a2n(uint8_t character)
+static uint8_t
+_a2n(uint8_t Character)
 {
-  unsigned int number;
+  uint8_t number;
 
-  if (character <= '9') {
-    number = character - '0';
+  if (Character <= '9') {
+    number = Character - '0';
   } else {
     /* Convert lower case to upper. */
-    character &= ~('a' - 'A');
-    number = character - ('A' - 10);
+    Character &= ~('a' - 'A');
+    number = Character - ('A' - 10);
   } 
   return number;
 }
@@ -59,6 +59,7 @@ _readbyte(void)
   number  = _a2n(*linept) << 4;
   linept++;
   number |= _a2n(*linept);
+
   checksum += number;
   return number;
 } 
@@ -70,33 +71,33 @@ _readword(void)
 {
   uint16_t number;
 
-  number = _readbyte();  
-  number = ((uint16_t)_readbyte() << 8) | number;
+  number  = (uint16_t)_readbyte();  
+  number |= (uint16_t)_readbyte() << 8;
   return number; 
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static uint16_t
-_swapword(uint16_t input)
+_swapword(uint16_t Input)
 {
   uint16_t number;
 
-  number = ((input & 0xFF) << 8) | ((input & 0xFF00) >> 8);
+  number = ((Input & 0xFF) << 8) | ((Input & 0xFF00) >> 8);
   return number;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 hex_data_t *
-gp_readhex(const char *filename, MemBlock *m)
+gp_readhex(const char *File_name, MemBlock_t *M)
 {
   hex_data_t   *info;
   unsigned int  length;
   unsigned int  address;
   unsigned int  type;
-  unsigned int  data;
-  int           i;
+  uint8_t       byte;
+  unsigned int  i;
   unsigned int  page;
 
   info = GP_Malloc(sizeof(*info));
@@ -105,8 +106,8 @@ gp_readhex(const char *filename, MemBlock *m)
   info->error      = false;
 
   /* Open the input file. */
-  if ((infile = fopen(filename, "rt")) == NULL) {
-    perror(filename);
+  if ((infile = fopen(File_name, "rt")) == NULL) {
+    perror(File_name);
     exit(1);
   }
     
@@ -156,13 +157,13 @@ gp_readhex(const char *filename, MemBlock *m)
     } else {
       /* Read the data (skipping last byte if at odd address). */
       for (i = 0; i < length; ++i) {
-	data = _readbyte();
+	byte = _readbyte();
 
 	if (info->hex_format == INHX16) {
-	  b_memory_put(m, page | ((address + i) ^ 1), data, filename, NULL);
+	  b_memory_put(M, page | ((address + i) ^ 1), byte, File_name, NULL);
 	}
 	else {
-	  b_memory_put(m, page | (address + i),       data, filename, NULL);
+	  b_memory_put(M, page | (address + i),       byte, File_name, NULL);
 	}
       }
 
@@ -170,17 +171,17 @@ gp_readhex(const char *filename, MemBlock *m)
     }
 
     /* Read the checksum, data is thrown away. */
-    data = _readbyte();
+    _readbyte();
 
-    if ((checksum & 0xFF) != 0) { 
+    if (checksum != 0) { 
       if (info->hex_format == INHX8M) {
         /*  First attempt at INHX8M failed, try INHX16. */
         fseek(infile, 0L, SEEK_SET);	  
         info->hex_format = INHX16;
         info->size       = 0;
         /* Data in i_memory is trash. */
-        i_memory_free(m);
-        m = i_memory_create();
+        i_memory_free(M);
+        M = i_memory_create();
       } else {
         printf("\nChecksum Error\n");
         fclose(infile);

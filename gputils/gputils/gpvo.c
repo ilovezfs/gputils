@@ -88,12 +88,17 @@ _print_header(const gp_object_type *object)
     { 0x1240, "MICROCHIP_MAGIC_v2" }
   };
 
-  char       *time = ctime(&object->time);
-  const char *processor_name = gp_processor_name(object->processor, 2);
+  time_t      time;
+  char       *time_str;
+  const char *processor_name;
   int         i;
 
+  time     = (time_t)object->time;
+  time_str = ctime(&time);
+  processor_name = gp_processor_name(object->processor, 2);
+
   /* strip the newline from time */
-  time[strlen(time) - 1] = '\0';
+  time_str[strlen(time_str) - 1] = '\0';
 
   printf("COFF File and Optional Headers\n");
 
@@ -105,7 +110,7 @@ _print_header(const gp_object_type *object)
   printf("COFF version         %#x: %s\n", object->version,
          (i < NELEM(magic)) ? magic[i].magic_name : "unknown");
   printf("Processor Type       %s\n",  processor_name);
-  printf("Time Stamp           %s\n",  time);
+  printf("Time Stamp           %s\n",  time_str);
   printf("Number of Sections   %u\n",  object->num_sections);
   printf("Number of Symbols    %u\n",  object->num_symbols);
   printf("Characteristics      %#x\n", object->flags);
@@ -186,7 +191,8 @@ _print_linenum_list(proc_class_t class, const gp_linenum_type *linenumber)
   while (linenumber != NULL) {
     if (state.suppress_names) {
       filename = linenumber->symbol->name;
-    } else {
+    }
+    else {
       filename = linenumber->symbol->aux_list->_aux_symbol._aux_file.filename;
     }
 
@@ -267,7 +273,7 @@ _print_sec_header(proc_class_t class, const gp_section_type *section)
 {
   int org_to_byte_shift;
 
-  org_to_byte_shift = (section->flags & (STYP_TEXT | STYP_DATA_ROM)) ? class->org_to_byte_shift : 0;
+  org_to_byte_shift = (section->flags & STYP_ROM_AREA) ? class->org_to_byte_shift : 0;
 
   printf("Section Header\n");
   printf("Name                    %s\n",  section->name);
@@ -346,7 +352,7 @@ _print_sec_list(const gp_object_type *object)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_coff_type(int type, char *buffer, size_t sizeof_buffer)
+_coff_type(unsigned int type, char *buffer, size_t sizeof_buffer)
 {
   switch (type) {
   case T_NULL:
@@ -453,7 +459,7 @@ _coff_type(int type, char *buffer, size_t sizeof_buffer)
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_format_sym_type(int type, char *buffer, size_t sizeof_buffer)
+_format_sym_type(unsigned int type, char *buffer, size_t sizeof_buffer)
 {
   static const char * const type_str[] = {
     "T_NULL",
@@ -481,14 +487,14 @@ _format_sym_type(int type, char *buffer, size_t sizeof_buffer)
     return type_str[type];
   }
 
-  snprintf(buffer, sizeof_buffer, "%d", type);
+  snprintf(buffer, sizeof_buffer, "%u", type);
   return buffer;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_format_sym_derived_type(int type, char *buffer, size_t sizeof_buffer)
+_format_sym_derived_type(unsigned int type, char *buffer, size_t sizeof_buffer)
 {
   static const char * const type_str[] = {
     "DT_NON",
@@ -510,43 +516,43 @@ _format_sym_derived_type(int type, char *buffer, size_t sizeof_buffer)
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_format_sym_class(int cls, char *buffer, size_t sizeof_buffer)
+_format_sym_class(unsigned int cls, char *buffer, size_t sizeof_buffer)
 {
   switch(cls) {
-  case C_EFCN:    return "C_EFCN";
   case C_NULL:    return "C_NULL";
-  case C_AUTO:    return "C_AUTO";
-  case C_EXT:     return "C_EXT";
-  case C_STAT:    return "C_STAT";
-  case C_REG:     return "C_REG";
-  case C_EXTDEF:  return "C_EXTDEF";
-  case C_LABEL:   return "C_LABEL";
-  case C_ULABEL:  return "C_ULABEL";
-  case C_MOS:     return "C_MOS";
-  case C_ARG:     return "C_ARG";
-  case C_STRTAG:  return "C_STRTAG";
-  case C_MOU:     return "C_MOU";
-  case C_UNTAG:   return "C_UNTAG";
-  case C_TPDEF:   return "C_TPDEF";
-  case C_USTATIC: return "C_USTATIC";
-  case C_ENTAG:   return "C_ENTAG";
-  case C_MOE:     return "C_MOE";
-  case C_REGPARM: return "C_REGPARM";
-  case C_FIELD:   return "C_FIELD";
-  case C_AUTOARG: return "C_AUTOARG";
-  case C_LASTENT: return "C_LASTENT";
-  case C_BLOCK:   return "C_BLOCK";
-  case C_FCN:     return "C_FCN";
-  case C_EOS:     return "C_EOS";
-  case C_FILE:    return "C_FILE";
-  case C_LINE:    return "C_LINE";
-  case C_ALIAS:   return "C_ALIAS";
-  case C_HIDDEN:  return "C_HIDDEN";
-  case C_EOF:     return "C_EOF";
-  case C_LIST:    return "C_LIST";
-  case C_SECTION: return "C_SECTION";
+  case C_AUTO:    return "C_AUTO";      /* automatic variable */
+  case C_EXT:     return "C_EXT";       /* external symbol */
+  case C_STAT:    return "C_STAT";      /* static */
+  case C_REG:     return "C_REG";       /* register variable */
+  case C_EXTDEF:  return "C_EXTDEF";    /* external definition */
+  case C_LABEL:   return "C_LABEL";     /* label */
+  case C_ULABEL:  return "C_ULABEL";    /* undefined label */
+  case C_MOS:     return "C_MOS";       /* member of structure */
+  case C_ARG:     return "C_ARG";       /* function argument */
+  case C_STRTAG:  return "C_STRTAG";    /* structure tag */
+  case C_MOU:     return "C_MOU";       /* member of union */
+  case C_UNTAG:   return "C_UNTAG";     /* union tag */
+  case C_TPDEF:   return "C_TPDEF";     /* type definition */
+  case C_USTATIC: return "C_USTATIC";   /* undefined static */
+  case C_ENTAG:   return "C_ENTAG";     /* enumeration tag */
+  case C_MOE:     return "C_MOE";       /* member of enumeration */
+  case C_REGPARM: return "C_REGPARM";   /* register parameter */
+  case C_FIELD:   return "C_FIELD";     /* bit field */
+  case C_AUTOARG: return "C_AUTOARG";   /* auto argument */
+  case C_LASTENT: return "C_LASTENT";   /* dummy entry (end of block) */
+  case C_BLOCK:   return "C_BLOCK";     /* ".bb" or ".eb" */
+  case C_FCN:     return "C_FCN";       /* ".bf" or ".ef" */
+  case C_EOS:     return "C_EOS";       /* end of structure */
+  case C_FILE:    return "C_FILE";      /* file name */
+  case C_LINE:    return "C_LINE";      /* line number reformatted as symbol table entry */
+  case C_ALIAS:   return "C_ALIAS";     /* duplicate tag */
+  case C_HIDDEN:  return "C_HIDDEN";    /* ext symbol in dmert public lib */
+  case C_EOF:     return "C_EOF";       /* end of file */
+  case C_LIST:    return "C_LIST";      /* absoulte listing on or off */
+  case C_SECTION: return "C_SECTION";   /* section */
+  case C_EFCN:    return "C_EFCN";      /* physical end of function */
   default:
-    snprintf(buffer, sizeof_buffer, "%d", cls);
+    snprintf(buffer, sizeof_buffer, "%u", cls);
     return buffer;
   }
 }
@@ -556,9 +562,12 @@ _format_sym_class(int cls, char *buffer, size_t sizeof_buffer)
 static void
 _print_sym_table(const gp_object_type *object)
 {
+  static char     buf[64];
+
   gp_symbol_type *symbol;
   gp_aux_type    *aux;
-  char           *section;
+  const char     *section;
+  int             c;
   int             i;
   int             idx = 1;
   char            buffer_type[8];
@@ -573,18 +582,19 @@ _print_sym_table(const gp_object_type *object)
   while (symbol != NULL) {
     if (symbol->section_number == N_DEBUG) {
       section = "DEBUG";
-    } else if (symbol->section_number == N_ABS) {
+    }
+    else if (symbol->section_number == N_ABS) {
       section = "ABSOLUTE";
-    } else if (symbol->section_number == N_UNDEF) {
+    }
+    else if (symbol->section_number == N_UNDEF) {
       section = "UNDEFINED";
-    } else {
+    }
+    else {
       if (symbol->section != NULL) {
         section = symbol->section->name;
       }
       else {
-        static char buf[64];
-
-        snprintf(buf, sizeof (buf), "Bad num.: %d", symbol->section_number);
+        snprintf(buf, sizeof(buf), "Bad num.: %u", symbol->section_number);
         section = buf;
       }
     }
@@ -647,8 +657,7 @@ _print_sym_table(const gp_object_type *object)
           }
         }
         for (i = 0; i < object->symbol_size; i++) {
-          int c = aux->_aux_symbol.data[i] & 0xFF;
-
+          c = aux->_aux_symbol.data[i] & 0xFF;
           putchar((isprint(c)) ? c : '.');
         }
         putchar('\n');
@@ -671,13 +680,12 @@ static void
 _export_sym_table(gp_object_type *object)
 {
   gp_symbol_type *symbol;
-  char buffer[BUFSIZ];
+  char            buffer[BUFSIZ];
 
   symbol = object->symbol_list;
 
   while (symbol != NULL) {
-    if ((state.export.enabled) && (symbol->class == C_EXT) &&
-        (symbol->section_number > 0)) {
+    if ((state.export.enabled) && (symbol->class == C_EXT) && (symbol->section_number > 0)) {
       _coff_type(symbol->type, buffer, sizeof(buffer));
       fprintf(state.export.f, "  extern %s ; %s\n", symbol->name, buffer);
     }
@@ -824,7 +832,8 @@ int main(int argc, char *argv[])
 
   if ((optind + 1) == argc) {
     state.filename = argv[optind];
-  } else {
+  }
+  else {
     usage = true;
   }
 

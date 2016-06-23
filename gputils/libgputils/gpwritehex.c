@@ -30,10 +30,10 @@ enum mode_flags_e {
   HMODE_SWAP  /* swap bytes for INHX16 format */
 };
 
-static int       sum;
-static char     *newline;
-static FILE     *hex;
-static MemBlock *memory;
+static int         checksum;
+static const char *newline;
+static FILE       *hex;
+static MemBlock_t *memory;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -41,18 +41,16 @@ static void
 _new_record(void)
 {
   fprintf(hex, ":");
-  sum = 0;
+  checksum = 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_write_byte(int b)
+_write_byte(uint8_t Value)
 {
-  sum += b;
-
-  assert((0 <= b) && (b <= 255));
-  fprintf(hex, "%02X", b);
+  checksum += (int)Value;
+  fprintf(hex, "%02X", Value);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -60,10 +58,10 @@ _write_byte(int b)
 /* Write big-endian word. */
 
 static void
-_write_bg_word(int w)
+_write_bg_word(uint16_t Word)
 {
-  _write_byte((w >> 8) & 0xff);
-  _write_byte(w & 0xff);
+  _write_byte((Word >> 8) & 0xff);
+  _write_byte(Word & 0xff);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -71,20 +69,20 @@ _write_bg_word(int w)
 /* Write little-endian word. */
 
 static void
-_write_word(int w)
+_write_word(uint16_t Word)
 {
-  _write_byte(w & 0xff);
-  _write_byte((w >> 8) & 0xff);
+  _write_byte(Word & 0xff);
+  _write_byte((Word >> 8) & 0xff);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_start_record(int start, int len)
+_start_record(unsigned int Start, unsigned int Len)
 {
   _new_record();
-  _write_byte(len);
-  _write_bg_word(start);
+  _write_byte(Len);
+  _write_bg_word(Start);
   _write_byte(0);
 }
 
@@ -93,52 +91,52 @@ _start_record(int start, int len)
 static void
 _end_record(void)
 {
-  _write_byte((-sum) & 0xff);
+  _write_byte((-checksum) & 0xff);
   fprintf(hex, "%s", newline);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_data_line(int start, int stop, enum mode_flags_e mode)
+_data_line(unsigned int Start, unsigned int Stop, enum mode_flags_e Mode)
 {
   uint8_t byte;
 
-  if (mode == HMODE_ALL) {
-    _start_record(start, stop - start);
-    while (start < stop) {
-      if (!b_memory_get(memory, start++, &byte, NULL, NULL)) {
+  if (Mode == HMODE_ALL) {
+    _start_record(Start, Stop - Start);
+    while (Start < Stop) {
+      if (!b_memory_get(memory, Start++, &byte, NULL, NULL)) {
         byte = 0xff;
       }
       _write_byte(byte);
     }
   }
-  else if (mode == HMODE_SWAP) {
+  else if (Mode == HMODE_SWAP) {
     /* MPLINK 2.40, 3.80, 4.11 and 4.3x do not support INHX16 format.
      * (FIXME I have no idea where it comes from or if it can be used
      * for whatever purpose it was written for.) */
-    assert(((start % 2) == 0) && ((stop % 2) == 0));
-    _start_record(start / 2, (stop  - start) / 2);
-    while (start < stop) {
-      if (!b_memory_get(memory, (start++) ^ 1, &byte, NULL, NULL)) {
+    assert(((Start % 2) == 0) && ((Stop % 2) == 0));
+    _start_record(Start / 2, (Stop  - Start) / 2);
+    while (Start < Stop) {
+      if (!b_memory_get(memory, (Start++) ^ 1, &byte, NULL, NULL)) {
         byte = 0xff;
       }
       _write_byte(byte);
     }
   }
   else {
-    _start_record(start, (stop - start) / (((mode == HMODE_LOW) || (HMODE_HIGH == mode)) ? 2 : 1));
+    _start_record(Start, (Stop - Start) / (((Mode == HMODE_LOW) || (Mode == HMODE_HIGH)) ? 2 : 1));
 
-    if (mode == HMODE_HIGH) {
-      ++start;
+    if (Mode == HMODE_HIGH) {
+      ++Start;
     }
 
-    while (start < stop) {
-      if (!b_memory_get(memory, start, &byte, NULL, NULL)) {
+    while (Start < Stop) {
+      if (!b_memory_get(memory, Start, &byte, NULL, NULL)) {
         byte = 0xff;
       }
       _write_byte(byte);
-      start += 2;
+      Start += 2;
     }
   }
   _end_record();
@@ -147,13 +145,13 @@ _data_line(int start, int stop, enum mode_flags_e mode)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_seg_address_line(int segment)
+_seg_address_line(unsigned int Segment)
 {
   _new_record();
   _write_byte(2);
   _write_word(0);
   _write_byte(4);
-  _write_bg_word(segment);
+  _write_bg_word(Segment);
   _end_record();
 }
 
@@ -172,20 +170,21 @@ _last_line(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_mask)
+_write_i_mem(enum formats Hex_format, enum mode_flags_e Mode, unsigned int Core_mask)
 {
-  MemBlock *m = memory;
-  int       i;
-  int       j;
-  int       maximum;
-  uint8_t   byte;
+  MemBlock_t   *m;
+  unsigned int  i;
+  unsigned int  j;
+  unsigned int  maximum;
+  uint8_t       byte;
 
+  m = memory;
   while (m != NULL) {
-    i = m->base << I_MEM_BITS;
+    i = IMemAddrFromBase(m->base);
 
     maximum = i + I_MEM_MAX;
 
-    if (hex_format == INHX32) {
+    if (Hex_format == INHX32) {
       /* FIXME would mode swap require division by 2? */
       _seg_address_line(m->base);
     }
@@ -201,14 +200,14 @@ _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_
         j = i;
         while (b_memory_get(memory, i, &byte, NULL, NULL)) {
           ++i;
-          if ((((mode == HMODE_ALL) || (mode == HMODE_SWAP)) && ((i & 0xf) == 0)) || ((i & 0x1f) == 0)) {
+          if ((((Mode == HMODE_ALL) || (Mode == HMODE_SWAP)) && ((i & 0xf) == 0)) || ((i & 0x1f) == 0)) {
             break;
           }
         }
 #if 0
         /* disabled for MPASM compatibility,
          * regression test gpasm.mchip/asmfiles/szee16.asm */
-        if (core_mask > 0xFF) {
+        if (Core_mask > 0xFF) {
           /* Write complete instructions, so move start down and stop up to even address. */
           if (j & 1) {
             --j;
@@ -223,7 +222,7 @@ _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_
         /* Write the data to the file */
         /* To be bug-for-bug compatible with MPASM 5.34 we ignore negative addresses. */
         if (j >= 0) {
-          _data_line(j, i, mode);
+          _data_line(j, i, Mode);
         }
       }
     }
@@ -236,74 +235,74 @@ _write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
-         int numerrors, gp_boolean dos_newlines, unsigned int core_mask)
+writehex(const char *Base_filename, MemBlock_t *M, enum formats Hex_format, int Num_errors,
+         gp_boolean Dos_newlines, unsigned int Core_mask)
 {
-  char hexfilename[BUFSIZ];
-  char lowhex[BUFSIZ];
-  char highhex[BUFSIZ];
+  char hex_filename[BUFSIZ];
+  char low_hex[BUFSIZ];
+  char high_hex[BUFSIZ];
 
-  memory = m;
+  memory = M;
 
-  newline = dos_newlines ? "\r\n" : "\n";
+  newline = Dos_newlines ? "\r\n" : "\n";
 
    /* build file names */
-  snprintf(hexfilename, sizeof(hexfilename), "%s.hex", basefilename);
-  snprintf(lowhex, sizeof(lowhex), "%s.hxl", basefilename);
-  snprintf(highhex, sizeof(highhex), "%s.hxh", basefilename);
+  snprintf(hex_filename, sizeof(hex_filename), "%s.hex", Base_filename);
+  snprintf(low_hex, sizeof(low_hex), "%s.hxl", Base_filename);
+  snprintf(high_hex, sizeof(high_hex), "%s.hxh", Base_filename);
 
-  if (numerrors > 0) {
+  if (Num_errors > 0) {
     /* Remove the hex files (if any). */
-    unlink(hexfilename);
-    unlink(lowhex);
-    unlink(highhex);
+    unlink(hex_filename);
+    unlink(low_hex);
+    unlink(high_hex);
     return false;
   }
 
   /* No error: overwrite the hex file */
-  if (hex_format == INHX8S) {
+  if (Hex_format == INHX8S) {
     /* Write the low memory */
-    hex = fopen(lowhex, "wt");
+    hex = fopen(low_hex, "wt");
 
     if (hex == NULL) {
-      perror(lowhex);
+      perror(low_hex);
       return false;
     }
 
-    _write_i_mem(hex_format, HMODE_LOW, core_mask);
+    _write_i_mem(Hex_format, HMODE_LOW, Core_mask);
     fclose(hex);
 
     /* Write the high memory. */
-    hex = fopen(highhex, "wt");
+    hex = fopen(high_hex, "wt");
 
     if (hex == NULL) {
-      perror(highhex);
+      perror(high_hex);
       return false;
     }
 
-    _write_i_mem(hex_format, HMODE_HIGH, core_mask);
+    _write_i_mem(Hex_format, HMODE_HIGH, Core_mask);
     fclose(hex);
   }
-  else if (hex_format == INHX16) {
-    hex = fopen(hexfilename, "wt");
+  else if (Hex_format == INHX16) {
+    hex = fopen(hex_filename, "wt");
 
     if (hex == NULL) {
-      perror(hexfilename);
+      perror(hex_filename);
       return false;
     }
 
-    _write_i_mem(hex_format, HMODE_SWAP, core_mask);
+    _write_i_mem(Hex_format, HMODE_SWAP, Core_mask);
     fclose(hex);
   }
   else {
-    hex = fopen(hexfilename, "wt");
+    hex = fopen(hex_filename, "wt");
 
     if (hex == NULL) {
-      perror(hexfilename);
+      perror(hex_filename);
       return false;
     }
 
-    _write_i_mem(hex_format, HMODE_ALL, core_mask);
+    _write_i_mem(Hex_format, HMODE_ALL, Core_mask);
     fclose(hex);
   }
 
@@ -312,21 +311,21 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* scan the memory to see if it exceeds 32kB limit on INHX8M limit */
+/* Scan the memory to see if it exceeds 32kB limit on INHX8M limit. */
 
 gp_boolean
-check_writehex(MemBlock *m, enum formats hex_format)
+check_writehex(MemBlock_t *M, enum formats Hex_format)
 {
   gp_boolean ok = true;
 
-  if (hex_format != INHX32) {
-    while (m != NULL) {
-      if (m->base > 0) {
+  if (Hex_format != INHX32) {
+    while (M != NULL) {
+      if (M->base > 0) {
         ok = false;
         /* Superfluous to watch the further blocks. */
         break;
       }
-      m = m->next;
+      M = M->next;
     }
   }
 

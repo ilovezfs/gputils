@@ -98,7 +98,7 @@ typedef struct src_line {
 
 typedef struct conf_mem_block {
   int                    addr;
-  MemBlock              *m;
+  MemBlock_t            *m;
   gp_boolean             new_config;
   gp_symbol_type        *file_symbol;
   unsigned int           line_number;
@@ -178,8 +178,8 @@ extern struct gpasm_state {
     *stMacroParams,                     /* Macro #defines (stDefines is base). */
     *stMacros;                          /* Macros */
 
-  MemBlock         *i_memory;           /* Instruction memory linked list. */
-  MemBlock         *c_memory;           /* Configuration memory linked list. */
+  MemBlock_t       *i_memory;           /* Instruction memory linked list. */
+  MemBlock_t       *c_memory;           /* Configuration memory linked list. */
   conf_mem_block_t *conf_sec_mem;       /* Configuration section memory linked list. */
 
   char *srcfilename,                    /* Source (.asm) file name. */
