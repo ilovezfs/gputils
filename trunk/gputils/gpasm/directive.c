@@ -48,7 +48,7 @@ static gp_boolean prev_btfsx = false;
 /*------------------------------------------------------------------------------------------------*/
 
 static uint16_t
-_checkwrite(uint16_t value)
+_check_write(uint16_t value)
 {
   uint16_t insn;
   int      org;
@@ -168,7 +168,7 @@ _emit(uint16_t value, const char *name)
 {
   /* only write the program data to memory on the second pass */
   if (state.pass == 2) {
-    value = _checkwrite(value);
+    value = _check_write(value);
     state.device.class->i_memory_put(state.i_memory, state.byte_addr, value, name, NULL);
   }
 
@@ -180,15 +180,17 @@ _emit(uint16_t value, const char *name)
 static void
 _emit_byte(uint16_t value, const char *name)
 {
+  uint8_t       byte;
+  uint16_t      word;
+  unsigned int  org;
+  range_pair_t *cur_badrom;
+
   if (state.pass == 2) {
     if ((state.mode == MODE_RELOCATABLE) && (state.obj.section == NULL)) {
       gperror_verror(GPE_WRONG_SECTION, NULL);
     }
 
     if (!IS_RAM_ORG) {
-      uint8_t byte;
-      int     org;
-
       if (IS_PIC16_CORE && (state.byte_addr > 0x1ffff)) {
         gperror_verror(GPE_ADDROVF, "Address{%#x} > 0x1ffff", state.byte_addr);
       }
@@ -197,10 +199,10 @@ _emit_byte(uint16_t value, const char *name)
       }
 
       if (value > state.device.class->core_mask) {
-        uint16_t v = value & state.device.class->core_mask;
+        word = value & state.device.class->core_mask;
 
-        gperror_vwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", value, value, v, v);
-        value = v;
+        gperror_vwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", value, value, word, word);
+        value = word;
       }
 
       org = gp_processor_byte_to_real(state.processor, state.byte_addr);
@@ -216,8 +218,6 @@ _emit_byte(uint16_t value, const char *name)
         }
         else {
           /* check if current org is within a bad address range */
-          range_pair_t *cur_badrom;
-
           for (cur_badrom = state.badrom; cur_badrom != NULL; cur_badrom = cur_badrom->next) {
             if ((org >= cur_badrom->start) && (org <= cur_badrom->end)) {
               gperror_vwarning(GPW_EXCEED_ROM, "BADROM_START{%#x} <= Address{%#x} <= BADROM_END{%#x}",
@@ -264,24 +264,24 @@ _off_or_on(pnode_t *p)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* convert an expression list which may consist of strings, constants, labels,
+/* Convert an expression list which may consist of strings, constants, labels,
  * etc. into instruction memory.
  * This is called by the da,data, and dw directives.
  *
- * pnode *L -        A pointer to a doubly-linked list containing all of the
- *                   expressions.
- * int char_shift -  Character width in bits (8 but 7 for da on 14-bit PIC).
+ * pnode *L                -  A pointer to a doubly-linked list containing all of the
+ *                            expressions.
+ * unsigned int char_shift -  Character width in bits (8 but 7 for da on 14-bit PIC).
  */
 
-static int
-_emit_data(pnode_t *L, int char_shift, const char *name)
+static unsigned int
+_emit_data(pnode_t *L, unsigned int char_shift, const char *name)
 {
   const pnode_t  *p;
   const char     *pc;
   unsigned int    begin_org;
   int             value;
-  uint16_t        v;
-  int             n;
+  uint16_t        word;
+  unsigned int    n;
 
   for (begin_org = state.byte_addr; L != NULL; L = TAIL(L)) {
     p = HEAD(L);
@@ -306,17 +306,17 @@ _emit_data(pnode_t *L, int char_shift, const char *name)
           value &= 0xff;
           /* If idata or packed and not db or de, emit one character per word. */
           if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
-            v = value;
+            word = value;
           }
           else {
-            v = value << char_shift;
+            word = value << char_shift;
 
             if (*pc != '\0') {
               pc = convert_escape_chars(pc, &value);
-              v |= value & 0xff;
+              word |= value & 0xff;
             }
           }
-          _emit(v, name);
+          _emit(word, name);
         }
         /* For data and packed emit a terminating nul for strings. */
         if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
@@ -325,13 +325,13 @@ _emit_data(pnode_t *L, int char_shift, const char *name)
       }
     }
     else if (state.device.class->core_mask > 0xff) {
-      v = reloc_evaluate(p, RELOCT_ALL);
-      _emit(v, name);
+      word = reloc_evaluate(p, RELOCT_ALL);
+      _emit(word, name);
     }
     else {
       /* FIXME: This case is for EEPROM8. Do we need the RELOCT_LOW? */
-      v = reloc_evaluate(p, RELOCT_LOW);
-      _emit_byte(v, name);
+      word = reloc_evaluate(p, RELOCT_LOW);
+      _emit_byte(word, name);
     }
   }
 
@@ -346,8 +346,9 @@ _emit_data(pnode_t *L, int char_shift, const char *name)
 static void
 _enter_if(void)
 {
-  amode_t *new = GP_Malloc(sizeof(*new));
+  amode_t *new;
 
+  new = GP_Malloc(sizeof(*new));
   new->mode  = IN_THEN;
   new->upper = state.astack;
 
@@ -894,8 +895,8 @@ static gp_boolean config_mpasm_used = false;
  * do_gpasm_config. Returns true when a section is created.
  */
 
-static MemBlock *
-_find_conf_sec_mem(int ca)
+static MemBlock_t *
+_find_conf_sec_mem(unsigned int ca)
 {
   conf_mem_block_t *p;
   int               ba = (IS_PIC16_CORE || IS_PIC16E_CORE) ? ca : (ca - (ca & 1));
@@ -911,10 +912,11 @@ _find_conf_sec_mem(int ca)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static MemBlock *
-_add_conf_sec_mem(int ca, gp_boolean new_config)
+static MemBlock_t *
+_add_conf_sec_mem(unsigned int ca, gp_boolean new_config)
 {
   conf_mem_block_t *new = GP_Malloc(sizeof(conf_mem_block_t));
+  conf_mem_block_t *p;
 
   new->addr = ((IS_PIC16_CORE || IS_PIC16E_CORE) && new_config) ? ca : (ca & ~1);
   new->m = i_memory_create();
@@ -931,8 +933,6 @@ _add_conf_sec_mem(int ca, gp_boolean new_config)
   new->next = NULL;
 
   if (state.conf_sec_mem != NULL) {
-    conf_mem_block_t *p;
-
     for (p = state.conf_sec_mem; p->next != NULL; p = p->next)
       ;
     p->next = new;
@@ -946,14 +946,16 @@ _add_conf_sec_mem(int ca, gp_boolean new_config)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static MemBlock *
-_get_config_mem(int ca, gp_boolean new_config)
+static MemBlock_t *
+_get_config_mem(unsigned int ca, gp_boolean new_config)
 {
+  MemBlock_t *mem;
+
   if (state.mode != MODE_RELOCATABLE) {
     return state.c_memory;
   }
   else {
-    MemBlock *mem = _find_conf_sec_mem(ca);
+    mem = _find_conf_sec_mem(ca);
 
     if (mem == NULL) {
       mem = _add_conf_sec_mem(ca, new_config);
@@ -968,8 +970,8 @@ _get_config_mem(int ca, gp_boolean new_config)
 /* helper to write configuration data, grabbing defaults when necessary */
 
 static void
-_config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
-                        int ca, uint8_t byte, uint8_t mask)
+_config_16_set_byte_mem(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev, unsigned int ca,
+                        uint8_t byte, uint8_t mask)
 {
   uint8_t old_byte;
   char    buf[BUFSIZ];
@@ -986,8 +988,8 @@ _config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
-                        int ca, uint8_t byte, uint8_t mask)
+_config_16_set_word_mem(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev,
+                        unsigned int ca, uint8_t byte, uint8_t mask)
 {
   uint8_t other_byte;
   char    buf[BUFSIZ];
@@ -1005,9 +1007,13 @@ _config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
 static gpasmVal
 _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  const pnode_t *p;
-  int            ca;
-  int            value;
+  const pnode_t         *p;
+  int                    ca;
+  int                    value;
+  MemBlock_t            *config_mem;
+  const gp_cfg_device_t *p_dev;
+  uint16_t               word;
+  char                   buf[BUFSIZ];
 
   if (state.processor == NULL) {
     gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -1058,12 +1064,10 @@ _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.lst.config_address = ca;
 
   if ((can_evaluate(p)) && (state.pass == 2)) {
-    MemBlock *config_mem = _get_config_mem(ca, false);
+    config_mem = _get_config_mem(ca, false);
     value = evaluate(p);
 
     if (IS_PIC16E_CORE) {
-      const gp_cfg_device_t *p_dev;
-
       if (value > 0xff) {
         gperror_vwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
       }
@@ -1080,9 +1084,6 @@ _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
       }
     }
     else {
-      uint16_t word;
-      char     buf[BUFSIZ];
-
       /* Don't complain for 14 bit enhanced devices.
          Why are the config words 16 bits long in headers?? */
       if ((!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE)) {
@@ -1109,10 +1110,11 @@ _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
 /* Sets defaults over unused portions of configuration memory. */
 
 static void
-_config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
+_config_16_check_defaults(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev)
 {
   const gp_cfg_addr_t *addrs = p_dev->addresses;
-  int t;
+  unsigned int         t;
+  uint8_t              byte;
 
   /* FIXME: We do not need to set defaults here, but during
      linking. And to keep it consistent for absolute mode we should
@@ -1125,8 +1127,6 @@ _config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
    * approach here - defaults or nothing. Going to go with defaults.
    */
   for (t = 0; t < p_dev->address_count; ++addrs, ++t) {
-    uint8_t byte;
-
     if (!b_memory_get(config_mem, addrs->address, &byte, NULL, NULL)) {
       _config_16_set_byte_mem(config_mem, p_dev, addrs->address, addrs->def_value, 0xff);
     }
@@ -1149,9 +1149,11 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   const char               *v_str;
   pnode_t                  *k;
   pnode_t                  *v;
-  int                       ca;
+  unsigned int              ca;
   char                      v_buff[64];
   char                      buf[BUFSIZ];
+  unsigned int              dm_addr;
+  MemBlock_t               *config_mem;
 
   state.lst.line.linetype = LTY_DIR;
   config_mpasm_used = true;
@@ -1231,8 +1233,8 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 
   /* emit the bytes if appropriate */
   if (state.pass == 2) {
-    unsigned int  dm_addr = (ca - p_dev->addresses->address) & 0xFF;
-    MemBlock     *config_mem = _get_config_mem(ca, true);
+    dm_addr    = (ca - p_dev->addresses->address) & 0xFF;
+    config_mem = _get_config_mem(ca, true);
 
     if (state.mode != MODE_RELOCATABLE) {
       _config_16_check_defaults(config_mem, p_dev);
@@ -1261,12 +1263,12 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
-                           int ca, uint16_t word, uint16_t mask)
+_config_12_14_set_word_mem(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev,
+                           unsigned int ca, uint16_t word, uint16_t mask)
 {
-  int      org;
-  uint16_t old_word;
-  char     buf[BUFSIZ];
+  unsigned int org;
+  uint16_t     old_word;
+  char         buf[BUFSIZ];
 
   org = gp_processor_byte_to_org(state.device.class, ca);
   snprintf(buf, sizeof(buf), "CONFIG_%#x", org);
@@ -1285,12 +1287,12 @@ _config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
 /* Sets defaults over unused portions of configuration memory. */
 
 static void
-_config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
+_config_12_14_check_defaults(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev)
 {
   const gp_cfg_addr_t *addrs = p_dev->addresses;
   unsigned int         addr;
   uint16_t             word;
-  int                  t;
+  unsigned int         t;
 
   for (t = 0; t < p_dev->address_count; ++addrs, ++t) {
     addr = gp_processor_org_to_byte(state.device.class, addrs->address);
@@ -1318,10 +1320,12 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   const char               *v_str;
   const pnode_t            *k;
   const pnode_t            *v;
-  int                       conf_org;
-  int                       ca;
+  unsigned int              conf_org;
+  unsigned int              ca;
   char                      v_buff[64];
   char                      buf[BUFSIZ];
+  unsigned int              dm_addr;
+  MemBlock_t               *config_mem;
 
   state.lst.line.linetype = LTY_DIR;
   config_mpasm_used = true;
@@ -1381,7 +1385,7 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   }
 
   /* find the directive */
-  p_dir = gp_cfg_find_directive(p_dev, k_str, (unsigned int *)&conf_org, NULL);
+  p_dir = gp_cfg_find_directive(p_dev, k_str, &conf_org, NULL);
   if (p_dir == NULL) {
     snprintf(buf, sizeof(buf), "CONFIG Directive Error: Setting not found for %s processor: \"%s\"",
              state.processor->names[2], k_str);
@@ -1403,8 +1407,8 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 
   /* emit the bytes if appropriate */
   if (state.pass == 2) {
-    unsigned int dm_addr = (conf_org - p_dev->addresses->address) & 0xFF;
-    MemBlock *config_mem = _get_config_mem(ca, true);
+    dm_addr    = (conf_org - p_dev->addresses->address) & 0xFF;
+    config_mem = _get_config_mem(ca, true);
 
     if (state.mode != MODE_RELOCATABLE) {
       _config_12_14_check_defaults(config_mem, p_dev);
@@ -1499,7 +1503,7 @@ _do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
 static gpasmVal
 _do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  int char_shift;
+  unsigned int char_shift;
 
   if (state.processor == NULL) {
     gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -1568,6 +1572,11 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
   const pnode_t *L;
   const pnode_t *p;
   unsigned int   org;
+  unsigned int   begin_byte_addr;
+  const char    *pc;
+  int            value;
+  uint16_t       v;
+  unsigned int   n;
 
   if (state.processor == NULL) {
     gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -1589,24 +1598,20 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
   L = parms;
 
   if (IS_PIC16E_CORE || (SECTION_FLAGS & STYP_DATA)) {
-    unsigned int begin_byte_addr = state.byte_addr;
+    begin_byte_addr = state.byte_addr;
 
     for (; L != NULL; L = TAIL(L)) {
-      const char *pc;
-
       p = HEAD(L);
 
       if (p->tag == PTAG_STRING) {
         pc = p->value.string;
         while (*pc != '\0') {
-          int value;
-
           pc = convert_escape_chars(pc, &value);
           _emit_byte(value, name);
         }
       }
       else {
-        int value = reloc_evaluate(p, RELOCT_LOW);
+        value = reloc_evaluate(p, RELOCT_LOW);
 
         if (value < 0) {
           gperror_vwarning(GPW_RANGE, "%i (%#x) < 0", value, value);
@@ -1641,13 +1646,11 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   } /* if (IS_PIC16E_CORE || (SECTION_FLAGS & STYP_DATA)) */
   else {
-    uint16_t     v = 0;
-    unsigned int n = 0;
+    v = 0;
+    n = 0;
 
     while (L != NULL) {
-      const char *pc = NULL;
-      int         value;
-
+      pc = NULL;
       p = HEAD(L);
 
       if (p->tag == PTAG_STRING) {
@@ -1728,6 +1731,9 @@ static gpasmVal
 _do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
+  const char    *pc;
+  int            value;
+  uint16_t       v;
 
   if (state.processor == NULL) {
     gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -1742,18 +1748,14 @@ _do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
     p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
-      const char *pc = p->value.string;
+      pc = p->value.string;
 
       while (*pc != '\0') {
-        int value;
-
         pc = convert_escape_chars(pc, &value);
         _emit(value & 0xff, name);
       }
     }
     else {
-      uint16_t v;
-
       v = reloc_evaluate(p, RELOCT_ALL);
       _emit(v & 0xff, name);
     }
@@ -1779,6 +1781,7 @@ _do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
   gp_boolean          new_type = false;
   int                 coff_type = T_NULL;
   enum gpasmValTypes  type = GVT_DEBUG;
+  char               *lhs;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -1809,8 +1812,6 @@ _do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
       if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
         if (enforce_simple(p->value.binop.p0)) {
-          char *lhs;
-
           lhs = p->value.binop.p0->value.symbol;
 
           if (strcasecmp(lhs, "value") == 0) {
@@ -2932,11 +2933,12 @@ _do_ident(gpasmVal r, const char *name, int arity, pnode_t *parms)
 static gpasmVal
 _do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  int          value;
-  int          v;
-  unsigned int id_location;
-  unsigned int idreg;
-  char         buf[BUFSIZ];
+  int           value;
+  int           v;
+  unsigned int  id_location;
+  unsigned int  idreg;
+  char          buf[BUFSIZ];
+  MemBlock_t   *m;
 
   if (state.processor == NULL) {
     gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
@@ -2976,7 +2978,7 @@ _do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   if (state.pass == 2) {
-    MemBlock *m = (state.mode == MODE_RELOCATABLE) ? state.obj.section->data : state.c_memory;
+    m = (state.mode == MODE_RELOCATABLE) ? state.obj.section->data : state.c_memory;
 
     if (IS_PIC16E_CORE) {
       if (idreg < state.processor->idlocs_addrs[0]) {
@@ -3072,6 +3074,7 @@ _do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
   int            max_bytes;
   int            n;
   char           buf[BUFSIZ];
+  MemBlock_t    *m;
 
   if (state.mpasm_compatible) {
     snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
@@ -3104,7 +3107,7 @@ _do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   if (state.pass == 2) {
-    MemBlock *m = (state.mode == MODE_RELOCATABLE) ? state.obj.section->data : state.c_memory;
+    m = (state.mode == MODE_RELOCATABLE) ? state.obj.section->data : state.c_memory;
 
     if (idreg < state.processor->idlocs_addrs[0]) {
       gperror_verror(GPE_RANGE, "Not a valid ID location. Address{%#x} < IDLOCS_MIN{%#x}",
@@ -3890,9 +3893,9 @@ _do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
       else {
         /* Default section name, this will be overwritten if a label is present. */
         snprintf(state.obj.new_sect_name, sizeof(state.obj.new_sect_name), ".org_%x", r);
-        state.obj.new_sect_addr = new_byte_addr;
+        state.obj.new_sect_addr  = new_byte_addr;
         state.obj.new_sect_flags = STYP_TEXT | STYP_ABS;
-        state.lst.line.linetype = LTY_SEC;
+        state.lst.line.linetype  = LTY_SEC;
         state.next_state = STATE_SECTION;
       }
     }
@@ -4227,10 +4230,12 @@ _do_subtitle(gpasmVal r, const char *name, int arity, pnode_t *parms)
 static gpasmVal
 _do_title(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
+  const pnode_t *p;
+
   state.lst.line.linetype = LTY_NONE;
 
   if (enforce_arity(arity, 1)) {
-    const pnode_t *p = HEAD(parms);
+    p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
       gp_strncpy(state.lst.title_name, p->value.string, sizeof(state.lst.title_name));
@@ -4498,6 +4503,8 @@ _do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   gp_boolean     first;
+  char          *lhs;
+  gpasmVal       val;
 
   if (_check_processor_select(name)) {
     return r;
@@ -4510,9 +4517,6 @@ _do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
     p = HEAD(parms);
     if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
-        char *lhs;
-        gpasmVal val;
-
         /* fetch the symbol */
         lhs = p->value.binop.p0->value.symbol;
         val = maybe_evaluate(p->value.binop.p1);
@@ -4558,7 +4562,7 @@ _do_while(gpasmVal r, const char *name, int arity, pnode_t *parms)
   head = GP_Malloc(sizeof(*head));
   state.lst.line.linetype = LTY_DOLIST_DIR;
   head->parms = (enforce_arity(arity, 1)) ? HEAD(parms) : NULL;
-  head->body = NULL;
+  head->body  = NULL;
 
   /* Record data for the list, cod, and coff files. */
   head->line_number = state.src->line_number;
@@ -4676,7 +4680,7 @@ file_ok(unsigned int file)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_emit_check(int insn, int argument, int mask, const char *name)
+_emit_check(unsigned int insn, int argument, int mask, const char *name)
 {
   int test = argument;
   int v = argument & mask;
@@ -4701,7 +4705,7 @@ _emit_check(int insn, int argument, int mask, const char *name)
 */
 
 static void
-_emit_check_relative(int insn, int argument, int mask, int range, const char *name)
+_emit_check_relative(unsigned int insn, int argument, int mask, int range, const char *name)
 {
   char full_message[BUFSIZ];
 
@@ -5670,7 +5674,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           int reg = 0;
 
           file = reloc_evaluate(HEAD(Parameters), RELOCT_F);
-          reg = reloc_evaluate(HEAD(TAIL(Parameters)), RELOCT_P);
+          reg  = reloc_evaluate(HEAD(TAIL(Parameters)), RELOCT_P);
           file_ok(file);
 
           if (reg & ~0xf1f) {

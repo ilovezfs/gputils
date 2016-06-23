@@ -30,11 +30,11 @@ extern gp_boolean gp_decode_extended;
 typedef struct {
   int                        wreg;
   int                        pclath;
-  int                        pclath_valid;
+  unsigned int               pclath_valid;
   int                        bank;
-  int                        bank_valid;
+  unsigned int               bank_valid;
   const gp_register_table_t *proc_regs;
-  int                        bsr_boundary;      /* Only case of PIC16E. */
+  unsigned int               bsr_boundary;      /* Only case of PIC16E. */
   gp_boolean                 need_sfr_equ;
 } gpdasm_fstate_t;
 
@@ -46,27 +46,33 @@ typedef struct {
 #define GPDIS_SHOW_ALL_BRANCH   (1 << 3)
 #define GPDIS_SHOW_EXCLAMATION  (1 << 4)
 
-extern int gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor_t processor);
+extern unsigned int gp_disassemble_mark_false_addresses(MemBlock_t *m, unsigned int byte_address,
+                                                        pic_processor_t processor);
 
-extern int gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t processor,
-                                      gpdasm_fstate_t *fstate);
+extern unsigned int gp_disassemble_find_labels(MemBlock_t *m, unsigned int byte_address,
+                                               pic_processor_t processor, gpdasm_fstate_t *fstate);
 
-extern int gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t processor,
-                                         gpdasm_fstate_t *fstate, void (*user_data_finder)(MemArg *));
+extern unsigned int gp_disassemble_find_registers(MemBlock_t *m, unsigned int byte_address,
+                                                  pic_processor_t processor,  gpdasm_fstate_t *fstate,
+                                                  void (*user_data_finder)(MemArg_t *));
 
-extern void gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int behavior,
-                                     char *buffer, size_t buffer_length, size_t current_length);
+extern void gp_disassemble_show_data(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
+                                     unsigned int behavior, char *buffer, size_t buffer_length,
+                                     size_t current_length);
 
-extern int gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                          int prog_mem_size, int behavior, char *buffer, size_t buffer_length, size_t current_length);
+extern unsigned int gp_disassemble(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
+                                   unsigned int bsr_boundary, unsigned int prog_mem_size,
+                                   unsigned int behavior, char *buffer, size_t buffer_length,
+                                   size_t current_length);
 
-extern int gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
-                               char *buffer, size_t buffer_length);
+extern unsigned int gp_disassemble_byte(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
+                                        char *buffer, size_t buffer_length);
 
-extern int gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
-                               char *buffer, size_t buffer_length);
+extern unsigned int gp_disassemble_word(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
+                                        char *buffer, size_t buffer_length);
 
-extern int gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                               int prog_mem_size, int behavior, char *buffer, size_t buffer_length,
-                               unsigned int size);
+extern unsigned int gp_disassemble_size(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
+                                        unsigned int bsr_boundary, unsigned int prog_mem_size,
+                                        unsigned int behavior, char *buffer, size_t buffer_length,
+                                        unsigned int size);
 #endif

@@ -224,7 +224,7 @@ _dump_directory_block(const uint8_t *block, unsigned block_num)
 static void
 _dump_index(uint8_t *block)
 {
-  unsigned int _64k_base = gp_getu16(&block[COD_DIR_HIGHADDR]) << I_MEM_BITS;
+  unsigned int _64k_base = IMemAddrFromBase((unsigned int)gp_getu16(&block[COD_DIR_HIGHADDR]));
   int          i;
   int          curr_block;
 
@@ -283,7 +283,7 @@ dump_memmap(proc_class_t proc_class)
   dbi = main_dir;
 
   do {
-    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]) << I_MEM_BITS;
+    _64k_base   = IMemAddrFromBase((unsigned int)gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]));
     start_block = gp_getu16(&dbi->dir[COD_DIR_MEMMAP]);
 
     if (start_block) {
@@ -344,7 +344,7 @@ dump_code(proc_class_t proc_class)
   dbi = main_dir;
 
   do {
-    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]) << I_MEM_BITS;
+    _64k_base = IMemAddrFromBase((unsigned int)gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]));
     for (k = 0; k < COD_CODE_IMAGE_BLOCKS; k++) {
       index = gp_getu16(&dbi->dir[2 * (COD_DIR_CODE + k)]);
 
@@ -620,12 +620,8 @@ dump_line_symbols(void)
             }
 
             printf(" %5d  %5d  %06X  %2x %s  %-50s\n",
-                   lst_line_number++,
-                   sline,
-                   (_64k_base << I_MEM_BITS) | sloc,
-                   smod,
-                   _smod_flags(smod),
-                   source_file_name);
+                   lst_line_number++, sline, IMemAddrFromBase(_64k_base) | sloc,
+                   smod, _smod_flags(smod), source_file_name);
 
             if ((sfile < number_of_source_files) && (sline != last_src_line)) {
               if (source_files[sfile] != NULL) {

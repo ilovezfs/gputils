@@ -12599,7 +12599,7 @@ Where options can be one of:
 \begin_layout Standard
 \noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="22" columns="3">
+<lyxtabular version="3" rows="23" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -12658,6 +12658,36 @@ Meaning
 \begin_layout Plain Layout
 Produce hex file in one of four formats: inhx8m, inhx8s, inhx16, inhx32
  (the default)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-b <level>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+–optimize-banksel <level>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Remove unnecessary Banksel directives.
+ [0]
 \end_layout
 
 \end_inset
@@ -13395,7 +13425,7 @@ A dead section is any section that doesn't have relocations pointing to
 \end_layout
 
 \begin_layout Subsection
-Pagesel 0
+Pagesel Level 0
 \end_layout
 
 \begin_layout Standard
@@ -13403,7 +13433,7 @@ No Pagesel optimizations.
 \end_layout
 
 \begin_layout Subsection
-Pagesel 1
+Pagesel Level 1
 \end_layout
 
 \begin_layout Subsubsection
@@ -13439,15 +13469,52 @@ goto label
 \series bold
 label
 \series default
- is located in another object.
- This address is not known at compile time.
+ is located in another code section.
+ This address is not known at compile time in the non-absolute mode.
  It is possible that during linking the caller and the called objects will
  be located same page.
  In this case, there is no need for the Pagesel directive.
- This optmization remove the unnecessary Pagesel directives.
- In fact remove the instructions which was created by this directive.
- 
+ This optmization removes the unnecessary Pagesel directives.
+ In fact deletes the instructions which was created by this directive.
 \series bold
+
+\begin_inset Newline newline
+\end_inset
+
+This option for now experimental.
+\end_layout
+
+\begin_layout Subsection
+Banksel Level 0
+\end_layout
+
+\begin_layout Standard
+No Banksel optimizations.
+\end_layout
+
+\begin_layout Subsection
+Banksel Level 1
+\end_layout
+
+\begin_layout Subsubsection
+Unnecessary Banksel Directives
+\end_layout
+
+\begin_layout Standard
+The Banksel directive must apply before use that registers, if these not
+ located in the Common RAM or Access RAM area.
+ These addresses is not known at compile time in the non-absolute mode.
+ It is possible that during linking more register will be located a same
+ RAM Bank.
+ In this case, there is no need for the Banksel directive if these registers
+ located in the same RAM Bank.
+ This optmization removes the unnecessary Banksel directives.
+ In fact deletes the instructions which was created by this directive.
+\series bold
+
+\begin_inset Newline newline
+\end_inset
+
 This option for now experimental.
 \end_layout
 

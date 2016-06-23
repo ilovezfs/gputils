@@ -225,7 +225,7 @@ cod_lst_line(int line_type)
   }
 
   address      = gp_processor_byte_to_org(state.class, state.lst.was_org);
-  high_address = IMemBaseAddr(address);
+  high_address = IMemBaseFromAddr(address);
 
   if ((dbi == NULL) || (high_address != _64k_base)) {
     _64k_base = high_address;
@@ -370,7 +370,7 @@ _write_code(void)
 {
   static DirBlockInfo *dbi = NULL;
 
-  const MemBlock      *m;
+  const MemBlock_t    *m;
   int                  i;
   int                  mem_base;
   int                  high_addr;
@@ -386,8 +386,8 @@ _write_code(void)
   m             = state.i_memory;
 
   while (m != NULL) {
-    mem_base  = m->base << I_MEM_BITS;
-    high_addr = IMemBaseAddr(mem_base);
+    mem_base  = IMemAddrFromBase(m->base);
+    high_addr = IMemBaseFromAddr(mem_base);
 
     if ((dbi == NULL) || (high_addr != _64k_base)) {
       _64k_base = high_addr;

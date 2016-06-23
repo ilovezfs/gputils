@@ -486,7 +486,7 @@ _print_reloc(uint16_t type, uint16_t current_value, unsigned int index)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr, unsigned int bytes_emitted, uint16_t reloc_type)
+_lst_data(unsigned int pos, MemBlock_t *m, unsigned int byte_addr, unsigned int bytes_emitted, uint16_t reloc_type)
 {
   uint8_t      emit_byte;
   uint16_t     emit_word;
@@ -722,16 +722,17 @@ lst_err_line(const char *type, unsigned int code, const char *format, va_list ar
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lst_memory_map(MemBlock *m)
+lst_memory_map(MemBlock_t *m)
 {
 #define MEM_IS_USED(m, i)  (((m)->memory != NULL) ? (IS_BYTE ? ((m)->memory[i].data & BYTE_USED_MASK) : (((m)->memory[2 * (i)].data & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1].data & BYTE_USED_MASK))) : 0)
 
-  int i;
-  int j;
-  int base;
-  int row_used;
-  int num_per_line;
-  int num_per_block;
+  int          i;
+  int          j;
+  int          base;
+  int          row_used;
+  int          num_per_line;
+  int          num_per_block;
+  unsigned int max_mem;
 
   lst_line(NULL);
   lst_line(NULL);
@@ -742,9 +743,8 @@ lst_memory_map(MemBlock *m)
   num_per_block = 16;
 
   while (m != NULL) {
-    unsigned int max_mem = I_MEM_MAX  >> !IS_BYTE;
-
-    base = (m->base << I_MEM_BITS) >> !IS_BYTE;
+    max_mem = I_MEM_MAX >> !IS_BYTE;
+    base    = IMemAddrFromBase(m->base) >> !IS_BYTE;
 
     for (i = 0; i < max_mem; i += num_per_line) {
       row_used = 0;
@@ -813,7 +813,7 @@ lst_memory_map(MemBlock *m)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lst_format_line(const char *src_line, int value)
+lst_format_line(const char *src_line, unsigned int value)
 {
   unsigned int  emitted = 0;
   unsigned int  emitted_lines = 0;
@@ -824,7 +824,7 @@ lst_format_line(const char *src_line, int value)
 #define ADDR_LEN 7
   unsigned int  pos = 0;
   uint16_t      reloc_type;
-  MemBlock     *m = state.i_memory;
+  MemBlock_t   *m = state.i_memory;
   uint16_t      word;
 
   assert(src_line != NULL);

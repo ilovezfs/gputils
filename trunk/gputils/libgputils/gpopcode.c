@@ -2,6 +2,8 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -60,7 +62,7 @@ const insn_t op_12c5xx[] = {
   { "xorwf" ,  PIC12_MASK_XORWF ,  PIC12_INSN_XORWF ,    ICODE_XORWF , INSN_CLASS_OPWF5   , INV_MASK_NULL }
 };
 
-const int num_op_12c5xx = TABLE_SIZE(op_12c5xx);
+const unsigned int num_op_12c5xx = TABLE_SIZE(op_12c5xx);
 
 /* PIC 12-bit Enhanced instruction set */
 const insn_t op_16c5xx_enh[] = {
@@ -69,7 +71,7 @@ const insn_t op_16c5xx_enh[] = {
   { "return",  PIC12E_MASK_RETURN, PIC12E_INSN_RETURN,   ICODE_RETURN, INSN_CLASS_IMPLICIT, INV_MASK_BANK }
 };
 
-const int num_op_16c5xx_enh = TABLE_SIZE(op_16c5xx_enh);
+const unsigned int num_op_16c5xx_enh = TABLE_SIZE(op_16c5xx_enh);
 
 /* Scenix SX has a superset of the PIC 12-bit instruction set. */
 /*
@@ -123,7 +125,7 @@ const insn_t op_sx[] = {
   { "xorwf" ,  PIC12_MASK_XORWF ,  PIC12_INSN_XORWF ,    ICODE_XORWF , INSN_CLASS_OPWF5    , INV_MASK_NULL }
 };
 
-const int num_op_sx = TABLE_SIZE(op_sx);
+const unsigned int num_op_sx = TABLE_SIZE(op_sx);
 
 /* PIC 14-bit instruction set */
 insn_t op_16cxx[] = {
@@ -167,7 +169,7 @@ insn_t op_16cxx[] = {
   { "xorwf" ,  PIC14_MASK_XORWF ,  PIC14_INSN_XORWF ,    ICODE_XORWF , INSN_CLASS_OPWF7   , INV_MASK_NULL }
 };
 
-const int num_op_16cxx = TABLE_SIZE(op_16cxx);
+const unsigned int num_op_16cxx = TABLE_SIZE(op_16cxx);
 
 const struct strict_insn op_16cxx_strict_mask[] = {
   { "addlw",   0x3f00 },
@@ -178,8 +180,7 @@ const struct strict_insn op_16cxx_strict_mask[] = {
   { "sublw",   0x3f00 }
 };
 
-const int num_op_16cxx_strict_mask = TABLE_SIZE(op_16cxx_strict_mask);
-
+const unsigned int num_op_16cxx_strict_mask = TABLE_SIZE(op_16cxx_strict_mask);
 
 /* PIC 14-bit Enhanced instruction set */
 const insn_t op_16cxx_enh[] = {
@@ -204,7 +205,7 @@ const insn_t op_16cxx_enh[] = {
   { "subwfb",  PIC14E_MASK_SUBWFB, PIC14E_INSN_SUBWFB,   ICODE_SUBWFB, INSN_CLASS_OPWF7    , INV_MASK_NULL }
 };
 
-const int num_op_16cxx_enh = TABLE_SIZE(op_16cxx_enh);
+const unsigned int num_op_16cxx_enh = TABLE_SIZE(op_16cxx_enh);
 
 /* PIC 14-bit Enhanced-X instruction set */
 const insn_t op_16cxx_enhx[] = {
@@ -229,7 +230,7 @@ const insn_t op_16cxx_enhx[] = {
   { "subwfb",  PIC14E_MASK_SUBWFB, PIC14E_INSN_SUBWFB,   ICODE_SUBWFB, INSN_CLASS_OPWF7    , INV_MASK_NULL }
 };
 
-const int num_op_16cxx_enhx = TABLE_SIZE(op_16cxx_enhx);
+const unsigned int num_op_16cxx_enhx = TABLE_SIZE(op_16cxx_enhx);
 
 /* PIC 16-bit instruction set */
 const insn_t op_17cxx[] = {
@@ -293,7 +294,7 @@ const insn_t op_17cxx[] = {
   { "xorwf" ,  PIC16_MASK_XORWF ,  PIC16_INSN_XORWF ,    ICODE_XORWF , INSN_CLASS_OPWF8   , INV_MASK_NULL }
 };
 
-const int num_op_17cxx = TABLE_SIZE(op_17cxx);
+const unsigned int num_op_17cxx = TABLE_SIZE(op_17cxx);
 
 const insn_t op_18cxx[] = {
   { "addlw" , PIC16E_MASK_ADDLW , PIC16E_INSN_ADDLW ,    ICODE_ADDLW , INSN_CLASS_LIT8    , INV_MASK_NULL },
@@ -370,7 +371,7 @@ const insn_t op_18cxx[] = {
   { "xorwf" , PIC16E_MASK_XORWF , PIC16E_INSN_XORWF ,    ICODE_XORWF , INSN_CLASS_OPWFA8  , INV_MASK_NULL }
 };
 
-const int num_op_18cxx = TABLE_SIZE(op_18cxx);
+const unsigned int num_op_18cxx = TABLE_SIZE(op_18cxx);
 
 /* PIC 16-bit "Special" instruction set */
 const insn_t op_18cxx_sp[] = {
@@ -402,7 +403,7 @@ const insn_t op_18cxx_sp[] = {
   { "tgz"   , 0xffff, PIC16ES_INSN_TGZ   ,  0, INSN_CLASS_IMPLICIT, INV_MASK_NULL }
 };
 
-const int num_op_18cxx_sp = TABLE_SIZE(op_18cxx_sp);
+const unsigned int num_op_18cxx_sp = TABLE_SIZE(op_18cxx_sp);
 
 /* PIC 16-bit Extended instruction set */
 const insn_t op_18cxx_ext[] = {
@@ -416,4 +417,4 @@ const insn_t op_18cxx_ext[] = {
   { "subulnk", PIC16EX_MASK_SUBULNK, PIC16EX_INSN_SUBULNK, ICODE_SUBULNK, INSN_CLASS_LIT6     , INV_MASK_NULL }
 };
 
-const int num_op_18cxx_ext = TABLE_SIZE(op_18cxx_ext);
+const unsigned int num_op_18cxx_ext = TABLE_SIZE(op_18cxx_ext);

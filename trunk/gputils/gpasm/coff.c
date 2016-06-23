@@ -70,7 +70,8 @@ l1:
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_new_config_section(const char *name, int addr, int flags, MemBlock *data, gp_boolean new_config)
+_new_config_section(const char *name, unsigned int addr, unsigned int flags, MemBlock_t *data,
+                    gp_boolean new_config)
 {
   gp_symbol_type *new;
   gp_aux_type    *new_aux;
@@ -173,8 +174,7 @@ coff_init(void)
       state.obj.enabled = false;
     }
     else {
-      state.obj.object            = gp_coffgen_init();
-      state.obj.object->filename  = GP_Strdup(state.objfilename);
+      state.obj.object            = gp_coffgen_new_object(state.objfilename);
       state.obj.object->processor = state.processor;
       state.obj.object->class     = state.device.class;
       state.obj.object->isnew     = state.obj.newcoff;
@@ -240,7 +240,7 @@ coff_close_file(void)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-coff_new_section(const char *name, int addr, int flags)
+coff_new_section(const char *name, unsigned int addr, unsigned int flags)
 {
   gp_section_type *found;
   gp_symbol_type  *new;
@@ -332,13 +332,13 @@ coff_reloc(unsigned int symbol_number, int16_t offset, enum gpasmValTypes type)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-coff_linenum(int emitted)
+coff_linenum(unsigned int emitted)
 {
   static gp_boolean  show_bad_debug = true;
 
   gp_linenum_type   *new;
-  int                end;
-  int                origin;
+  unsigned int       end;
+  unsigned int       origin;
 
   if ((!state.obj.enabled) || (state.obj.section == NULL)) {
     return;
@@ -346,7 +346,7 @@ coff_linenum(int emitted)
 
   /* If the section is absolute, use the abolute address. */
   origin = state.lst.line.was_byte_addr;
-  if (!(state.obj.section->flags & STYP_ABS)) {
+  if ((state.obj.section->flags & STYP_ABS) == 0) {
     /* else use the relative address */
     origin -= state.obj.section->address;
   }
@@ -383,11 +383,11 @@ coff_linenum(int emitted)
    increment the global symbol number. */
 
 gp_symbol_type *
-coff_add_sym(const char *name, int value, enum gpasmValTypes type)
+coff_add_sym(const char *name, gp_symvalue_t value, enum gpasmValTypes type)
 {
   gp_symbol_type *new;
-  int             section_number;
-  int             class;
+  unsigned int    section_number;
+  unsigned int    class;
   char            message[BUFSIZ];
 
   if (!state.obj.enabled) {

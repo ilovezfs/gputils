@@ -31,7 +31,7 @@ typedef enum gp_coff_type {
 } gp_coff_type;
 
 typedef struct gp_binary_type {
-  long     size;                /* size of the file in bytes */
+  off_t    size;                /* size of the file in bytes */
   uint8_t *file;                /* file contents */
 } gp_binary_type;
 

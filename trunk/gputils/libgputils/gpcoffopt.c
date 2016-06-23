@@ -24,28 +24,6 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-typedef struct reloc_properties {
-  gp_reloc_type        *relocation;
-  const gp_symbol_type *label;              /* If exists so label which is linked here to. */
-  const insn_t         *instruction;        /* The actual instruction. */
-  unsigned int          state;              /* For COPT_... constants. */
-  gp_boolean            protected;
-
-  uint32_t              target_page;
-  uint32_t              reloc_page;
-
-  uint32_t              reloc_byte_addr;
-  uint32_t              reloc_insn_addr;
-
-  uint32_t              reloc_byte_length;
-  uint32_t              reloc_insn_length;
-} reloc_properties_t;
-
-/* Number of reloc_properties_t type in an array. */
-#define RELOC_PIPE_LENGTH                      4
-
-static reloc_properties_t reloc_pipe[RELOC_PIPE_LENGTH];
-
 #define COPT_NULL                           0
 #define COPT_BRA14E_CURR_PAGE               (1 << 0)
 #define COPT_BRA14E_OTHER_PAGE              (1 << 1)
@@ -55,6 +33,8 @@ static reloc_properties_t reloc_pipe[RELOC_PIPE_LENGTH];
 #define COPT_CALL_OTHER_PAGE                (1 << 5)
 #define COPT_PAGESEL_CURR_PAGE              (1 << 6)
 #define COPT_PAGESEL_OTHER_PAGE             (1 << 7)
+
+#define COPT_BANKSEL                        (1 << 8)
 
 /* Only PIC14E and PIC14EX. */
 #define COPT_BRA14E_MASK                    (COPT_BRA14E_CURR_PAGE | COPT_BRA14E_OTHER_PAGE)
@@ -78,6 +58,38 @@ static reloc_properties_t reloc_pipe[RELOC_PIPE_LENGTH];
 
 #define COPT_PAGESEL_MASK                   (COPT_PAGESEL_CURR_PAGE | COPT_PAGESEL_OTHER_PAGE)
 
+/* Number of reloc_properties_t type in an array. */
+#define RELOC_PIPE_LENGTH                      4
+
+typedef struct reloc_properties {
+  gp_reloc_type        *relocation;
+  const gp_symbol_type *label;              /* If exists so label which is linked here to. */
+  const insn_t         *instruction;        /* The actual instruction. */
+  unsigned int          state;              /* For COPT_... constants. */
+  gp_boolean            protected;
+
+  uint32_t              target_page;
+  uint32_t              reloc_page;
+
+  uint32_t              reloc_byte_addr;
+  uint32_t              reloc_insn_addr;
+
+  uint32_t              reloc_byte_length;
+  uint32_t              reloc_insn_length;
+
+  uint32_t              ram_bank;
+} reloc_properties_t;
+
+static reloc_properties_t   reloc_pipe[RELOC_PIPE_LENGTH];
+
+static gp_section_type    **section_array;
+static unsigned int         num_sections;
+
+static gp_symbol_type     **register_array;
+static unsigned int         num_registers;
+
+static gp_boolean           first_banksel = false;
+
 /*------------------------------------------------------------------------------------------------*/
 
 /* Remove any weak symbols in the object. */
@@ -94,7 +106,7 @@ gp_coffopt_remove_weak(gp_object_type *Object)
   while (symbol != NULL) {
     if (gp_coffgen_is_external_symbol(symbol) && (!gp_coffgen_symbol_has_reloc(symbol))) {
       gp_debug("  removed weak symbol \"%s\"", symbol->name);
-      gp_coffgen_del_symbol(Object, symbol);
+      gp_coffgen_put_reserve_symbol(Object, symbol);
     }
 
     symbol = symbol->next;
@@ -109,6 +121,8 @@ void
 gp_coffopt_remove_dead_sections(gp_object_type *Object, int Pass, gp_boolean Enable_cinit_warns)
 {
   gp_section_type *section;
+  gp_section_type *section_next;
+  gp_symbol_type  *symbol;
   gp_reloc_type   *relocation;
   gp_section_type *rel_sect;
   gp_boolean       section_removed;
@@ -129,14 +143,15 @@ gp_coffopt_remove_dead_sections(gp_object_type *Object, int Pass, gp_boolean Ena
       /* Mark all sections that relocations point to as used. */
       relocation = section->relocation_list;
       while (relocation != NULL) {
-        if ((rel_sect = relocation->symbol->section) != NULL) {
+        symbol = relocation->symbol;
+        if ((rel_sect = symbol->section) != NULL) {
           if (rel_sect != section) {
             rel_sect->is_used = true;
           }
         }
         else {
-          if (Enable_cinit_warns || (strcmp(relocation->symbol->name, "_cinit") != 0)) {
-            gp_warning("Relocation symbol %s has no section.", relocation->symbol->name);
+          if (Enable_cinit_warns || (strcmp(symbol->name, "_cinit") != 0)) {
+            gp_warning("Relocation symbol %s has no section.", symbol->name);
           }
         }
         relocation = relocation->next;
@@ -146,14 +161,15 @@ gp_coffopt_remove_dead_sections(gp_object_type *Object, int Pass, gp_boolean Ena
 
     section = Object->section_list;
     while (section != NULL) {
+      section_next = section->next;
       /* FIXME: Maybe don't remove if it is in protected memory. */
       if ((!section->is_used) && FlagsIsAllClr(section->flags, STYP_ABS | STYP_DATA)) {
         gp_debug("Removing section \"%s\".", section->name);
-        gp_coffgen_del_section_symbols(Object, section);
-        gp_coffgen_del_section(Object, section);
+        gp_coffgen_put_reserve_section_symbols(Object, section);
+        gp_coffgen_put_reserve_section(Object, section);
         section_removed = true;
       }
-      section = section->next;
+      section = section_next;
     }
 
     /* take another pass */
@@ -251,81 +267,35 @@ _page_addr_from_byte_addr(proc_class_t Class, uint32_t Byte_addr)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static int
-_reloc_addr_cmp(const void *P0, const void *P1)
-{
-  const gp_reloc_type *r0    = *(const gp_reloc_type **)P0;
-  const gp_reloc_type *r1    = *(const gp_reloc_type **)P1;
-  uint32_t             addr0 = r0->address;
-  uint32_t             addr1 = r1->address;
-
-  if (addr0 < addr1) {
-    return -1;
-  }
-
-  if (addr0 > addr1) {
-    return 1;
-  }
-
-  return 0;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* Makes an array from all relocations of section.  */
-
-static gp_reloc_type **
-_reloc_make_array(gp_section_type *Section, unsigned int *Num_relocations)
-{
-  gp_reloc_type  *reloc;
-  gp_reloc_type **array;
-  unsigned int    i;
-  unsigned int    n_relocations;
-
-  if ((n_relocations = Section->num_reloc) == 0) {
-    return NULL;
-  }
-
-  array = (gp_reloc_type **)GP_Malloc(n_relocations * sizeof(gp_reloc_type *));
-
-  i     = 0;
-  reloc = Section->relocation_list;
-  while (reloc != NULL) {
-    array[i] = reloc;
-    ++i;
-    reloc    = reloc->next;
-  }
-
-  assert(n_relocations == i);
-
-  qsort(array, n_relocations, sizeof(gp_reloc_type *), _reloc_addr_cmp);
-  *Num_relocations = n_relocations;
-  return array;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 /* Decrease relocation addresses in a given list. */
 
 static void
 _reloc_decrease_addresses(proc_class_t Class, gp_reloc_type *Relocation, uint32_t Relocation_page,
                           uint32_t Insn_offset, uint32_t Byte_offset)
 {
-  gp_reloc_type  *reloc;
-  gp_symbol_type *symbol;
+  gp_reloc_type         *reloc;
+  gp_symbol_type        *symbol;
+  const gp_section_type *section;
+
+  if (Relocation == NULL) {
+    return;
+  }
 
   reloc = Relocation;
   while (reloc != NULL) {
     if (reloc->address >= Byte_offset) {
       reloc->address -= Byte_offset;
-      symbol = reloc->symbol;
+      symbol  = reloc->symbol;
+      section = symbol->section;
 
       /* Prevents the modification of symbols on the other pages. */
-      if ((_page_addr_from_insn_addr(Class, symbol->value) == Relocation_page) &&
+      if (FlagIsSet(section->flags, STYP_ROM_AREA) &&
+          (_page_addr_from_insn_addr(Class, symbol->value) == Relocation_page)) {
           /* Prevents the multiple modifications of symbol. */
-          (FlagIsClr(symbol->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE))) {
-        symbol->value -= Insn_offset;
-        FlagSet(symbol->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
+        if (FlagIsClr(symbol->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE)) {
+          symbol->value -= Insn_offset;
+          FlagSet(symbol->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
+        }
       }
     }
 
@@ -335,28 +305,95 @@ _reloc_decrease_addresses(proc_class_t Class, gp_reloc_type *Relocation, uint32_
 
 /*------------------------------------------------------------------------------------------------*/
 
+static void
+_label_arrays_make(proc_class_t Class)
+{
+  gp_section_type *section;
+  unsigned int     i;
+
+  if ((section_array == NULL) || (num_sections == 0)) {
+    return;
+  }
+
+  for (i = 0; i < num_sections; ++i) {
+    section = section_array[i];
+    section->num_labels  = 0;
+    section->label_array = gp_symbol_make_label_array(section, Class->org_to_byte_shift,
+                                                      &(section->num_labels));
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_label_arrays_free(void)
+{
+  gp_section_type *section;
+  unsigned int     i;
+
+  if ((section_array == NULL) || (num_sections == 0)) {
+    return;
+  }
+
+  for (i = 0; i < num_sections; ++i) {
+    section = section_array[i];
+
+    if (section->label_array != NULL) {
+      free(section->label_array);
+      section->label_array = NULL;
+    }
+
+    section->num_labels  = 0;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* Sets or clears section optimize flag in a given list. */
 
 static void
-_section_set_clear_opt_flags(gp_section_type *First_section, uint32_t Flags)
+_label_clear_opt_flag(void)
 {
   gp_section_type *section;
-  gp_symbol_type  *symbol;
+  gp_symbol_type  *label;
+  unsigned int     i;
+  unsigned int     j;
 
-  section = First_section;
-  while (section != NULL) {
-    symbol = section->symbol;
-    if (FlagsIsNotAllClr(section->flags, Flags)) {
+  if ((section_array == NULL) || (num_sections == 0)) {
+    return;
+  }
+
+  for (i = 0; i < num_sections; ++i) {
+    section = section_array[i];
+    for (j = 0; j < section->num_labels; ++j) {
+      label = section->label_array[j];
       /* This will be modifiable. */
-      FlagClr(section->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
-      FlagClr(symbol->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
+      FlagClr(label->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
     }
-    else {
-      /* This will be protected. */
-      FlagSet(section->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
-      FlagSet(symbol->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Decrease label addresses in a given list. */
+
+static void
+_label_array_decrease_addresses(proc_class_t Class, gp_section_type *Section, uint32_t Start_address,
+                                uint32_t Insn_offset)
+{
+  unsigned int    i;
+  gp_symbol_type *label;
+
+  for (i = 0; i < Section->num_labels; ++i) {
+    label = Section->label_array[i];
+
+    /* Prevents the multiple modifications of symbol. */
+    if (label->value >= Start_address) {
+      if (FlagIsClr(label->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE)) {
+        label->value -= Insn_offset;
+        FlagSet(label->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
+      }
     }
-    section = section->next;
   }
 }
 
@@ -365,37 +402,38 @@ _section_set_clear_opt_flags(gp_section_type *First_section, uint32_t Flags)
 /* Decrease section addresses in a given list. */
 
 static void
-_section_decrease_addresses(proc_class_t Class, gp_section_type *First_section, uint32_t Relocation_page,
-                            uint32_t Start_address, uint32_t Insn_offset, uint32_t Byte_offset)
+_sections_decrease_start_address(proc_class_t Class, const gp_section_type *Section, uint32_t Insn_offset,
+                                 uint32_t Byte_offset)
 {
   gp_section_type *section;
   gp_symbol_type  *symbol;
+  unsigned int     i;
   uint32_t         byte_address;
   uint32_t         insn_address;
+  gp_symvalue_t    value_prev;
 
-  section = First_section;
-  while (section != NULL) {
+  if ((section_array == NULL) || (num_sections < 1)) {
+    return;
+  }
+
+  for (i = 0; i < num_sections; ++i) {
+    section = section_array[i];
     /* Prevents the modification of sections on other pages. */
-    if ((_page_addr_from_byte_addr(Class, section->address) == Relocation_page) &&
-        (section->address >= Start_address) &&
-        (FlagIsClr(section->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE))) {
+    if (section->address > Section->address) {
       byte_address = section->address - Byte_offset;
       insn_address = gp_processor_byte_to_org(Class, byte_address);
-      /* The name of this section. */
-      symbol       = section->symbol;
       b_memory_move(section->data, section->address, byte_address, section->size);
       section->address = byte_address;
-      FlagSet(section->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
 
-      /* Prevents the multiple modifications of symbol. */
-      if (FlagIsClr(symbol->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE)) {
+      symbol = section->symbol;
+      if (symbol != NULL) {
+        value_prev     = symbol->value;
         symbol->value -= Insn_offset;
-        FlagSet(symbol->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
+        assert((gp_symvalue_t)insn_address == symbol->value);
       }
 
-      assert((gp_symvalue_t)insn_address == symbol->value);
+      _label_array_decrease_addresses(Class, section, value_prev, Insn_offset);
     }
-    section = section->next;
   }
 }
 
@@ -427,48 +465,102 @@ _linenum_decrease_addresses(proc_class_t Class, gp_section_type *First_section,
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Sets or clears section optimize flag in a given list. */
+/* Destroys an instruction from data memory of given section. */
 
 static void
-_label_set_clear_opt_flags(gp_symbol_type **Label_array, unsigned int Num_labels, uint32_t Section_flags)
+_destroy_insn(proc_class_t Class, gp_section_type *Section, uint32_t Byte_address, uint32_t Byte_length,
+              const char *Symbol_name)
 {
-  unsigned int i;
-
-  for (i = 0; i < Num_labels; ++i) {
-    if (FlagsIsNotAllClr(Label_array[i]->section->flags, Section_flags)) {
-      /* This will be modifiable. */
-      FlagClr(Label_array[i]->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
-    }
-    else {
-      /* This will be protected. */
-      FlagSet(Label_array[i]->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
-    }
-  }
+  b_memory_delete_area(Section->data, Byte_address, Byte_length);
+  Section->size -= Byte_length;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Decrease label addresses in a given list. */
+/* Destroys a Pagesel directive and updates all related addresses. */
 
 static void
-_label_decrease_addresses(proc_class_t Class, gp_symbol_type **Label_array, unsigned int Num_labels,
-                          uint32_t Relocation_page, uint32_t Start_address, uint32_t Insn_offset)
+_destroy_insn_and_update_addr(proc_class_t Class, gp_section_type *First_section, gp_section_type *Section,
+                              unsigned int Insn_index)
 {
-  unsigned int    i;
-  gp_symbol_type *label;
+  unsigned int  i;
+  uint32_t      start_page;
+  uint32_t      byte_addr_curr;
+  uint32_t      byte_length_curr;
+  uint32_t      insn_addr_curr;
+  uint32_t      insn_length_curr;
+  uint32_t      byte_addr_next;
+//  uint32_t      insn_addr_next;
+  const char   *sym_name;
 
-  for (i = 0; i < Num_labels; ++i) {
-    label = Label_array[i];
+  byte_addr_curr   = reloc_pipe[Insn_index].reloc_byte_addr;
+  byte_length_curr = reloc_pipe[Insn_index].reloc_byte_length;
+  insn_addr_curr   = reloc_pipe[Insn_index].reloc_insn_addr;
+  insn_length_curr = reloc_pipe[Insn_index].reloc_insn_length;
+  byte_addr_next   = byte_addr_curr + byte_length_curr;
+//  insn_addr_next   = insn_addr_curr + insn_length_curr;
+  start_page       = reloc_pipe[Insn_index].reloc_page;
+  sym_name         = (reloc_pipe[Insn_index].relocation->symbol != NULL) ?
+                                        reloc_pipe[Insn_index].relocation->symbol->name : NULL;
 
-    /* Prevents the modification of labels (symbols) on the other pages. */
-    if ((_page_addr_from_insn_addr(Class, label->value) == Relocation_page) &&
-        (label->value >= Start_address)) {
-      /* Prevents the multiple modifications of symbol. */
-      if (FlagIsClr(label->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE)) {
-        label->value -= Insn_offset;
-        FlagSet(label->opt_flags, OPT_FLAGS_GPCOFFOPT_MODULE);
-      }
-    }
+  _destroy_insn(Class, Section, byte_addr_curr, byte_length_curr, sym_name);
+  gp_symbol_delete_by_value(Section->label_array, &Section->num_labels, insn_addr_curr);
+
+  gp_coffgen_del_linenum_by_address_area(Section, byte_addr_curr, byte_addr_next - 1);
+  _linenum_decrease_addresses(Class, First_section, start_page, byte_addr_next, byte_length_curr);
+
+  /* Enable modification of address only in program memory. */
+  _label_clear_opt_flag();
+
+  _sections_decrease_start_address(Class, Section, insn_length_curr, byte_length_curr);
+
+  _reloc_decrease_addresses(Class, reloc_pipe[Insn_index].relocation->next, start_page, insn_length_curr,
+                            byte_length_curr);
+
+//  _label_array_decrease_addresses(Class, Section, insn_addr_next, insn_length_curr);
+  gp_coffgen_del_reloc(Section, reloc_pipe[Insn_index].relocation);
+
+  /* Decrease the address of instruction in newer (younger) states. */
+  for (i = 0; i < Insn_index; ++i) {
+    reloc_pipe[i].reloc_byte_addr -= byte_length_curr;
+    reloc_pipe[i].reloc_insn_addr -= insn_length_curr;
+  }
+
+  _reloc_pipe_delete_state(Insn_index);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static gp_boolean
+_insn_isReturn(proc_class_t Class, const gp_section_type *Section, unsigned int Byte_addr)
+{
+  uint16_t      data;
+  const insn_t *instruction;
+
+  if (Class->find_insn == NULL) {
+    return false;
+  }
+
+  if (Class->i_memory_get(Section->data, Byte_addr, &data, NULL, NULL) != W_USED_ALL) {
+    return false;
+  }
+
+  instruction = Class->find_insn(Class, data);
+  if (instruction == NULL) {
+    return false;
+  }
+
+  switch (instruction->icode) {
+    case ICODE_RETFIE:
+    case ICODE_RETI:
+    case ICODE_RETIW:
+    case ICODE_RETLW:
+    case ICODE_RETP:
+    case ICODE_RETURN:
+      return true;
+
+    default:
+      return false;
   }
 }
 
@@ -477,23 +569,26 @@ _label_decrease_addresses(proc_class_t Class, gp_symbol_type **Label_array, unsi
 /* Analyze and add a new relocation state unto the relocation pipe. */
 
 static void
-_reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relocation,
-               gp_symbol_type **Label_array, unsigned int Num_labels, unsigned int Num_pages)
+_pagesel_reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relocation,
+                       unsigned int Num_pages)
 {
   const gp_symbol_type *symbol;
   uint16_t              data;
   uint32_t              reloc_byte_addr;
   uint32_t              reloc_insn_addr;
+  uint32_t              reloc_byte_length;
   uint32_t              value;
   uint32_t              reloc_page;
   uint32_t              target_page;
-  uint32_t              reloc_byte_length;
 
   symbol          = Relocation->symbol;
   reloc_byte_addr = Section->address   + Relocation->address;
   value           = Relocation->offset + (uint32_t)symbol->value;
 
-  Class->i_memory_get(Section->data, reloc_byte_addr, &data, NULL, NULL);
+  if (Class->i_memory_get(Section->data, reloc_byte_addr, &data, NULL, NULL) != W_USED_ALL) {
+    gp_error("No instruction at 0x%0*X in program memory!", Class->addr_digits, reloc_byte_addr);
+    assert(0);
+  }
 
   reloc_insn_addr = gp_processor_byte_to_org(Class, reloc_byte_addr);
   reloc_page      = gp_processor_page_addr(Class, reloc_insn_addr);
@@ -510,7 +605,7 @@ _reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relo
   }
 
   reloc_pipe[0].relocation      = Relocation;
-  reloc_pipe[0].label           = gp_symbol_find_by_value(Label_array, Num_labels, reloc_insn_addr);
+  reloc_pipe[0].label           = gp_symbol_find_by_value(Section->label_array, Section->num_labels, reloc_insn_addr);
   reloc_pipe[0].instruction     = (Class->find_insn != NULL) ? Class->find_insn(Class, data) : NULL;
   reloc_pipe[0].state           = COPT_NULL;
   reloc_pipe[0].protected       = ((reloc_pipe[0].label != NULL) && (reloc_pipe[0].label->num_reloc_link > 1)) ? true : false;
@@ -528,13 +623,13 @@ _reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relo
   case RELOCT_CALL:
     /* call function */
     reloc_pipe[0].state = (reloc_page == target_page) ? COPT_CALL_CURR_PAGE : COPT_CALL_OTHER_PAGE;
-    reloc_byte_length  = 2;
+    reloc_byte_length   = 2;
     break;
 
   case RELOCT_GOTO:
     /* goto label */
     reloc_pipe[0].state = (reloc_page == target_page) ? COPT_GOTO_CURR_PAGE : COPT_GOTO_OTHER_PAGE;
-    reloc_byte_length  = 2;
+    reloc_byte_length   = 2;
     break;
 
   case RELOCT_LOW:
@@ -568,7 +663,7 @@ _reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relo
   case RELOCT_BRA:
     /* bra label */
     reloc_pipe[0].state = (reloc_page == target_page) ? COPT_BRA14E_CURR_PAGE : COPT_BRA14E_OTHER_PAGE;
-    reloc_byte_length  = 2;
+    reloc_byte_length   = 2;
     break;
 
   case RELOCT_CONDBRA:
@@ -588,7 +683,7 @@ _reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relo
        movlw value
        movwf PCLATH */
     reloc_pipe[0].state = (reloc_page == target_page) ? COPT_PAGESEL_CURR_PAGE : COPT_PAGESEL_OTHER_PAGE;
-    reloc_byte_length  = Class->pagesel_byte_length(Num_pages, true);
+    reloc_byte_length   = Class->pagesel_byte_length(Num_pages, true);
     break;
 
   case RELOCT_PAGESEL_BITS:
@@ -608,7 +703,7 @@ _reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relo
 
        movlp value */
     reloc_pipe[0].state = (reloc_page == target_page) ? COPT_PAGESEL_CURR_PAGE : COPT_PAGESEL_OTHER_PAGE;
-    reloc_byte_length  = Class->pagesel_byte_length(Num_pages, false);
+    reloc_byte_length   = Class->pagesel_byte_length(Num_pages, false);
     break;
 
   /* unimplemented relocations */
@@ -642,77 +737,14 @@ _reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relo
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Destroys an instruction from data memory of given section. */
-
-static void
-_instruction_destroy(gp_section_type *Section, uint32_t Byte_address, uint32_t Byte_length)
-{
-  b_memory_delete_area(Section->data, Byte_address, Byte_length);
-  Section->size -= Byte_length;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* Destroys a Pagesel directive and updates all related addresses. */
-
-static void
-_destroy_pagesel_and_update(proc_class_t Class, gp_section_type *First_section, gp_section_type *Section,
-                            gp_symbol_type **Label_array, unsigned int *Num_labels, unsigned int Insn_index)
-{
-  unsigned int i;
-  uint32_t     start_page;
-  uint32_t     byte_addr_curr;
-  uint32_t     byte_length_curr;
-  uint32_t     insn_addr_curr;
-  uint32_t     insn_length_curr;
-  uint32_t     byte_addr_next;
-  uint32_t     insn_addr_next;
-
-  byte_addr_curr   = reloc_pipe[Insn_index].reloc_byte_addr;
-  byte_length_curr = reloc_pipe[Insn_index].reloc_byte_length;
-  insn_addr_curr   = reloc_pipe[Insn_index].reloc_insn_addr;
-  insn_length_curr = reloc_pipe[Insn_index].reloc_insn_length;
-  byte_addr_next   = byte_addr_curr + byte_length_curr;
-  insn_addr_next   = insn_addr_curr + insn_length_curr;
-  start_page       = reloc_pipe[Insn_index].reloc_page;
-
-  _instruction_destroy(Section, byte_addr_curr, byte_length_curr);
-  gp_symbol_delete_by_value(Label_array, Num_labels, insn_addr_curr);
-
-  gp_coffgen_del_linenum_by_address_area(Section, byte_addr_curr, byte_addr_next - 1);
-  _linenum_decrease_addresses(Class, First_section, start_page, byte_addr_next, byte_length_curr);
-
-  /* Enable modification of address only in program memory. */
-  _section_set_clear_opt_flags(First_section, STYP_TEXT | STYP_DATA_ROM);
-  _label_set_clear_opt_flags(Label_array, *Num_labels, STYP_TEXT | STYP_DATA_ROM);
-
-  _section_decrease_addresses(Class, First_section, start_page, byte_addr_next, insn_length_curr,
-                              byte_length_curr);
-
-  _reloc_decrease_addresses(Class, reloc_pipe[Insn_index].relocation->next, start_page, insn_length_curr,
-                            byte_length_curr);
-
-  _label_decrease_addresses(Class, Label_array, *Num_labels, start_page, insn_addr_next, insn_length_curr);
-  gp_coffgen_del_reloc(Section, reloc_pipe[Insn_index].relocation);
-
-  /* Decrease the address of instruction in newer (younger) states. */
-  for (i = 0; i < Insn_index; ++i) {
-    reloc_pipe[i].reloc_byte_addr -= byte_length_curr;
-    reloc_pipe[i].reloc_insn_addr -= insn_length_curr;
-  }
-
-  _reloc_pipe_delete_state(Insn_index);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 /* If possible according to the rules, then removes a Pagesel directive. */
 
 static gp_boolean
 _pagesel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_type *Section,
-                gp_symbol_type **Label_array, unsigned int *Num_labels, gp_boolean Completion)
+                gp_boolean Completion)
 {
   unsigned int saturation;
+  unsigned int byte_addr_next;
 
   saturation  = (reloc_pipe[0].relocation != NULL);
   saturation += (reloc_pipe[1].relocation != NULL);
@@ -727,42 +759,66 @@ _pagesel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_t
   if (Completion) {
     /* This is the last relocation on chain (a code section). */
     if ((reloc_pipe[0].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[0].protected)) {
-      /*
-        reloc_pipe[0] pagesel current_page  <-- UNNECESSARY if not PROTECTED
-      */
-      _destroy_pagesel_and_update(Class, First_section, Section, Label_array, Num_labels, 0);
-      _reloc_pipe_shift(false);
-      return true;
+      byte_addr_next = reloc_pipe[0].reloc_byte_addr + reloc_pipe[0].reloc_byte_length;
+
+      if (_insn_isReturn(Class, Section, byte_addr_next)) {
+        /*
+          reloc_pipe[0]   pagesel current_page  <-- UNNECESSARY if not PROTECTED
+          byte_addr_next: return (or these: retfie, retlw, reti, retp)
+        */
+        _destroy_insn_and_update_addr(Class, First_section, Section, 0);
+        _reloc_pipe_shift(false);
+        return true;
+      }
     }
   }
 
-  if (saturation == 4) {
-    /* The State Pipe is full. */
-    if ((reloc_pipe[3].state == COPT_CALL_OTHER_PAGE) &&
-        (reloc_pipe[2].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[2].protected) &&
-        (reloc_pipe[1].state == COPT_PAGESEL_CURR_PAGE) &&
-        (reloc_pipe[0].state == COPT_CALL_CURR_PAGE)) {
+  if (saturation >= 2) {
+    /* The saturation of State Pipe at least 1/2. */
+    if ((reloc_pipe[1].state == COPT_CALL_CURR_PAGE) &&
+        (reloc_pipe[0].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[0].protected)) {
       /*
-        reloc_pipe[3] call    function_on_other_page 
-        reloc_pipe[2] pagesel current_page  <------- UNNECESSARY if not PROTECTED
-        reloc_pipe[1] pagesel current_page
-        reloc_pipe[0] call    function_on_current_page 
+        reloc_pipe[1] call    function_on_current_page 
+        reloc_pipe[0] pagesel current_page  <--------- UNNECESSARY if not PROTECTED
       */
-      _destroy_pagesel_and_update(Class, First_section, Section, Label_array, Num_labels, 2);
+      _destroy_insn_and_update_addr(Class, First_section, Section, 0);
     }
-    else if ((reloc_pipe[3].state == COPT_CALL_OTHER_PAGE) &&
-             (reloc_pipe[2].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[2].protected) &&
-             (reloc_pipe[1].state == COPT_PAGESEL_OTHER_PAGE) &&
-             (reloc_pipe[0].state == COPT_CALL_OTHER_PAGE)) {
+    else if ((reloc_pipe[1].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[1].protected) &&
+             (reloc_pipe[0].state == COPT_PAGESEL_OTHER_PAGE)) {
       /*
-        reloc_pipe[3] call    function_on_other_page 
-        reloc_pipe[2] pagesel current_page  <------- UNNECESSARY if not PROTECTED
-        reloc_pipe[1] pagesel other_page
-        reloc_pipe[0] call    function_on_other_page 
+        reloc_pipe[1] pagesel current_page  <------- UNNECESSARY if not PROTECTED
+        reloc_pipe[0] pagesel other_page  
       */
-      _destroy_pagesel_and_update(Class, First_section, Section, Label_array, Num_labels, 2);
+      _destroy_insn_and_update_addr(Class, First_section, Section, 1);
     }
-  } /* if (saturation == 4) */
+    else if ((reloc_pipe[1].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[1].protected) &&
+             (reloc_pipe[0].state & COPT_ABS_BRANCH_CURR_PAGE_MASK)) {
+      /*
+        reloc_pipe[1] pagesel current_page  <------ UNNECESSARY if not PROTECTED
+        reloc_pipe[0] goto    label_on_current_page 
+
+          OR
+
+        reloc_pipe[1] pagesel current_page  <--------- UNNECESSARY if not PROTECTED
+        reloc_pipe[0] call    function_on_current_page
+      */
+      _destroy_insn_and_update_addr(Class, First_section, Section, 1);
+    }
+    else if ((reloc_pipe[1].state & COPT_PAGESEL_MASK) && (!reloc_pipe[1].protected) &&
+             (reloc_pipe[0].state & COPT_REL_BRANCH_MASK)) {
+      /*
+        The 'bra' is a relative jump, no need to Pagesel.
+
+        reloc_pipe[1] pagesel current_or_other_page  <----- UNNECESSARY if not PROTECTED
+        reloc_pipe[0] bra     label_on_current_or_other_page
+      */
+      gp_warning("Strange relocation = %s (%u) with = %s (%u) in section \"%s\" at symbol \"%s\".",
+                 gp_coffgen_reloc_type_to_str(reloc_pipe[1].relocation->type), reloc_pipe[1].relocation->type,
+                 gp_coffgen_reloc_type_to_str(reloc_pipe[0].relocation->type), reloc_pipe[0].relocation->type,
+                 Section->name, reloc_pipe[0].relocation->symbol->name);
+      _destroy_insn_and_update_addr(Class, First_section, Section, 1);
+    }
+  } /* if (saturation >= 2) */
 
   if (saturation >= 3) {
     /* The saturation of State Pipe at least 3/4. */
@@ -787,7 +843,7 @@ _pagesel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_t
         reloc_pipe[1] pagesel other_page  <--------- UNNECESSARY if not PROTECTED
         reloc_pipe[0] call    function_on_other_page 
       */
-      _destroy_pagesel_and_update(Class, First_section, Section, Label_array, Num_labels, 1);
+      _destroy_insn_and_update_addr(Class, First_section, Section, 1);
     }
     else if ((reloc_pipe[2].state == COPT_CALL_CURR_PAGE) &&
              (reloc_pipe[1].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[1].protected) &&
@@ -797,7 +853,7 @@ _pagesel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_t
         reloc_pipe[1] pagesel current_page  <--------- UNNECESSARY if not PROTECTED
         reloc_pipe[0] pagesel current_page
       */
-      _destroy_pagesel_and_update(Class, First_section, Section, Label_array, Num_labels, 1);
+      _destroy_insn_and_update_addr(Class, First_section, Section, 1);
     }
     else if ((reloc_pipe[2].state == COPT_CALL_CURR_PAGE) &&
              (reloc_pipe[1].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[1].protected) &&
@@ -807,56 +863,37 @@ _pagesel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_t
         reloc_pipe[1] pagesel current_page  <--------- UNNECESSARY if not PROTECTED
         reloc_pipe[0] call    function_on_current_page 
       */
-      _destroy_pagesel_and_update(Class, First_section, Section, Label_array, Num_labels, 1);
+      _destroy_insn_and_update_addr(Class, First_section, Section, 1);
     }
   } /* if (saturation >= 3) */
 
-  if (saturation >= 2) {
-    /* The saturation of State Pipe at least 1/2. */
-    if ((reloc_pipe[1].state == COPT_CALL_CURR_PAGE) &&
-        (reloc_pipe[0].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[0].protected)) {
+  if (saturation == 4) {
+    /* The State Pipe is full. */
+    if ((reloc_pipe[3].state == COPT_CALL_OTHER_PAGE) &&
+        (reloc_pipe[2].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[2].protected) &&
+        (reloc_pipe[1].state == COPT_PAGESEL_CURR_PAGE) &&
+        (reloc_pipe[0].state == COPT_CALL_CURR_PAGE)) {
       /*
-        reloc_pipe[1] call    function_on_current_page 
-        reloc_pipe[0] pagesel current_page  <--------- UNNECESSARY if not PROTECTED
+        reloc_pipe[3] call    function_on_other_page 
+        reloc_pipe[2] pagesel current_page  <------- UNNECESSARY if not PROTECTED
+        reloc_pipe[1] pagesel current_page
+        reloc_pipe[0] call    function_on_current_page 
       */
-      _destroy_pagesel_and_update(Class, First_section, Section, Label_array, Num_labels, 0);
+      _destroy_insn_and_update_addr(Class, First_section, Section, 2);
     }
-    else if ((reloc_pipe[1].state == COPT_CALL_OTHER_PAGE) &&
-             (reloc_pipe[0].state == COPT_PAGESEL_CURR_PAGE)) {
+    else if ((reloc_pipe[3].state == COPT_CALL_OTHER_PAGE) &&
+             (reloc_pipe[2].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[2].protected) &&
+             (reloc_pipe[1].state == COPT_PAGESEL_OTHER_PAGE) &&
+             (reloc_pipe[0].state == COPT_CALL_OTHER_PAGE)) {
       /*
-        reloc_pipe[1] call    function_on_other_page 
-        reloc_pipe[0] pagesel current_page  <------- set PROTECTED
+        reloc_pipe[3] call    function_on_other_page 
+        reloc_pipe[2] pagesel current_page  <------- UNNECESSARY if not PROTECTED
+        reloc_pipe[1] pagesel other_page
+        reloc_pipe[0] call    function_on_other_page 
       */
-      reloc_pipe[0].protected = true;
+      _destroy_insn_and_update_addr(Class, First_section, Section, 2);
     }
-    else if ((reloc_pipe[1].state == COPT_PAGESEL_CURR_PAGE) && (!reloc_pipe[1].protected) &&
-             (reloc_pipe[0].state & COPT_ABS_BRANCH_CURR_PAGE_MASK)) {
-      /*
-        reloc_pipe[1] pagesel current_page  <------ UNNECESSARY if not PROTECTED
-        reloc_pipe[0] goto    label_on_current_page 
-
-          OR
-
-        reloc_pipe[1] pagesel current_page  <--------- UNNECESSARY if not PROTECTED
-        reloc_pipe[0] call    function_on_current_page
-      */
-      _destroy_pagesel_and_update(Class, First_section, Section, Label_array, Num_labels, 1);
-    }
-    else if ((reloc_pipe[1].state & COPT_PAGESEL_MASK) && (!reloc_pipe[1].protected) &&
-             (reloc_pipe[0].state & COPT_REL_BRANCH_MASK)) {
-      /*
-        The 'bra' is a relative jump, no need to Pagesel.
-
-        reloc_pipe[1] pagesel current_or_other_page  <----- UNNECESSARY if not PROTECTED
-        reloc_pipe[0] bra     label_on_current_or_other_page
-      */
-      gp_warning("Strange relocation = %s (%u) with = %s (%u) in section \"%s\" at symbol \"%s\".",
-                 gp_coffgen_reloc_type_to_str(reloc_pipe[1].relocation->type), reloc_pipe[1].relocation->type,
-                 gp_coffgen_reloc_type_to_str(reloc_pipe[0].relocation->type), reloc_pipe[0].relocation->type,
-                 Section->name, reloc_pipe[0].relocation->symbol->name);
-      _destroy_pagesel_and_update(Class, First_section, Section, Label_array, Num_labels, 1);
-    }
-  } /* if (saturation >= 2) */
+  } /* if (saturation == 4) */
 
   return true;
 }
@@ -868,15 +905,13 @@ _pagesel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_t
 void
 gp_coffopt_remove_unnecessary_pagesel(gp_object_type *Object)
 {
-  proc_class_t      class;
-  gp_section_type  *first_section;
-  gp_symbol_type  **label_array;
-  unsigned int      num_labels;
-  gp_reloc_type   **relocation_array;
-  unsigned int      num_relocations;
-  gp_section_type  *section;
-  unsigned int      num_pages;
-  unsigned int      i;
+  proc_class_t     class;
+  gp_section_type *first_section;
+  gp_section_type *section;
+  gp_reloc_type   *reloc_curr;
+  gp_reloc_type   *reloc_next;
+  unsigned int     num_pages;
+  unsigned int     i;
 
   class = Object->class;
 
@@ -888,6 +923,11 @@ gp_coffopt_remove_unnecessary_pagesel(gp_object_type *Object)
     return;
   }
 
+  section_array  = NULL;
+  num_sections   = 0;
+  register_array = NULL;
+  num_registers  = 0;
+
   gp_debug("Removing unnecessary pagesel instructions.");
   _reloc_pipe_clear();
   num_pages     = gp_processor_num_pages(Object->processor);
@@ -895,31 +935,315 @@ gp_coffopt_remove_unnecessary_pagesel(gp_object_type *Object)
 
   section = first_section;
   while (section != NULL) {
+    _reloc_pipe_clear();
+
     if (gp_has_data(section)) {
-      num_labels  = 0;
-      label_array = gp_symbol_make_label_array(section, class->org_to_byte_shift, &num_labels);
+      num_sections  = 0;
+      section_array = gp_coffgen_make_section_array(Object, &num_sections,
+                              gp_processor_page_addr(class, gp_processor_byte_to_org(class, section->address)),
+                              STYP_ROM_AREA);
+      _label_arrays_make(class);
 
-      if (label_array != NULL) {
-        relocation_array = _reloc_make_array(section, &num_relocations);
-
-        if (relocation_array != NULL) {
+      if (section->label_array != NULL) {
+        reloc_curr = section->relocation_list;
+        if (reloc_curr != NULL) {
           i = 0;
           do {
-            _reloc_analyze(class, section, relocation_array[i], label_array, num_labels, num_pages);
-            ++i;
-
-            _pagesel_remove(class, first_section, section, label_array, &num_labels, (i >= num_relocations));
-
+            reloc_next = reloc_curr->next;
+            _pagesel_reloc_analyze(class, section, reloc_curr, num_pages);
+            reloc_curr = reloc_next;
+            _pagesel_remove(class, first_section, section, (reloc_curr == NULL));
             _reloc_pipe_shift(true);
-          } while (i < num_relocations);
-
-          free(relocation_array);
+            ++i;
+          } while (reloc_curr != NULL);
         }
+      }
 
-        free(label_array);
+      _label_arrays_free();
+
+      if (section_array != NULL) {
+        free(section_array);
       }
     }
 
     section = section->next;
   } /* while (section != NULL) */
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Analyze and add a new relocation state unto the relocation pipe. */
+
+static gp_boolean
+_banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section_type *Section,
+                       gp_reloc_type *Relocation, unsigned int Num_pages)
+{
+  const gp_symbol_type *symbol;
+  uint16_t              data;
+  uint32_t              reloc_byte_addr;
+  uint32_t              reloc_insn_addr;
+  uint32_t              reloc_byte_length;
+  uint32_t              reloc_page;
+  uint32_t              value;
+  uint32_t              ram_bank;
+  gp_boolean            need_clear;
+  gp_boolean            there_is_banksel;
+
+  symbol          = Relocation->symbol;
+  reloc_byte_addr = Section->address + Relocation->address;
+  reloc_insn_addr = gp_processor_byte_to_org(Class, reloc_byte_addr);
+  value           = Relocation->offset + (uint32_t)symbol->value;
+
+  reloc_page      = gp_processor_page_addr(Class, reloc_insn_addr);
+
+  if (Class->i_memory_get(Section->data, reloc_byte_addr, &data, NULL, NULL) != W_USED_ALL) {
+    gp_error("No instruction at 0x%0*X in program memory!", Class->addr_digits, reloc_byte_addr);
+    assert(0);
+  }
+
+  reloc_byte_length = 0;
+  ram_bank          = 0;
+  need_clear        = false;
+  there_is_banksel  = false;
+
+  switch (Relocation->type) {
+  case RELOCT_ALL:
+    break;
+
+  case RELOCT_CALL:
+  case RELOCT_GOTO:
+    need_clear = true;
+    break;
+
+  case RELOCT_LOW:
+  case RELOCT_HIGH:
+  case RELOCT_UPPER:
+  case RELOCT_P:
+    break;
+
+  case RELOCT_BANKSEL:
+    ram_bank          = gp_processor_bank_addr(Processor, value);
+    reloc_byte_length = Class->banksel_byte_length(Num_pages);
+    there_is_banksel  = true;
+    break;
+
+  case RELOCT_IBANKSEL:
+    break;
+
+  case RELOCT_F:
+  case RELOCT_TRIS:
+  case RELOCT_TRIS_3BIT:
+  case RELOCT_MOVLR:
+    break;
+
+  case RELOCT_MOVLB:
+    ram_bank          = gp_processor_bank_addr(Processor, value);
+    reloc_byte_length = 2;
+    there_is_banksel  = true;
+    break;
+
+  case RELOCT_GOTO2:
+    need_clear = true;
+    break;
+
+  case RELOCT_FF1:
+  case RELOCT_FF2:
+  case RELOCT_LFSR1:
+  case RELOCT_LFSR2:
+    break;
+
+  case RELOCT_BRA:
+  case RELOCT_CONDBRA:
+    need_clear = true;
+    break;
+
+  case RELOCT_ACCESS:
+  case RELOCT_PAGESEL_WREG:
+  case RELOCT_PAGESEL_BITS:
+  case RELOCT_PAGESEL_MOVLP:
+    break;
+
+  /* unimplemented relocations */
+  case RELOCT_PAGESEL:
+  case RELOCT_SCNSZ_LOW:
+  case RELOCT_SCNSZ_HIGH:
+  case RELOCT_SCNSZ_UPPER:
+  case RELOCT_SCNEND_LOW:
+  case RELOCT_SCNEND_HIGH:
+  case RELOCT_SCNEND_UPPER:
+  case RELOCT_SCNEND_LFSR1:
+  case RELOCT_SCNEND_LFSR2:
+  default: {
+      if (symbol->name != NULL) {
+        gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",
+                 gp_coffgen_reloc_type_to_str(Relocation->type),
+                 Relocation->type, Section->name, symbol->name);
+      }
+      else {
+        gp_error("Unimplemented relocation = %s (%u) in section \"%s\".",
+                 gp_coffgen_reloc_type_to_str(Relocation->type),
+                 Relocation->type, Section->name);
+      }
+      assert(0);
+    }
+  }
+
+  if (need_clear) {
+    _reloc_pipe_clear();
+    return false;
+  }
+
+  if (there_is_banksel) {
+    _reloc_pipe_shift(true);
+
+    reloc_pipe[0].relocation        = Relocation;
+    reloc_pipe[0].label             = gp_symbol_find_by_value(Section->label_array, Section->num_labels, reloc_insn_addr);
+    reloc_pipe[0].instruction       = (Class->find_insn != NULL) ? Class->find_insn(Class, data) : NULL;
+    reloc_pipe[0].state             = COPT_BANKSEL;
+    reloc_pipe[0].protected         = ((reloc_pipe[0].label != NULL) && (reloc_pipe[0].label->num_reloc_link > 1)) ? true : false;
+    reloc_pipe[0].reloc_page        = reloc_page;
+    reloc_pipe[0].reloc_byte_addr   = reloc_byte_addr;
+    reloc_pipe[0].reloc_insn_addr   = reloc_insn_addr;
+    reloc_pipe[0].reloc_byte_length = reloc_byte_length;
+    reloc_pipe[0].reloc_insn_length = gp_processor_byte_to_org(Class, reloc_byte_length);
+    reloc_pipe[0].ram_bank          = ram_bank;
+
+    if (!first_banksel) {
+      /* This is the first Banksel directive of section. Absolutely must protect it. */
+      reloc_pipe[0].protected = true;
+      first_banksel           = true;
+    }
+    return true;
+  }
+
+  return false;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* If possible according to the rules, then removes a Pagesel directive. */
+
+static gp_boolean
+_banksel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_type *Section)
+{
+  unsigned int saturation;
+
+  saturation  = (reloc_pipe[0].relocation != NULL);
+  saturation += (reloc_pipe[1].relocation != NULL);
+  saturation += (reloc_pipe[2].relocation != NULL);
+  saturation += (reloc_pipe[3].relocation != NULL);
+
+  if (saturation == 0) {
+    /* The State Pipe is empty. */
+    return false;
+  }
+
+  if (saturation >= 2) {
+    if ((reloc_pipe[1].state == COPT_BANKSEL) &&
+        (reloc_pipe[0].state == COPT_BANKSEL) &&
+        (reloc_pipe[1].ram_bank == reloc_pipe[0].ram_bank)) {
+      if (!reloc_pipe[1].protected) {
+        /*
+          reloc_pipe[1] banksel Z <--------- UNNECESSARY if not PROTECTED
+          reloc_pipe[0] banksel Z
+        */
+        _destroy_insn_and_update_addr(Class, First_section, Section, 1);
+      }
+      else if (!reloc_pipe[0].protected) {
+        /*
+          reloc_pipe[1] banksel Z
+          reloc_pipe[0] banksel Z <--------- UNNECESSARY if not PROTECTED
+        */
+        _destroy_insn_and_update_addr(Class, First_section, Section, 0);
+      }
+    }
+  } /* if (saturation >= 2) */
+
+  return true;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Deletes the unnecessary Banksel directives from an object. */
+
+void
+gp_coffopt_remove_unnecessary_banksel(gp_object_type *Object)
+{
+  proc_class_t     class;
+  pic_processor_t  processor;
+  gp_section_type *first_section;
+  gp_section_type *section;
+  gp_reloc_type   *reloc_curr;
+  gp_reloc_type   *reloc_next;
+  unsigned int     num_banks;
+  unsigned int     i;
+  gp_boolean       may_remove;
+
+  class     = Object->class;
+  processor = Object->processor;
+
+  if ((class != PROC_CLASS_PIC12)   && (class != PROC_CLASS_PIC12E) &&
+      (class != PROC_CLASS_PIC12I)  && (class != PROC_CLASS_SX)     &&
+      (class != PROC_CLASS_PIC14)   && (class != PROC_CLASS_PIC14E) &&
+      (class != PROC_CLASS_PIC14EX) && (class != PROC_CLASS_PIC16)  &&
+      (class != PROC_CLASS_PIC16E)) {
+    return;
+  }
+
+  section_array  = NULL;
+  num_sections   = 0;
+  register_array = NULL;
+  num_registers  = 0;
+
+  gp_debug("Removing unnecessary banksel instructions.");
+  num_registers  = 0;
+  register_array = gp_symbol_make_register_array(Object, &num_registers);
+
+  if (register_array == NULL) {
+    return;
+  }
+
+  _reloc_pipe_clear();
+  num_banks     = gp_processor_num_banks(Object->processor);
+  first_section = Object->section_list;
+
+  section = first_section;
+  while (section != NULL) {
+    first_banksel = false;
+    _reloc_pipe_clear();
+
+    if (gp_has_data(section)) {
+      num_sections  = 0;
+      section_array = gp_coffgen_make_section_array(Object, &num_sections,
+                              gp_processor_page_addr(class, gp_processor_byte_to_org(class, section->address)),
+                              STYP_ROM_AREA);
+      _label_arrays_make(class);
+      reloc_curr = section->relocation_list;
+      if (reloc_curr != NULL) {
+        i = 0;
+        while (reloc_curr != NULL) {
+          reloc_next = reloc_curr->next;
+          may_remove = _banksel_reloc_analyze(class, processor, section, reloc_curr, num_banks);
+
+          if (may_remove) {
+            _banksel_remove(class, first_section, section);
+          }
+
+          reloc_curr = reloc_next;
+          ++i;
+        }
+
+      }
+
+      _label_arrays_free();
+
+      if (section_array != NULL) {
+        free(section_array);
+      }
+    } /* if (gp_has_data(section)) */
+
+    section = section->next;
+  } /* while (section != NULL) */
+
+  free(register_array);
 }

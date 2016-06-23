@@ -195,7 +195,7 @@ gpasmVal set_label(const char *label, pnode_t *parms)
 
   if (asm_enabled()) {
     if ((state.mode == MODE_RELOCATABLE) && !IN_MACRO_WHILE_DEFINITION &&
-        !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
+        !(SECTION_FLAGS & (STYP_TEXT | STYP_RAM_AREA | STYP_BPACK)))
       gperror_verror(GPE_LABEL_IN_SECTION, NULL);
 
     value = do_or_append_insn("set", parms);
@@ -542,7 +542,7 @@ line:
               case LTY_DATA:
               case LTY_RES:
                 if ((state.mode == MODE_RELOCATABLE) && !IN_MACRO_WHILE_DEFINITION &&
-                    !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS))) {
+                    !(SECTION_FLAGS & (STYP_TEXT | STYP_RAM_AREA | STYP_BPACK))) {
                   gperror_verror(GPE_LABEL_IN_SECTION, NULL);
                 }
 

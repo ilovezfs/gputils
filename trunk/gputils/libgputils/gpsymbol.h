@@ -31,6 +31,8 @@ extern const gp_symbol_type *gp_symbol_find(const gp_object_type *Object, const 
 extern gp_symbol_type **gp_symbol_make_label_array(gp_section_type *Section, unsigned int Org_to_byte_shift,
                                                    unsigned int *Num_labels);
 
+extern gp_symbol_type **gp_symbol_make_register_array(gp_object_type *Object, unsigned int *Num_registers);
+
 extern gp_symbol_type *gp_symbol_find_by_value(gp_symbol_type **Array, unsigned int Num_symbols, gp_symvalue_t Value);
 
 extern gp_boolean gp_symbol_delete_by_value(gp_symbol_type **Array, unsigned int *Num_symbols, gp_symvalue_t Value);
