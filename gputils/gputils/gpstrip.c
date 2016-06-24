@@ -82,7 +82,7 @@ _show_usage(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_conditional_remove(gp_symbol_type *symbol)
+_conditional_remove(gp_symbol_t *symbol)
 {
   const symbol_t *sym;
 
@@ -100,9 +100,9 @@ _conditional_remove(gp_symbol_type *symbol)
 static void
 _remove_sections(void)
 {
-  size_t           i;
-  const symbol_t  *sym;
-  gp_section_type *section;
+  size_t          i;
+  const symbol_t *sym;
+  gp_section_t   *section;
 
   /* FIXME: Check for relocations from other sections. Error out if they exist. */
 
@@ -130,7 +130,7 @@ _remove_symbols(void)
 {
   size_t          i;
   const symbol_t *sym;
-  gp_symbol_type *symbol;
+  gp_symbol_t    *symbol;
 
   for (i = 0; i < sym_get_symbol_count(state.symbol_remove); ++i) {
     sym    = sym_get_symbol_with_index(state.symbol_remove, i);
@@ -148,7 +148,7 @@ _remove_symbols(void)
 static void
 _strip_all(void)
 {
-  gp_section_type *section;
+  gp_section_t *section;
 
   if (state.object->flags & F_EXEC) {
     section = state.object->section_list;
@@ -180,9 +180,9 @@ _strip_all(void)
 static void
 _strip_debug(void)
 {
-  gp_section_type *section;
-  gp_symbol_type  *list;
-  gp_symbol_type  *symbol;
+  gp_section_t *section;
+  gp_symbol_t  *list;
+  gp_symbol_t  *symbol;
 
   section = state.object->section_list;
   while (section != NULL) {
@@ -210,8 +210,8 @@ _strip_debug(void)
 static void
 _strip_unneeded(void)
 {
-  gp_symbol_type *list;
-  gp_symbol_type *symbol;
+  gp_symbol_t *list;
+  gp_symbol_t *symbol;
 
   list = state.object->symbol_list;
   while (list != NULL) {
@@ -230,8 +230,8 @@ _strip_unneeded(void)
 static void
 _discard_all(void)
 {
-  gp_symbol_type *list;
-  gp_symbol_type *symbol;
+  gp_symbol_t *list;
+  gp_symbol_t *symbol;
 
   list = state.object->symbol_list;
   while (list != NULL) {

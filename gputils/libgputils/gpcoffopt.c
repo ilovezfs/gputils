@@ -62,30 +62,30 @@ Boston, MA 02111-1307, USA.  */
 #define RELOC_PIPE_LENGTH                      4
 
 typedef struct reloc_properties {
-  gp_reloc_type        *relocation;
-  const gp_symbol_type *label;              /* If exists so label which is linked here to. */
-  const insn_t         *instruction;        /* The actual instruction. */
-  unsigned int          state;              /* For COPT_... constants. */
-  gp_boolean            protected;
+  gp_reloc_t        *relocation;
+  const gp_symbol_t *label;             /* If exists so label which is linked here to. */
+  const insn_t      *instruction;       /* The actual instruction. */
+  unsigned int       state;             /* For COPT_... constants. */
+  gp_boolean         protected;
 
-  uint32_t              target_page;
-  uint32_t              reloc_page;
+  uint32_t           target_page;
+  uint32_t           reloc_page;
 
-  uint32_t              reloc_byte_addr;
-  uint32_t              reloc_insn_addr;
+  uint32_t           reloc_byte_addr;
+  uint32_t           reloc_insn_addr;
 
-  uint32_t              reloc_byte_length;
-  uint32_t              reloc_insn_length;
+  uint32_t           reloc_byte_length;
+  uint32_t           reloc_insn_length;
 
-  uint32_t              ram_bank;
+  uint32_t           ram_bank;
 } reloc_properties_t;
 
 static reloc_properties_t   reloc_pipe[RELOC_PIPE_LENGTH];
 
-static gp_section_type    **section_array;
+static gp_section_t       **section_array;
 static unsigned int         num_sections;
 
-static gp_symbol_type     **register_array;
+static gp_symbol_t        **register_array;
 static unsigned int         num_registers;
 
 static gp_boolean           first_banksel = false;
@@ -95,9 +95,9 @@ static gp_boolean           first_banksel = false;
 /* Remove any weak symbols in the object. */
 
 void
-gp_coffopt_remove_weak(gp_object_type *Object)
+gp_coffopt_remove_weak(gp_object_t *Object)
 {
-  gp_symbol_type *symbol;
+  gp_symbol_t *symbol;
 
   gp_debug("Removing weak symbols from \"%s\".", Object->filename);
 
@@ -106,7 +106,8 @@ gp_coffopt_remove_weak(gp_object_type *Object)
   while (symbol != NULL) {
     if (gp_coffgen_is_external_symbol(symbol) && (!gp_coffgen_symbol_has_reloc(symbol))) {
       gp_debug("  removed weak symbol \"%s\"", symbol->name);
-      gp_coffgen_put_reserve_symbol(Object, symbol);
+      /* It is not allowed to deleted because the gplink/cod.c will need this. */
+      gp_coffgen_move_reserve_symbol(Object, symbol);
     }
 
     symbol = symbol->next;
@@ -118,14 +119,14 @@ gp_coffopt_remove_weak(gp_object_type *Object)
 /* Remove any relocatable section that doesn't have a symbol pointed to by a relocation. */
 
 void
-gp_coffopt_remove_dead_sections(gp_object_type *Object, int Pass, gp_boolean Enable_cinit_warns)
+gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass, gp_boolean Enable_cinit_warns)
 {
-  gp_section_type *section;
-  gp_section_type *section_next;
-  gp_symbol_type  *symbol;
-  gp_reloc_type   *relocation;
-  gp_section_type *rel_sect;
-  gp_boolean       section_removed;
+  gp_section_t *section;
+  gp_section_t *section_next;
+  gp_symbol_t  *symbol;
+  gp_reloc_t   *relocation;
+  gp_section_t *rel_sect;
+  gp_boolean    section_removed;
 
   do {
     section_removed = false;
@@ -165,8 +166,10 @@ gp_coffopt_remove_dead_sections(gp_object_type *Object, int Pass, gp_boolean Ena
       /* FIXME: Maybe don't remove if it is in protected memory. */
       if ((!section->is_used) && FlagsIsAllClr(section->flags, STYP_ABS | STYP_DATA)) {
         gp_debug("Removing section \"%s\".", section->name);
-        gp_coffgen_put_reserve_section_symbols(Object, section);
-        gp_coffgen_put_reserve_section(Object, section);
+        /* It is not allowed to deleted because the gplink/cod.c will need these. */
+        gp_coffgen_move_reserve_section_symbols(Object, section);
+        /* It is not allowed to deleted because the gplink/cod.c will need this. */
+        gp_coffgen_move_reserve_section(Object, section);
         section_removed = true;
       }
       section = section_next;
@@ -270,12 +273,12 @@ _page_addr_from_byte_addr(proc_class_t Class, uint32_t Byte_addr)
 /* Decrease relocation addresses in a given list. */
 
 static void
-_reloc_decrease_addresses(proc_class_t Class, gp_reloc_type *Relocation, uint32_t Relocation_page,
+_reloc_decrease_addresses(proc_class_t Class, gp_reloc_t *Relocation, uint32_t Relocation_page,
                           uint32_t Insn_offset, uint32_t Byte_offset)
 {
-  gp_reloc_type         *reloc;
-  gp_symbol_type        *symbol;
-  const gp_section_type *section;
+  gp_reloc_t         *reloc;
+  gp_symbol_t        *symbol;
+  const gp_section_t *section;
 
   if (Relocation == NULL) {
     return;
@@ -308,8 +311,8 @@ _reloc_decrease_addresses(proc_class_t Class, gp_reloc_type *Relocation, uint32_
 static void
 _label_arrays_make(proc_class_t Class)
 {
-  gp_section_type *section;
-  unsigned int     i;
+  gp_section_t *section;
+  unsigned int  i;
 
   if ((section_array == NULL) || (num_sections == 0)) {
     return;
@@ -328,8 +331,8 @@ _label_arrays_make(proc_class_t Class)
 static void
 _label_arrays_free(void)
 {
-  gp_section_type *section;
-  unsigned int     i;
+  gp_section_t *section;
+  unsigned int  i;
 
   if ((section_array == NULL) || (num_sections == 0)) {
     return;
@@ -354,10 +357,10 @@ _label_arrays_free(void)
 static void
 _label_clear_opt_flag(void)
 {
-  gp_section_type *section;
-  gp_symbol_type  *label;
-  unsigned int     i;
-  unsigned int     j;
+  gp_section_t *section;
+  gp_symbol_t  *label;
+  unsigned int  i;
+  unsigned int  j;
 
   if ((section_array == NULL) || (num_sections == 0)) {
     return;
@@ -378,11 +381,11 @@ _label_clear_opt_flag(void)
 /* Decrease label addresses in a given list. */
 
 static void
-_label_array_decrease_addresses(proc_class_t Class, gp_section_type *Section, uint32_t Start_address,
+_label_array_decrease_addresses(proc_class_t Class, gp_section_t *Section, uint32_t Start_address,
                                 uint32_t Insn_offset)
 {
-  unsigned int    i;
-  gp_symbol_type *label;
+  unsigned int  i;
+  gp_symbol_t  *label;
 
   for (i = 0; i < Section->num_labels; ++i) {
     label = Section->label_array[i];
@@ -402,15 +405,15 @@ _label_array_decrease_addresses(proc_class_t Class, gp_section_type *Section, ui
 /* Decrease section addresses in a given list. */
 
 static void
-_sections_decrease_start_address(proc_class_t Class, const gp_section_type *Section, uint32_t Insn_offset,
+_sections_decrease_start_address(proc_class_t Class, const gp_section_t *Section, uint32_t Insn_offset,
                                  uint32_t Byte_offset)
 {
-  gp_section_type *section;
-  gp_symbol_type  *symbol;
-  unsigned int     i;
-  uint32_t         byte_address;
-  uint32_t         insn_address;
-  gp_symvalue_t    value_prev;
+  gp_section_t  *section;
+  gp_symbol_t   *symbol;
+  unsigned int   i;
+  uint32_t       byte_address;
+  uint32_t       insn_address;
+  gp_symvalue_t  value_prev;
 
   if ((section_array == NULL) || (num_sections < 1)) {
     return;
@@ -442,11 +445,11 @@ _sections_decrease_start_address(proc_class_t Class, const gp_section_type *Sect
 /* Decrease line number addresses in a given list. */
 
 static void
-_linenum_decrease_addresses(proc_class_t Class, gp_section_type *First_section,
+_linenum_decrease_addresses(proc_class_t Class, gp_section_t *First_section,
                             uint32_t Relocation_page, uint32_t Start_address, uint32_t Byte_offset)
 {
-  gp_section_type *section;
-  gp_linenum_type *linenum;
+  gp_section_t *section;
+  gp_linenum_t *linenum;
 
   section = First_section;
   while (section != NULL) {
@@ -468,7 +471,7 @@ _linenum_decrease_addresses(proc_class_t Class, gp_section_type *First_section,
 /* Destroys an instruction from data memory of given section. */
 
 static void
-_destroy_insn(proc_class_t Class, gp_section_type *Section, uint32_t Byte_address, uint32_t Byte_length,
+_destroy_insn(proc_class_t Class, gp_section_t *Section, uint32_t Byte_address, uint32_t Byte_length,
               const char *Symbol_name)
 {
   b_memory_delete_area(Section->data, Byte_address, Byte_length);
@@ -480,7 +483,7 @@ _destroy_insn(proc_class_t Class, gp_section_type *Section, uint32_t Byte_addres
 /* Destroys a Pagesel directive and updates all related addresses. */
 
 static void
-_destroy_insn_and_update_addr(proc_class_t Class, gp_section_type *First_section, gp_section_type *Section,
+_destroy_insn_and_update_addr(proc_class_t Class, gp_section_t *First_section, gp_section_t *Section,
                               unsigned int Insn_index)
 {
   unsigned int  i;
@@ -532,7 +535,7 @@ _destroy_insn_and_update_addr(proc_class_t Class, gp_section_type *First_section
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_insn_isReturn(proc_class_t Class, const gp_section_type *Section, unsigned int Byte_addr)
+_insn_isReturn(proc_class_t Class, const gp_section_t *Section, unsigned int Byte_addr)
 {
   uint16_t      data;
   const insn_t *instruction;
@@ -569,17 +572,17 @@ _insn_isReturn(proc_class_t Class, const gp_section_type *Section, unsigned int 
 /* Analyze and add a new relocation state unto the relocation pipe. */
 
 static void
-_pagesel_reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_type *Relocation,
+_pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Relocation,
                        unsigned int Num_pages)
 {
-  const gp_symbol_type *symbol;
-  uint16_t              data;
-  uint32_t              reloc_byte_addr;
-  uint32_t              reloc_insn_addr;
-  uint32_t              reloc_byte_length;
-  uint32_t              value;
-  uint32_t              reloc_page;
-  uint32_t              target_page;
+  const gp_symbol_t *symbol;
+  uint16_t           data;
+  uint32_t           reloc_byte_addr;
+  uint32_t           reloc_insn_addr;
+  uint32_t           reloc_byte_length;
+  uint32_t           value;
+  uint32_t           reloc_page;
+  uint32_t           target_page;
 
   symbol          = Relocation->symbol;
   reloc_byte_addr = Section->address   + Relocation->address;
@@ -740,7 +743,7 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_type *Section, gp_reloc_ty
 /* If possible according to the rules, then removes a Pagesel directive. */
 
 static gp_boolean
-_pagesel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_type *Section,
+_pagesel_remove(proc_class_t Class, gp_section_t *First_section, gp_section_t *Section,
                 gp_boolean Completion)
 {
   unsigned int saturation;
@@ -903,15 +906,15 @@ _pagesel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_t
 /* Deletes the unnecessary Pagesel directives from an object. */
 
 void
-gp_coffopt_remove_unnecessary_pagesel(gp_object_type *Object)
+gp_coffopt_remove_unnecessary_pagesel(gp_object_t *Object)
 {
-  proc_class_t     class;
-  gp_section_type *first_section;
-  gp_section_type *section;
-  gp_reloc_type   *reloc_curr;
-  gp_reloc_type   *reloc_next;
-  unsigned int     num_pages;
-  unsigned int     i;
+  proc_class_t  class;
+  gp_section_t *first_section;
+  gp_section_t *section;
+  gp_reloc_t   *reloc_curr;
+  gp_reloc_t   *reloc_next;
+  unsigned int  num_pages;
+  unsigned int  i;
 
   class = Object->class;
 
@@ -975,19 +978,19 @@ gp_coffopt_remove_unnecessary_pagesel(gp_object_type *Object)
 /* Analyze and add a new relocation state unto the relocation pipe. */
 
 static gp_boolean
-_banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section_type *Section,
-                       gp_reloc_type *Relocation, unsigned int Num_pages)
+_banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section_t *Section,
+                       gp_reloc_t *Relocation, unsigned int Num_pages)
 {
-  const gp_symbol_type *symbol;
-  uint16_t              data;
-  uint32_t              reloc_byte_addr;
-  uint32_t              reloc_insn_addr;
-  uint32_t              reloc_byte_length;
-  uint32_t              reloc_page;
-  uint32_t              value;
-  uint32_t              ram_bank;
-  gp_boolean            need_clear;
-  gp_boolean            there_is_banksel;
+  const gp_symbol_t *symbol;
+  uint16_t           data;
+  uint32_t           reloc_byte_addr;
+  uint32_t           reloc_insn_addr;
+  uint32_t           reloc_byte_length;
+  uint32_t           reloc_page;
+  uint32_t           value;
+  uint32_t           ram_bank;
+  gp_boolean         need_clear;
+  gp_boolean         there_is_banksel;
 
   symbol          = Relocation->symbol;
   reloc_byte_addr = Section->address + Relocation->address;
@@ -1124,7 +1127,7 @@ _banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section
 /* If possible according to the rules, then removes a Pagesel directive. */
 
 static gp_boolean
-_banksel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_type *Section)
+_banksel_remove(proc_class_t Class, gp_section_t *First_section, gp_section_t *Section)
 {
   unsigned int saturation;
 
@@ -1167,14 +1170,14 @@ _banksel_remove(proc_class_t Class, gp_section_type *First_section, gp_section_t
 /* Deletes the unnecessary Banksel directives from an object. */
 
 void
-gp_coffopt_remove_unnecessary_banksel(gp_object_type *Object)
+gp_coffopt_remove_unnecessary_banksel(gp_object_t *Object)
 {
   proc_class_t     class;
   pic_processor_t  processor;
-  gp_section_type *first_section;
-  gp_section_type *section;
-  gp_reloc_type   *reloc_curr;
-  gp_reloc_type   *reloc_next;
+  gp_section_t    *first_section;
+  gp_section_t    *section;
+  gp_reloc_t      *reloc_curr;
+  gp_reloc_t      *reloc_next;
   unsigned int     num_banks;
   unsigned int     i;
   gp_boolean       may_remove;

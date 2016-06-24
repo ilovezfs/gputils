@@ -100,7 +100,7 @@ typedef struct conf_mem_block {
   int                    addr;
   MemBlock_t            *m;
   gp_boolean             new_config;
-  gp_symbol_type        *file_symbol;
+  gp_symbol_t           *file_symbol;
   unsigned int           line_number;
   struct conf_mem_block *next;
 } conf_mem_block_t;
@@ -265,18 +265,18 @@ extern struct gpasm_state {
   } preproc;
 
   struct {                              /* Object file state: */
-    gp_object_type  *object;            /*   Object file. */
-    gp_section_type *section;           /*   Current section. */
-    unsigned int     section_num;       /*   Current section number. */
-    gp_boolean       enabled;           /*   True if object file is enabled. */
-    char             new_sect_name[80]; /*   new section name */
-    unsigned int     new_sect_addr;     /*   new section adress */
-    unsigned int     new_sect_flags;    /*   new section flags */
-    unsigned int     symbol_num;        /*   Current symbol number. */
-    unsigned int     flags;             /*   Current section flags. */
-    gp_symbol_type  *debug_file;        /*   Debug information for high level langs. */
-    unsigned int     debug_line;
-    gp_boolean       newcoff;
+    gp_object_t  *object;               /*   Object file. */
+    gp_section_t *section;              /*   Current section. */
+    unsigned int  section_num;          /*   Current section number. */
+    gp_boolean    enabled;              /*   True if object file is enabled. */
+    char          new_sect_name[80];    /*   new section name */
+    unsigned int  new_sect_addr;        /*   new section adress */
+    unsigned int  new_sect_flags;       /*   new section flags */
+    unsigned int  symbol_num;           /*   Current symbol number. */
+    unsigned int  flags;                /*   Current section flags. */
+    gp_symbol_t  *debug_file;           /*   Debug information for high level langs. */
+    unsigned int  debug_line;
+    gp_boolean    newcoff;
   } obj;
 
   struct source_context *src;           /* Top of the stack of source files. */
@@ -384,7 +384,7 @@ typedef struct source_context {
   struct yy_buffer_state *yybuf;
   unsigned int            line_number;
   unsigned int            loop_number;      /* Loop number for while loops. */
-  gp_symbol_type         *file_symbol;
+  gp_symbol_t            *file_symbol;
   file_context_t         *fc;               /* Position in the file context stack. */
   struct amode           *astack;           /* Stack of amodes when a macro was called. */
   gp_boolean              last_char_is_nl;  /* If the last read character is a newline. */
@@ -439,13 +439,13 @@ typedef struct macro_body {
 } macro_body_t;
 
 typedef struct macro_head {
-  int             pass;                 /* Pass in which macro was defined: 1 or 2 */
-  pnode_t        *parms;
-  macro_body_t   *body;
-  gp_boolean      defined;              /* 1 macro has been defined so calls are valid */
-  char           *src_name;
-  unsigned int    line_number;
-  gp_symbol_type *file_symbol;
+  int           pass;                   /* Pass in which macro was defined: 1 or 2 */
+  pnode_t      *parms;
+  macro_body_t *body;
+  gp_boolean    defined;                /* 1 macro has been defined so calls are valid */
+  char         *src_name;
+  unsigned int  line_number;
+  gp_symbol_t  *file_symbol;
 } macro_head_t;
 
 typedef struct amode {

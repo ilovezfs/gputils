@@ -38,12 +38,12 @@ Boston, MA 02111-1307, USA.  */
 #define SECTION_UDATA   4
 
 struct syms_s {
-  gp_symbol_type *symbol;
-  gp_symbol_type *file;
+  gp_symbol_t *symbol;
+  gp_symbol_t *file;
 };
 
 struct file_stack {
-  gp_symbol_type    *symbol;
+  gp_symbol_t       *symbol;
   struct file_stack *previous;
 };
 
@@ -67,7 +67,7 @@ _map_line(const char *format, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_section_value(gp_section_type *section)
+_section_value(gp_section_t *section)
 {
   unsigned int value = 0;
 
@@ -95,10 +95,10 @@ _section_value(gp_section_type *section)
 static int
 _cmp_sections(const void *a, const void *b)
 {
-  gp_section_type *section_a = *((gp_section_type **)a);
-  gp_section_type *section_b = *((gp_section_type **)b);
-  unsigned int     value_a   = _section_value(section_a);
-  unsigned int     value_b   = _section_value(section_b);
+  gp_section_t *section_a = *((gp_section_t **)a);
+  gp_section_t *section_b = *((gp_section_t **)b);
+  unsigned int  value_a   = _section_value(section_a);
+  unsigned int  value_b   = _section_value(section_b);
 
   if (value_a < value_b) {
     return -1;
@@ -124,16 +124,16 @@ _cmp_sections(const void *a, const void *b)
 static void
 _write_sections(void)
 {
-  gp_section_type  *section = NULL;
-  gp_section_type **section_list = NULL;
-  char             *type;
-  char             *location;
-  unsigned int      i;
-  unsigned int      num_sections;
-  int               org_to_byte_shift;
+  gp_section_t  *section = NULL;
+  gp_section_t **section_list = NULL;
+  char          *type;
+  char          *location;
+  unsigned int   i;
+  unsigned int   num_sections;
+  int            org_to_byte_shift;
 
   num_sections = state.object->num_sections;
-  section_list = GP_Malloc(sizeof(gp_section_type *) * num_sections);
+  section_list = GP_Malloc(sizeof(gp_section_t *) * num_sections);
 
   section = state.object->section_list;
   for (i = 0; i < num_sections; i++) {
@@ -142,7 +142,7 @@ _write_sections(void)
     section         = section->next;
   }
 
-  qsort((void *)section_list, num_sections, sizeof(gp_section_type *), _cmp_sections);
+  qsort((void *)section_list, num_sections, sizeof(gp_section_t *), _cmp_sections);
 
   _map_line("                                 Section Info");
   _map_line("                  Section       Type    Address   Location Size(Bytes)");
@@ -201,8 +201,8 @@ _write_sections(void)
 static void
 _write_program_memory(void)
 {
-  gp_section_type *section = NULL;
-  int              prog_size = 0;
+  gp_section_t *section = NULL;
+  int           prog_size = 0;
 
   _map_line("                              Program Memory Usage");
   _map_line("                               Start         End");
@@ -233,7 +233,7 @@ _write_program_memory(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static struct file_stack *
-_push_file(struct file_stack *stack, gp_symbol_type *symbol)
+_push_file(struct file_stack *stack, gp_symbol_t *symbol)
 {
   struct file_stack *new;
 
@@ -283,12 +283,12 @@ _cmp_address(const void *p1, const void *p2)
 static void
 _write_symbols(void)
 {
-  struct syms_s        *syms;
-  const gp_symbol_type *sm;
-  int                   num_syms;
-  int                   i;
-  struct file_stack    *stack = NULL;
-  gp_symbol_type       *symbol = NULL;
+  struct syms_s     *syms;
+  const gp_symbol_t *sm;
+  int                num_syms;
+  int                i;
+  struct file_stack *stack = NULL;
+  gp_symbol_t       *symbol = NULL;
 
   syms = GP_Malloc(sizeof(struct syms_s) * state.object->num_symbols);
 

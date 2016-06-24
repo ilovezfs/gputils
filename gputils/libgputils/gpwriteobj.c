@@ -96,7 +96,7 @@ _add_name(const char *Name, uint8_t *Table, FILE *Fp)
 /* write the file header */
 
 static void
-_write_filehdr(const gp_object_type *Object, FILE *Fp)
+_write_filehdr(const gp_object_t *Object, FILE *Fp)
 {
   /* 'f_magic'  -- magic number */
   gp_fputl16((Object->isnew ? MICROCHIP_MAGIC_v2 : MICROCHIP_MAGIC_v1), Fp);
@@ -119,7 +119,7 @@ _write_filehdr(const gp_object_type *Object, FILE *Fp)
 /* write the optional header */
 
 static void
-_write_opthdr(const gp_object_type *Object, FILE *Fp)
+_write_opthdr(const gp_object_t *Object, FILE *Fp)
 {
   uint32_t coff_type;
 
@@ -152,7 +152,7 @@ _write_opthdr(const gp_object_type *Object, FILE *Fp)
 /* write the section header */
 
 static void
-_write_scnhdr(const gp_section_type *Section, unsigned int Org_to_byte_shift, uint8_t *Table, FILE *Fp)
+_write_scnhdr(const gp_section_t *Section, unsigned int Org_to_byte_shift, uint8_t *Table, FILE *Fp)
 {
   uint32_t section_address;
 
@@ -187,7 +187,7 @@ _write_scnhdr(const gp_section_type *Section, unsigned int Org_to_byte_shift, ui
 /* write the section data */
 
 static void
-_write_data(pic_processor_t Processor, const gp_section_type *Section, FILE *Fp)
+_write_data(pic_processor_t Processor, const gp_section_t *Section, FILE *Fp)
 {
   unsigned int org;
   unsigned int end;
@@ -212,9 +212,9 @@ _write_data(pic_processor_t Processor, const gp_section_type *Section, FILE *Fp)
 /* write the section relocations */
 
 static void
-_write_reloc(const gp_section_type *Section, FILE *Fp)
+_write_reloc(const gp_section_t *Section, FILE *Fp)
 {
-  gp_reloc_type *current;
+  gp_reloc_t *current;
 
   current = Section->relocation_list;
   while (current != NULL) {
@@ -236,9 +236,9 @@ _write_reloc(const gp_section_type *Section, FILE *Fp)
 /* write the section linenumbers */
 
 static void
-_write_linenum(const gp_section_type *Section, unsigned int Org_to_byte_shift, FILE *Fp)
+_write_linenum(const gp_section_t *Section, unsigned int Org_to_byte_shift, FILE *Fp)
 {
-  gp_linenum_type *current;
+  gp_linenum_t *current;
 
   if ((Section->flags & STYP_ROM_AREA) == 0) {
     Org_to_byte_shift = 0;
@@ -266,7 +266,7 @@ _write_linenum(const gp_section_type *Section, unsigned int Org_to_byte_shift, F
 /* write the auxiliary symbols */
 
 static void
-_write_auxsymbols(const gp_aux_type *Aux, uint8_t *Table, gp_boolean Isnew, FILE *Fp)
+_write_auxsymbols(const gp_aux_t *Aux, uint8_t *Table, gp_boolean Isnew, FILE *Fp)
 {
   unsigned int offset;
 
@@ -350,10 +350,10 @@ _write_auxsymbols(const gp_aux_type *Aux, uint8_t *Table, gp_boolean Isnew, FILE
 /* write the symbol table */
 
 static void
-_write_symbols(const gp_object_type *Object, uint8_t *Table, FILE *Fp)
+_write_symbols(const gp_object_t *Object, uint8_t *Table, FILE *Fp)
 {
-  gp_symbol_type *current;
-  gp_boolean      isnew;
+  gp_symbol_t *current;
+  gp_boolean   isnew;
 
   isnew   = Object->isnew;
   current = Object->symbol_list;
@@ -390,13 +390,13 @@ _write_symbols(const gp_object_type *Object, uint8_t *Table, FILE *Fp)
 /* update all the coff pointers */
 
 static void
-_updateptr(gp_object_type *Object)
+_updateptr(gp_object_t *Object)
 {
-  unsigned int     data_idx;
-  gp_section_type *section;
-  gp_symbol_type  *symbol;
-  unsigned int     section_number;
-  unsigned int     symbol_number;
+  unsigned int  data_idx;
+  gp_section_t *section;
+  gp_symbol_t  *symbol;
+  unsigned int  section_number;
+  unsigned int  symbol_number;
 
   data_idx = (Object->isnew) ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2 + (SEC_HDR_SIZ_v2 * Object->num_sections)) :
                                (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ_v1 * Object->num_sections));
@@ -457,7 +457,7 @@ _updateptr(gp_object_type *Object)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-gp_has_data(const gp_section_type *Section)
+gp_has_data(const gp_section_t *Section)
 {
   if (Section->size == 0) {
     return false;
@@ -483,12 +483,12 @@ gp_has_data(const gp_section_type *Section)
 /* write the coff file */
 
 gp_boolean
-gp_write_coff(gp_object_type *Object, int Num_errors)
+gp_write_coff(gp_object_t *Object, int Num_errors)
 {
-  FILE            *coff;
-  unsigned int     org_to_byte_shift;
-  gp_section_type *section;
-  uint8_t          table[MAX_STRING_TABLE]; /* string table */
+  FILE         *coff;
+  unsigned int  org_to_byte_shift;
+  gp_section_t *section;
+  uint8_t       table[MAX_STRING_TABLE]; /* string table */
 
   if (Num_errors > 0) {
     unlink(Object->filename);
@@ -565,9 +565,9 @@ gp_write_coff(gp_object_type *Object, int Num_errors)
    are no relocations (undefined symbols) */
 
 gp_boolean
-gp_is_absolute_object(const gp_object_type *Object)
+gp_is_absolute_object(const gp_object_t *Object)
 {
-  gp_section_type *section;
+  gp_section_t *section;
 
   for (section = Object->section_list; section != NULL; section = section->next) {
     if ((section->num_reloc != 0) || !(section->flags & STYP_ABS)) {

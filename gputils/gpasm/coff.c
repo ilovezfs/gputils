@@ -29,7 +29,7 @@ Boston, MA 02111-1307, USA.  */
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_update_section_symbol(gp_section_type *section)
+_update_section_symbol(gp_section_t *section)
 {
   /* write data to the auxiliary section symbol */
   section->symbol->aux_list->_aux_symbol._aux_scn.length  = section->size;
@@ -42,9 +42,9 @@ _update_section_symbol(gp_section_type *section)
 static void
 _update_reloc_ptr(void)
 {
-  gp_section_type *section;
-  gp_symbol_type  *symbol;
-  gp_reloc_type   *reloc;
+  gp_section_t *section;
+  gp_symbol_t  *symbol;
+  gp_reloc_t   *reloc;
 
   section = state.obj.object->section_list;
   while (section != NULL) {
@@ -73,8 +73,8 @@ static void
 _new_config_section(const char *name, unsigned int addr, unsigned int flags, MemBlock_t *data,
                     gp_boolean new_config)
 {
-  gp_symbol_type *new;
-  gp_aux_type    *new_aux;
+  gp_symbol_t *new;
+  gp_aux_t    *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -116,7 +116,7 @@ static void
 _create_config_sections(void)
 {
   const conf_mem_block_t *conf_sec_mem;
-  gp_linenum_type        *linenum;
+  gp_linenum_t           *linenum;
   char                    section_name[BUFSIZ];
   char                   *upper;
 
@@ -242,9 +242,9 @@ coff_close_file(void)
 void
 coff_new_section(const char *name, unsigned int addr, unsigned int flags)
 {
-  gp_section_type *found;
-  gp_symbol_type  *new;
-  gp_aux_type     *new_aux;
+  gp_section_t *found;
+  gp_symbol_t  *new;
+  gp_aux_t     *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -313,8 +313,8 @@ coff_new_section(const char *name, unsigned int addr, unsigned int flags)
 void
 coff_reloc(unsigned int symbol_number, int16_t offset, enum gpasmValTypes type)
 {
-  gp_reloc_type *new;
-  unsigned int   origin;
+  gp_reloc_t   *new;
+  unsigned int  origin;
 
   if ((!state.obj.enabled) || (state.obj.section == NULL)) {
     return;
@@ -336,7 +336,7 @@ coff_linenum(unsigned int emitted)
 {
   static gp_boolean  show_bad_debug = true;
 
-  gp_linenum_type   *new;
+  gp_linenum_t      *new;
   unsigned int       end;
   unsigned int       origin;
 
@@ -382,13 +382,13 @@ coff_linenum(unsigned int emitted)
 /* Add a symbol to the coff symbol table.  The calling function must
    increment the global symbol number. */
 
-gp_symbol_type *
+gp_symbol_t *
 coff_add_sym(const char *name, gp_symvalue_t value, enum gpasmValTypes type)
 {
-  gp_symbol_type *new;
-  unsigned int    section_number;
-  unsigned int    class;
-  char            message[BUFSIZ];
+  gp_symbol_t  *new;
+  unsigned int  section_number;
+  unsigned int  class;
+  char          message[BUFSIZ];
 
   if (!state.obj.enabled) {
     return NULL;
@@ -462,11 +462,11 @@ coff_add_sym(const char *name, gp_symvalue_t value, enum gpasmValTypes type)
 
 /* add a file symbol to the coff symbol table */
 
-gp_symbol_type *
+gp_symbol_t *
 coff_add_filesym(const char *name, gp_boolean isinclude)
 {
-  gp_symbol_type *new;
-  gp_aux_type    *new_aux;
+  gp_symbol_t *new;
+  gp_aux_t    *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -505,7 +505,7 @@ coff_add_filesym(const char *name, gp_boolean isinclude)
 void
 coff_add_eofsym(void)
 {
-  gp_symbol_type *new;
+  gp_symbol_t *new;
 
   state.obj.symbol_num++;
 
@@ -530,7 +530,7 @@ coff_add_eofsym(void)
 void
 coff_add_listsym(void)
 {
-  gp_symbol_type *new;
+  gp_symbol_t *new;
 
   if (state.debug_info) {
     return;
@@ -559,7 +559,7 @@ coff_add_listsym(void)
 void
 coff_add_nolistsym(void)
 {
-  gp_symbol_type *new;
+  gp_symbol_t *new;
 
   if (state.debug_info) {
     return;
@@ -588,8 +588,8 @@ coff_add_nolistsym(void)
 void
 coff_add_directsym(uint8_t command, const char *string)
 {
-  gp_symbol_type *new;
-  gp_aux_type    *new_aux;
+  gp_symbol_t *new;
+  gp_aux_t    *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -619,8 +619,8 @@ coff_add_directsym(uint8_t command, const char *string)
 void
 coff_add_identsym(const char *string)
 {
-  gp_symbol_type *new;
-  gp_aux_type    *new_aux;
+  gp_symbol_t *new;
+  gp_aux_t    *new_aux;
 
   state.obj.symbol_num += 2;
 
@@ -649,10 +649,10 @@ coff_add_identsym(const char *string)
 char *
 coff_local_name(const char *name)
 {
-  symbol_t       *local;
-  gp_symbol_type *symbol;
-  int             count;
-  char            buffer[BUFSIZ];
+  symbol_t    *local;
+  gp_symbol_t *symbol;
+  int          count;
+  char         buffer[BUFSIZ];
 
   if (!state.obj.enabled) {
     return NULL;

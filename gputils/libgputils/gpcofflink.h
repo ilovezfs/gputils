@@ -57,48 +57,48 @@ typedef struct linker_section {
   const char        *shadow_sym;
 } linker_section_t;
 
-extern void gp_cofflink_add_symbol(symbol_table_t *Table, gp_symbol_type *Symbol, gp_object_type *File);
+extern void gp_cofflink_add_symbol(symbol_table_t *Table, gp_symbol_t *Symbol, gp_object_t *File);
 
 extern void gp_cofflink_remove_symbol(symbol_table_t *Table, char *Name);
 
-extern gp_boolean gp_cofflink_add_symbols(symbol_table_t *Table, symbol_table_t *Missing, gp_object_type *Object);
+extern gp_boolean gp_cofflink_add_symbols(symbol_table_t *Table, symbol_table_t *Missing, gp_object_t *Object);
 
-extern void gp_cofflink_combine_objects(gp_object_type *Object);
+extern void gp_cofflink_combine_objects(gp_object_t *Object);
 
-extern void gp_cofflink_clean_table(gp_object_type *Object, symbol_table_t *Symbols);
+extern void gp_cofflink_clean_table(gp_object_t *Object, symbol_table_t *Symbols);
 
-extern void gp_cofflink_combine_overlay(gp_object_type *Object, gp_boolean Remove_symbol);
+extern void gp_cofflink_combine_overlay(gp_object_t *Object, gp_boolean Remove_symbol);
 
-extern void gp_cofflink_make_stack(gp_object_type *Object, unsigned int Num_bytes);
+extern void gp_cofflink_make_stack(gp_object_t *Object, unsigned int Num_bytes);
 
-extern void gp_cofflink_merge_sections(gp_object_type *Object);
+extern void gp_cofflink_merge_sections(gp_object_t *Object);
 
-extern void gp_cofflink_make_cinit(gp_object_type *Object);
+extern void gp_cofflink_make_cinit(gp_object_t *Object);
 
-extern void gp_cofflink_make_idata(gp_object_type *Object, gp_boolean Force_cinit);
+extern void gp_cofflink_make_idata(gp_object_t *Object, gp_boolean Force_cinit);
 
-extern void gp_cofflink_add_cinit_section(gp_object_type *Object);
+extern void gp_cofflink_add_cinit_section(gp_object_t *Object);
 
-extern void gp_cofflink_reloc_abs(gp_object_type *Object, MemBlock_t *M, unsigned int Org_to_byte_shift,
+extern void gp_cofflink_reloc_abs(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shift,
                                   uint32_t Flags);
 
-extern void gp_cofflink_reloc_assigned(gp_object_type *Object, MemBlock_t *M, unsigned int Org_to_byte_shift,
+extern void gp_cofflink_reloc_assigned(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shift,
                                        uint32_t Flags, symbol_table_t *Sections,
                                        symbol_table_t *Logical_sections);
 
-extern void gp_cofflink_reloc_cinit(gp_object_type *Object, MemBlock_t *M, unsigned int Org_to_byte_shift,
-                                    gp_section_type *Cinit_section, const symbol_table_t *Sections);
+extern void gp_cofflink_reloc_cinit(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shift,
+                                    gp_section_t *Cinit_section, const symbol_table_t *Sections);
 
-extern void gp_cofflink_reloc_unassigned(gp_object_type *Object, MemBlock_t *M, unsigned int Org_to_byte_shift,
+extern void gp_cofflink_reloc_unassigned(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shift,
                                          uint32_t Flags, const symbol_table_t *Sections);
 
-extern void gp_cofflink_update_table(gp_object_type *Object, unsigned int Org_to_byte_shift);
+extern void gp_cofflink_update_table(gp_object_t *Object, unsigned int Org_to_byte_shift);
 
-extern void gp_cofflink_fill_pages(gp_object_type *Object, MemBlock_t *M, const symbol_table_t *Sections);
+extern void gp_cofflink_fill_pages(gp_object_t *Object, MemBlock_t *M, const symbol_table_t *Sections);
 
-extern void gp_cofflink_patch(gp_object_type *Object);
+extern void gp_cofflink_patch(gp_object_t *Object);
 
-extern MemBlock_t *gp_cofflink_make_memory(gp_object_type *Object);
+extern MemBlock_t *gp_cofflink_make_memory(gp_object_t *Object);
 
 extern gp_boolean gp_relocate_to_shared;
 

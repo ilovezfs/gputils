@@ -166,7 +166,7 @@ Boston, MA 02111-1307, USA.  */
 /******************************************************************************/
 
 struct px;
-struct gp_section_type;
+struct gp_section;
 
 typedef struct _core_sfr_ {
   int         address;
@@ -255,7 +255,7 @@ struct proc_class {
   unsigned int        (*reloc_f)(unsigned int address);
   unsigned int        (*reloc_tris)(unsigned int address);
   unsigned int        (*reloc_movlb)(unsigned int address);
-  unsigned int        (*reloc_bra)(struct gp_section_type *section, unsigned int value,
+  unsigned int        (*reloc_bra)(struct gp_section *section, unsigned int value,
                                    unsigned int byte_address);
 
   unsigned int        (*reloc_high)(gp_boolean is_code, unsigned int value);

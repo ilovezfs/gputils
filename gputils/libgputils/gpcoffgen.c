@@ -29,13 +29,13 @@ static unsigned int section_serial_id = 0;
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_object_type *
+gp_object_t *
 gp_coffgen_new_object(const char *File_name)
 {
-  gp_object_type *object;
+  gp_object_t *object;
 
   /* allocate memory for the object file */
-  object = (gp_object_type *)GP_Calloc(1, sizeof(gp_object_type));
+  object = (gp_object_t *)GP_Calloc(1, sizeof(gp_object_t));
 
   /* initialize the object */
   object->filename  = GP_Strdup(File_name);
@@ -49,20 +49,28 @@ gp_coffgen_new_object(const char *File_name)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Move linked lists between two object. */
+
 void
-gp_coffgen_transfer_object_data(gp_object_type *Receiver, gp_object_type *Sender)
+gp_coffgen_transfer_object_data(gp_object_t *Receiver, gp_object_t *Sender)
 {
   if ((Receiver == NULL) || (Sender == NULL)) {
     return;
   }
 
-  if (Sender->num_sections != 0) {
-    if (Receiver->num_sections == 0) {
+  if (Sender->section_list != NULL) {
+    assert(Sender->num_sections != 0);
+
+    if (Receiver->section_list == NULL) {
       /* The object has no sections. */
+      assert(Receiver->num_sections == 0);
+
       Receiver->section_list = Sender->section_list;
     }
     else {
       /* Append the sections from the second object to the first. */
+      assert(Receiver->num_sections > 0);
+
       Receiver->section_list_tail->next = Sender->section_list;
       Sender->section_list->prev        = Receiver->section_list_tail;
     }
@@ -70,20 +78,42 @@ gp_coffgen_transfer_object_data(gp_object_type *Receiver, gp_object_type *Sender
     Receiver->section_list_tail  = Sender->section_list_tail;
     Receiver->num_sections      += Sender->num_sections;
 
-    /* In the "Sender" object will not stay reference onto any section.
-       If exists block of sections, this will remain there. */
+    /* In the "Sender" object will not stay reference onto any section. */
     Sender->section_list      = NULL;
     Sender->section_list_tail = NULL;
     Sender->num_sections      = 0;
   }
 
-  if (Sender->num_symbols != 0) {
-    if (Receiver->num_symbols == 0) {
+  if (Sender->dead_section_list != NULL) {
+    if (Receiver->dead_section_list == NULL) {
+      /* The object has no dead sections. */
+      Receiver->dead_section_list = Sender->dead_section_list;
+    }
+    else {
+      /* Append the sections from the second object to the first. */
+      Receiver->dead_section_list_tail->next = Sender->dead_section_list;
+      Sender->dead_section_list->prev        = Receiver->dead_section_list_tail;
+    }
+
+    /* In the "Sender" object will not stay reference onto any section. */
+    Receiver->dead_section_list_tail = Sender->dead_section_list_tail;
+    Sender->dead_section_list      = NULL;
+    Sender->dead_section_list_tail = NULL;
+  }
+
+  if (Sender->symbol_list != NULL) {
+    assert(Sender->num_symbols != 0);
+
+    if (Receiver->symbol_list == NULL) {
       /* The object has no symbols. */
+      assert(Receiver->num_symbols == 0);
+
       Receiver->symbol_list = Sender->symbol_list;
     }
     else {
       /* Append the symbols from the second object to the first. */
+      assert(Receiver->num_symbols > 0);
+
       Receiver->symbol_list_tail->next = Sender->symbol_list;
       Sender->symbol_list->prev        = Receiver->symbol_list_tail;
     }
@@ -91,22 +121,41 @@ gp_coffgen_transfer_object_data(gp_object_type *Receiver, gp_object_type *Sender
     Receiver->symbol_list_tail  = Sender->symbol_list_tail;
     Receiver->num_symbols      += Sender->num_symbols;
 
-    /* In the "Sender" object will not stay reference onto any symbol.
-       If exists block of symbols, this will remain there. */
+    /* In the "Sender" object will not stay reference onto any symbol. */
     Sender->symbol_list      = NULL;
     Sender->symbol_list_tail = NULL;
     Sender->num_symbols      = 0;
+  }
+
+  if (Sender->dead_symbol_list != NULL) {
+    if (Receiver->dead_symbol_list == NULL) {
+      /* The object has no symbols. */
+      Receiver->dead_symbol_list = Sender->dead_symbol_list;
+    }
+    else {
+      /* Append the symbols from the second object to the first. */
+      Receiver->dead_symbol_list_tail->next = Sender->dead_symbol_list;
+      Sender->dead_symbol_list->prev        = Receiver->dead_symbol_list_tail;
+    }
+
+    Receiver->dead_symbol_list_tail = Sender->dead_symbol_list_tail;
+
+    /* In the "Sender" object will not stay reference onto any symbol. */
+    Sender->dead_symbol_list      = NULL;
+    Sender->dead_symbol_list_tail = NULL;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Update the object identifier in the all internal linked lists. */
+
 gp_boolean
-gp_coffgen_update_all_object_id(gp_object_type *Object)
+gp_coffgen_update_all_object_id(gp_object_t *Object)
 {
-  gp_section_type *section;
-  gp_symbol_type  *symbol;
-  unsigned int     id;
+  gp_section_t *section;
+  gp_symbol_t  *symbol;
+  unsigned int  id;
 
   if (Object == NULL) {
     return false;
@@ -121,6 +170,14 @@ gp_coffgen_update_all_object_id(gp_object_type *Object)
     }
   }
 
+  if (Object->dead_section_list != NULL) {
+    section = Object->dead_section_list;
+    while (section != NULL) {
+      section->object_id = id;
+      section            = section->next;
+    }
+  }
+
   if ((Object->symbol_list != NULL) && (Object->num_symbols > 0)) {
     symbol = Object->symbol_list;
     while (symbol != NULL) {
@@ -129,27 +186,35 @@ gp_coffgen_update_all_object_id(gp_object_type *Object)
     }
   }
 
+  if (Object->dead_symbol_list != NULL) {
+    symbol = Object->dead_symbol_list;
+    while (symbol != NULL) {
+      symbol->object_id = id;
+      symbol            = symbol->next;
+    }
+  }
   return true;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_section_type *
-gp_coffgen_find_section(gp_object_type *Object, gp_section_type *Start, const char *Name)
+/* Find a "Name" section from the given starting section. */
+
+gp_section_t *
+gp_coffgen_find_section(gp_object_t *Object, gp_section_t *Start, const char *Name)
 {
-  gp_section_type *current;
+  gp_section_t *section;
 
   if ((Object == NULL) || (Start == NULL)) {
     return NULL;
   }
 
-  current = Start;
-
-  while (current != NULL) {
-    if ((current->name != NULL) && (strcmp(current->name, Name) == 0)) {
-      return current;
+  section = Start;
+  while (section != NULL) {
+    if ((section->name != NULL) && (strcmp(section->name, Name) == 0)) {
+      return section;
     }
-    current = current->next;
+    section = section->next;
   }
 
   return NULL;
@@ -157,13 +222,15 @@ gp_coffgen_find_section(gp_object_type *Object, gp_section_type *Start, const ch
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_section_type *
+/* Create a new section. */
+
+gp_section_t *
 gp_coffgen_new_section(const char *Name, MemBlock_t *Data)
 {
-  gp_section_type *new;
+  gp_section_t *new;
 
   /* allocate memory for the section */
-  new = (gp_section_type *)GP_Calloc(1, sizeof(gp_section_type));
+  new = (gp_section_t *)GP_Calloc(1, sizeof(gp_section_t));
 
   /* initialize section */
   new->name      = GP_Strdup(Name);
@@ -175,15 +242,15 @@ gp_coffgen_new_section(const char *Name, MemBlock_t *Data)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* allocate a block of section -- gpreadobj.c */
+/* Allocate a block of section. -- gpreadobj.c */
 
-gp_section_type *
-gp_coffgen_make_block_section(gp_object_type *Object)
+gp_section_t *
+gp_coffgen_make_block_section(gp_object_t *Object)
 {
-  gp_section_type **ptr_array;
-  unsigned int      n_sections;
-  unsigned int      id;
-  unsigned int      i;
+  gp_section_t **ptr_array;
+  unsigned int   n_sections;
+  unsigned int   id;
+  unsigned int   i;
 
   if (Object->section_list != NULL) {
     gp_error("'%s': The list of sections already exists, can not be created again.", Object->filename);
@@ -194,11 +261,11 @@ gp_coffgen_make_block_section(gp_object_type *Object)
     return NULL;
   }
 
-  ptr_array = (gp_section_type **)GP_Malloc(n_sections * sizeof(gp_section_type *));
+  ptr_array = (gp_section_t **)GP_Malloc(n_sections * sizeof(gp_section_t *));
 
   id = Object->serial_id;
   for (i = 0; i < n_sections; i++) {
-    ptr_array[i] = (gp_section_type *)GP_Calloc(1, sizeof(gp_section_type));
+    ptr_array[i] = (gp_section_t *)GP_Calloc(1, sizeof(gp_section_t));
     ptr_array[i]->object_id = id;
     ptr_array[i]->serial_id = section_serial_id++;
   }
@@ -223,8 +290,10 @@ gp_coffgen_make_block_section(gp_object_type *Object)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_section_type *
-gp_coffgen_add_exists_section(gp_object_type *Object, gp_section_type *Section)
+/* Add to object an exists section. */
+
+gp_section_t *
+gp_coffgen_add_exists_section(gp_object_t *Object, gp_section_t *Section)
 {
   if (Object == NULL) {
     return NULL;
@@ -249,10 +318,12 @@ gp_coffgen_add_exists_section(gp_object_type *Object, gp_section_type *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_section_type *
-gp_coffgen_insert_section(gp_object_type *Object, gp_section_type *Ancestor, gp_section_type *Following)
+/* Behind a section inserts another section. */
+
+gp_section_t *
+gp_coffgen_insert_section(gp_object_t *Object, gp_section_t *Ancestor, gp_section_t *Following)
 {
-  gp_section_type *next_sect;
+  gp_section_t *next_sect;
 
   if (Object == NULL) {
     return NULL;
@@ -306,8 +377,10 @@ gp_coffgen_insert_section(gp_object_type *Object, gp_section_type *Ancestor, gp_
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_section_type *
-gp_coffgen_add_section(gp_object_type *Object, const char *Name, MemBlock_t *Data)
+/* Add a new section to the object. */
+
+gp_section_t *
+gp_coffgen_add_section(gp_object_t *Object, const char *Name, MemBlock_t *Data)
 {
   if (Object == NULL) {
     return NULL;
@@ -318,48 +391,60 @@ gp_coffgen_add_section(gp_object_type *Object, const char *Name, MemBlock_t *Dat
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Move linked lists between two section. */
+
 void
-gp_coffgen_transfer_section_data(gp_section_type *Receiver, gp_section_type *Sender)
+gp_coffgen_transfer_section_data(gp_section_t *Receiver, gp_section_t *Sender)
 {
   if ((Receiver == NULL) || (Sender == NULL)) {
     return;
   }
 
-  if (Sender->num_reloc != 0) {
+  if (Sender->relocation_list != NULL) {
     /* Append the relocations from the "Sender" section to the "Receiver". */
-    if (Receiver->num_reloc == 0) {
+    assert(Sender->num_reloc != 0);
+
+    if (Receiver->relocation_list == NULL) {
+      assert(Receiver->num_reloc == 0);
+
       Receiver->relocation_list = Sender->relocation_list;
     }
     else {
+      assert(Receiver->num_reloc > 0);
+
       Receiver->relocation_list_tail->next = Sender->relocation_list;
       Sender->relocation_list->prev        = Receiver->relocation_list_tail;
     }
 
-    Receiver->relocation_list_tail = Sender->relocation_list_tail;
-    Receiver->num_reloc += Sender->num_reloc;
+    Receiver->relocation_list_tail  = Sender->relocation_list_tail;
+    Receiver->num_reloc            += Sender->num_reloc;
 
-    /* In the "Sender" section will not stay reference onto any relocation.
-       If exists block of relocations, this will remain there. */
+    /* In the "Sender" section will not stay reference onto any relocation. */
     Sender->relocation_list      = NULL;
     Sender->relocation_list_tail = NULL;
     Sender->num_reloc            = 0;
   }
 
-  if (Sender->num_lineno != 0) {
+  if (Sender->line_number_list != NULL) {
     /* Append the line numbers from the "Sender" section to the "Receiver". */
-    if (Receiver->num_lineno == 0) {
+    assert(Sender->num_lineno != 0);
+
+    if (Receiver->line_number_list == NULL) {
+      assert(Receiver->num_lineno == 0);
+
       Receiver->line_number_list = Sender->line_number_list;
     }
     else {
+      assert(Receiver->num_lineno > 0);
+
       Receiver->line_number_list_tail->next = Sender->line_number_list;
       Sender->line_number_list->prev        = Receiver->line_number_list_tail;
     }
 
-    Receiver->line_number_list_tail = Sender->line_number_list_tail;
-    Receiver->num_lineno += Sender->num_lineno;
+    Receiver->line_number_list_tail  = Sender->line_number_list_tail;
+    Receiver->num_lineno            += Sender->num_lineno;
 
-    /* In the "Sender" section will not stay reference onto any line number.
-       If exists block of line numbers, this will remain there. */
+    /* In the "Sender" section will not stay reference onto any line number. */
     Sender->line_number_list      = NULL;
     Sender->line_number_list_tail = NULL;
     Sender->num_lineno            = 0;
@@ -368,12 +453,14 @@ gp_coffgen_transfer_section_data(gp_section_type *Receiver, gp_section_type *Sen
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Update the section identifier in the all internal linked lists. */
+
 gp_boolean
-gp_coffgen_update_all_section_id(gp_section_type *Section)
+gp_coffgen_update_all_section_id(gp_section_t *Section)
 {
-  gp_reloc_type   *relocation;
-  gp_linenum_type *line_number;
-  unsigned int     id;
+  gp_reloc_t   *relocation;
+  gp_linenum_t *line_number;
+  unsigned int  id;
 
   if (Section == NULL) {
     return false;
@@ -402,45 +489,47 @@ gp_coffgen_update_all_section_id(gp_section_type *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Move all symbols of section to dead list. */
+
 void
-gp_coffgen_put_reserve_section_symbols(gp_object_type *Object, gp_section_type *Section)
+gp_coffgen_move_reserve_section_symbols(gp_object_t *Object, gp_section_t *Section)
 {
-  gp_symbol_type *list;
-  gp_symbol_type *symbol;
+  gp_symbol_t *list;
+  gp_symbol_t *symbol;
 
   if (Object == NULL) {
     return NULL;
   }
 
-  /* remove all symbols for the section */
+  /* Move all symbols for the section into dead list. */
   list = Object->symbol_list;
   while (list != NULL) {
-    /* advance the pointer so the symbol can be freed */
     symbol = list;
     list   = list->next;
 
     if (symbol->section == Section) {
-      gp_coffgen_put_reserve_symbol(Object, symbol);
+      gp_coffgen_move_reserve_symbol(Object, symbol);
     }
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Delete all symbols of section. */
+
 void
-gp_coffgen_del_section_symbols(gp_object_type *Object, gp_section_type *Section)
+gp_coffgen_del_section_symbols(gp_object_t *Object, gp_section_t *Section)
 {
-  gp_symbol_type *list;
-  gp_symbol_type *symbol;
+  gp_symbol_t *list;
+  gp_symbol_t *symbol;
 
   if (Object == NULL) {
     return NULL;
   }
 
-  /* remove all symbols for the section */
+  /* Remove all symbols for the section. */
   list = Object->symbol_list;
   while (list != NULL) {
-    /* advance the pointer so the symbol can be freed */
     symbol = list;
     list   = list->next;
 
@@ -452,8 +541,10 @@ gp_coffgen_del_section_symbols(gp_object_type *Object, gp_section_type *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_section_type *
-gp_coffgen_put_reserve_section(gp_object_type *Object, gp_section_type *Section)
+/* Move a section to dead list. */
+
+gp_section_t *
+gp_coffgen_move_reserve_section(gp_object_t *Object, gp_section_t *Section)
 {
   if ((Object->section_list == NULL) || (Object->num_sections == 0)) {
     return NULL;
@@ -483,26 +574,28 @@ gp_coffgen_put_reserve_section(gp_object_type *Object, gp_section_type *Section)
 
   (Object->num_sections)--;
 
-  /* Put in the reserved linked list. */
-  if (Object->reserved_section_list == NULL) {
+  /* Put into the dead linked list. */
+  if (Object->dead_section_list == NULL) {
     /* the list is empty */
-    Object->reserved_section_list = Section;
+    Object->dead_section_list = Section;
     Section->prev = NULL;
   }
   else {
-    Section->prev = Object->reserved_section_list_tail;
-    Object->reserved_section_list_tail->next = Section;
+    Section->prev = Object->dead_section_list_tail;
+    Object->dead_section_list_tail->next = Section;
     Section->next = NULL;
   }
 
-  Object->reserved_section_list_tail = Section;
+  Object->dead_section_list_tail = Section;
   return Section;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Delete a section from object. */
+
 gp_boolean
-gp_coffgen_del_section(gp_object_type *Object, gp_section_type *Section)
+gp_coffgen_del_section(gp_object_t *Object, gp_section_t *Section)
 {
   if ((Object->section_list == NULL) || (Object->num_sections == 0)) {
     return false;
@@ -540,10 +633,10 @@ gp_coffgen_del_section(gp_object_type *Object, gp_section_type *Section)
 static int
 _section_cmp(const void *P0, const void *P1)
 {
-  const gp_section_type *s0 = *(const gp_section_type **)P0;
-  const gp_section_type *s1 = *(const gp_section_type **)P1;
-  uint32_t               a0 = s0->address;
-  uint32_t               a1 = s1->address;
+  const gp_section_t *s0 = *(const gp_section_t **)P0;
+  const gp_section_t *s1 = *(const gp_section_t **)P1;
+  uint32_t            a0 = s0->address;
+  uint32_t            a1 = s1->address;
 
   if (a0 < a1) {
     return -1;
@@ -558,16 +651,18 @@ _section_cmp(const void *P0, const void *P1)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_section_type **
-gp_coffgen_make_section_array(gp_object_type *Object, unsigned int *Num_sections,
+/* Put in an array that sections which are located the same page. */
+
+gp_section_t **
+gp_coffgen_make_section_array(gp_object_t *Object, unsigned int *Num_sections,
                               unsigned int Page_addr, uint32_t Flags)
 {
-  proc_class_t      class;
-  gp_section_type  *section;
-  gp_section_type **array;
-  unsigned int      i;
-  unsigned int      page;
-  unsigned int      n_sections;
+  proc_class_t   class;
+  gp_section_t  *section;
+  gp_section_t **array;
+  unsigned int   i;
+  unsigned int   page;
+  unsigned int   n_sections;
 
   if ((Object == NULL) || (Num_sections == NULL)) {
     return NULL;
@@ -575,6 +670,7 @@ gp_coffgen_make_section_array(gp_object_type *Object, unsigned int *Num_sections
 
   class = Object->class;
 
+  /* Examines the sections. */
   n_sections = 0;
   section    = Object->section_list;
   while (section != NULL) {
@@ -582,6 +678,7 @@ gp_coffgen_make_section_array(gp_object_type *Object, unsigned int *Num_sections
     page = gp_processor_page_addr(class, gp_processor_byte_to_org(class, section->address));
 
     if ((page == Page_addr) && (FlagsIsNotAllClr(section->flags, Flags))) {
+      /* Located on same page and there is at least one valid flag. */
       ++n_sections;
       FlagSet(section->opt_flags, OPT_FLAGS_GPCOFFGEN_MODULE);
     }
@@ -592,8 +689,9 @@ gp_coffgen_make_section_array(gp_object_type *Object, unsigned int *Num_sections
     return NULL;
   }
 
-  array = (gp_section_type **)GP_Malloc(n_sections * sizeof(gp_section_type *));
+  array = (gp_section_t **)GP_Malloc(n_sections * sizeof(gp_section_t *));
 
+  /* Populate the array. */
   i       = 0;
   section = Object->section_list;
   while (section != NULL) {
@@ -605,7 +703,7 @@ gp_coffgen_make_section_array(gp_object_type *Object, unsigned int *Num_sections
   }
 
   if (n_sections > 1) {
-    qsort(array, n_sections, sizeof(gp_section_type *), _section_cmp);
+    qsort(array, n_sections, sizeof(gp_section_t *), _section_cmp);
   }
 
   *Num_sections = n_sections;
@@ -614,56 +712,50 @@ gp_coffgen_make_section_array(gp_object_type *Object, unsigned int *Num_sections
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_symbol_type *
-gp_coffgen_find_symbol(gp_object_type *Object, const char *Name)
+/* Find by name a symbol that not section symbol. */
+
+gp_symbol_t *
+gp_coffgen_find_symbol(gp_object_t *Object, const char *Name)
 {
-  gp_symbol_type *current;
-  gp_symbol_type *found;
+  gp_symbol_t *symbol;
 
   if (Object == NULL) {
     return NULL;
   }
 
-  current = Object->symbol_list;
-  found   = NULL;
-
-  while (current != NULL) {
-    if ((current->class != C_SECTION) && (current->name != NULL) &&
-        (strcmp(current->name, Name) == 0)) {
-      found = current;
-      break;
+  symbol = Object->symbol_list;
+  while (symbol != NULL) {
+    if ((symbol->class != C_SECTION) && (symbol->name != NULL) && (strcmp(symbol->name, Name) == 0)) {
+      return symbol;
     }
-    current = current->next;
+    symbol = symbol->next;
   }
 
-  return found;
+  return NULL;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_symbol_type *
-gp_coffgen_find_section_symbol(gp_object_type *Object, const char *Name)
+/* Find by name a symbol that a section symbol. */
+
+gp_symbol_t *
+gp_coffgen_find_section_symbol(gp_object_t *Object, const char *Name)
 {
-  gp_symbol_type *current;
-  gp_symbol_type *found;
+  gp_symbol_t *symbol;
 
   if (Object == NULL) {
     return NULL;
   }
 
-  current = Object->symbol_list;
-  found   = NULL;
-
-  while (current != NULL) {
-    if ((current->class == C_SECTION) && (current->name != NULL) &&
-        (strcmp(current->name, Name) == 0)) {
-      found = current;
-      break;
+  symbol = Object->symbol_list;
+  while (symbol != NULL) {
+    if ((symbol->class == C_SECTION) && (symbol->name != NULL) && (strcmp(symbol->name, Name) == 0)) {
+      return symbol;
     }
-    current = current->next;
+    symbol = symbol->next;
   }
 
-  return found;
+  return NULL;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -671,44 +763,40 @@ gp_coffgen_find_section_symbol(gp_object_type *Object, const char *Name)
 /* Search for a symbol, based on the value and name of host section.
    The function is slow, but only need the error messages. */
 
-gp_symbol_type *
-gp_coffgen_find_symbol_section_value(gp_object_type *Object, const char *Section_name, long Value)
+gp_symbol_t *
+gp_coffgen_find_symbol_section_value(gp_object_t *Object, const char *Section_name, long Value)
 {
-  gp_symbol_type *current;
-  gp_symbol_type *found;
+  gp_symbol_t *symbol;
 
   if ((Object == NULL) || (Section_name == NULL)) {
     return NULL;
   }
 
-  current = Object->symbol_list;
-  found   = NULL;
-
-  while (current != NULL) {
-    if ((current->class != C_SECTION) && (current->class != C_FILE) &&
-        (current->section_name != NULL) &&
-        (strcmp(current->section_name, Section_name) == 0) &&
-        (current->value == Value)) {
-      found = current;
-      break;
+  symbol = Object->symbol_list;
+  while (symbol != NULL) {
+    if ((symbol->class != C_SECTION) && (symbol->class != C_FILE) &&
+        (symbol->section_name != NULL) &&
+        (strcmp(symbol->section_name, Section_name) == 0) &&
+        (symbol->value == Value)) {
+      return symbol;
     }
-    current = current->next;
+    symbol = symbol->next;
   }
 
-  return found;
+  return NULL;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* allocate a block of symbols -- gpreadobj.c */
+/* Allocate a block of symbols. -- gpreadobj.c */
 
-gp_symbol_type *
-gp_coffgen_make_block_symbol(gp_object_type *Object)
+gp_symbol_t *
+gp_coffgen_make_block_symbol(gp_object_t *Object)
 {
-  gp_symbol_type **ptr_array;
-  unsigned int     n_symbols;
-  unsigned int     id;
-  unsigned int     i;
+  gp_symbol_t  **ptr_array;
+  unsigned int   n_symbols;
+  unsigned int   id;
+  unsigned int   i;
 
   if (Object->symbol_list != NULL) {
     gp_error("'%s': The list of symbols already exists, can not be created again.", Object->filename);
@@ -719,11 +807,11 @@ gp_coffgen_make_block_symbol(gp_object_type *Object)
     return NULL;
   }
 
-  ptr_array = (gp_symbol_type **)GP_Malloc(n_symbols * sizeof(gp_symbol_type *));
+  ptr_array = (gp_symbol_t **)GP_Malloc(n_symbols * sizeof(gp_symbol_t *));
 
   id = Object->serial_id;
   for (i = 0; i < n_symbols; i++) {
-    ptr_array[i] = (gp_symbol_type *)GP_Calloc(1, sizeof(gp_symbol_type));
+    ptr_array[i] = (gp_symbol_t *)GP_Calloc(1, sizeof(gp_symbol_t));
     ptr_array[i]->object_id = id;
   }
 
@@ -747,13 +835,15 @@ gp_coffgen_make_block_symbol(gp_object_type *Object)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_symbol_type *
-gp_coffgen_add_symbol(gp_object_type *Object)
+/* Add a new symbol to the object. */
+
+gp_symbol_t *
+gp_coffgen_add_symbol(gp_object_t *Object)
 {
-  gp_symbol_type *new;
+  gp_symbol_t *new;
 
   /* allocate memory for the symbol */
-  new = (gp_symbol_type *)GP_Calloc(1, sizeof(gp_symbol_type));
+  new = (gp_symbol_t *)GP_Calloc(1, sizeof(gp_symbol_t));
   new->number = Object->num_symbols;
 
   if (Object->symbol_list == NULL) {
@@ -774,13 +864,15 @@ gp_coffgen_add_symbol(gp_object_type *Object)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_aux_type *
-gp_coffgen_add_aux(gp_object_type *Object, gp_symbol_type *Symbol)
+/* Add a new auxiliary symbol to the symbol from the object. */
+
+gp_aux_t *
+gp_coffgen_add_aux(gp_object_t *Object, gp_symbol_t *Symbol)
 {
-  gp_aux_type *new;
+  gp_aux_t *new;
 
   /* allocate memory for the auxiliary symbol */
-  new = (gp_aux_type *)GP_Calloc(1, sizeof(gp_aux_type));
+  new = (gp_aux_t *)GP_Calloc(1, sizeof(gp_aux_t));
 
   if (Symbol->aux_list == NULL) {
     /* the list is empty */
@@ -802,14 +894,14 @@ gp_coffgen_add_aux(gp_object_type *Object, gp_symbol_type *Symbol)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* allocate a block of auxiliary symbols -- gpreadobj.c */
+/* Allocate a block of auxiliary symbols. -- gpreadobj.c */
 
-gp_aux_type *
-gp_coffgen_make_block_aux(gp_symbol_type *Symbol)
+gp_aux_t *
+gp_coffgen_make_block_aux(gp_symbol_t *Symbol)
 {
-  gp_aux_type **ptr_array;
-  unsigned int  n_auxsyms;
-  unsigned int  i;
+  gp_aux_t     **ptr_array;
+  unsigned int   n_auxsyms;
+  unsigned int   i;
 
   if (Symbol->aux_list != NULL) {
     gp_error("'%s': The list of aux symbols already exists, can not be created again.", Symbol->name);
@@ -820,10 +912,10 @@ gp_coffgen_make_block_aux(gp_symbol_type *Symbol)
     return NULL;
   }
 
-  ptr_array = (gp_aux_type **)GP_Malloc(n_auxsyms * sizeof(gp_aux_type *));
+  ptr_array = (gp_aux_t **)GP_Malloc(n_auxsyms * sizeof(gp_aux_t *));
 
   for (i = 0; i < n_auxsyms; i++) {
-    ptr_array[i] = (gp_aux_type *)GP_Calloc(1, sizeof(gp_aux_type));
+    ptr_array[i] = (gp_aux_t *)GP_Calloc(1, sizeof(gp_aux_t));
 #if (AUX_NONE != 0)
     ptr_array[i]->type = AUX_NONE;
 #endif
@@ -850,8 +942,10 @@ gp_coffgen_make_block_aux(gp_symbol_type *Symbol)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_symbol_type *
-gp_coffgen_put_reserve_symbol(gp_object_type *Object, gp_symbol_type *Symbol)
+/* Move a symbol to dead list. */
+
+gp_symbol_t *
+gp_coffgen_move_reserve_symbol(gp_object_t *Object, gp_symbol_t *Symbol)
 {
   if ((Object->symbol_list == NULL) || (Object->num_symbols == 0)) {
     return NULL;
@@ -881,26 +975,28 @@ gp_coffgen_put_reserve_symbol(gp_object_type *Object, gp_symbol_type *Symbol)
 
   Object->num_symbols -= Symbol->num_auxsym + 1;
 
-  /* Put in the reserved linked list. */
-  if (Object->reserved_symbol_list == NULL) {
+  /* Put in the dead linked list. */
+  if (Object->dead_symbol_list == NULL) {
     /* the list is empty */
-    Object->reserved_symbol_list = Symbol;
+    Object->dead_symbol_list = Symbol;
     Symbol->prev = NULL;
   }
   else {
-    Symbol->prev = Object->reserved_symbol_list_tail;
-    Object->reserved_symbol_list_tail->next = Symbol;
+    Symbol->prev = Object->dead_symbol_list_tail;
+    Object->dead_symbol_list_tail->next = Symbol;
     Symbol->next = NULL;
   }
 
-  Object->reserved_symbol_list_tail = Symbol;
+  Object->dead_symbol_list_tail = Symbol;
   return Symbol;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Delete the symbol from the object. */
+
 gp_boolean
-gp_coffgen_del_symbol(gp_object_type *Object, gp_symbol_type *Symbol)
+gp_coffgen_del_symbol(gp_object_t *Object, gp_symbol_t *Symbol)
 {
   if ((Object->symbol_list == NULL) || (Object->num_symbols == 0)) {
     return false;
@@ -934,15 +1030,15 @@ gp_coffgen_del_symbol(gp_object_type *Object, gp_symbol_type *Symbol)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* allocate a block of relocations -- gpreadobj.c */
+/* Allocate a block of relocations. -- gpreadobj.c */
 
-gp_reloc_type *
-gp_coffgen_make_block_reloc(gp_section_type *Section)
+gp_reloc_t *
+gp_coffgen_make_block_reloc(gp_section_t *Section)
 {
-  gp_reloc_type **ptr_array;
-  unsigned int    n_relocations;
-  unsigned int    id;
-  unsigned int    i;
+  gp_reloc_t   **ptr_array;
+  unsigned int   n_relocations;
+  unsigned int   id;
+  unsigned int   i;
 
   if (Section->relocation_list != NULL) {
     gp_error("'%s': The list of relocations already exists, can not be created again.", Section->name);
@@ -953,11 +1049,11 @@ gp_coffgen_make_block_reloc(gp_section_type *Section)
     return NULL;
   }
 
-  ptr_array = (gp_reloc_type **)GP_Malloc(n_relocations * sizeof(gp_reloc_type *));
+  ptr_array = (gp_reloc_t **)GP_Malloc(n_relocations * sizeof(gp_reloc_t *));
 
   id = Section->serial_id;
   for (i = 0; i < n_relocations; i++) {
-    ptr_array[i] = (gp_reloc_type *)GP_Calloc(1, sizeof(gp_reloc_type));
+    ptr_array[i] = (gp_reloc_t *)GP_Calloc(1, sizeof(gp_reloc_t));
     ptr_array[i]->section_id = id;
   }
 
@@ -982,13 +1078,15 @@ gp_coffgen_make_block_reloc(gp_section_type *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_reloc_type *
-gp_coffgen_add_reloc(gp_section_type *Section)
+/* Add a new relocation to the section. */
+
+gp_reloc_t *
+gp_coffgen_add_reloc(gp_section_t *Section)
 {
-  gp_reloc_type *new;
+  gp_reloc_t *new;
 
   /* allocate memory for the relocation */
-  new = (gp_reloc_type *)GP_Calloc(1, sizeof(gp_reloc_type));
+  new = (gp_reloc_t *)GP_Calloc(1, sizeof(gp_reloc_t));
   new->section_id = Section->serial_id;
 
   if (Section->relocation_list == NULL) {
@@ -1008,10 +1106,12 @@ gp_coffgen_add_reloc(gp_section_type *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Delete the relocation from the section. */
+
 gp_boolean
-gp_coffgen_del_reloc(gp_section_type *Section, gp_reloc_type *Relocation)
+gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation)
 {
-  gp_symbol_type *symbol;
+  gp_symbol_t *symbol;
 
   if ((Section->relocation_list == NULL) || (Section->num_reloc == 0)) {
     return false;
@@ -1055,6 +1155,8 @@ gp_coffgen_del_reloc(gp_section_type *Section, gp_reloc_type *Relocation)
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+/* Convert to string the relocation type. */
 
 const char *
 gp_coffgen_reloc_type_to_str(uint16_t Type)
@@ -1106,15 +1208,15 @@ gp_coffgen_reloc_type_to_str(uint16_t Type)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* allocate a block of line numbers -- gpreadobj.c */
+/* Allocate a block of line numbers. -- gpreadobj.c */
 
-gp_linenum_type *
-gp_coffgen_make_block_linenum(gp_section_type *Section)
+gp_linenum_t *
+gp_coffgen_make_block_linenum(gp_section_t *Section)
 {
-  gp_linenum_type **ptr_array;
-  unsigned int      n_line_numbers;
-  unsigned int      id;
-  unsigned int      i;
+  gp_linenum_t **ptr_array;
+  unsigned int   n_line_numbers;
+  unsigned int   id;
+  unsigned int   i;
 
   if (Section->line_number_list != NULL) {
     gp_error("'%s': The list of line numbers already exists, can not be created again.", Section->name);
@@ -1125,11 +1227,11 @@ gp_coffgen_make_block_linenum(gp_section_type *Section)
     return NULL;
   }
 
-  ptr_array = (gp_linenum_type **)GP_Malloc(n_line_numbers * sizeof(gp_linenum_type *));
+  ptr_array = (gp_linenum_t **)GP_Malloc(n_line_numbers * sizeof(gp_linenum_t *));
 
   id = Section->serial_id;
   for (i = 0; i < n_line_numbers; i++) {
-    ptr_array[i] = (gp_linenum_type *)GP_Calloc(1, sizeof(gp_linenum_type));
+    ptr_array[i] = (gp_linenum_t *)GP_Calloc(1, sizeof(gp_linenum_t));
     ptr_array[i]->section_id = id;
   }
 
@@ -1154,13 +1256,15 @@ gp_coffgen_make_block_linenum(gp_section_type *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_linenum_type *
-gp_coffgen_add_linenum(gp_section_type *Section)
+/* Add new line number to the section. */
+
+gp_linenum_t *
+gp_coffgen_add_linenum(gp_section_t *Section)
 {
-  gp_linenum_type *new;
+  gp_linenum_t *new;
 
   /* allocate memory for the line number */
-  new = (gp_linenum_type *)GP_Calloc(1, sizeof(gp_linenum_type));
+  new = (gp_linenum_t *)GP_Calloc(1, sizeof(gp_linenum_t));
   new->section_id = Section->serial_id;
 
   if (Section->line_number_list == NULL) {
@@ -1180,8 +1284,10 @@ gp_coffgen_add_linenum(gp_section_type *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Delete the line number from the section. */
+
 gp_boolean
-gp_coffgen_del_linenum(gp_section_type *Section, gp_linenum_type *Linenum)
+gp_coffgen_del_linenum(gp_section_t *Section, gp_linenum_t *Linenum)
 {
   if ((Section->line_number_list == NULL) || (Section->num_lineno == 0)) {
     return false;
@@ -1217,10 +1323,12 @@ gp_coffgen_del_linenum(gp_section_type *Section, gp_linenum_type *Linenum)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_linenum_type *
-gp_coffgen_find_linenum_by_address(gp_section_type *Section, unsigned int Address)
+/* Find line number by address in the section. */
+
+gp_linenum_t *
+gp_coffgen_find_linenum_by_address(gp_section_t *Section, unsigned int Address)
 {
-  gp_linenum_type *linenum;
+  gp_linenum_t *linenum;
 
   if ((Section->line_number_list == NULL) || (Section->num_lineno == 0)) {
     return NULL;
@@ -1239,10 +1347,12 @@ gp_coffgen_find_linenum_by_address(gp_section_type *Section, unsigned int Addres
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Delete a line number by address from the section. */
+
 gp_boolean
-gp_coffgen_del_linenum_by_address(gp_section_type *Section, unsigned int Address)
+gp_coffgen_del_linenum_by_address(gp_section_t *Section, unsigned int Address)
 {
-  gp_linenum_type *linenum;
+  gp_linenum_t *linenum;
 
   linenum = gp_coffgen_find_linenum_by_address(Section, Address);
 
@@ -1255,13 +1365,15 @@ gp_coffgen_del_linenum_by_address(gp_section_type *Section, unsigned int Address
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Delete line numbers by address range from the section. */
+
 unsigned int
-gp_coffgen_del_linenum_by_address_area(gp_section_type *Section, unsigned int Address_start,
+gp_coffgen_del_linenum_by_address_area(gp_section_t *Section, unsigned int Address_start,
                                        unsigned int Address_end)
 {
-  gp_linenum_type *linenum;
-  gp_linenum_type *next;
-  unsigned int     num;
+  gp_linenum_t *linenum;
+  gp_linenum_t *next;
+  unsigned int  num;
 
   if ((Section->line_number_list == NULL) || (Section->num_lineno == 0)) {
     return false;
@@ -1287,12 +1399,12 @@ gp_coffgen_del_linenum_by_address_area(gp_section_type *Section, unsigned int Ad
 static int
 _linenum_cmp(const void *P0, const void *P1)
 {
-  const gp_linenum_type *l0   = *(const gp_linenum_type **)P0;
-  const gp_linenum_type *l1   = *(const gp_linenum_type **)P1;
-  const gp_symbol_type  *sym0 = l0->symbol;
-  const gp_symbol_type  *sym1 = l1->symbol;
-  unsigned int           num0 = l0->line_number;
-  unsigned int           num1 = l1->line_number;
+  const gp_linenum_t *l0   = *(const gp_linenum_t **)P0;
+  const gp_linenum_t *l1   = *(const gp_linenum_t **)P1;
+  const gp_symbol_t  *sym0 = l0->symbol;
+  const gp_symbol_t  *sym1 = l1->symbol;
+  unsigned int        num0 = l0->line_number;
+  unsigned int        num1 = l1->line_number;
 
   if (sym0 < sym1) {
     return -1;
@@ -1315,22 +1427,22 @@ _linenum_cmp(const void *P0, const void *P1)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Use gplink/glink.c */
+/* Create line number array. Use gplink/glink.c */
 
 void
-gp_coffgen_make_linenum_arrays(gp_object_type *Object)
+gp_coffgen_make_linenum_arrays(gp_object_t *Object)
 {
-  gp_section_type  *section;
-  gp_linenum_type  *linenum;
-  gp_linenum_type **array;
-  unsigned int      n_linenums;
-  unsigned int      prev_num;
-  unsigned int      i;
+  gp_section_t  *section;
+  gp_linenum_t  *linenum;
+  gp_linenum_t **array;
+  unsigned int   n_linenums;
+  unsigned int   prev_num;
+  unsigned int   i;
 
   section = Object->section_list;
   while (section != NULL) {
     n_linenums = section->num_lineno;
-    array      = (gp_linenum_type **)GP_Malloc(n_linenums * sizeof(gp_linenum_type *));
+    array      = (gp_linenum_t **)GP_Malloc(n_linenums * sizeof(gp_linenum_t *));
     i          = 0;
     prev_num   = (unsigned int)(-1);
     linenum    = section->line_number_list;
@@ -1346,26 +1458,26 @@ gp_coffgen_make_linenum_arrays(gp_object_type *Object)
     }
 
     /* Reduces the required memory size. */
-    array = (gp_linenum_type **)GP_Realloc(array, i * sizeof(gp_linenum_type *));
+    array = (gp_linenum_t **)GP_Realloc(array, i * sizeof(gp_linenum_t *));
     section->line_numbers_array        = array;
     section->line_numbers_array_length = i;
 
-    qsort(array, i, sizeof(gp_linenum_type *), _linenum_cmp);
+    qsort(array, i, sizeof(gp_linenum_t *), _linenum_cmp);
     section = section->next;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Use gplink/lst.c */
+/* Find a line number in array by symbol and number. Use gplink/lst.c */
 
-gp_linenum_type *
-gp_coffgen_find_linenum(const gp_section_type *Section, const gp_symbol_type *Symbol,
+gp_linenum_t *
+gp_coffgen_find_linenum(const gp_section_t *Section, const gp_symbol_t *Symbol,
                         unsigned int Line_number)
 {
-  gp_linenum_type   linenum;
-  gp_linenum_type  *ptr;
-  gp_linenum_type **ret;
+  gp_linenum_t   linenum;
+  gp_linenum_t  *ptr;
+  gp_linenum_t **ret;
 
   if ((Section == NULL) || (Section->line_numbers_array == NULL)) {
     return NULL;
@@ -1374,8 +1486,8 @@ gp_coffgen_find_linenum(const gp_section_type *Section, const gp_symbol_type *Sy
   linenum.symbol      = Symbol;
   linenum.line_number = Line_number;
   ptr = &linenum;
-  ret = (gp_linenum_type **)bsearch(&ptr, Section->line_numbers_array, Section->line_numbers_array_length,
-                                    sizeof(gp_linenum_type *), _linenum_cmp);
+  ret = (gp_linenum_t **)bsearch(&ptr, Section->line_numbers_array, Section->line_numbers_array_length,
+                                    sizeof(gp_linenum_t *), _linenum_cmp);
   return ((ret != NULL) ? *ret : NULL);
 }
 
@@ -1384,7 +1496,7 @@ gp_coffgen_find_linenum(const gp_section_type *Section, const gp_symbol_type *Sy
 /* Determine if any relocation uses the symbol. */
 
 gp_boolean
-gp_coffgen_symbol_has_reloc(const gp_symbol_type *Symbol)
+gp_coffgen_symbol_has_reloc(const gp_symbol_t *Symbol)
 {
   return ((Symbol->num_reloc_link > 0) ? true : false);
 }
@@ -1394,7 +1506,7 @@ gp_coffgen_symbol_has_reloc(const gp_symbol_type *Symbol)
 /* Determine if the symbol is global. */
 
 gp_boolean
-gp_coffgen_is_global_symbol(const gp_symbol_type *Symbol)
+gp_coffgen_is_global_symbol(const gp_symbol_t *Symbol)
 {
   return (((Symbol->class == C_EXT) && (Symbol->section_number == N_SCNUM)) ? true : false);
 }
@@ -1404,7 +1516,7 @@ gp_coffgen_is_global_symbol(const gp_symbol_type *Symbol)
 /* Determine if the symbol is external. */
 
 gp_boolean
-gp_coffgen_is_external_symbol(const gp_symbol_type *Symbol)
+gp_coffgen_is_external_symbol(const gp_symbol_t *Symbol)
 {
   return (((Symbol->class == C_EXT) && (Symbol->section_number == N_UNDEF)) ? true : false);
 }
@@ -1414,7 +1526,7 @@ gp_coffgen_is_external_symbol(const gp_symbol_type *Symbol)
 /* Determine if the symbol is debug. */
 
 gp_boolean
-gp_coffgen_is_debug_symbol(const gp_symbol_type *Symbol)
+gp_coffgen_is_debug_symbol(const gp_symbol_t *Symbol)
 {
   return (((Symbol->class == C_NULL) && (Symbol->section_number == N_DEBUG)) ? true : false);
 }
@@ -1424,20 +1536,22 @@ gp_coffgen_is_debug_symbol(const gp_symbol_type *Symbol)
 /* Determine if the symbol is absolute. */
 
 gp_boolean
-gp_coffgen_is_absolute_symbol(const gp_symbol_type *Symbol)
+gp_coffgen_is_absolute_symbol(const gp_symbol_t *Symbol)
 {
   return (((Symbol->class == C_NULL) && (Symbol->section_number == N_ABS)) ? true : false);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Free the section. */
+
 void
-gp_coffgen_free_section(gp_section_type *Section)
+gp_coffgen_free_section(gp_section_t *Section)
 {
-  gp_reloc_type   *relocation;
-  gp_linenum_type *line_number;
-  gp_reloc_type   *old_relocation;
-  gp_linenum_type *old_line_number;
+  gp_reloc_t   *relocation;
+  gp_linenum_t *line_number;
+  gp_reloc_t   *old_relocation;
+  gp_linenum_t *old_line_number;
 
   if (Section->data != NULL) {
     i_memory_free(Section->data);
@@ -1467,11 +1581,13 @@ gp_coffgen_free_section(gp_section_type *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Free the symbol. */
+
 unsigned int
-gp_coffgen_free_symbol(gp_symbol_type *Symbol)
+gp_coffgen_free_symbol(gp_symbol_t *Symbol)
 {
-  gp_aux_type  *aux;
-  gp_aux_type  *old_aux;
+  gp_aux_t     *aux;
+  gp_aux_t     *old_aux;
   unsigned int  num_auxsym;
 
   if (Symbol == NULL) {
@@ -1496,13 +1612,15 @@ gp_coffgen_free_symbol(gp_symbol_type *Symbol)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Free the object. */
+
 gp_boolean
-gp_coffgen_free_object(gp_object_type *Object)
+gp_coffgen_free_object(gp_object_t *Object)
 {
-  gp_section_type *section;
-  gp_symbol_type  *symbol;
-  gp_section_type *old_section;
-  gp_symbol_type  *old_symbol;
+  gp_section_t *section;
+  gp_symbol_t  *symbol;
+  gp_section_t *old_section;
+  gp_symbol_t  *old_symbol;
 
   if (Object == NULL) {
     return false;
@@ -1515,7 +1633,7 @@ gp_coffgen_free_object(gp_object_type *Object)
     gp_coffgen_free_symbol(old_symbol);
   }
 
-  symbol = Object->reserved_symbol_list;
+  symbol = Object->dead_symbol_list;
   while (symbol != NULL) {
     old_symbol = symbol;
     symbol     = symbol->next;
@@ -1537,7 +1655,7 @@ gp_coffgen_free_object(gp_object_type *Object)
     gp_coffgen_free_section(old_section);
   }
 
-  section = Object->reserved_section_list;
+  section = Object->dead_section_list;
   while (section != NULL) {
     old_section = section;
     section     = section->next;
@@ -1557,7 +1675,7 @@ gp_coffgen_free_object(gp_object_type *Object)
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-gp_coffgen_determine_aux_symbol(const gp_symbol_type *Symbol)
+gp_coffgen_determine_aux_symbol(const gp_symbol_t *Symbol)
 {
   unsigned int aux_type = AUX_NONE;
 

@@ -78,7 +78,7 @@ _show_usage(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_header(const gp_object_type *object)
+_print_header(const gp_object_t *object)
 {
 #define NELEM(x)  (sizeof(x) / sizeof(*(x)))
 
@@ -160,7 +160,7 @@ _format_reloc_type(uint16_t type, char *buffer, size_t sizeof_buffer)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_relocation_list(proc_class_t class, const gp_reloc_type *relocation)
+_print_relocation_list(proc_class_t class, const gp_reloc_t *relocation)
 {
   char buffer[32];
 
@@ -183,7 +183,7 @@ _print_relocation_list(proc_class_t class, const gp_reloc_type *relocation)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_linenum_list(proc_class_t class, const gp_linenum_type *linenumber)
+_print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber)
 {
   const char *filename;
 
@@ -212,7 +212,7 @@ _print_linenum_list(proc_class_t class, const gp_linenum_type *linenumber)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_data(proc_class_t class, pic_processor_t processor, const gp_section_type *section)
+_print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *section)
 {
   char     buffer[BUFSIZ];
   int      address;
@@ -271,9 +271,9 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_type
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_sec_header(proc_class_t class, const gp_section_type *section)
+_print_sec_header(proc_class_t class, const gp_section_t *section)
 {
-  int org_to_byte_shift;
+  unsigned int org_to_byte_shift;
 
   org_to_byte_shift = (section->flags & STYP_ROM_AREA) ? class->org_to_byte_shift : 0;
 
@@ -328,9 +328,9 @@ _print_sec_header(proc_class_t class, const gp_section_type *section)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_sec_list(const gp_object_type *object)
+_print_sec_list(const gp_object_t *object)
 {
-  const gp_section_type *section = object->section_list;
+  const gp_section_t *section = object->section_list;
 
   while (section != NULL) {
     _print_sec_header(object->class, section);
@@ -562,19 +562,20 @@ _format_sym_class(unsigned int cls, char *buffer, size_t sizeof_buffer)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_sym_table(const gp_object_type *object)
+_print_sym_table(const gp_object_t *object)
 {
-  static char     buf[64];
+  static char  buf[64];
 
-  gp_symbol_type *symbol;
-  gp_aux_type    *aux;
-  const char     *section;
-  int             c;
-  int             i;
-  int             idx = 1;
-  char            buffer_type[8];
-  char            buffer_derived_type[8];
-  char            buffer_class[8];
+  gp_symbol_t *symbol;
+  gp_symbol_t *callee;
+  gp_aux_t    *aux;
+  const char  *section;
+  int          c;
+  int          i;
+  int          idx = 1;
+  char         buffer_type[8];
+  char         buffer_derived_type[8];
+  char         buffer_class[8];
 
   symbol = object->symbol_list;
 
@@ -641,8 +642,7 @@ _print_sym_table(const gp_object_type *object)
         break;
 
       case AUX_FCN_CALLS: {
-        struct gp_symbol_type *callee = aux->_aux_symbol._aux_fcn_calls.callee;
-
+        callee = aux->_aux_symbol._aux_fcn_calls.callee;
         printf(AUX_INDENT "callee       = %s\n", (callee != NULL) ? callee->name : "higher order");
         printf(AUX_INDENT "is_interrupt = %u\n",
                aux->_aux_symbol._aux_fcn_calls.is_interrupt);
@@ -679,10 +679,10 @@ _print_sym_table(const gp_object_type *object)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_export_sym_table(gp_object_type *object)
+_export_sym_table(gp_object_t *object)
 {
-  gp_symbol_type *symbol;
-  char            buffer[BUFSIZ];
+  gp_symbol_t *symbol;
+  char         buffer[BUFSIZ];
 
   symbol = object->symbol_list;
 

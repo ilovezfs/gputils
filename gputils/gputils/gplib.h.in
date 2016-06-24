@@ -39,11 +39,11 @@ enum lib_modes {
 #define MAX_OBJ_NAMES 256
 
 extern struct gplib_state {
-  enum lib_modes   mode;                        /* operating mode */
-  int              numobjects;                  /* number of objects in the list */
-  char            *filename;                    /* library file name */
-  char            *objectname[MAX_OBJ_NAMES];   /* the list of object filenames */
-  gp_archive_type *archive;                     /* internal archive format */
+  enum lib_modes  mode;                        /* operating mode */
+  int             numobjects;                  /* number of objects in the list */
+  char           *filename;                    /* library file name */
+  char           *objectname[MAX_OBJ_NAMES];   /* the list of object filenames */
+  gp_archive_t   *archive;                     /* internal archive format */
 } state;
 
 #endif

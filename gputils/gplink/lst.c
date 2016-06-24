@@ -33,13 +33,13 @@ Boston, MA 02111-1307, USA.  */
 
 #define LINESIZ     520
 
-static gp_boolean             list_enabled;
-static const gp_section_type *line_section;
+static gp_boolean          list_enabled;
+static const gp_section_t *line_section;
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_open_source(const char *name, gp_symbol_type *symbol)
+_open_source(const char *name, gp_symbol_t *symbol)
 {
   char                 file_name[PATH_MAX + 1];
   struct list_context *new;
@@ -126,11 +126,11 @@ _lst_line(const char *format, ...)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static const gp_linenum_type *
-_find_line_number(const gp_symbol_type *symbol, unsigned int line_number)
+static const gp_linenum_t *
+_find_line_number(const gp_symbol_t *symbol, unsigned int line_number)
 {
-  const gp_section_type *section;
-  const gp_linenum_type *linenum;
+  const gp_section_t *section;
+  const gp_linenum_t *linenum;
 
   section = state.object->section_list;
   while (section != NULL) {
@@ -186,16 +186,16 @@ _expand_tabs(const char *buf)
 static void
 _write_source(int last_line)
 {
-  char          linebuf[LINESIZ];
-  char          dasmbuf[LINESIZ];
-  char         *pc;
-  const         gp_linenum_type *line;
-  gp_boolean    first_time;
-  unsigned int  org;
-  unsigned int  len;
-  uint8_t       byte;
-  uint16_t      word;
-  int           num_bytes;
+  char                linebuf[LINESIZ];
+  char                dasmbuf[LINESIZ];
+  char               *pc;
+  const gp_linenum_t *line;
+  gp_boolean          first_time;
+  unsigned int        org;
+  unsigned int        len;
+  uint8_t             byte;
+  uint16_t            word;
+  int                 num_bytes;
 
   /* If the source file wasn't found, can't write it to the list file. */
   if (state.lst.src->missing_source) {
@@ -363,9 +363,9 @@ _lst_init(void)
 void
 lst_write(void)
 {
-  gp_symbol_type    *symbol;
-  const gp_aux_type *aux;
-  gp_boolean         first_time;
+  gp_symbol_t    *symbol;
+  const gp_aux_t *aux;
+  gp_boolean      first_time;
 
   _lst_init();
 
