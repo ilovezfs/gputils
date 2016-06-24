@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Mar 21 2016
+; Build date : May 15 2016
 ;  MPASM PIC18F46K40 processor include
 ; 
 ;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
@@ -255,6 +255,7 @@ CM1PCH           EQU  H'0F3C'
 CMOUT            EQU  H'0F3D'
 CLKRCON          EQU  H'0F3E'
 CLKRCLK          EQU  H'0F3F'
+CWG1CLK          EQU  H'0F40'
 CWG1CLKCON       EQU  H'0F40'
 CWG1ISM          EQU  H'0F41'
 CWG1DBR          EQU  H'0F42'
@@ -403,6 +404,7 @@ PR6              EQU  H'0FB0'
 T6PR             EQU  H'0FB0'
 T6CON            EQU  H'0FB1'
 T6HLT            EQU  H'0FB2'
+T6CLK            EQU  H'0FB3'
 T6CLKCON         EQU  H'0FB3'
 T6RST            EQU  H'0FB4'
 T4TMR            EQU  H'0FB5'
@@ -411,6 +413,7 @@ PR4              EQU  H'0FB6'
 T4PR             EQU  H'0FB6'
 T4CON            EQU  H'0FB7'
 T4HLT            EQU  H'0FB8'
+T4CLK            EQU  H'0FB9'
 T4CLKCON         EQU  H'0FB9'
 T4RST            EQU  H'0FBA'
 T2TMR            EQU  H'0FBB'
@@ -419,6 +422,7 @@ PR2              EQU  H'0FBC'
 T2PR             EQU  H'0FBC'
 T2CON            EQU  H'0FBD'
 T2HLT            EQU  H'0FBE'
+T2CLK            EQU  H'0FBF'
 T2CLKCON         EQU  H'0FBF'
 T2RST            EQU  H'0FC0'
 TMR5L            EQU  H'0FC1'
@@ -550,7 +554,7 @@ SSPM3            EQU  H'0003'
 
 
 ;----- SSP2CON2 Bits -----------------------------------------------------
-SEN              EQU  H'0000'
+SEN_SSP2CON2     EQU  H'0000'
 RSEN             EQU  H'0001'
 PEN              EQU  H'0002'
 RCEN             EQU  H'0003'
@@ -1022,7 +1026,7 @@ CWG1IF           EQU  H'0000'
 
 
 ;----- WDTCON0 Bits -----------------------------------------------------
-SEN              EQU  H'0000'
+SEN_WDTCON0      EQU  H'0000'
 
 SWDTEN           EQU  H'0000'
 
@@ -1895,7 +1899,7 @@ ANSELE2          EQU  H'0002'
 ;----- HLVDCON0 Bits -----------------------------------------------------
 INTL             EQU  H'0000'
 INTH             EQU  H'0001'
-RDY              EQU  H'0004'
+RDY_HLVDCON0     EQU  H'0004'
 OUT_HLVDCON0     EQU  H'0005'
 EN               EQU  H'0007'
 
@@ -1921,16 +1925,24 @@ HLVDSEL3         EQU  H'0003'
 ;----- FVRCON Bits -----------------------------------------------------
 TSRNG            EQU  H'0004'
 TSEN             EQU  H'0005'
-FVRRDY           EQU  H'0006'
-FVREN            EQU  H'0007'
+RDY_FVRCON       EQU  H'0006'
+EN               EQU  H'0007'
 
 ADFVR0           EQU  H'0000'
 ADFVR1           EQU  H'0001'
 CDAFVR0          EQU  H'0002'
 CDAFVR1          EQU  H'0003'
+FVRRDY           EQU  H'0006'
+FVREN            EQU  H'0007'
 
 
 ;----- ZCDCON Bits -----------------------------------------------------
+INTN             EQU  H'0000'
+INTP             EQU  H'0001'
+POL              EQU  H'0004'
+OUT_ZCDCON       EQU  H'0005'
+SEN_ZCDCON       EQU  H'0007'
+
 ZCDINTN          EQU  H'0000'
 ZCDINTP          EQU  H'0001'
 ZCDPOL           EQU  H'0004'
@@ -2077,6 +2089,12 @@ CLKRCLK2         EQU  H'0002'
 CLK0             EQU  H'0000'
 CLK1             EQU  H'0001'
 CLK2             EQU  H'0002'
+
+
+;----- CWG1CLK Bits -----------------------------------------------------
+CS               EQU  H'0000'
+
+CWG1CS           EQU  H'0000'
 
 
 ;----- CWG1CLKCON Bits -----------------------------------------------------
@@ -2867,6 +2885,7 @@ NVMADR6          EQU  H'0006'
 NVMADR7          EQU  H'0007'
 
 
+
 ;----- NVMADRL Bits -----------------------------------------------------
 ADR0             EQU  H'0000'
 ADR1             EQU  H'0001'
@@ -2887,12 +2906,14 @@ NVMADR6          EQU  H'0006'
 NVMADR7          EQU  H'0007'
 
 
+
 ;----- NVMADRH Bits -----------------------------------------------------
 NVMADR8          EQU  H'0000'
 NVMADR9          EQU  H'0001'
 
 ADR8             EQU  H'0000'
 ADR9             EQU  H'0001'
+
 
 
 ;----- NVMDAT Bits -----------------------------------------------------
@@ -3250,7 +3271,7 @@ SSPM3            EQU  H'0003'
 
 
 ;----- SSP1CON2 Bits -----------------------------------------------------
-SEN              EQU  H'0000'
+SEN_SSP1CON2     EQU  H'0000'
 RSEN             EQU  H'0001'
 PEN              EQU  H'0002'
 RCEN             EQU  H'0003'
@@ -3563,7 +3584,26 @@ T6MODE3          EQU  H'0003'
 T6MODE4          EQU  H'0004'
 
 
+;----- T6CLK Bits -----------------------------------------------------
+CS0              EQU  H'0000'
+CS1              EQU  H'0001'
+CS2              EQU  H'0002'
+CS3              EQU  H'0003'
+
+
+T6CS0            EQU  H'0000'
+T6CS1            EQU  H'0001'
+T6CS2            EQU  H'0002'
+T6CS3            EQU  H'0003'
+
+
 ;----- T6CLKCON Bits -----------------------------------------------------
+CS0              EQU  H'0000'
+CS1              EQU  H'0001'
+CS2              EQU  H'0002'
+CS3              EQU  H'0003'
+
+
 T6CS0            EQU  H'0000'
 T6CS1            EQU  H'0001'
 T6CS2            EQU  H'0002'
@@ -3628,7 +3668,26 @@ T4MODE3          EQU  H'0003'
 T4MODE4          EQU  H'0004'
 
 
+;----- T4CLK Bits -----------------------------------------------------
+CS0              EQU  H'0000'
+CS1              EQU  H'0001'
+CS2              EQU  H'0002'
+CS3              EQU  H'0003'
+
+
+T4CS0            EQU  H'0000'
+T4CS1            EQU  H'0001'
+T4CS2            EQU  H'0002'
+T4CS3            EQU  H'0003'
+
+
 ;----- T4CLKCON Bits -----------------------------------------------------
+CS0              EQU  H'0000'
+CS1              EQU  H'0001'
+CS2              EQU  H'0002'
+CS3              EQU  H'0003'
+
+
 T4CS0            EQU  H'0000'
 T4CS1            EQU  H'0001'
 T4CS2            EQU  H'0002'
@@ -3693,7 +3752,26 @@ T2MODE3          EQU  H'0003'
 T2MODE4          EQU  H'0004'
 
 
+;----- T2CLK Bits -----------------------------------------------------
+CS0              EQU  H'0000'
+CS1              EQU  H'0001'
+CS2              EQU  H'0002'
+CS3              EQU  H'0003'
+
+
+T2CS0            EQU  H'0000'
+T2CS1            EQU  H'0001'
+T2CS2            EQU  H'0002'
+T2CS3            EQU  H'0003'
+
+
 ;----- T2CLKCON Bits -----------------------------------------------------
+CS0              EQU  H'0000'
+CS1              EQU  H'0001'
+CS2              EQU  H'0002'
+CS3              EQU  H'0003'
+
+
 T2CS0            EQU  H'0000'
 T2CS1            EQU  H'0001'
 T2CS2            EQU  H'0002'

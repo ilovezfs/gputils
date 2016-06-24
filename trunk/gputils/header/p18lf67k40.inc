@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Mar 21 2016
+; Build date : May 15 2016
 ;  MPASM PIC18LF67K40 processor include
 ; 
 ;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
@@ -446,6 +446,7 @@ T7CLK            EQU  H'0F33'
 TMR7CLK          EQU  H'0F33'
 CLKRCON          EQU  H'0F34'
 CLKRCLK          EQU  H'0F35'
+CWG1CLK          EQU  H'0F36'
 CWG1CLKCON       EQU  H'0F36'
 CWG1ISM          EQU  H'0F37'
 CWG1DBR          EQU  H'0F38'
@@ -1409,7 +1410,7 @@ SMU2PWAIF        EQU  H'0005'
 
 
 ;----- WDTCON0 Bits -----------------------------------------------------
-SEN              EQU  H'0000'
+SEN_WDTCON0      EQU  H'0000'
 
 SWDTEN           EQU  H'0000'
 PS0              EQU  H'0001'
@@ -2777,7 +2778,7 @@ WPUH7            EQU  H'0007'
 ;----- HLVDCON0 Bits -----------------------------------------------------
 INTL             EQU  H'0000'
 INTH             EQU  H'0001'
-RDY              EQU  H'0004'
+RDY_HLVDCON0     EQU  H'0004'
 OUT_HLVDCON0     EQU  H'0005'
 EN               EQU  H'0007'
 
@@ -2803,16 +2804,24 @@ HLVDSEL3         EQU  H'0003'
 ;----- FVRCON Bits -----------------------------------------------------
 TSRNG            EQU  H'0004'
 TSEN             EQU  H'0005'
-FVRRDY           EQU  H'0006'
-FVREN            EQU  H'0007'
+RDY_FVRCON       EQU  H'0006'
+EN               EQU  H'0007'
 
 ADFVR0           EQU  H'0000'
 ADFVR1           EQU  H'0001'
 CDAFVR0          EQU  H'0002'
 CDAFVR1          EQU  H'0003'
+FVRRDY           EQU  H'0006'
+FVREN            EQU  H'0007'
 
 
 ;----- ZCDCON Bits -----------------------------------------------------
+INTN             EQU  H'0000'
+INTP             EQU  H'0001'
+POL              EQU  H'0004'
+OUT_ZCDCON       EQU  H'0005'
+SEN_ZCDCON       EQU  H'0007'
+
 ZCDINTN          EQU  H'0000'
 ZCDINTP          EQU  H'0001'
 ZCDPOL           EQU  H'0004'
@@ -3029,7 +3038,7 @@ SSPM3            EQU  H'0003'
 
 
 ;----- SSP2CON2 Bits -----------------------------------------------------
-SEN              EQU  H'0000'
+SEN_SSP2CON2     EQU  H'0000'
 RSEN             EQU  H'0001'
 PEN              EQU  H'0002'
 RCEN             EQU  H'0003'
@@ -4173,6 +4182,12 @@ CLK1             EQU  H'0001'
 CLK2             EQU  H'0002'
 
 
+;----- CWG1CLK Bits -----------------------------------------------------
+CS               EQU  H'0000'
+
+CWG1CS           EQU  H'0000'
+
+
 ;----- CWG1CLKCON Bits -----------------------------------------------------
 CS               EQU  H'0000'
 
@@ -4963,6 +4978,7 @@ NVMADR6          EQU  H'0006'
 NVMADR7          EQU  H'0007'
 
 
+
 ;----- NVMADRL Bits -----------------------------------------------------
 ADR0             EQU  H'0000'
 ADR1             EQU  H'0001'
@@ -4983,12 +4999,14 @@ NVMADR6          EQU  H'0006'
 NVMADR7          EQU  H'0007'
 
 
+
 ;----- NVMADRH Bits -----------------------------------------------------
 NVMADR8          EQU  H'0000'
 NVMADR9          EQU  H'0001'
 
 ADR8             EQU  H'0000'
 ADR9             EQU  H'0001'
+
 
 
 ;----- NVMDAT Bits -----------------------------------------------------
@@ -5482,7 +5500,7 @@ SSPM3            EQU  H'0003'
 
 
 ;----- SSP1CON2 Bits -----------------------------------------------------
-SEN              EQU  H'0000'
+SEN_SSP1CON2     EQU  H'0000'
 RSEN             EQU  H'0001'
 PEN              EQU  H'0002'
 RCEN             EQU  H'0003'

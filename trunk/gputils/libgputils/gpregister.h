@@ -23,7 +23,7 @@ typedef struct {
 } gp_register_table_t;
 
 extern const gp_register_table_t gp_register_db[];
-extern const int gp_register_db_size;
+extern const int                 gp_register_db_size;
 
 extern const gp_register_table_t *gp_register_find_mcu(const gp_register_table_t *Table, int Table_size, const char *McuName);
 

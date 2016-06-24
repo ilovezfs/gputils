@@ -261,7 +261,7 @@ name "sec:Supported-processors"
 \end_layout
 
 \begin_layout Standard
-The gputils currently supports most processors supported by MPLABX v3.30.
+The gputils currently supports most processors supported by MPLABX v3.35.
  This includes the following processors:
 \begin_inset Newline newline
 \end_inset

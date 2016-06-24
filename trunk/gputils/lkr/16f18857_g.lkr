@@ -9,7 +9,7 @@ CODEPAGE   NAME=.devid     START=0x8006            END=0x8006         PROTECTED
 CODEPAGE   NAME=.config    START=0x8007            END=0x800B         PROTECTED 
 CODEPAGE   NAME=eedata     START=0xF000            END=0xF0FF         PROTECTED 
 
-LINEARMEM  NAME=linear0    START=0x2000            END=0x30BF         PROTECTED
+LINEARMEM  NAME=linear0    START=0x2000            END=0x2FEF         PROTECTED
 
 DATABANK   NAME=sfr0       START=0x0               END=0x1F           PROTECTED
 DATABANK   NAME=sfr1       START=0x80              END=0x9F           PROTECTED
@@ -127,19 +127,6 @@ DATABANK   NAME=gpr47      START=0x17A0            END=0x17EF         SHADOW=lin
 DATABANK   NAME=gpr48      START=0x1820            END=0x186F         SHADOW=linear0:0x2F00
 DATABANK   NAME=gpr49      START=0x18A0            END=0x18EF         SHADOW=linear0:0x2F50
 DATABANK   NAME=gpr50      START=0x1920            END=0x196F         SHADOW=linear0:0x2FA0
-DATABANK   NAME=gpr51s     START=0x19F0            END=0x19FF         SHADOW=linear0:0x2FF0
-DATABANK   NAME=gpr52s     START=0x1A70            END=0x1A7F         SHADOW=linear0:0x3000
-DATABANK   NAME=gpr53s     START=0x1AF0            END=0x1AFF         SHADOW=linear0:0x3010
-DATABANK   NAME=gpr54s     START=0x1B70            END=0x1B7F         SHADOW=linear0:0x3020
-DATABANK   NAME=gpr55s     START=0x1BF0            END=0x1BFF         SHADOW=linear0:0x3030
-DATABANK   NAME=gpr56s     START=0x1C70            END=0x1C7F         SHADOW=linear0:0x3040
-DATABANK   NAME=gpr57s     START=0x1CF0            END=0x1CFF         SHADOW=linear0:0x3050
-DATABANK   NAME=gpr58s     START=0x1D70            END=0x1D7F         SHADOW=linear0:0x3060
-DATABANK   NAME=gpr59s     START=0x1DF0            END=0x1DFF         SHADOW=linear0:0x3070
-DATABANK   NAME=gpr60s     START=0x1E70            END=0x1E7F         SHADOW=linear0:0x3080
-DATABANK   NAME=gpr61s     START=0x1EF0            END=0x1EFF         SHADOW=linear0:0x3090
-DATABANK   NAME=gpr62s     START=0x1F70            END=0x1F7F         SHADOW=linear0:0x30A0
-DATABANK   NAME=gpr63s     START=0x1FF0            END=0x1FFF         SHADOW=linear0:0x30B0
 
 SHAREBANK  NAME=gprnobank  START=0x70            END=0x7F           
 SHAREBANK  NAME=gprnobank  START=0xF0            END=0xFF           PROTECTED
@@ -192,6 +179,19 @@ SHAREBANK  NAME=gprnobank  START=0x17F0          END=0x17FF         PROTECTED
 SHAREBANK  NAME=gprnobank  START=0x1870          END=0x187F         PROTECTED
 SHAREBANK  NAME=gprnobank  START=0x18F0          END=0x18FF         PROTECTED
 SHAREBANK  NAME=gprnobank  START=0x1970          END=0x197F         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x19F0          END=0x19FF         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1A70          END=0x1A7F         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1AF0          END=0x1AFF         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1B70          END=0x1B7F         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1BF0          END=0x1BFF         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1C70          END=0x1C7F         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1CF0          END=0x1CFF         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1D70          END=0x1D7F         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1DF0          END=0x1DFF         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1E70          END=0x1E7F         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1EF0          END=0x1EFF         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1F70          END=0x1F7F         PROTECTED
+SHAREBANK  NAME=gprnobank  START=0x1FF0          END=0x1FFF         PROTECTED
 
 SECTION    NAME=PROG0      ROM=page0           // ROM code space - page0
 SECTION    NAME=IDLOCS     ROM=.idlocs         // ID locations
