@@ -2,6 +2,7 @@
 /* Header to label list handler.
 
    Copyright (C) 2014 Molnar Karoly
+   Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -46,31 +47,31 @@ enum {
 };
 
 typedef struct lset_symbol {
-  char *name;
-  long start;
-  long end;
-  unsigned int attr;                    /* CSYM_yyyy */
-  int line_number;
+  char               *name;
+  long                start;
+  long                end;
+  unsigned int        attr;             /* CSYM_yyyy */
+  int                 line_number;
   struct lset_symbol *prev;
   struct lset_symbol *next;
 } lset_symbol_t;
 
 typedef struct lset_section {
-  char *name;
-  unsigned int symbol_number;
-  int line_number;
-  lset_symbol_t *symbol_first;
-  lset_symbol_t *symbol_actual;
-  lset_symbol_t *symbol_last;
-  lset_symbol_t **symbol_table;
-  struct lset_section *prev;
-  struct lset_section *next;
+  char                 *name;
+  unsigned int          symbol_number;
+  int                   line_number;
+  lset_symbol_t        *symbol_first;
+  lset_symbol_t        *symbol_actual;
+  lset_symbol_t        *symbol_last;
+  lset_symbol_t       **symbol_table;
+  struct lset_section  *prev;
+  struct lset_section  *next;
 } lset_section_t;
 
 typedef struct lset_section_root {
-  char *file_name;
-  unsigned int is_data;
-  unsigned int section_number;
+  char           *file_name;
+  unsigned int    is_data;
+  unsigned int    section_number;
   lset_section_t *section_global;
   lset_section_t *section_first;
   lset_section_t *section_actual;

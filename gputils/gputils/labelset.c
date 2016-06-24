@@ -2,6 +2,7 @@
 /* Label list handler.
 
    Copyright (C) 2014 Molnar Karoly
+   Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 

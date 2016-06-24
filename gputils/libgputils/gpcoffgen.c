@@ -2,6 +2,8 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -1278,6 +1280,103 @@ gp_coffgen_del_linenum_by_address_area(gp_section_type *Section, unsigned int Ad
   }
 
   return num;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static int
+_linenum_cmp(const void *P0, const void *P1)
+{
+  const gp_linenum_type *l0   = *(const gp_linenum_type **)P0;
+  const gp_linenum_type *l1   = *(const gp_linenum_type **)P1;
+  const gp_symbol_type  *sym0 = l0->symbol;
+  const gp_symbol_type  *sym1 = l1->symbol;
+  unsigned int           num0 = l0->line_number;
+  unsigned int           num1 = l1->line_number;
+
+  if (sym0 < sym1) {
+    return -1;
+  }
+
+  if (sym0 > sym1) {
+    return 1;
+  }
+
+  if (num0 < num1) {
+    return -1;
+  }
+
+  if (num0 > num1) {
+    return 1;
+  }
+
+  return 0;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Use gplink/glink.c */
+
+void
+gp_coffgen_make_linenum_arrays(gp_object_type *Object)
+{
+  gp_section_type  *section;
+  gp_linenum_type  *linenum;
+  gp_linenum_type **array;
+  unsigned int      n_linenums;
+  unsigned int      prev_num;
+  unsigned int      i;
+
+  section = Object->section_list;
+  while (section != NULL) {
+    n_linenums = section->num_lineno;
+    array      = (gp_linenum_type **)GP_Malloc(n_linenums * sizeof(gp_linenum_type *));
+    i          = 0;
+    prev_num   = (unsigned int)(-1);
+    linenum    = section->line_number_list;
+    while (linenum != NULL) {
+      /* From among identical line numbers only places the first in the array. */
+      if (prev_num != linenum->line_number) {
+        array[i] = linenum;
+        ++i;
+        prev_num = linenum->line_number;
+      }
+
+      linenum = linenum->next;
+    }
+
+    /* Reduces the required memory size. */
+    array = (gp_linenum_type **)GP_Realloc(array, i * sizeof(gp_linenum_type *));
+    section->line_numbers_array        = array;
+    section->line_numbers_array_length = i;
+
+    qsort(array, i, sizeof(gp_linenum_type *), _linenum_cmp);
+    section = section->next;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Use gplink/lst.c */
+
+gp_linenum_type *
+gp_coffgen_find_linenum(const gp_section_type *Section, const gp_symbol_type *Symbol,
+                        unsigned int Line_number)
+{
+  gp_linenum_type   linenum;
+  gp_linenum_type  *ptr;
+  gp_linenum_type **ret;
+
+  if ((Section == NULL) || (Section->line_numbers_array == NULL)) {
+    return NULL;
+  }
+
+  linenum.symbol      = Symbol;
+  linenum.line_number = Line_number;
+  ptr = &linenum;
+  ret = (gp_linenum_type **)bsearch(&ptr, Section->line_numbers_array, Section->line_numbers_array_length,
+                                    sizeof(gp_linenum_type *), _linenum_cmp);
+  return ((ret != NULL) ? *ret : NULL);
 }
 
 /*------------------------------------------------------------------------------------------------*/

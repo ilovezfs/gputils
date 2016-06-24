@@ -37,7 +37,7 @@ int gp_num_messages = 0;
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_error(const char *format, ...)
+gp_error(const char *Format, ...)
 {
   va_list args;
   char    buffer[BUFSIZ];
@@ -52,8 +52,8 @@ gp_error(const char *format, ...)
     return;
   }
 
-  va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
+  va_start(args, Format);
+  vsnprintf(buffer, sizeof(buffer), Format, args);
   va_end(args);
 
   printf("error: %s\n", buffer);
@@ -62,7 +62,7 @@ gp_error(const char *format, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_warning(const char *format, ...)
+gp_warning(const char *Format, ...)
 {
   va_list args;
   char    buffer[BUFSIZ];
@@ -77,8 +77,8 @@ gp_warning(const char *format, ...)
     return;
   }
 
-  va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
+  va_start(args, Format);
+  vsnprintf(buffer, sizeof(buffer), Format, args);
   va_end(args);
 
   printf("warning: %s\n", buffer);
@@ -87,7 +87,7 @@ gp_warning(const char *format, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_message(const char *format, ...)
+gp_message(const char *Format, ...)
 {
   va_list args;
   char    buffer[BUFSIZ];
@@ -102,8 +102,8 @@ gp_message(const char *format, ...)
     return;
   }
 
-  va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
+  va_start(args, Format);
+  vsnprintf(buffer, sizeof(buffer), Format, args);
   va_end(args);
 
   printf("message: %s\n", buffer);
@@ -112,7 +112,7 @@ gp_message(const char *format, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_debug(const char *format, ...)
+gp_debug(const char *Format, ...)
 {
   va_list args;
   char    buffer[BUFSIZ];
@@ -125,8 +125,8 @@ gp_debug(const char *format, ...)
     return;
   }
 
-  va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
+  va_start(args, Format);
+  vsnprintf(buffer, sizeof(buffer), Format, args);
   va_end(args);
 
   printf("debug: %s\n", buffer);

@@ -194,20 +194,20 @@ typedef struct dir_block_info {
 } DirBlockInfo;
 
 /* common cod functions */
-extern void gp_cod_strncpy(uint8_t *dest, const char *src, int max_len);
-extern void gp_cod_date(uint8_t *buffer, size_t sizeof_buffer);
-extern void gp_cod_time(uint8_t *buffer, size_t sizeof_buffer);
-extern void gp_cod_create(Block *b);
+extern void gp_cod_strncpy(uint8_t *Dest, const char *Src, int Max_len);
+extern void gp_cod_date(uint8_t *Buffer, size_t Sizeof_buffer);
+extern void gp_cod_time(uint8_t *Buffer, size_t Sizeof_buffer);
+extern void gp_cod_create(Block *B);
 extern BlockList *gp_blocks_new(void);
-extern BlockList *gp_blocks_append(Blocks *bl, BlockList *b);
-extern BlockList *gp_blocks_get_last(Blocks *bl);
-extern BlockList *gp_blocks_get_last_or_new(Blocks *bl);
-extern int gp_blocks_count(const Blocks *bl);
-extern void gp_blocks_enumerate(DirBlockInfo *dir, unsigned int offset, Blocks *bl, unsigned int *block_num);
-extern void gp_blocks_enumerate_directory(DirBlockInfo *main_dir);
-extern void gp_blocks_write(FILE *f, Blocks *bl);
-extern void gp_blocks_write_directory(FILE *f, DirBlockInfo *main_dir);
-extern void gp_blocks_free(Blocks *bl);
-extern void gp_blocks_free_directory(DirBlockInfo *main_dir);
+extern BlockList *gp_blocks_append(Blocks *Bl, BlockList *B);
+extern BlockList *gp_blocks_get_last(Blocks *Bl);
+extern BlockList *gp_blocks_get_last_or_new(Blocks *Bl);
+extern int gp_blocks_count(const Blocks *Bl);
+extern void gp_blocks_enumerate(DirBlockInfo *Dir, unsigned int Offset, Blocks *Bl, unsigned int *Block_num);
+extern void gp_blocks_enumerate_directory(DirBlockInfo *Main_dir);
+extern void gp_blocks_write(FILE *F, Blocks *Bl);
+extern void gp_blocks_write_directory(FILE *F, DirBlockInfo *Main_dir);
+extern void gp_blocks_free(Blocks *Bl);
+extern void gp_blocks_free_directory(DirBlockInfo *Main_dir);
 
 #endif

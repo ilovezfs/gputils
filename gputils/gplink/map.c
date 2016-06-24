@@ -2,6 +2,8 @@
    Copyright (C) 2003, 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify

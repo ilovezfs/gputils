@@ -2,6 +2,8 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -73,6 +75,11 @@ extern gp_boolean gp_coffgen_del_linenum(gp_section_type *Section, gp_linenum_ty
 extern gp_boolean gp_coffgen_del_linenum_by_address(gp_section_type *Section, unsigned int Address);
 extern unsigned int gp_coffgen_del_linenum_by_address_area(gp_section_type *Section, unsigned int Address_start,
                                                            unsigned int Address_end);
+
+extern void gp_coffgen_make_linenum_arrays(gp_object_type *Object);
+
+extern gp_linenum_type *gp_coffgen_find_linenum(const gp_section_type *Section, const gp_symbol_type *Symbol,
+                                                unsigned int Line_number);
 
 
 extern gp_boolean gp_coffgen_symbol_has_reloc(const gp_symbol_type *Symbol);

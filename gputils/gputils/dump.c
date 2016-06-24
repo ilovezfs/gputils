@@ -3,6 +3,8 @@
    Scott Dattalo
    Copyright (C) 2012 Borut Razem
 
+    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
