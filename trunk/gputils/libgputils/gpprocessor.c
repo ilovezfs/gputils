@@ -1862,7 +1862,7 @@ _reloc_unsupported(unsigned int address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_reloc_bra_unsupported(gp_section_type *section, unsigned int value, unsigned int byte_address)
+_reloc_bra_unsupported(gp_section_t *section, unsigned int value, unsigned int byte_address)
 {
   (void)section;
   (void)value;
@@ -2560,7 +2560,7 @@ _reloc_movlb_pic14e(unsigned int address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_reloc_bra_pic14e(gp_section_type *section, unsigned int value, unsigned int byte_address)
+_reloc_bra_pic14e(gp_section_t *section, unsigned int value, unsigned int byte_address)
 {
   int offset = value - (byte_address / 2) - 1;
 
@@ -2818,7 +2818,7 @@ _reloc_movlb_pic16e(unsigned int address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_reloc_bra_pic16e(gp_section_type *section, unsigned int value, unsigned int byte_address)
+_reloc_bra_pic16e(gp_section_t *section, unsigned int value, unsigned int byte_address)
 {
   int offset = ((int)(value - byte_address - 2)) >> 1;
 

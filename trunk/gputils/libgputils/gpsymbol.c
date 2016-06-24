@@ -28,10 +28,10 @@ Boston, MA 02111-1307, USA.  */
 static int
 _hash_sort_cmp(const void *P0, const void *P1)
 {
-  const gp_hash_type *h0 = (const gp_hash_type *)P0;
-  const gp_hash_type *h1 = (const gp_hash_type *)P1;
-  const char         *s0;
-  const char         *s1;
+  const gp_hash_t *h0 = (const gp_hash_t *)P0;
+  const gp_hash_t *h1 = (const gp_hash_t *)P1;
+  const char      *s0;
+  const char      *s1;
 
   if (h0->hash.high.u64 < h1->hash.high.u64) {
     return -1;
@@ -72,8 +72,8 @@ _hash_sort_cmp(const void *P0, const void *P1)
 static int
 _hash_find_cmp(const void *P0, const void *P1)
 {
-  const gp_hash_type *h0 = (const gp_hash_type *)P0;
-  const gp_hash_type *h1 = (const gp_hash_type *)P1;
+  const gp_hash_t *h0 = (const gp_hash_t *)P0;
+  const gp_hash_t *h1 = (const gp_hash_t *)P1;
 
   if (h0->hash.high.u64 < h1->hash.high.u64) {
     return -1;
@@ -96,14 +96,14 @@ _hash_find_cmp(const void *P0, const void *P1)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_hash_type *
-gp_symbol_make_hash_table(gp_object_type *Object)
+gp_hash_t *
+gp_symbol_make_hash_table(gp_object_t *Object)
 {
-  gp_symbol_type *symbol;
-  gp_hash_type   *table;
-  gp_hash_type   *tp;
-  unsigned int    n_symbols;
-  hash128_t      *h;
+  gp_symbol_t  *symbol;
+  gp_hash_t    *table;
+  gp_hash_t    *tp;
+  unsigned int  n_symbols;
+  hash128_t    *h;
 
   if (Object == NULL) {
     return NULL;
@@ -122,7 +122,7 @@ gp_symbol_make_hash_table(gp_object_type *Object)
     symbol = symbol->next;
   }
 
-  table = (gp_hash_type *)GP_Calloc(n_symbols, sizeof(gp_hash_type));
+  table = (gp_hash_t *)GP_Calloc(n_symbols, sizeof(gp_hash_t));
 
   Object->symbol_hashtable      = table;
   Object->symbol_hashtable_size = n_symbols;
@@ -141,7 +141,7 @@ gp_symbol_make_hash_table(gp_object_type *Object)
     symbol = symbol->next;
   }
 
-  qsort(table, n_symbols, sizeof(gp_hash_type), _hash_sort_cmp);
+  qsort(table, n_symbols, sizeof(gp_hash_t), _hash_sort_cmp);
   return table;
 }
 
@@ -149,11 +149,11 @@ gp_symbol_make_hash_table(gp_object_type *Object)
 
 /* Search a symbol on the basis of value and owner section name. */
 
-const gp_symbol_type *
-gp_symbol_find(const gp_object_type *Object, const char *Section_name, gp_symvalue_t Symbol_value)
+const gp_symbol_t *
+gp_symbol_find(const gp_object_t *Object, const char *Section_name, gp_symvalue_t Symbol_value)
 {
-  gp_hash_type  gp_hash;
-  gp_hash_type *ret;
+  gp_hash_t  gp_hash;
+  gp_hash_t *ret;
 
   if ((Object == NULL) || (Section_name == NULL)) {
     return NULL;
@@ -167,8 +167,8 @@ gp_symbol_find(const gp_object_type *Object, const char *Section_name, gp_symval
   gp_hash_str(&gp_hash.hash, Section_name, false);
   gp_hash_mem(&gp_hash.hash, &Symbol_value, sizeof(Symbol_value));
 
-  ret = (gp_hash_type *)bsearch(&gp_hash, Object->symbol_hashtable, Object->symbol_hashtable_size,
-                                sizeof(gp_hash_type), _hash_find_cmp);
+  ret = (gp_hash_t *)bsearch(&gp_hash, Object->symbol_hashtable, Object->symbol_hashtable_size,
+                             sizeof(gp_hash_t), _hash_find_cmp);
 
   return ((ret != NULL) ? ret->symbol : NULL);
 }
@@ -178,10 +178,10 @@ gp_symbol_find(const gp_object_type *Object, const char *Section_name, gp_symval
 static int
 _value_cmp(const void *P0, const void *P1)
 {
-  const gp_symbol_type *s0 = *(const gp_symbol_type **)P0;
-  const gp_symbol_type *s1 = *(const gp_symbol_type **)P1;
-  gp_symvalue_t         v0 = s0->value;
-  gp_symvalue_t         v1 = s1->value;
+  const gp_symbol_t *s0 = *(const gp_symbol_t **)P0;
+  const gp_symbol_t *s1 = *(const gp_symbol_t **)P1;
+  gp_symvalue_t      v0 = s0->value;
+  gp_symvalue_t      v1 = s1->value;
 
   if (v0 < v1) {
     return -1;
@@ -198,16 +198,16 @@ _value_cmp(const void *P0, const void *P1)
 
 /* Collects those labels that belong to the same "Section". */
 
-gp_symbol_type **
-gp_symbol_make_label_array(gp_section_type *Section, unsigned int Org_to_byte_shift,
+gp_symbol_t **
+gp_symbol_make_label_array(gp_section_t *Section, unsigned int Org_to_byte_shift,
                            unsigned int *Num_labels)
 {
-  gp_symbol_type  *symbol;
-  gp_symbol_type **array;
-  gp_symvalue_t    start_addr;
-  gp_symvalue_t    end_addr;
-  unsigned int     i;
-  unsigned int     n_labels;
+  gp_symbol_t    *symbol;
+  gp_symbol_t   **array;
+  gp_symvalue_t   start_addr;
+  gp_symvalue_t   end_addr;
+  unsigned int    i;
+  unsigned int    n_labels;
 
   if ((Section == NULL) || (Num_labels == NULL)) {
     return NULL;
@@ -235,7 +235,7 @@ gp_symbol_make_label_array(gp_section_type *Section, unsigned int Org_to_byte_sh
     return NULL;
   }
 
-  array = (gp_symbol_type **)GP_Malloc(n_labels * sizeof(gp_symbol_type *));
+  array = (gp_symbol_t **)GP_Malloc(n_labels * sizeof(gp_symbol_t *));
 
   i      = 0;
   symbol = Section->symbol;
@@ -248,7 +248,7 @@ gp_symbol_make_label_array(gp_section_type *Section, unsigned int Org_to_byte_sh
   }
 
   if (n_labels > 1) {
-    qsort(array, n_labels, sizeof(gp_symbol_type *), _value_cmp);
+    qsort(array, n_labels, sizeof(gp_symbol_t *), _value_cmp);
   }
 
   *Num_labels = n_labels;
@@ -259,13 +259,13 @@ gp_symbol_make_label_array(gp_section_type *Section, unsigned int Org_to_byte_sh
 
 /* Collects those registers that belong to the same "Section". */
 
-gp_symbol_type **
-gp_symbol_make_register_array(gp_object_type *Object, unsigned int *Num_registers)
+gp_symbol_t **
+gp_symbol_make_register_array(gp_object_t *Object, unsigned int *Num_registers)
 {
-  gp_symbol_type  *symbol;
-  gp_symbol_type **array;
-  unsigned int     i;
-  unsigned int     n_registers;
+  gp_symbol_t   *symbol;
+  gp_symbol_t  **array;
+  unsigned int   i;
+  unsigned int   n_registers;
 
   if ((Object == NULL) || (Num_registers == NULL)) {
     return NULL;
@@ -288,7 +288,7 @@ gp_symbol_make_register_array(gp_object_type *Object, unsigned int *Num_register
     return NULL;
   }
 
-  array = (gp_symbol_type **)GP_Malloc(n_registers * sizeof(gp_symbol_type *));
+  array = (gp_symbol_t **)GP_Malloc(n_registers * sizeof(gp_symbol_t *));
 
   i      = 0;
   symbol = Object->symbol_list;
@@ -301,7 +301,7 @@ gp_symbol_make_register_array(gp_object_type *Object, unsigned int *Num_register
   }
 
   if (n_registers > 1) {
-    qsort(array, n_registers, sizeof(gp_symbol_type *), _value_cmp);
+    qsort(array, n_registers, sizeof(gp_symbol_t *), _value_cmp);
   }
 
   *Num_registers = n_registers;
@@ -312,12 +312,12 @@ gp_symbol_make_register_array(gp_object_type *Object, unsigned int *Num_register
 
 /* Search a symbol on the basis of value. */
 
-gp_symbol_type *
-gp_symbol_find_by_value(gp_symbol_type **Array, unsigned int Num_symbols, gp_symvalue_t Value)
+gp_symbol_t *
+gp_symbol_find_by_value(gp_symbol_t **Array, unsigned int Num_symbols, gp_symvalue_t Value)
 {
-  gp_symbol_type   symbol;
-  gp_symbol_type  *sptr;
-  gp_symbol_type **ret;
+  gp_symbol_t   symbol;
+  gp_symbol_t  *sptr;
+  gp_symbol_t **ret;
 
   if ((Array == NULL) || (Num_symbols == 0)) {
     return NULL;
@@ -325,7 +325,7 @@ gp_symbol_find_by_value(gp_symbol_type **Array, unsigned int Num_symbols, gp_sym
 
   symbol.value = Value;
   sptr         = &symbol;
-  ret = (gp_symbol_type **)bsearch(&sptr, Array, Num_symbols, sizeof(gp_symbol_type *), _value_cmp);
+  ret = (gp_symbol_t **)bsearch(&sptr, Array, Num_symbols, sizeof(gp_symbol_t *), _value_cmp);
   return ((ret != NULL) ? *ret : NULL);
 }
 
@@ -334,15 +334,15 @@ gp_symbol_find_by_value(gp_symbol_type **Array, unsigned int Num_symbols, gp_sym
 /* Delete a symbol on the basis of value. */
 
 gp_boolean
-gp_symbol_delete_by_value(gp_symbol_type **Array, unsigned int *Num_symbols, gp_symvalue_t Value)
+gp_symbol_delete_by_value(gp_symbol_t **Array, unsigned int *Num_symbols, gp_symvalue_t Value)
 {
-  unsigned int     n_symbols;
-  gp_symbol_type   symbol;
-  gp_symbol_type  *sptr;
-  gp_symbol_type **ret;
-  unsigned int     dst;
-  unsigned int     src;
-  unsigned int     num;
+  unsigned int   n_symbols;
+  gp_symbol_t    symbol;
+  gp_symbol_t   *sptr;
+  gp_symbol_t  **ret;
+  unsigned int   dst;
+  unsigned int   src;
+  unsigned int   num;
 
   if ((Array == NULL) || (Num_symbols == NULL) || ((n_symbols = *Num_symbols) == 0)) {
     return false;
@@ -350,7 +350,7 @@ gp_symbol_delete_by_value(gp_symbol_type **Array, unsigned int *Num_symbols, gp_
 
   symbol.value = Value;
   sptr         = &symbol;
-  ret = (gp_symbol_type **)bsearch(&sptr, Array, n_symbols, sizeof(gp_symbol_type *), _value_cmp);
+  ret = (gp_symbol_t **)bsearch(&sptr, Array, n_symbols, sizeof(gp_symbol_t *), _value_cmp);
 
   if (ret != NULL) {
     dst = ret - Array;
@@ -358,7 +358,7 @@ gp_symbol_delete_by_value(gp_symbol_type **Array, unsigned int *Num_symbols, gp_
     num = n_symbols - src;
 
     if (num != 0) {
-      memmove(&Array[dst], &Array[src], num * sizeof(gp_symbol_type *));
+      memmove(&Array[dst], &Array[src], num * sizeof(gp_symbol_t *));
     }
 
     *Num_symbols = n_symbols - 1;

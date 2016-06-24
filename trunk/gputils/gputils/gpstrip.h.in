@@ -37,7 +37,7 @@ extern struct gpstrip_state {
   symbol_table_t *symbol_keep;          /* force these symbols to be keep */
   symbol_table_t *symbol_remove;        /* force these symbols to be removed */
   symbol_table_t *section_remove;       /* remove these sections */
-  gp_object_type *object;               /* formatted object file */
+  gp_object_t    *object;               /* formatted object file */
 } state;
 
 #endif

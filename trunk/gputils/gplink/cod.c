@@ -70,8 +70,8 @@ static void
 _assign_file_id(void)
 {
   symbol_table_t *file_table;
-  gp_symbol_type *symbol;
-  gp_aux_type    *aux;
+  gp_symbol_t    *symbol;
+  gp_aux_t       *aux;
   symbol_t       *sym;
   int             file_id = 0;
   int            *value;
@@ -146,9 +146,9 @@ cod_init(void)
 static void
 _write_file_block(void)
 {
-  const gp_symbol_type *symbol;
-  BlockList            *fb = NULL;
-  int                   file_id = 0;
+  const gp_symbol_t *symbol;
+  BlockList         *fb = NULL;
+  int                file_id = 0;
 
   symbol = state.object->symbol_list;
   while (symbol != NULL) {
@@ -273,14 +273,14 @@ cod_lst_line(int line_type)
 void
 cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 {
-  size_t                    i;
-  int                       len;
-  int                       type;
-  const gp_coffsymbol_type *var;
-  const gp_symbol_type     *symbol;
-  const gp_section_type    *section;
-  const char               *name;
-  BlockList                *sb;
+  size_t                 i;
+  int                    len;
+  int                    type;
+  const gp_coffsymbol_t *var;
+  const gp_symbol_t     *symbol;
+  const gp_section_t    *section;
+  const char            *name;
+  BlockList             *sb;
 
   if ((symbol_list == NULL) || (num_symbols == 0)) {
     return;
@@ -441,12 +441,12 @@ _write_code(void)
 static void
 _write_debug(void)
 {
-  int                   len;
-  const gp_symbol_type *symbol;
-  const gp_aux_type    *aux;
-  BlockList            *db;
-  char                  command;
-  const char           *string;
+  int                len;
+  const gp_symbol_t *symbol;
+  const gp_aux_t    *aux;
+  BlockList         *db;
+  char               command;
+  const char        *string;
 
   if (!state.cod.enabled) {
     return;

@@ -1773,7 +1773,7 @@ _do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t      *p;
   char               *symbol_name = NULL;
-  gp_symbol_type     *coff_symbol = NULL;
+  gp_symbol_t        *coff_symbol = NULL;
   int                 eval;
   int                 value = 0;
   gp_boolean          new_class = false;
@@ -1952,13 +1952,13 @@ _do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
 static gpasmVal
 _do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  const pnode_t  *p;
-  const char     *symbol_name;
-  gp_symbol_type *coff_symbol = NULL;
-  int             number_symbols;
-  gp_aux_type    *aux_list;
-  int             i;
-  int             value;
+  const pnode_t *p;
+  const char    *symbol_name;
+  gp_symbol_t   *coff_symbol = NULL;
+  int            number_symbols;
+  gp_aux_t      *aux_list;
+  int            i;
+  int            value;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -4253,10 +4253,10 @@ _do_title(gpasmVal r, const char *name, int arity, pnode_t *parms)
 static gpasmVal
 _do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  const pnode_t  *p;
-  const char     *symbol_name;
-  gp_symbol_type *coff_symbol;
-  int             value;
+  const pnode_t *p;
+  const char    *symbol_name;
+  gp_symbol_t   *coff_symbol;
+  int            value;
 
   state.lst.line.linetype = LTY_DIR;
 

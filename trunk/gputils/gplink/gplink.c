@@ -138,9 +138,9 @@ _count_missing(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_object_append(gp_object_type *object)
+_object_append(gp_object_t *object)
 {
-  gp_object_type *list;
+  gp_object_t *list;
 
   /* append the entry to the list */
   if (state.object == NULL) {
@@ -171,7 +171,7 @@ _object_append(gp_object_type *object)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_archive_append(gp_archive_type *file, const char *name)
+_archive_append(gp_archive_t *file, const char *name)
 {
   struct archivelist *new;
 
@@ -203,17 +203,17 @@ _archive_append(gp_archive_type *file, const char *name)
    objects are added. */
 
 static gp_boolean
-_scan_index(symbol_table_t *table, gp_archive_type *archive)
+_scan_index(symbol_table_t *table, gp_archive_t *archive)
 {
-  const symbol_t  *sym_miss;
-  const symbol_t  *sym_arch;
-  gp_archive_type *member;
-  gp_object_type  *object;
-  size_t           i;
-  int              num_added;
-  const char      *name;
-  char            *object_name;
-  gp_boolean       modified;
+  const symbol_t *sym_miss;
+  const symbol_t *sym_arch;
+  gp_archive_t   *member;
+  gp_object_t    *object;
+  size_t          i;
+  int             num_added;
+  const char     *name;
+  char           *object_name;
+  gp_boolean      modified;
 
   num_added = 1; /* initalize to 1 so while loop can be entered */
   modified  = false;
@@ -251,7 +251,7 @@ _scan_index(symbol_table_t *table, gp_archive_type *archive)
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_scan_archive(gp_archive_type *archive, const char *name)
+_scan_archive(gp_archive_t *archive, const char *name)
 {
   gp_boolean      modified;
   symbol_table_t *archive_tbl;
@@ -301,8 +301,8 @@ _remove_linker_symbol(char *name)
 static void
 _add_linker_symbol(const char *name)
 {
-  gp_symbol_type *current;
-  gp_symbol_type *found;
+  gp_symbol_t *current;
+  gp_symbol_t *found;
 
   found   = NULL;
   current = state.object->symbol_list;
@@ -325,8 +325,8 @@ _add_linker_symbol(const char *name)
 static void
 _search_idata(void)
 {
-  gp_object_type  *object;
-  gp_section_type *section;
+  gp_object_t  *object;
+  gp_section_t *section;
 
   object = state.object;
   while (object != NULL) {
@@ -349,13 +349,13 @@ _search_idata(void)
 static void
 _build_tables(void)
 {
-  gp_object_type     *object;
+  gp_object_t        *object;
   struct archivelist *arlist;
   gp_boolean          modified;
   size_t              i;
   const symbol_t     *sym;
   const char         *name;
-  gp_coffsymbol_type *var;
+  gp_coffsymbol_t    *var;
 
   /* Create the object file symbol tables. */
   object = state.object;
@@ -426,10 +426,10 @@ _build_tables(void)
 void
 gplink_open_coff(const char *name)
 {
-  gp_object_type  *object;
-  gp_archive_type *archive;
-  FILE            *coff;
-  char             file_name[PATH_MAX + 1];
+  gp_object_t  *object;
+  gp_archive_t *archive;
+  FILE         *coff;
+  char          file_name[PATH_MAX + 1];
 
   strncpy(file_name, name, sizeof(file_name));
 
@@ -945,7 +945,7 @@ _linker(void)
 
   if (state.mplink_compatible) {
     /* allocate cinit section to the lowest possible address */
-    gp_section_type *cinit_section;
+    gp_section_t *cinit_section;
 
     cinit_section = gp_coffgen_find_section(state.object, state.object->section_list, ".cinit");
 

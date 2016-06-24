@@ -24,23 +24,23 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPREADOBJ_H__
 #define __GPREADOBJ_H__
 
-typedef enum gp_coff_type { 
+typedef enum gp_coff { 
   GP_COFF_ARCHIVE, 
   GP_COFF_OBJECT, 
   GP_COFF_OBJECT_V2, 
   GP_COFF_SYS_ERR,
   GP_COFF_UNKNOWN
-} gp_coff_type;
+} gp_coff_t;
 
-typedef struct gp_binary_type {
+typedef struct gp_binary {
   off_t    size;                /* size of the file in bytes */
   uint8_t *file;                /* file contents */
-} gp_binary_type;
+} gp_binary_t;
 
-extern gp_coff_type gp_identify_coff_file(const char *filename);
-extern gp_binary_type *gp_read_file(const char *filename);
-extern void gp_free_file(gp_binary_type *data);
-extern gp_object_type *gp_convert_file(const char *filename, const gp_binary_type *data);
-extern gp_object_type *gp_read_coff(const char *filename);
+extern gp_coff_t gp_identify_coff_file(const char *filename);
+extern gp_binary_t *gp_read_file(const char *filename);
+extern void gp_free_file(gp_binary_t *data);
+extern gp_object_t *gp_convert_file(const char *filename, const gp_binary_t *data);
+extern gp_object_t *gp_read_coff(const char *filename);
 
 #endif

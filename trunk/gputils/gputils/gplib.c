@@ -133,12 +133,13 @@ _has_path(const char *file_name)
 
 int main(int argc, char *argv[])
 {
-  int              c;
-  int              i;
-  gp_boolean       usage          = false;
-  gp_boolean       update_archive = false;
-  gp_boolean       no_index       = false;
-  gp_archive_type *object         = NULL;
+  int           c;
+  int           i;
+  gp_boolean    usage          = false;
+  gp_boolean    update_archive = false;
+  gp_boolean    no_index       = false;
+  gp_archive_t *object         = NULL;
+  gp_coff_t     type;
 
   gp_init();
 
@@ -242,7 +243,7 @@ int main(int argc, char *argv[])
   case AR_CREATE:
   case AR_REPLACE:
     while (i < state.numobjects) {
-      gp_coff_type type = gp_identify_coff_file(state.objectname[i]);
+      type = gp_identify_coff_file(state.objectname[i]);
 
       if ((type != GP_COFF_OBJECT_V2) && (type != GP_COFF_OBJECT)) {
         gp_error("\"%s\" is not a valid object file", state.objectname[i]);

@@ -28,7 +28,7 @@ Boston, MA 02111-1307, USA.  */
    character is often used to fill the gap. */
 
 unsigned int
-gp_archive_count_members(const gp_archive_type *Archive)
+gp_archive_count_members(const gp_archive_t *Archive)
 {
   unsigned int number = 0;
 
@@ -50,7 +50,7 @@ gp_archive_count_members(const gp_archive_type *Archive)
 /* This function is unused. */
 
 char *
-gp_archive_member_name(const gp_archive_type *Archive)
+gp_archive_member_name(const gp_archive_t *Archive)
 {
   char  name[256];
   char *end;
@@ -67,7 +67,7 @@ gp_archive_member_name(const gp_archive_type *Archive)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_archive_list_members(const gp_archive_type *Archive)
+gp_archive_list_members(const gp_archive_t *Archive)
 {
   char    name[256];
   char   *end;
@@ -96,12 +96,12 @@ gp_archive_list_members(const gp_archive_type *Archive)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_archive_type *
-gp_archive_find_member(gp_archive_type *Archive, const char *Object_name)
+gp_archive_t *
+gp_archive_find_member(gp_archive_t *Archive, const char *Object_name)
 {
-  char             name[256];
-  char            *end;
-  gp_archive_type *found;
+  char          name[256];
+  char         *end;
+  gp_archive_t *found;
 
   /* If present, skip the symbol index. */
   if (gp_archive_have_index(Archive)) {
@@ -129,7 +129,7 @@ gp_archive_find_member(gp_archive_type *Archive, const char *Object_name)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_archive_free_member(gp_archive_type *Archive)
+gp_archive_free_member(gp_archive_t *Archive)
 {
   if (Archive->data.file != NULL) {
     free(Archive->data.file);
@@ -142,11 +142,11 @@ gp_archive_free_member(gp_archive_type *Archive)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_archive_type *
-gp_archive_delete_member(gp_archive_type *Archive, const char *Object_name)
+gp_archive_t *
+gp_archive_delete_member(gp_archive_t *Archive, const char *Object_name)
 {
-  gp_archive_type *object;
-  gp_archive_type *list;
+  gp_archive_t *object;
+  gp_archive_t *list;
 
   object = gp_archive_find_member(Archive, Object_name);
   assert(object != NULL);
@@ -173,21 +173,21 @@ gp_archive_delete_member(gp_archive_type *Archive, const char *Object_name)
 
 /*------------------------------------------------------------------------------------------------*/
 
-gp_archive_type *
-gp_archive_add_member(gp_archive_type *Archive, const char *File_name, const char *Object_name)
+gp_archive_t *
+gp_archive_add_member(gp_archive_t *Archive, const char *File_name, const char *Object_name)
 {
-  gp_archive_type *old_member;
-  gp_archive_type *new_member;
-  gp_archive_type *list;
-  gp_binary_type  *new_object;
-  char             name[256];
-  char             date[12];
-  char             size[10];
-  int              timer;
+  gp_archive_t *old_member;
+  gp_archive_t *new_member;
+  gp_archive_t *list;
+  gp_binary_t  *new_object;
+  char          name[256];
+  char          date[12];
+  char          size[10];
+  int           timer;
 
   new_object = gp_read_file(File_name);
 
-  new_member = (gp_archive_type *)GP_Malloc(sizeof(*new_member));
+  new_member = (gp_archive_t *)GP_Malloc(sizeof(*new_member));
   new_member->next = NULL;
 
   /* Point the archive member file to the object file. The object is never
@@ -234,12 +234,12 @@ gp_archive_add_member(gp_archive_type *Archive, const char *File_name, const cha
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-gp_archive_extract_member(gp_archive_type *Archive, const char *Object_name)
+gp_archive_extract_member(gp_archive_t *Archive, const char *Object_name)
 {
-  gp_archive_type *object;
-  char             file_name[256];
-  FILE            *output_file;
-  int              size;
+  gp_archive_t *object;
+  char          file_name[256];
+  FILE         *output_file;
+  int           size;
 
   object = gp_archive_find_member(Archive, Object_name);
   assert(object != NULL);
@@ -268,7 +268,7 @@ gp_archive_extract_member(gp_archive_type *Archive, const char *Object_name)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-gp_archive_write(gp_archive_type *Archive, const char *Archive_name)
+gp_archive_write(gp_archive_t *Archive, const char *Archive_name)
 {
   FILE *output_file;
   int   size;
@@ -300,7 +300,7 @@ gp_archive_write(gp_archive_type *Archive, const char *Archive_name)
    if a symbol index is created. */
 
 void
-gp_archive_update_offsets(gp_archive_type *Archive)
+gp_archive_update_offsets(gp_archive_t *Archive)
 {
   unsigned int offset = SARMAG;
   int          size = 0;
@@ -317,17 +317,17 @@ gp_archive_update_offsets(gp_archive_type *Archive)
 
 /* Read a coff archive and store it in memory. */
 
-gp_archive_type *
+gp_archive_t *
 gp_archive_read(const char *File_name)
 {
-  FILE            *infile;
-  gp_archive_type *archive;
-  gp_archive_type *list;
-  gp_archive_type *new;
-  ar_hdr_t         tmp_header;
-  fpos_t           position;
-  int              object_size;
-  char             buffer[SARMAG + 1];
+  FILE         *infile;
+  gp_archive_t *archive;
+  gp_archive_t *list;
+  gp_archive_t *new;
+  ar_hdr_t      tmp_header;
+  fpos_t        position;
+  int           object_size;
+  char          buffer[SARMAG + 1];
 
   infile = fopen(File_name, "rb");
   if (infile == NULL) {
@@ -344,7 +344,7 @@ gp_archive_read(const char *File_name)
   archive = NULL;
   while (feof(infile) == 0) {
     /* allocate space for the next archive member */
-    new = (gp_archive_type *)GP_Malloc(sizeof(gp_archive_type));
+    new = (gp_archive_t *)GP_Malloc(sizeof(gp_archive_t));
     new->next = NULL;
 
     /* read the archive header */
@@ -392,7 +392,7 @@ gp_archive_read(const char *File_name)
 /* Determine if the archive has a symbol index. */
 
 gp_boolean
-gp_archive_have_index(const gp_archive_type *Archive)
+gp_archive_have_index(const gp_archive_t *Archive)
 {
   return (((Archive != NULL) && (Archive->header.ar_name[0] == '/')) ? true : false);
 }
@@ -401,10 +401,10 @@ gp_archive_have_index(const gp_archive_type *Archive)
 
 /* Remove the symbol index if one exists. */
 
-gp_archive_type *
-gp_archive_remove_index(gp_archive_type *Archive)
+gp_archive_t *
+gp_archive_remove_index(gp_archive_t *Archive)
 {
-  gp_archive_type *member;
+  gp_archive_t *member;
 
   /* If present, remove the symbol index. */
   if (gp_archive_have_index(Archive)) {
@@ -424,11 +424,11 @@ gp_archive_remove_index(gp_archive_type *Archive)
    need compatibility with other tools.  */
 
 void
-gp_archive_make_index(gp_archive_type *Archive, symbol_table_t *Definition)
+gp_archive_make_index(gp_archive_t *Archive, symbol_table_t *Definition)
 {
-  gp_object_type *object;
-  char            name[256];
-  char           *end;
+  gp_object_t *object;
+  char         name[256];
+  char        *end;
 
   /* If present, skip the symbol index. */
   if (gp_archive_have_index(Archive)) {
@@ -453,20 +453,20 @@ gp_archive_make_index(gp_archive_type *Archive, symbol_table_t *Definition)
 
 /* Add the symbol index to the archive. */
 
-gp_archive_type *
-gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
+gp_archive_t *
+gp_archive_add_index(symbol_table_t *Table, gp_archive_t *Archive)
 {
-  gp_archive_type           *new_member;
-  gp_archive_type           *member;
-  size_t                     sym_count;
-  size_t                     i;
-  const symbol_t           **lst;
-  const char                *sym_name;
-  size_t                     sym_name_len;
-  const gp_coffsymbol_type  *var;
-  char                       size[10];
-  uint8_t                   *ptr;
-  long                       index_size;
+  gp_archive_t           *new_member;
+  gp_archive_t           *member;
+  size_t                  sym_count;
+  size_t                  i;
+  const symbol_t        **lst;
+  const char             *sym_name;
+  size_t                  sym_name_len;
+  const gp_coffsymbol_t  *var;
+  char                    size[10];
+  uint8_t                *ptr;
+  long                    index_size;
 
   if ((Archive == NULL) || (Table == NULL)) {
     return NULL;
@@ -489,7 +489,7 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
   }
 
   /* create a new member for the index and place it in the archive */
-  new_member = (gp_archive_type *)GP_Malloc(sizeof(*new_member));
+  new_member = (gp_archive_t *)GP_Malloc(sizeof(*new_member));
   new_member->data.file = (uint8_t *)GP_Malloc(index_size);
   new_member->data.size = index_size;
   new_member->next      = NULL;
@@ -540,7 +540,7 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive)
 /* Place the symbol from the archive symbol index in the archive symbol table. */
 
 gp_boolean
-gp_archive_add_symbol(symbol_table_t *Table, const char *Name, gp_archive_type *Member)
+gp_archive_add_symbol(symbol_table_t *Table, const char *Name, gp_archive_t *Member)
 {
   symbol_t *sym;
 
@@ -562,15 +562,15 @@ placed in the archive symbol table.  This table stores the name of the
 symbol and the archive member that the symbol is defined in. */
 
 void
-gp_archive_read_index(symbol_table_t *Table, gp_archive_type *Archive)
+gp_archive_read_index(symbol_table_t *Table, gp_archive_t *Archive)
 {
-  unsigned int     number;
-  unsigned int     i;
-  const char      *name;
-  const uint8_t   *offset;
-  unsigned int     offset_value;
-  gp_archive_type *list;
-  const uint8_t   *file;
+  unsigned int   number;
+  unsigned int   i;
+  const char    *name;
+  const uint8_t *offset;
+  unsigned int   offset_value;
+  gp_archive_t  *list;
+  const uint8_t *file;
 
   assert(gp_archive_have_index(Archive));
 
@@ -614,12 +614,12 @@ gp_archive_read_index(symbol_table_t *Table, gp_archive_type *Archive)
 void
 gp_archive_print_table(const symbol_table_t *Table)
 {
-  const symbol_t        **lst;
-  size_t                  sym_count;
-  size_t                  i;
-  const gp_archive_type  *member;
-  char                    name[256];
-  char                   *end;
+  const symbol_t     **lst;
+  size_t               sym_count;
+  size_t               i;
+  const gp_archive_t  *member;
+  char                 name[256];
+  char                *end;
 
   assert(Table != NULL);
 

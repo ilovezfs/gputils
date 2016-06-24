@@ -30,7 +30,7 @@ Boston, MA 02111-1307, USA.  */
 
 struct archivelist {
   char               *name;
-  gp_archive_type    *archive;
+  gp_archive_t       *archive;
   struct archivelist *next;
 };
 
@@ -117,7 +117,7 @@ extern struct gplink_state {
   } symbol;
 
   struct archivelist    *archives;
-  gp_object_type        *object;    /* Object files. */
+  gp_object_t           *object;    /* Object files. */
   MemBlock_t            *i_memory;  /* Instruction memory linked list. */
 } state;
 
@@ -138,7 +138,7 @@ struct ifdef {
 
 struct list_context {
   char                *name;
-  gp_symbol_type      *symbol;
+  gp_symbol_t         *symbol;
   FILE                *f;
   gp_boolean           missing_source;
   unsigned int         line_number;

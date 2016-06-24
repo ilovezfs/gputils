@@ -118,10 +118,10 @@ _lst_printf(const char *format, ...)
 
 /* find relocation by address */
 
-static gp_reloc_type *
+static gp_reloc_t *
 _find_reloc_by_address(uint16_t address)
 {
-  gp_reloc_type *p;
+  gp_reloc_t *p;
 
   for (p = state.obj.section->relocation_list; p != NULL; p = p->next) {
     if (p->address == address) {
@@ -139,7 +139,7 @@ _find_reloc_by_address(uint16_t address)
 static uint16_t
 _prev_reloc_type(void)
 {
-  gp_reloc_type *p;
+  gp_reloc_t *p;
 
   if (state.obj.section->relocation_list == state.obj.section->relocation_list_tail) {
     return 0;
@@ -828,6 +828,7 @@ lst_format_line(const char *src_line, unsigned int value)
   uint16_t      reloc_type;
   MemBlock_t   *m = state.i_memory;
   uint16_t      word;
+  gp_reloc_t   *p;
 
   assert(src_line != NULL);
 
@@ -835,7 +836,7 @@ lst_format_line(const char *src_line, unsigned int value)
       (state.obj.new_sect_flags & STYP_TEXT) && (state.obj.section->relocation_list_tail != NULL)) {
       if ((state.obj.section->address + state.obj.section->relocation_list_tail->address) > state.lst.line.was_byte_addr) {
         /* already passed it, go back to the history */
-        gp_reloc_type *p = _find_reloc_by_address(state.lst.line.was_byte_addr);
+        p = _find_reloc_by_address(state.lst.line.was_byte_addr);
         reloc_type = (p != NULL) ? p->type : 0;
       }
       else if ((state.obj.section->address + state.obj.section->relocation_list_tail->address) == state.lst.line.was_byte_addr) {

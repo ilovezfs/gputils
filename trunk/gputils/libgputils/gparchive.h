@@ -65,35 +65,35 @@ typedef struct ar_hdr {
 
 #define AR_HDR_SIZ 280
 
-typedef struct gp_archive_type {
-  ar_hdr_t                header; /* archive header file */
-  gp_binary_type          data;   /* binary data */
-  unsigned int            offset; /* offset from the beginning of the archive */
-  struct gp_archive_type *next;   /* next file in linked list */
-} gp_archive_type;
+typedef struct gp_archive {
+  ar_hdr_t           header;    /* archive header file */
+  gp_binary_t        data;      /* binary data */
+  unsigned int       offset;    /* offset from the beginning of the archive */
+  struct gp_archive *next;      /* next file in linked list */
+} gp_archive_t;
 
 /* symbol index data */
 #define AR_INDEX_NUMBER_SIZ 4  /* number of symbols is 4 bytes long */
 #define AR_INDEX_OFFSET_SIZ 4  /* symbol index offsets are 4 bytes long */
 
-extern unsigned int gp_archive_count_members(const gp_archive_type *Archive);
-extern char *gp_archive_member_name(const gp_archive_type *Archive);
-extern void gp_archive_list_members(const gp_archive_type *Archive);
-extern gp_archive_type *gp_archive_find_member(gp_archive_type *Archive, const char *Object_name);
-extern void gp_archive_free_member(gp_archive_type *Archive);
-extern gp_archive_type *gp_archive_delete_member(gp_archive_type *Archive, const char *Object_name);
-extern gp_archive_type *gp_archive_add_member(gp_archive_type *Archive, const char *File_name,
+extern unsigned int gp_archive_count_members(const gp_archive_t *Archive);
+extern char *gp_archive_member_name(const gp_archive_t *Archive);
+extern void gp_archive_list_members(const gp_archive_t *Archive);
+extern gp_archive_t *gp_archive_find_member(gp_archive_t *Archive, const char *Object_name);
+extern void gp_archive_free_member(gp_archive_t *Archive);
+extern gp_archive_t *gp_archive_delete_member(gp_archive_t *Archive, const char *Object_name);
+extern gp_archive_t *gp_archive_add_member(gp_archive_t *Archive, const char *File_name,
                                               const char *Object_name);
-extern gp_boolean gp_archive_extract_member(gp_archive_type *Archive, const char *Object_name);
-extern gp_boolean gp_archive_write(gp_archive_type *Archive, const char *Archive_name);
-extern void gp_archive_update_offsets(gp_archive_type *Archive);
-extern gp_archive_type *gp_archive_read(const char *File_name);
-extern gp_boolean gp_archive_have_index(const gp_archive_type *Archive);
-extern gp_archive_type *gp_archive_remove_index(gp_archive_type *Archive);
-extern void gp_archive_make_index(gp_archive_type *Archive, symbol_table_t *Definition);
-extern gp_archive_type *gp_archive_add_index(symbol_table_t *Table, gp_archive_type *Archive);
-extern gp_boolean gp_archive_add_symbol(symbol_table_t *Table, const char *Name, gp_archive_type *Member);
-extern void gp_archive_read_index(symbol_table_t *Table, gp_archive_type *Archive);
+extern gp_boolean gp_archive_extract_member(gp_archive_t *Archive, const char *Object_name);
+extern gp_boolean gp_archive_write(gp_archive_t *Archive, const char *Archive_name);
+extern void gp_archive_update_offsets(gp_archive_t *Archive);
+extern gp_archive_t *gp_archive_read(const char *File_name);
+extern gp_boolean gp_archive_have_index(const gp_archive_t *Archive);
+extern gp_archive_t *gp_archive_remove_index(gp_archive_t *Archive);
+extern void gp_archive_make_index(gp_archive_t *Archive, symbol_table_t *Definition);
+extern gp_archive_t *gp_archive_add_index(symbol_table_t *Table, gp_archive_t *Archive);
+extern gp_boolean gp_archive_add_symbol(symbol_table_t *Table, const char *Name, gp_archive_t *Member);
+extern void gp_archive_read_index(symbol_table_t *Table, gp_archive_t *Archive);
 extern void gp_archive_print_table(const symbol_table_t *Table);
 
 #endif
