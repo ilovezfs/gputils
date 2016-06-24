@@ -37,6 +37,5 @@ extern void continue_cblock(void);
 extern void cblock_expr(const struct pnode *s);
 extern void cblock_expr_incr(const struct pnode *s, const struct pnode *incr);
 extern gp_boolean asm_enabled(void);
-extern int check_page(int address);
 
 #endif

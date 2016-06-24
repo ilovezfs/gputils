@@ -1,3 +1,45 @@
+2016-06-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Changed modification date.
+
+  * gpasm/directive.h:
+    Removed a unused definition.
+
+  * gplink/gplink.c
+    Renamed a function name from gp_cofflink_make_linenum_arrays
+    to gp_coffgen_make_linenum_arrays.
+
+  * gplink/lst.c:
+    Renamed a function name from gp_cofflink_find_linenum
+    to gp_coffgen_find_linenum.
+
+  * libgputils/gpcoffgen.c, libgputils/gpcoffgen.h,
+    libgputils/gpcofflink.c, libgputils/gpcofflink.h:
+    Moved and renamed two function:
+    gp_cofflink_make_linenum_arrays --> gp_coffgen_make_linenum_arrays
+    gp_cofflink_find_linenum --> gp_coffgen_find_linenum
+
+  * gpasm/gperror.c, gpasm/gperror.h, gpasm/lst.c, gpasm/special.c,
+    gpasm/util.c, gplink/gplink.h.in, gplink/lst.h, gplink/map.c,
+    gplink/map.h, gputils/dump.c, gputils/gpdasm.c, gputils/gpdasm.h.in,
+    gputils/gplib.c, gputils/gplib.h.in, gputils/gpstrip.c,
+    gputils/gpstrip.h.in, gputils/gpvc.c, gputils/gpvc.h.in,
+    gputils/gpvo.c, gputils/gpvo.h.in, gputils/labelset.c,
+    libgputils/gpprocessor.c, libgputils/gpreadobj.c,
+    libgputils/gpreadobj.h, libgputils/gpsystem.c,
+    libgputils/gpsystem.h, libgputils/gptypes.h,
+    libgputils/gpwritehex.c:
+    Added or changed copyright.
+
+  * gputils/labelset.h, libgputils/gparchive.c, libgputils/gpcod.h,
+    libgputils/gpcoffgen, libgputils/gpcofflink, libgputils/gpdis.c,
+    libgputils/gpdis.h, libgputils/gpmemory.c, libgputils/gpmemory.h,
+    libgputils/gpmessage.c, libgputils/gpmessage.h:
+    Code formatting.
+
+  * TODO
+    Deleted the "bank switches" line.
+
 2016-06-23  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gplink/gplink.c, gplink/gplink.h.in,
     libgputils/gpcoffopt.c, libgputils/gpcoffopt.h,

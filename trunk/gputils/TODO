@@ -24,7 +24,6 @@ gpasm
   * Allow expressions in .direct.  Reduce to operators, numbers, and controls.
 
 gplink
-  * Removed unnecessary bank switches.
   * Peep-like optimization. Consider using pcode from sdcc-pic14.
   * Partial linking.
   * Use extended COD file types.

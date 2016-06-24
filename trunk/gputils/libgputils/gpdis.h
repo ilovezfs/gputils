@@ -46,33 +46,33 @@ typedef struct {
 #define GPDIS_SHOW_ALL_BRANCH   (1 << 3)
 #define GPDIS_SHOW_EXCLAMATION  (1 << 4)
 
-extern unsigned int gp_disassemble_mark_false_addresses(MemBlock_t *m, unsigned int byte_address,
-                                                        pic_processor_t processor);
+extern unsigned int gp_disassemble_mark_false_addresses(MemBlock_t *M, unsigned int Byte_address,
+                                                        pic_processor_t Processor);
 
-extern unsigned int gp_disassemble_find_labels(MemBlock_t *m, unsigned int byte_address,
-                                               pic_processor_t processor, gpdasm_fstate_t *fstate);
+extern unsigned int gp_disassemble_find_labels(MemBlock_t *M, unsigned int Byte_address,
+                                               pic_processor_t Processor, gpdasm_fstate_t *Fstate);
 
-extern unsigned int gp_disassemble_find_registers(MemBlock_t *m, unsigned int byte_address,
-                                                  pic_processor_t processor,  gpdasm_fstate_t *fstate,
-                                                  void (*user_data_finder)(MemArg_t *));
+extern unsigned int gp_disassemble_find_registers(MemBlock_t *M, unsigned int Byte_address,
+                                                  pic_processor_t Processor, gpdasm_fstate_t *Fstate,
+                                                  void (*User_data_finder)(MemArg_t *));
 
-extern void gp_disassemble_show_data(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
-                                     unsigned int behavior, char *buffer, size_t buffer_length,
-                                     size_t current_length);
+extern void gp_disassemble_show_data(MemBlock_t *M, unsigned int Byte_address, proc_class_t Class,
+                                     unsigned int Behavior, char *Buffer, size_t Buffer_length,
+                                     size_t Current_length);
 
-extern unsigned int gp_disassemble(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
-                                   unsigned int bsr_boundary, unsigned int prog_mem_size,
-                                   unsigned int behavior, char *buffer, size_t buffer_length,
-                                   size_t current_length);
+extern unsigned int gp_disassemble(MemBlock_t *M, unsigned int Byte_address, proc_class_t Class,
+                                   unsigned int Bsr_boundary, unsigned int Prog_mem_size,
+                                   unsigned int Behavior, char *Buffer, size_t Buffer_length,
+                                   size_t Current_length);
 
-extern unsigned int gp_disassemble_byte(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
-                                        char *buffer, size_t buffer_length);
+extern unsigned int gp_disassemble_byte(MemBlock_t *M, unsigned int Byte_address,
+                                        char *Buffer, size_t Buffer_length);
 
-extern unsigned int gp_disassemble_word(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
-                                        char *buffer, size_t buffer_length);
+extern unsigned int gp_disassemble_word(MemBlock_t *M, unsigned int Byte_address, proc_class_t Class,
+                                        char *Buffer, size_t Buffer_length);
 
-extern unsigned int gp_disassemble_size(MemBlock_t *m, unsigned int byte_address, proc_class_t class,
-                                        unsigned int bsr_boundary, unsigned int prog_mem_size,
-                                        unsigned int behavior, char *buffer, size_t buffer_length,
-                                        unsigned int size);
+extern unsigned int gp_disassemble_size(MemBlock_t *M, unsigned int Byte_address, proc_class_t Class,
+                                        unsigned int Bsr_boundary, unsigned int Prog_mem_size,
+                                        unsigned int Behavior, char *Buffer, size_t Buffer_length,
+                                        unsigned int Size);
 #endif

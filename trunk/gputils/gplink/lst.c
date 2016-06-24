@@ -2,6 +2,8 @@
    Copyright (C) 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -132,7 +134,7 @@ _find_line_number(const gp_symbol_type *symbol, unsigned int line_number)
 
   section = state.object->section_list;
   while (section != NULL) {
-    linenum = gp_cofflink_find_linenum(section, symbol, line_number);
+    linenum = gp_coffgen_find_linenum(section, symbol, line_number);
 
     if (linenum != NULL) {
       if (section != line_section) {
@@ -255,7 +257,7 @@ _write_source(int last_line)
             /* even address or less then two byts to disassemble: disassemble one byte */
             if (len != 0) {
               b_memory_assert_get(line_section->data, org, &byte, NULL, NULL);
-              gp_disassemble_byte(line_section->data, org, state.class, dasmbuf, sizeof(dasmbuf));
+              gp_disassemble_byte(line_section->data, org, dasmbuf, sizeof(dasmbuf));
               _lst_line("%06lx   %02x       %-24s %s", gp_processor_byte_to_org(state.class, org),
                         (unsigned int)byte, _expand_tabs(dasmbuf), linebuf);
               b_memory_set_listed(line_section->data, org, 1);

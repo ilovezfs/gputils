@@ -2,6 +2,8 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2015-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -528,7 +530,7 @@ typedef struct gp_symbol_type {
   /* section name of symbol */
   const char             *section_name;
 
-  /* section number, only for used for determining symbol type:
+  /* Section number, only for used for determining symbol type:
      N_DEBUG = -2, N_ABS = -1, N_UNDEF = 0, or N_SCNUM = 1 if defined */
   int16_t                 section_number;
 

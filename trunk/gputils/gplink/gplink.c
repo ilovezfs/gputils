@@ -2,6 +2,8 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2015-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -989,7 +991,7 @@ _linker(void)
     gp_coffopt_remove_unnecessary_banksel(state.object);
   }
 
-  gp_cofflink_make_linenum_arrays(state.object);
+  gp_coffgen_make_linenum_arrays(state.object);
 
   gp_cofflink_fill_pages(state.object, program, state.section.definition);
 

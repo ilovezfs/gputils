@@ -290,7 +290,7 @@ b_memory_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
  * destination memory block is non-existant, a new one will be created.
  *
  * inputs:
- *   I_memory     - start of the instruction memory
+ *   M            - start of the instruction memory
  *   Byte_address - destination address of the write
  *   Value        - the value to be written at that address
  *   Section_name - section_name of the memory block
