@@ -1,4 +1,9 @@
 2016-06-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, header/*, lkr/*, libgputils/gpcfg-table.c,
+    libgputils/gpreg-table.c, configure, configure.ac:
+    Updated with new devices based on the mplabx-3.35.
+
+2016-06-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/coff.c, gpasm/coff.h, gpasm/directive.c gpasm/gpasm.h.in,
     gpasm/lst.c, gplink/cod.c, gplink/gplink.c, gplink/gplink.h.in
     gplink/lst.c, gplink/map.c, gputils/gplib.c, gputils/gplib.h.in,

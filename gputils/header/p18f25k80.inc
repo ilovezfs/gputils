@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 21 2015
+; Build date : May 15 2016
 ;  MPASM PIC18F25K80 processor include
 ; 
-;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2016 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -37,16 +37,16 @@
 ;==========================================================================
 ;       18xxxx Family        EQUates
 ;==========================================================================
-FSR0            EQU 0
-FSR1            EQU 1
-FSR2            EQU 2
+FSR0             EQU  0
+FSR1             EQU  1
+FSR2             EQU  2
 
-FAST            EQU 1
+FAST             EQU  1
 
-W               EQU 0
-A               EQU 0
-ACCESS          EQU 0
-BANKED          EQU 1
+W                EQU  0
+A                EQU  0
+ACCESS           EQU  0
+BANKED           EQU  1
 ;==========================================================================
 
 ;==========================================================================
@@ -5064,7 +5064,7 @@ STKOVF           EQU  H'0007'
 ;     MSSPMSK = MSK7       7 Bit address masking mode
 ;
 ;   Master Clear Enable:
-;     MCLRE = OFF          MCLR Disabled, RG5 Enabled
+;     MCLRE = OFF          MCLR Disabled, RE3 Enabled
 ;     MCLRE = ON           MCLR Enabled, RE3 Disabled
 ;
 ;   Stack Overflow Reset:
@@ -5170,181 +5170,181 @@ STKOVF           EQU  H'0007'
 
 ; The following is an assignment of address values for all of the
 ; configuration registers for the purpose of table reads
-_CONFIG1L        EQU  H'300000'
-_CONFIG1H        EQU  H'300001'
-_CONFIG2L        EQU  H'300002'
-_CONFIG2H        EQU  H'300003'
-_CONFIG3H        EQU  H'300005'
-_CONFIG4L        EQU  H'300006'
-_CONFIG5L        EQU  H'300008'
-_CONFIG5H        EQU  H'300009'
-_CONFIG6L        EQU  H'30000A'
-_CONFIG6H        EQU  H'30000B'
-_CONFIG7L        EQU  H'30000C'
-_CONFIG7H        EQU  H'30000D'
+_CONFIG1L       EQU  H'300000'
+_CONFIG1H       EQU  H'300001'
+_CONFIG2L       EQU  H'300002'
+_CONFIG2H       EQU  H'300003'
+_CONFIG3H       EQU  H'300005'
+_CONFIG4L       EQU  H'300006'
+_CONFIG5L       EQU  H'300008'
+_CONFIG5H       EQU  H'300009'
+_CONFIG6L       EQU  H'30000A'
+_CONFIG6H       EQU  H'30000B'
+_CONFIG7L       EQU  H'30000C'
+_CONFIG7H       EQU  H'30000D'
 
 ;----- CONFIG1L Options --------------------------------------------------
-_RETEN_ON_1L         EQU  H'FE'    ; Ultra low-power regulator is Enabled (Controlled by SRETEN bit)
-_RETEN_OFF_1L        EQU  H'FF'    ; Ultra low-power regulator is Disabled (Controlled by REGSLP bit)
+_RETEN_ON_1L         EQU  H'FE'; Ultra low-power regulator is Enabled (Controlled by SRETEN bit)
+_RETEN_OFF_1L        EQU  H'FF'; Ultra low-power regulator is Disabled (Controlled by REGSLP bit)
 
-_INTOSCSEL_LOW_1L    EQU  H'FB'    ; LF-INTOSC in Low-power mode during Sleep
-_INTOSCSEL_HIGH_1L   EQU  H'FF'    ; LF-INTOSC in High-power mode during Sleep
+_INTOSCSEL_LOW_1L    EQU  H'FB'; LF-INTOSC in Low-power mode during Sleep
+_INTOSCSEL_HIGH_1L   EQU  H'FF'; LF-INTOSC in High-power mode during Sleep
 
-_SOSCSEL_LOW_1L      EQU  H'EF'    ; Low Power SOSC circuit selected
-_SOSCSEL_DIG_1L      EQU  H'F7'    ; Digital (SCLKI) mode
-_SOSCSEL_HIGH_1L     EQU  H'FF'    ; High Power SOSC circuit selected
+_SOSCSEL_LOW_1L      EQU  H'EF'; Low Power SOSC circuit selected
+_SOSCSEL_DIG_1L      EQU  H'F7'; Digital (SCLKI) mode
+_SOSCSEL_HIGH_1L     EQU  H'FF'; High Power SOSC circuit selected
 
-_XINST_OFF_1L        EQU  H'BF'    ; Disabled
-_XINST_ON_1L         EQU  H'FF'    ; Enabled
+_XINST_OFF_1L        EQU  H'BF'; Disabled
+_XINST_ON_1L         EQU  H'FF'; Enabled
 
 ;----- CONFIG1H Options --------------------------------------------------
-_FOSC_LP_1H          EQU  H'F0'    ; LP oscillator
-_FOSC_XT_1H          EQU  H'F1'    ; XT oscillator
-_FOSC_HS2_1H         EQU  H'F2'    ; HS oscillator (High power, 16 MHz - 25 MHz)
-_FOSC_HS1_1H         EQU  H'F3'    ; HS oscillator (Medium power, 4 MHz - 16 MHz)
-_FOSC_EC3IO_1H       EQU  H'F4'    ; EC oscillator, CLKOUT function on OSC2 (High power, 16 MHz - 64 MHz)
-_FOSC_EC3_1H         EQU  H'F5'    ; EC oscillator (High power, 16 MHz - 64 MHz)
-_FOSC_RC_1H          EQU  H'F6'    ; External RC oscillator, CLKOUT function on OSC2
-_FOSC_RCIO_1H        EQU  H'F7'    ; External RC oscillator
-_FOSC_INTIO2_1H      EQU  H'F8'    ; Internal RC oscillator
-_FOSC_INTIO1_1H      EQU  H'F9'    ; Internal RC oscillator, CLKOUT function on OSC2
-_FOSC_EC2IO_1H       EQU  H'FA'    ; EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 16 MHz)
-_FOSC_EC2_1H         EQU  H'FB'    ; EC oscillator (Medium power, 160 kHz - 16 MHz)
-_FOSC_EC1IO_1H       EQU  H'FC'    ; EC oscillator, CLKOUT function on OSC2 (Low power, DC - 160 kHz)
-_FOSC_EC1_1H         EQU  H'FD'    ; EC oscillator (Low power, DC - 160 kHz)
+_FOSC_LP_1H          EQU  H'F0'; LP oscillator
+_FOSC_XT_1H          EQU  H'F1'; XT oscillator
+_FOSC_HS2_1H         EQU  H'F2'; HS oscillator (High power, 16 MHz - 25 MHz)
+_FOSC_HS1_1H         EQU  H'F3'; HS oscillator (Medium power, 4 MHz - 16 MHz)
+_FOSC_EC3IO_1H       EQU  H'F4'; EC oscillator, CLKOUT function on OSC2 (High power, 16 MHz - 64 MHz)
+_FOSC_EC3_1H         EQU  H'F5'; EC oscillator (High power, 16 MHz - 64 MHz)
+_FOSC_RC_1H          EQU  H'F6'; External RC oscillator, CLKOUT function on OSC2
+_FOSC_RCIO_1H        EQU  H'F7'; External RC oscillator
+_FOSC_INTIO2_1H      EQU  H'F8'; Internal RC oscillator
+_FOSC_INTIO1_1H      EQU  H'F9'; Internal RC oscillator, CLKOUT function on OSC2
+_FOSC_EC2IO_1H       EQU  H'FA'; EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 16 MHz)
+_FOSC_EC2_1H         EQU  H'FB'; EC oscillator (Medium power, 160 kHz - 16 MHz)
+_FOSC_EC1IO_1H       EQU  H'FC'; EC oscillator, CLKOUT function on OSC2 (Low power, DC - 160 kHz)
+_FOSC_EC1_1H         EQU  H'FD'; EC oscillator (Low power, DC - 160 kHz)
 
-_PLLCFG_OFF_1H       EQU  H'EF'    ; Disabled
-_PLLCFG_ON_1H        EQU  H'FF'    ; Enabled
+_PLLCFG_OFF_1H       EQU  H'EF'; Disabled
+_PLLCFG_ON_1H        EQU  H'FF'; Enabled
 
-_FCMEN_OFF_1H        EQU  H'BF'    ; Disabled
-_FCMEN_ON_1H         EQU  H'FF'    ; Enabled
+_FCMEN_OFF_1H        EQU  H'BF'; Disabled
+_FCMEN_ON_1H         EQU  H'FF'; Enabled
 
-_IESO_OFF_1H         EQU  H'7F'    ; Disabled
-_IESO_ON_1H          EQU  H'FF'    ; Enabled
+_IESO_OFF_1H         EQU  H'7F'; Disabled
+_IESO_ON_1H          EQU  H'FF'; Enabled
 
 ;----- CONFIG2L Options --------------------------------------------------
-_PWRTEN_ON_2L        EQU  H'FE'    ; Enabled
-_PWRTEN_OFF_2L       EQU  H'FF'    ; Disabled
+_PWRTEN_ON_2L        EQU  H'FE'; Enabled
+_PWRTEN_OFF_2L       EQU  H'FF'; Disabled
 
-_BOREN_OFF_2L        EQU  H'F9'    ; Disabled in hardware, SBOREN disabled
-_BOREN_ON_2L         EQU  H'FB'    ; Controlled with SBOREN bit
-_BOREN_NOSLP_2L      EQU  H'FD'    ; Enabled while active, disabled in SLEEP, SBOREN disabled
-_BOREN_SBORDIS_2L    EQU  H'FF'    ; Enabled in hardware, SBOREN disabled
+_BOREN_OFF_2L        EQU  H'F9'; Disabled in hardware, SBOREN disabled
+_BOREN_ON_2L         EQU  H'FB'; Controlled with SBOREN bit
+_BOREN_NOSLP_2L      EQU  H'FD'; Enabled while active, disabled in SLEEP, SBOREN disabled
+_BOREN_SBORDIS_2L    EQU  H'FF'; Enabled in hardware, SBOREN disabled
 
-_BORV_0_2L           EQU  H'E7'    ; 3.0V
-_BORV_1_2L           EQU  H'EF'    ; 2.7V
-_BORV_2_2L           EQU  H'F7'    ; 2.0V
-_BORV_3_2L           EQU  H'FF'    ; 1.8V
+_BORV_0_2L           EQU  H'E7'; 3.0V
+_BORV_1_2L           EQU  H'EF'; 2.7V
+_BORV_2_2L           EQU  H'F7'; 2.0V
+_BORV_3_2L           EQU  H'FF'; 1.8V
 
-_BORPWR_LOW_2L       EQU  H'9F'    ; BORMV set to low power level
-_BORPWR_MEDIUM_2L    EQU  H'BF'    ; BORMV set to medium power level
-_BORPWR_HIGH_2L      EQU  H'DF'    ; BORMV set to high power level
-_BORPWR_ZPBORMV_2L   EQU  H'FF'    ; ZPBORMV instead of BORMV is selected
+_BORPWR_LOW_2L       EQU  H'9F'; BORMV set to low power level
+_BORPWR_MEDIUM_2L    EQU  H'BF'; BORMV set to medium power level
+_BORPWR_HIGH_2L      EQU  H'DF'; BORMV set to high power level
+_BORPWR_ZPBORMV_2L   EQU  H'FF'; ZPBORMV instead of BORMV is selected
 
 ;----- CONFIG2H Options --------------------------------------------------
-_WDTEN_OFF_2H        EQU  H'FC'    ; WDT disabled in hardware; SWDTEN bit disabled
-_WDTEN_NOSLP_2H      EQU  H'FD'    ; WDT enabled only while device is active and disabled in Sleep mode; SWDTEN bit disabled
-_WDTEN_ON_2H         EQU  H'FE'    ; WDT controlled by SWDTEN bit setting
-_WDTEN_SWDTDIS_2H    EQU  H'FF'    ; WDT enabled in hardware; SWDTEN bit disabled
+_WDTEN_OFF_2H        EQU  H'FC'; WDT disabled in hardware; SWDTEN bit disabled
+_WDTEN_NOSLP_2H      EQU  H'FD'; WDT enabled only while device is active and disabled in Sleep mode; SWDTEN bit disabled
+_WDTEN_ON_2H         EQU  H'FE'; WDT controlled by SWDTEN bit setting
+_WDTEN_SWDTDIS_2H    EQU  H'FF'; WDT enabled in hardware; SWDTEN bit disabled
 
-_WDTPS_1_2H          EQU  H'83'    ; 1:1
-_WDTPS_2_2H          EQU  H'87'    ; 1:2
-_WDTPS_4_2H          EQU  H'8B'    ; 1:4
-_WDTPS_8_2H          EQU  H'8F'    ; 1:8
-_WDTPS_16_2H         EQU  H'93'    ; 1:16
-_WDTPS_32_2H         EQU  H'97'    ; 1:32
-_WDTPS_64_2H         EQU  H'9B'    ; 1:64
-_WDTPS_128_2H        EQU  H'9F'    ; 1:128
-_WDTPS_256_2H        EQU  H'A3'    ; 1:256
-_WDTPS_512_2H        EQU  H'A7'    ; 1:512
-_WDTPS_1024_2H       EQU  H'AB'    ; 1:1024
-_WDTPS_2048_2H       EQU  H'AF'    ; 1:2048
-_WDTPS_4096_2H       EQU  H'B3'    ; 1:4096
-_WDTPS_8192_2H       EQU  H'B7'    ; 1:8192
-_WDTPS_16384_2H      EQU  H'BB'    ; 1:16384
-_WDTPS_32768_2H      EQU  H'BF'    ; 1:32768
-_WDTPS_65536_2H      EQU  H'C3'    ; 1:65536
-_WDTPS_131072_2H     EQU  H'C7'    ; 1:131072
-_WDTPS_262144_2H     EQU  H'CB'    ; 1:262144
-_WDTPS_524288_2H     EQU  H'CF'    ; 1:524288
-_WDTPS_1048576_2H    EQU  H'FF'    ; 1:1048576
+_WDTPS_1_2H          EQU  H'83'; 1:1
+_WDTPS_2_2H          EQU  H'87'; 1:2
+_WDTPS_4_2H          EQU  H'8B'; 1:4
+_WDTPS_8_2H          EQU  H'8F'; 1:8
+_WDTPS_16_2H         EQU  H'93'; 1:16
+_WDTPS_32_2H         EQU  H'97'; 1:32
+_WDTPS_64_2H         EQU  H'9B'; 1:64
+_WDTPS_128_2H        EQU  H'9F'; 1:128
+_WDTPS_256_2H        EQU  H'A3'; 1:256
+_WDTPS_512_2H        EQU  H'A7'; 1:512
+_WDTPS_1024_2H       EQU  H'AB'; 1:1024
+_WDTPS_2048_2H       EQU  H'AF'; 1:2048
+_WDTPS_4096_2H       EQU  H'B3'; 1:4096
+_WDTPS_8192_2H       EQU  H'B7'; 1:8192
+_WDTPS_16384_2H      EQU  H'BB'; 1:16384
+_WDTPS_32768_2H      EQU  H'BF'; 1:32768
+_WDTPS_65536_2H      EQU  H'C3'; 1:65536
+_WDTPS_131072_2H     EQU  H'C7'; 1:131072
+_WDTPS_262144_2H     EQU  H'CB'; 1:262144
+_WDTPS_524288_2H     EQU  H'CF'; 1:524288
+_WDTPS_1048576_2H    EQU  H'FF'; 1:1048576
 
 ;----- CONFIG3H Options --------------------------------------------------
-_CANMX_PORTC_3H      EQU  H'FE'    ; ECAN TX and RX pins are located on RC6 and RC7, respectively
-_CANMX_PORTB_3H      EQU  H'FF'    ; ECAN TX and RX pins are located on RB2 and RB3, respectively
+_CANMX_PORTC_3H      EQU  H'FE'; ECAN TX and RX pins are located on RC6 and RC7, respectively
+_CANMX_PORTB_3H      EQU  H'FF'; ECAN TX and RX pins are located on RB2 and RB3, respectively
 
-_MSSPMSK_MSK5_3H     EQU  H'F7'    ; 5 bit address masking mode
-_MSSPMSK_MSK7_3H     EQU  H'FF'    ; 7 Bit address masking mode
+_MSSPMSK_MSK5_3H     EQU  H'F7'; 5 bit address masking mode
+_MSSPMSK_MSK7_3H     EQU  H'FF'; 7 Bit address masking mode
 
-_MCLRE_OFF_3H        EQU  H'7F'    ; MCLR Disabled, RG5 Enabled
-_MCLRE_ON_3H         EQU  H'FF'    ; MCLR Enabled, RE3 Disabled
+_MCLRE_OFF_3H        EQU  H'7F'; MCLR Disabled, RE3 Enabled
+_MCLRE_ON_3H         EQU  H'FF'; MCLR Enabled, RE3 Disabled
 
 ;----- CONFIG4L Options --------------------------------------------------
-_STVREN_OFF_4L       EQU  H'FE'    ; Disabled
-_STVREN_ON_4L        EQU  H'FF'    ; Enabled
+_STVREN_OFF_4L       EQU  H'FE'; Disabled
+_STVREN_ON_4L        EQU  H'FF'; Enabled
 
-_BBSIZ_BB1K_4L       EQU  H'EF'    ; 1K word Boot Block size
-_BBSIZ_BB2K_4L       EQU  H'FF'    ; 2K word Boot Block size
+_BBSIZ_BB1K_4L       EQU  H'EF'; 1K word Boot Block size
+_BBSIZ_BB2K_4L       EQU  H'FF'; 2K word Boot Block size
 
 ;----- CONFIG5L Options --------------------------------------------------
-_CP0_ON_5L           EQU  H'FE'    ; Enabled
-_CP0_OFF_5L          EQU  H'FF'    ; Disabled
+_CP0_ON_5L           EQU  H'FE'; Enabled
+_CP0_OFF_5L          EQU  H'FF'; Disabled
 
-_CP1_ON_5L           EQU  H'FD'    ; Enabled
-_CP1_OFF_5L          EQU  H'FF'    ; Disabled
+_CP1_ON_5L           EQU  H'FD'; Enabled
+_CP1_OFF_5L          EQU  H'FF'; Disabled
 
-_CP2_ON_5L           EQU  H'FB'    ; Enabled
-_CP2_OFF_5L          EQU  H'FF'    ; Disabled
+_CP2_ON_5L           EQU  H'FB'; Enabled
+_CP2_OFF_5L          EQU  H'FF'; Disabled
 
-_CP3_ON_5L           EQU  H'F7'    ; Enabled
-_CP3_OFF_5L          EQU  H'FF'    ; Disabled
+_CP3_ON_5L           EQU  H'F7'; Enabled
+_CP3_OFF_5L          EQU  H'FF'; Disabled
 
 ;----- CONFIG5H Options --------------------------------------------------
-_CPB_ON_5H           EQU  H'BF'    ; Enabled
-_CPB_OFF_5H          EQU  H'FF'    ; Disabled
+_CPB_ON_5H           EQU  H'BF'; Enabled
+_CPB_OFF_5H          EQU  H'FF'; Disabled
 
-_CPD_ON_5H           EQU  H'7F'    ; Enabled
-_CPD_OFF_5H          EQU  H'FF'    ; Disabled
+_CPD_ON_5H           EQU  H'7F'; Enabled
+_CPD_OFF_5H          EQU  H'FF'; Disabled
 
 ;----- CONFIG6L Options --------------------------------------------------
-_WRT0_ON_6L          EQU  H'FE'    ; Enabled
-_WRT0_OFF_6L         EQU  H'FF'    ; Disabled
+_WRT0_ON_6L          EQU  H'FE'; Enabled
+_WRT0_OFF_6L         EQU  H'FF'; Disabled
 
-_WRT1_ON_6L          EQU  H'FD'    ; Enabled
-_WRT1_OFF_6L         EQU  H'FF'    ; Disabled
+_WRT1_ON_6L          EQU  H'FD'; Enabled
+_WRT1_OFF_6L         EQU  H'FF'; Disabled
 
-_WRT2_ON_6L          EQU  H'FB'    ; Enabled
-_WRT2_OFF_6L         EQU  H'FF'    ; Disabled
+_WRT2_ON_6L          EQU  H'FB'; Enabled
+_WRT2_OFF_6L         EQU  H'FF'; Disabled
 
-_WRT3_ON_6L          EQU  H'F7'    ; Enabled
-_WRT3_OFF_6L         EQU  H'FF'    ; Disabled
+_WRT3_ON_6L          EQU  H'F7'; Enabled
+_WRT3_OFF_6L         EQU  H'FF'; Disabled
 
 ;----- CONFIG6H Options --------------------------------------------------
-_WRTC_ON_6H          EQU  H'DF'    ; Enabled
-_WRTC_OFF_6H         EQU  H'FF'    ; Disabled
+_WRTC_ON_6H          EQU  H'DF'; Enabled
+_WRTC_OFF_6H         EQU  H'FF'; Disabled
 
-_WRTB_ON_6H          EQU  H'BF'    ; Enabled
-_WRTB_OFF_6H         EQU  H'FF'    ; Disabled
+_WRTB_ON_6H          EQU  H'BF'; Enabled
+_WRTB_OFF_6H         EQU  H'FF'; Disabled
 
-_WRTD_ON_6H          EQU  H'7F'    ; Enabled
-_WRTD_OFF_6H         EQU  H'FF'    ; Disabled
+_WRTD_ON_6H          EQU  H'7F'; Enabled
+_WRTD_OFF_6H         EQU  H'FF'; Disabled
 
 ;----- CONFIG7L Options --------------------------------------------------
-_EBTR0_ON_7L         EQU  H'FE'    ; Enabled
-_EBTR0_OFF_7L        EQU  H'FF'    ; Disabled
+_EBTR0_ON_7L         EQU  H'FE'; Enabled
+_EBTR0_OFF_7L        EQU  H'FF'; Disabled
 
-_EBTR1_ON_7L         EQU  H'FD'    ; Enabled
-_EBTR1_OFF_7L        EQU  H'FF'    ; Disabled
+_EBTR1_ON_7L         EQU  H'FD'; Enabled
+_EBTR1_OFF_7L        EQU  H'FF'; Disabled
 
-_EBTR2_ON_7L         EQU  H'FB'    ; Enabled
-_EBTR2_OFF_7L        EQU  H'FF'    ; Disabled
+_EBTR2_ON_7L         EQU  H'FB'; Enabled
+_EBTR2_OFF_7L        EQU  H'FF'; Disabled
 
-_EBTR3_ON_7L         EQU  H'F7'    ; Enabled
-_EBTR3_OFF_7L        EQU  H'FF'    ; Disabled
+_EBTR3_ON_7L         EQU  H'F7'; Enabled
+_EBTR3_OFF_7L        EQU  H'FF'; Disabled
 
 ;----- CONFIG7H Options --------------------------------------------------
-_EBTRB_ON_7H         EQU  H'BF'    ; Enabled
-_EBTRB_OFF_7H        EQU  H'FF'    ; Disabled
+_EBTRB_ON_7H         EQU  H'BF'; Enabled
+_EBTRB_OFF_7H        EQU  H'FF'; Disabled
 
 
 ;----- DEVID Equates --------------------------------------------------

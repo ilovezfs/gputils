@@ -19,7 +19,7 @@ GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
 GPUTILS_HTMLDOC_PATH=${GPUTILS_HTMLDOC_PATH:-"\$(datadir)/doc/gputils-\$(PACKAGE_VERSION)/html"}
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
-MPLABX_PATH_DEFAULT="/opt/microchip/mplabx/v3.30"
+MPLABX_PATH_DEFAULT="/opt/microchip/mplabx/v3.35"
 MAKE_SUBDIRS="libgputils libiberty gpasm gplink gputils header lkr doc man"
 
 # Check for additional parameters.
