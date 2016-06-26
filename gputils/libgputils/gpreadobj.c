@@ -24,13 +24,14 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-struct lazy_linking_s {
+typedef struct lazy_linking {
   union {
-    gp_symbol_t *symbol;
-    gp_aux_t    *aux;
+    gp_symbol_t       *symbol;
+    gp_aux_t          *aux;
   } read;
-  struct lazy_linking_s *next;
-};
+
+  struct lazy_linking *next;
+} lazy_linking_t;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -247,11 +248,11 @@ _read_section_header(gp_object_t *Object, gp_section_t *Section, const uint8_t *
   Section->flags      = _check_getl32(&File[36], Data);
   Section->data       = (Section->data_ptr != 0) ? i_memory_create() : NULL;
 
-  if (Section->flags & STYP_ROM_AREA) {
+  if (FlagsIsNotAllClr(Section->flags, STYP_ROM_AREA)) {
     Section->address = gp_processor_org_to_byte(Object->class, Section->address);
   }
 
-  if (((Section->flags & (STYP_TEXT | STYP_ABS)) == (STYP_TEXT | STYP_ABS)) && (Section->address & 1)) {
+  if ((FlagsIsAllSet(Section->flags, STYP_TEXT | STYP_ABS)) && (Section->address & 1)) {
     gp_error("Absolute code section \"%s\" must start at a word-aligned address.\n", Section->name);
   }
 
@@ -261,138 +262,77 @@ _read_section_header(gp_object_t *Object, gp_section_t *Section, const uint8_t *
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_read_reloc(gp_object_t *Object, const gp_section_t *Section, gp_reloc_t *Relocation,
-            const uint8_t *File, const gp_binary_t *Data)
+_read_symbol(gp_object_t *Object, int i, gp_symbol_t *Symbol, const uint8_t *File,
+             const char *String_table, lazy_linking_t *Lazy_linking, const gp_binary_t *Data)
 {
-  gp_symbol_t *symbol;
-  uint32_t     symbol_index;
+  char            buffer[9];
+  uint32_t        string_offset;
+  uint32_t        type;
+  uint32_t        data_idx;
+  lazy_linking_t *current_lazy;
 
-  /* 'r_vaddr'  -- entry relative virtual address */
-  Relocation->address = _check_getl32(&File[0], Data);
-  /* 'r_symndx' -- index into symbol table */
-  symbol_index        = _check_getl32(&File[4], Data);
-  symbol              = Object->symbol_ptr_array[symbol_index];
-  Relocation->symbol  = symbol;
-  /* 'r_offset' -- offset to be added to address of symbol 'r_symndx' */
-  Relocation->offset  = _check_getl16(&File[8], Data);
-  /* 'r_type'   -- relocation type */
-  Relocation->type    = _check_getl16(&File[10], Data);
-
-  /* Increase the number of relocation links. */
-  (symbol->num_reloc_link)++;
-
-  if (Relocation->address >= Section->size) {
-    gp_error("Relocation at address %#x in section \"%s\" of \"%s\" exceeds the section size.",
-             Relocation->address, Section->name, Object->filename);
+  /*   's_zeros'  -- first four characters are 0 */
+  if (_check_getl32(&File[0], Data) == 0) {
+    /* read name from the string table */
+    string_offset = _check_getl32(&File[4], Data);
+    /* 's_offset' -- pointer to the string table */
+    Symbol->name  = GP_Strdup(&String_table[string_offset]);
   }
-}
+  else {
+    /* 'name'     -- symbol name if less than 8 characters */
+    memcpy(buffer, &File[0], 8);
+    /* the name can occupy all 8 chars without a null terminator */
+    buffer[8]    = '\0';
+    Symbol->name = GP_Strdup(buffer);
+  }
 
-/*------------------------------------------------------------------------------------------------*/
+  data_idx  = 8;
+  /* 'value'      -- symbol value */
+  Symbol->value          = _check_getl32(&File[data_idx], Data);
+  data_idx += 4;
+  /* 'sec_num'    -- section number */
+  Symbol->section_number = _check_getl16(&File[data_idx], Data);
+  data_idx += 2;
 
-static void
-_read_lineno(gp_object_t *Object, const gp_section_t *Section, unsigned int Org_to_byte_shift,
-             gp_linenum_t *Line_number, const uint8_t *File, const gp_binary_t *Data)
-{
-  uint32_t symbol_index;
-  uint32_t insn_address;
+  if (Object->isnew) {
+    /* 'type' */
+    type = _check_getl32(&File[data_idx], Data);
+    data_idx += 4;
 
-  /* 'l_srcndx' -- symbol table index of associated source file */
-  symbol_index             = _check_getl32(&File[0], Data);
-  Line_number->symbol      = Object->symbol_ptr_array[symbol_index];
-  /* 'l_lnno'   -- line number */
-  Line_number->line_number = _check_getl16(&File[4], Data);
-  /* 'l_paddr'  -- address of code for this lineno */
-  insn_address             = _check_getl32(&File[6], Data);
-  Line_number->address     = gp_org_to_byte(Org_to_byte_shift, insn_address);
+    Symbol->type         = type & 0x1F;
+    Symbol->derived_type = type >> 5;
+  }
+  else {
+    /* TODO: Make sure the old format had this alignment. */
+    /* 'type' */
+    type = _check_getl16(&File[data_idx], Data);
+    data_idx += 2;
 
-  /* FIXME: function index and flags are unused, so far.
-     'l_flags'  -- bit flags for the line number
-  Line_number->l_flags  = _check_getl16(&File[10], Data);
-     'l_fcnndx' -- symbol table index of associated function, if there is one
-  Line_number->l_fcnndx = _check_getl32(&File[12], Data);
-  */
-}
+    Symbol->type         = type & 0x0F;
+    Symbol->derived_type = type >> 4;
+  }
 
-/*------------------------------------------------------------------------------------------------*/
+  /* 'st_class'   -- storage class */
+  Symbol->class = File[data_idx];
+  data_idx += 1;
+  /* 'num_auxsym' -- number of auxiliary symbols */
+  Symbol->num_auxsym = File[data_idx];
+  data_idx += 1;
 
-static void
-_read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data)
-{
-  unsigned int   i;
-  unsigned int   j;
-  const uint8_t *section_ptr;
-  const uint8_t *data_ptr;
-  const char    *string_table;
-  gp_section_t  *section;
-  gp_reloc_t    *relocation;
-  gp_linenum_t  *linenum;
-  unsigned int   number;
-  uint32_t       byte_addr;
-  uint32_t       header_size;
-  unsigned int   org_to_byte_shift;
+  Lazy_linking[i].read.symbol = Symbol;
+  /* update those aux entries that pointed to us */
+  current_lazy = Lazy_linking[i].next;
+  while (current_lazy != NULL) {
+    assert(current_lazy < &Lazy_linking[i]);
+    switch (current_lazy->read.aux->type) {
+      case AUX_FCN_CALLS:
+        current_lazy->read.aux->_aux_symbol._aux_fcn_calls.callee = Symbol;
+        break;
 
-  /* move to the start of the section headers */
-  section_ptr = File + (Object->isnew ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2) :
-                                        (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1));
-
-  header_size = (Object->isnew) ? SEC_HDR_SIZ_v2 : SEC_HDR_SIZ_v1;
-
-  /* setup pointer to string table */
-  string_table = (const char *)&File[Object->symbol_ptr + (Object->symbol_size * Object->num_symbols)];
-
-  section = gp_coffgen_make_block_section(Object);
-
-  for (i = 0; i < Object->num_sections; i++) {
-    _read_section_header(Object, section, section_ptr, string_table, Data);
-
-    section->number  = i + 1;
-    section_ptr     += header_size;
-
-    /* read the data */
-    if ((section->size > 0) && (section->data_ptr > 0)) {
-      byte_addr = section->address;
-      data_ptr  = &File[section->data_ptr];
-      number    = section->size;
-
-      for (j = 0; j < number; j++) {
-        b_memory_put(section->data, byte_addr + j, data_ptr[j], section->name, NULL);
-      }
+      default:
+        assert(!"Lazy symbol binding not implemented.");
     }
-
-    /* read the relocations */
-    if ((section->num_reloc > 0) && (section->reloc_ptr > 0)) {
-      data_ptr   = &File[section->reloc_ptr];
-      number     = section->num_reloc;
-      relocation = gp_coffgen_make_block_reloc(section);
-
-      for (j = 0; j < number; j++) {
-        _read_reloc(Object, section, relocation, data_ptr, Data);
-        data_ptr   += RELOC_SIZ;
-        relocation  = relocation->next;
-      }
-    }
-
-    /* read the line numbers */
-    if ((section->num_lineno > 0) && (section->lineno_ptr > 0)) {
-      if (section->flags & STYP_ROM_AREA) {
-        org_to_byte_shift = Object->class->org_to_byte_shift;
-      }
-      else {
-        org_to_byte_shift = 0;
-      }
-
-      data_ptr = &File[section->lineno_ptr];
-      number   = section->num_lineno;
-      linenum  = gp_coffgen_make_block_linenum(section);
-
-      for (j = 0; j < number; j++) {
-        _read_lineno(Object, section, org_to_byte_shift, linenum, data_ptr, Data);
-        data_ptr += LINENO_SIZ;
-        linenum   = linenum->next;
-      }
-    }
-
-    section = section->next;
+    current_lazy = current_lazy->next;
   }
 }
 
@@ -400,7 +340,7 @@ _read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data
 
 static void
 _read_aux(gp_object_t *Object, uint32_t i, gp_aux_t *Aux, unsigned int Aux_type, const uint8_t *File,
-          const char *String_table, struct lazy_linking_s *Lazy_linking, const gp_binary_t *Data)
+          const char *String_table, lazy_linking_t *Lazy_linking, const gp_binary_t *Data)
 {
   uint32_t string_offset;
   uint32_t calleendx;
@@ -471,78 +411,53 @@ _read_aux(gp_object_t *Object, uint32_t i, gp_aux_t *Aux, unsigned int Aux_type,
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_read_symbol(gp_object_t *Object, int i, gp_symbol_t *Symbol, const uint8_t *File,
-             const char *String_table, struct lazy_linking_s *Lazy_linking, const gp_binary_t *Data)
+_read_reloc(gp_object_t *Object, const gp_section_t *Section, gp_reloc_t *Relocation,
+            const uint8_t *File, const gp_binary_t *Data)
 {
-  char                   buffer[9];
-  uint32_t               string_offset;
-  uint32_t               type;
-  uint32_t               data_idx;
-  struct lazy_linking_s *current_lazy;
+  gp_symbol_t *symbol;
+  uint32_t     symbol_index;
 
-  /*   's_zeros'  -- first four characters are 0 */
-  if (_check_getl32(&File[0], Data) == 0) {
-    /* read name from the string table */
-    string_offset = _check_getl32(&File[4], Data);
-    /* 's_offset' -- pointer to the string table */
-    Symbol->name  = GP_Strdup(&String_table[string_offset]);
+  /* 'r_vaddr'  -- entry relative virtual address */
+  Relocation->address = _check_getl32(&File[0], Data);
+  /* 'r_symndx' -- index into symbol table */
+  symbol_index        = _check_getl32(&File[4], Data);
+  symbol              = Object->symbol_ptr_array[symbol_index];
+  Relocation->symbol  = symbol;
+  /* 'r_offset' -- offset to be added to address of symbol 'r_symndx' */
+  Relocation->offset  = _check_getl16(&File[8], Data);
+  /* 'r_type'   -- relocation type */
+  Relocation->type    = _check_getl16(&File[10], Data);
+
+  if (Relocation->address >= Section->size) {
+    gp_error("Relocation at address 0x%0*X in section \"%s\" of \"%s\" exceeds the section size.",
+             Object->class->addr_digits, Relocation->address, Section->name, Object->filename);
   }
-  else {
-    /* 'name'     -- symbol name if less than 8 characters */
-    memcpy(buffer, &File[0], 8);
-    /* the name can occupy all 8 chars without a null terminator */
-    buffer[8]    = '\0';
-    Symbol->name = GP_Strdup(buffer);
-  }
+}
 
-  data_idx  = 8;
-  /* 'value'      -- symbol value */
-  Symbol->value          = _check_getl32(&File[data_idx], Data);
-  data_idx += 4;
-  /* 'sec_num'    -- section number */
-  Symbol->section_number = _check_getl16(&File[data_idx], Data);
-  data_idx += 2;
+/*------------------------------------------------------------------------------------------------*/
 
-  if (Object->isnew) {
-    /* 'type' */
-    type = _check_getl32(&File[data_idx], Data);
-    data_idx += 4;
+static void
+_read_lineno(gp_object_t *Object, const gp_section_t *Section, unsigned int Org_to_byte_shift,
+             gp_linenum_t *Line_number, const uint8_t *File, const gp_binary_t *Data)
+{
+  uint32_t symbol_index;
+  uint32_t insn_address;
 
-    Symbol->type         = type & 0x1F;
-    Symbol->derived_type = type >> 5;
-  }
-  else {
-    /* TODO: Make sure the old format had this alignment. */
-    /* 'type' */
-    type = _check_getl16(&File[data_idx], Data);
-    data_idx += 2;
+  /* 'l_srcndx' -- symbol table index of associated source file */
+  symbol_index             = _check_getl32(&File[0], Data);
+  Line_number->symbol      = Object->symbol_ptr_array[symbol_index];
+  /* 'l_lnno'   -- line number */
+  Line_number->line_number = _check_getl16(&File[4], Data);
+  /* 'l_paddr'  -- address of code for this lineno */
+  insn_address             = _check_getl32(&File[6], Data);
+  Line_number->address     = gp_org_to_byte(Org_to_byte_shift, insn_address);
 
-    Symbol->type         = type & 0x0F;
-    Symbol->derived_type = type >> 4;
-  }
-
-  /* 'st_class'   -- storage class */
-  Symbol->class = File[data_idx];
-  data_idx += 1;
-  /* 'num_auxsym' -- number of auxiliary symbols */
-  Symbol->num_auxsym = File[data_idx];
-  data_idx += 1;
-
-  Lazy_linking[i].read.symbol = Symbol;
-  /* update those aux entries that pointed to us */
-  current_lazy = Lazy_linking[i].next;
-  while (current_lazy != NULL) {
-    assert(current_lazy < &Lazy_linking[i]);
-    switch (current_lazy->read.aux->type) {
-      case AUX_FCN_CALLS:
-        current_lazy->read.aux->_aux_symbol._aux_fcn_calls.callee = Symbol;
-        break;
-
-      default:
-        assert(!"Lazy symbol binding not implemented.");
-    }
-    current_lazy = current_lazy->next;
-  }
+  /* FIXME: function index and flags are unused, so far.
+     'l_flags'  -- bit flags for the line number
+  Line_number->l_flags  = _check_getl16(&File[10], Data);
+     'l_fcnndx' -- symbol table index of associated function, if there is one
+  Line_number->l_fcnndx = _check_getl32(&File[12], Data);
+  */
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -550,16 +465,16 @@ _read_symbol(gp_object_t *Object, int i, gp_symbol_t *Symbol, const uint8_t *Fil
 static void
 _read_symbol_table(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data)
 {
-  unsigned int           i;
-  unsigned int           j;
-  unsigned int           number;
-  unsigned int           num_auxsym;
-  unsigned int           aux_type;
-  gp_symbol_t           *symbol;
-  gp_aux_t              *aux;
-  const char            *string_table;
-  struct lazy_linking_s *lazy_linking;
-  const char            *section_name;
+  unsigned int    i;
+  unsigned int    j;
+  unsigned int    number;
+  unsigned int    num_auxsym;
+  unsigned int    aux_type;
+  gp_symbol_t    *symbol;
+  gp_aux_t       *aux;
+  const char     *string_table;
+  lazy_linking_t *lazy_linking;
+  const char     *section_name;
 
   number = Object->num_symbols;
   if (number == 0) {
@@ -573,7 +488,7 @@ _read_symbol_table(gp_object_t *Object, const uint8_t *File, const gp_binary_t *
   string_table = (const char *)&File[Object->symbol_ptr + (Object->symbol_size * number)];
 
   /* setup lazy linking of symbol table indices */
-  lazy_linking = (struct lazy_linking_s *)GP_Calloc(number, sizeof(struct lazy_linking_s));
+  lazy_linking = (lazy_linking_t *)GP_Calloc(number, sizeof(lazy_linking_t));
 
   /* read the symbols */
   File         = &File[Object->symbol_ptr];
@@ -623,6 +538,96 @@ _read_symbol_table(gp_object_t *Object, const uint8_t *File, const gp_binary_t *
 
     symbol = symbol->next;
   } /* for (i = 0; i < number; i++) */
+
+  free(lazy_linking);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data)
+{
+  unsigned int   i;
+  unsigned int   j;
+  const uint8_t *section_ptr;
+  const uint8_t *data_ptr;
+  const char    *string_table;
+  gp_section_t  *section;
+  gp_reloc_t    *relocation;
+  gp_linenum_t  *linenum;
+  unsigned int   number;
+  uint32_t       byte_addr;
+  uint32_t       header_size;
+  unsigned int   org_to_byte_shift;
+
+  /* move to the start of the section headers */
+  section_ptr = File + (Object->isnew ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2) :
+                                        (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1));
+
+  header_size = (Object->isnew) ? SEC_HDR_SIZ_v2 : SEC_HDR_SIZ_v1;
+
+  /* setup pointer to string table */
+  string_table = (const char *)&File[Object->symbol_ptr + (Object->symbol_size * Object->num_symbols)];
+
+  section = gp_coffgen_make_block_section(Object);
+
+  for (i = 0; i < Object->num_sections; i++) {
+    _read_section_header(Object, section, section_ptr, string_table, Data);
+
+    section->number  = i + 1;
+    section_ptr     += header_size;
+
+    /* read the data */
+    if ((section->size > 0) && (section->data_ptr > 0)) {
+      byte_addr = section->address;
+      data_ptr  = &File[section->data_ptr];
+      number    = section->size;
+
+      for (j = 0; j < number; j++) {
+        b_memory_put(section->data, byte_addr + j, data_ptr[j], section->name, NULL);
+      }
+    }
+
+    /* read the relocations */
+    if ((section->num_reloc > 0) && (section->reloc_ptr > 0)) {
+      data_ptr   = &File[section->reloc_ptr];
+      number     = section->num_reloc;
+      relocation = gp_coffgen_make_block_reloc(section);
+
+      for (j = 0; j < number; j++) {
+        _read_reloc(Object, section, relocation, data_ptr, Data);
+        data_ptr   += RELOC_SIZ;
+        relocation  = relocation->next;
+      }
+    }
+
+    /* read the line numbers */
+    if ((section->num_lineno > 0) && (section->lineno_ptr > 0)) {
+      if (FlagsIsNotAllClr(section->flags, STYP_ROM_AREA)) {
+        org_to_byte_shift = Object->class->org_to_byte_shift;
+      }
+      else {
+        org_to_byte_shift = 0;
+      }
+
+      data_ptr = &File[section->lineno_ptr];
+      number   = section->num_lineno;
+      linenum  = gp_coffgen_make_block_linenum(section);
+
+      for (j = 0; j < number; j++) {
+        _read_lineno(Object, section, org_to_byte_shift, linenum, data_ptr, Data);
+        data_ptr += LINENO_SIZ;
+        linenum   = linenum->next;
+      }
+    }
+
+    if (FlagsIsNotAllClr(section->flags, STYP_ABS | STYP_DATA)) {
+      /* This is a protected section. */
+      (section->reloc_count)++;
+    }
+
+    section = section->next;
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -639,9 +644,9 @@ _clean_symbol_table(gp_object_t *Object)
 
   curr_symbol = Object->symbol_list;
   while (curr_symbol != NULL) {
-    if (curr_symbol->section_number > 0) {
-      /* Assign section pointer, section numbers start at 1 not 0. */
-      curr_symbol->section = Object->section_ptr_array[curr_symbol->section_number - 1];
+    if (curr_symbol->section_number > N_UNDEF) {
+      /* Assign section pointer, section numbers start at 1 (N_SCNUM) not 0 (N_UNDEF). */
+      curr_symbol->section = Object->section_ptr_array[curr_symbol->section_number - N_SCNUM];
     }
     else {
       curr_symbol->section = NULL;
@@ -650,14 +655,12 @@ _clean_symbol_table(gp_object_t *Object)
     if (curr_symbol->num_auxsym > 0) {
       /* Omit from chain this auxiliary entries. */
       next_symbol = curr_symbol->next;
-      for (i = 0; i < curr_symbol->num_auxsym; i++) {
+      for (i = 0; i < curr_symbol->num_auxsym; ++i) {
         aux_symbol  = next_symbol;
         next_symbol = next_symbol->next;
-//        gp_coffgen_put_reserve_symbol(Object, aux_symbol);
         gp_coffgen_del_symbol(Object, aux_symbol);
       }
     }
-
     curr_symbol = curr_symbol->next;
   }
 }
@@ -762,9 +765,22 @@ gp_convert_file(const char *File_name, const gp_binary_t *Data)
   if (_read_file_header(object, Data->file, Data) != 0) {
     _read_opt_header(object, Data->file + (object->isnew ? FILE_HDR_SIZ_v2 : FILE_HDR_SIZ_v1), Data);
   }
+
   _read_symbol_table(object, Data->file, Data);
   _read_sections(object, Data->file, Data);
   _clean_symbol_table(object);
+
+  if (object->section_ptr_array != NULL) {
+    /* It is no longer necessary later. */
+    free(object->section_ptr_array);
+    object->section_ptr_array = NULL;
+  }
+
+  if (object->symbol_ptr_array != NULL) {
+    /* It is no longer necessary later. */
+    free(object->symbol_ptr_array);
+    object->symbol_ptr_array = NULL;
+  }
 
   return object;
 }

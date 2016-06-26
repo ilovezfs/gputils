@@ -1,10 +1,39 @@
+2016-06-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, gplink/map.c, gputils/dump.c, gputils/gpdasm.c,
+    gputils/gpvo.c:
+    Code formatting.
+
+  * gplink/gplink.c:
+    gp_coffgen_check_relocations
+
+  * gputils/testsuite/gpdasm.project/op12.asm,
+    gputils/testsuite/gpdasm.project/op16e.asm,
+    gputils/testsuite/gpdasm.project/op16e_new_conf.asm,
+    gputils/testsuite/gpdasm.project/op16e_old_conf.asm,
+    libgputils/gparchive.c, libgputils/gpwriteobj.c:
+    Minor changes.
+
+  * libgputils/gpcoff.h, libgputils/gpreadobj.c,
+    libgputils/gpreadobj.h:
+    Improved relocation recognition.
+
+  * libgputils/gpcoffgen.c, libgputils/gpcoffgen.h,
+    libgputils/gpcofflink.c:
+    Use new function:
+	gp_coffgen_section_has_reloc
+	gp_coffgen_check_relocations
+
+  * libgputils/gpcoffopt.c, libgputils/gpcoffopt.h:
+    Simplified this funtion:
+	gp_coffopt_remove_dead_sections
+
 2016-06-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/*, lkr/*, libgputils/gpcfg-table.c,
     libgputils/gpreg-table.c, configure, configure.ac:
     Updated with new devices based on the mplabx-3.35.
 
 2016-06-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
-  * gpasm/coff.c, gpasm/coff.h, gpasm/directive.c gpasm/gpasm.h.in,
+  * gpasm/coff.c, gpasm/coff.h, gpasm/directive.c, gpasm/gpasm.h.in,
     gpasm/lst.c, gplink/cod.c, gplink/gplink.c, gplink/gplink.h.in
     gplink/lst.c, gplink/map.c, gputils/gplib.c, gputils/gplib.h.in,
     gputils/gpstrip.c, gputils/gpstrip.h.in, gputils/gpvo.c,

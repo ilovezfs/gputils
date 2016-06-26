@@ -276,12 +276,12 @@ _off_or_on(pnode_t *p)
 static unsigned int
 _emit_data(pnode_t *L, unsigned int char_shift, const char *name)
 {
-  const pnode_t  *p;
-  const char     *pc;
-  unsigned int    begin_org;
-  int             value;
-  uint16_t        word;
-  unsigned int    n;
+  const pnode_t *p;
+  const char    *pc;
+  unsigned int   begin_org;
+  int            value;
+  uint16_t       word;
+  unsigned int   n;
 
   for (begin_org = state.byte_addr; L != NULL; L = TAIL(L)) {
     p = HEAD(L);
@@ -320,7 +320,7 @@ _emit_data(pnode_t *L, unsigned int char_shift, const char *name)
         }
         /* For data and packed emit a terminating nul for strings. */
         if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
-          _emit(0, name);
+          _emit('\0', name);
         }
       }
     }

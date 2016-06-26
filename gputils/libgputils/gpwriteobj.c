@@ -361,7 +361,7 @@ _write_symbols(const gp_object_t *Object, uint8_t *Table, FILE *Fp)
     _add_name(current->name, Table, Fp);
     gp_fputl32(current->value, Fp);
 
-    if (current->section_number < 1) {
+    if (current->section_number < N_SCNUM) {
       gp_fputl16(current->section_number, Fp);
     } else {
       gp_fputl16(current->section->number, Fp);
@@ -401,7 +401,7 @@ _updateptr(gp_object_t *Object)
   data_idx = (Object->isnew) ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2 + (SEC_HDR_SIZ_v2 * Object->num_sections)) :
                                (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ_v1 * Object->num_sections));
 
-  section_number = 1;
+  section_number = N_SCNUM;
 
   /* update the data pointers in the section headers */
   section = Object->section_list;

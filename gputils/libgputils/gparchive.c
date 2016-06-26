@@ -364,11 +364,11 @@ gp_archive_read(const char *File_name)
     if (archive == NULL) {
       /* this is the first entry */
       archive = new;
-      list = new;
     } else {
       list->next = new;
-      list = new;
     }
+
+    list = new;
 
     /* Some malformed libs have a couple of extra bytes on the end.  The
        while eof test passes, but there are no other members.  Test for

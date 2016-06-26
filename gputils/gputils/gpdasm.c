@@ -310,11 +310,11 @@ _write_header(void)
 {
   if (!state.format) {
     _ux_print(true, "        processor %s\n"
-                   "        radix dec", state.processor->names[1]);
+                    "        radix dec", state.processor->names[1]);
 
     if (state.processor->header != NULL) {
       _ux_print(true, "\n"
-                     "        include %s", state.processor->header);
+                      "        include %s", state.processor->header);
     }
   }
 }
@@ -332,12 +332,12 @@ _write_core_sfr_list(void)
   }
 
   _ux_print(true, "\n"
-                 "F       equ     1\n"
-                 "W       equ     0");
+                  "F       equ     1\n"
+                  "W       equ     0");
 
   if (state.class == PROC_CLASS_PIC16E) {
     _ux_print(true, "A       equ     0\n"
-                   "B       equ     1");
+                    "B       equ     1");
   }
 
   _ux_print(true, "");
@@ -364,7 +364,7 @@ _end_asm(void)
 {
   if (!state.format) {
     _ux_print(true, "\n"
-                   "        end");
+                    "        end");
   }
 }
 
@@ -791,7 +791,7 @@ _show_config(void)
 
     for (n = 0; n < hit->pair_count; ++n) {
       _ux_print(true, "        CONFIG  %-*s = %s", addr_pack.max_dir_width,
-               hit->pairs[n].directive->name, hit->pairs[n].option->name);
+                hit->pairs[n].directive->name, hit->pairs[n].option->name);
     }
   }
 }
@@ -849,7 +849,7 @@ _show_idlocs(void)
 
         buffer[j] = '\0';
         _ux_print(true, "\n"
-                       "        IDLOCS  \"%s\"", buffer);
+                        "        IDLOCS  \"%s\"", buffer);
       }
       else {
         /* Not only printable characters are there in it. */
@@ -905,7 +905,7 @@ _show_idlocs(void)
     word |= (idlocs_pack.words[2] & 0x000F) << 4;
     word |= (idlocs_pack.words[3] & 0x000F);
     _ux_print(true, "\n"
-                   "        __idlocs 0x%04X", word);
+                    "        __idlocs 0x%04X", word);
   }
 }
 
@@ -959,8 +959,8 @@ _list_user_labels(int Addr_digits)
   if (((sect = state.lset_root.sections[SECT_SPEC_EEDATA]) != NULL) && (sect->symbol_table != NULL)) {
     if (_need_section_print(sect)) {
       _ux_print(true, "\n"
-                     ";%s\n"
-                     "; EEDATA address definitions\n", border);
+                      ";%s\n"
+                      "; EEDATA address definitions\n", border);
       for (i = 0; i < sect->symbol_number; ++i) {
         sym = sect->symbol_table[i];
 
@@ -1145,8 +1145,8 @@ _dasm(MemBlock_t *memory)
 
   if (state.show_names) {
     _ux_print(true, "\n"
-                   "; The recognition of labels and registers is not always good, therefore\n"
-                   "; be treated cautiously the results.");
+                    "; The recognition of labels and registers is not always good, therefore\n"
+                    "; be treated cautiously the results.");
     if (state.need_sfr_equ) {
       _write_core_sfr_list();
     }
@@ -1188,8 +1188,8 @@ _dasm(MemBlock_t *memory)
               if (last_loc != (i - insn_size)) {
                 if (state.show_names && (offset == 0)) {
                   _ux_print(true, "\n"
-                                 ";%s\n"
-                                 "; IDLOCS area", border);
+                                  ";%s\n"
+                                  "; IDLOCS area", border);
                 }
 
                 _write_org(org, addr_digits, "idlocs", NULL, 0);
@@ -1263,8 +1263,8 @@ _dasm(MemBlock_t *memory)
               if (last_loc != (i - insn_size)) {
                 if (state.show_names && (offset == 0)) {
                   _ux_print(true, "\n"
-                                 ";%s\n"
-                                 "; CONFIG Bits area", border);
+                                  ";%s\n"
+                                  "; CONFIG Bits area", border);
                 }
 
                 _write_org(org, addr_digits, "config", NULL, 0);
@@ -1293,8 +1293,8 @@ _dasm(MemBlock_t *memory)
               if (last_loc != (i - insn_size)) {
                 if (state.show_names && (offset == 0)) {
                   _ux_print(true, "\n"
-                                 ";%s\n"
-                                 "; CONFIG Bits area", border);
+                                  ";%s\n"
+                                  "; CONFIG Bits area", border);
                 }
 
                 _write_org(org, addr_digits, "config", NULL, 0);
@@ -1325,8 +1325,8 @@ _dasm(MemBlock_t *memory)
 
             if (state.show_names && (offset == 0)) {
               _ux_print(true, "\n"
-                             ";%s\n"
-                             "; EEDATA area", border);
+                              ";%s\n"
+                              "; EEDATA area", border);
             }
 
             if ((sym != NULL) && (sym->attr & CSYM_ORG)) {
@@ -1385,8 +1385,8 @@ _dasm(MemBlock_t *memory)
 
             if (state.show_names && (org == 0)) {
               _ux_print(true, "\n"
-                             ";%s\n"
-                             "; CODE area", border);
+                              ";%s\n"
+                              "; CODE area", border);
             }
 
             if ((sym != NULL) && (sym->attr & CSYM_ORG)) {
@@ -1437,7 +1437,7 @@ _dasm(MemBlock_t *memory)
               if (state.format) {
                 state.class->i_memory_get(m, i + 2, &data, NULL, NULL);
                 _ux_print(true, "%0*x:  %0*x", addr_digits, gp_processor_byte_to_real(state.processor, i + 2),
-                         word_digits, (unsigned int)data);
+                          word_digits, (unsigned int)data);
                 prev_empty_line = false;
               }
 

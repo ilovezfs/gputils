@@ -98,7 +98,7 @@ gp_cofflink_add_symbols(symbol_table_t *Definition, symbol_table_t *Missing, gp_
   while (symbol != NULL) {
     /* process all external symbols that are not directives */
     if ((symbol->class == C_EXT) && (symbol->name[0] != '.')) {
-      if (symbol->section_number == 0) {
+      if (symbol->section_number == N_UNDEF) {
         /* This symbol is defined elsewhere. Check for it in the symbol
            definitions. If it doesn't exist there, add it to the missing
            symbol table, if not already entered. */
@@ -190,9 +190,9 @@ gp_cofflink_clean_table(gp_object_t *Object, symbol_table_t *Symbols)
         assert(sym != NULL);
         var = sym_get_symbol_annotation(sym);
         assert(var != NULL);
-        relocation->symbol = var->symbol;
-        /* Increase the number of relocation links. */
-        (relocation->symbol->num_reloc_link)++;
+        symbol = var->symbol;
+        assert(symbol != NULL);
+        relocation->symbol = symbol;
       }
 
       relocation = relocation->next;
@@ -232,12 +232,13 @@ _update_line_numbers(gp_linenum_t *Line_number, unsigned int Offset)
 void
 gp_cofflink_combine_overlay(gp_object_t *Object, gp_boolean Remove_symbol)
 {
+  int           addr_digits;
   gp_section_t *first;
   gp_section_t *second;
   gp_symbol_t  *symbol;
 
-  first = Object->section_list;
-
+  addr_digits = Object->class->addr_digits;
+  first       = Object->section_list;
   while (first != NULL) {
     if (first->flags & STYP_OVERLAY) {
       second = gp_coffgen_find_section(Object, first->next, first->name);
@@ -249,8 +250,8 @@ gp_cofflink_combine_overlay(gp_object_t *Object, gp_boolean Remove_symbol)
           continue;
         }
         else if ((first->flags & STYP_ABS) && (first->address != second->address)) {
-          gp_error("Different addresses for absolute overlay sections \"%s\" (%#x != %#x).",
-                   first->name, first->address, second->address);
+          gp_error("Different addresses for absolute overlay sections \"%s\" (0x%0*X != 0x%0*X).",
+                   first->name, addr_digits, first->address, addr_digits, second->address);
           continue;
         }
 
@@ -310,14 +311,14 @@ gp_cofflink_make_stack(gp_object_t *Object, unsigned int Num_bytes)
 
   /* create the symbol for the start address of the stack */
   symbol = gp_coffgen_find_symbol(Object, "_stack");
-  if ((symbol != NULL) && (symbol->section_number > 0)) {
+  if ((symbol != NULL) && (symbol->section_number > N_UNDEF)) {
     gp_error("_stack symbol already exists");
   }
   else {
     symbol = gp_coffgen_add_symbol(Object);
     symbol->name           = GP_Strdup("_stack");
     symbol->value          = 0;
-    symbol->section_number = 1;
+    symbol->section_number = N_SCNUM;
     symbol->section        = new;
     symbol->type           = T_NULL;
     symbol->class          = C_EXT;
@@ -325,14 +326,14 @@ gp_cofflink_make_stack(gp_object_t *Object, unsigned int Num_bytes)
 
   /* create the symbol for the end of the stack */
   symbol = gp_coffgen_find_symbol(Object, "_stack_end");
-  if ((symbol != NULL) && (symbol->section_number > 0)) {
+  if ((symbol != NULL) && (symbol->section_number > N_UNDEF)) {
     gp_error("_stack_end symbol already exists.");
   }
   else {
     symbol = gp_coffgen_add_symbol(Object);
     symbol->name           = GP_Strdup("_stack_end");
     symbol->value          = Num_bytes - 1;
-    symbol->section_number = 1;
+    symbol->section_number = N_SCNUM;
     symbol->section        = new;
     symbol->type           = T_NULL;
     symbol->class          = C_EXT;
@@ -347,6 +348,7 @@ gp_cofflink_make_stack(gp_object_t *Object, unsigned int Num_bytes)
 void
 gp_cofflink_merge_sections(gp_object_t *Object)
 {
+  int           addr_digits;
   gp_section_t *first;
   gp_section_t *second;
   gp_symbol_t  *symbol;
@@ -359,7 +361,8 @@ gp_cofflink_merge_sections(gp_object_t *Object)
   unsigned int  offset;
   unsigned int  byte_addr;
 
-  first = Object->section_list;
+  addr_digits = Object->class->addr_digits;
+  first       = Object->section_list;
   while (first != NULL) {
     second = gp_coffgen_find_section(Object, first->next, first->name);
 
@@ -369,8 +372,8 @@ gp_cofflink_merge_sections(gp_object_t *Object)
           (second->flags & STYP_ABS) ||
           (strcmp(first->name, ".config") == 0) ||
           (strcmp(first->name, ".idlocs") == 0)) {
-        gp_error("File \"%s\", section \"%s\" (%#x) is absolute but occurs in more than one file.",
-                 Object->filename, first->name, first->address);
+        gp_error("File \"%s\", section \"%s\" (0x%0*X) is absolute but occurs in more than one file.",
+                 Object->filename, first->name, addr_digits, first->address);
         exit(1);
       }
 
@@ -416,7 +419,7 @@ gp_cofflink_merge_sections(gp_object_t *Object)
       /* Update the symbol table. */
       symbol = Object->symbol_list;
       while (symbol != NULL) {
-        if ((symbol->section_number > 0) && (symbol->section == second)) {
+        if ((symbol->section_number > N_UNDEF) && (symbol->section == second)) {
           symbol->section  = first;
           symbol->value   += section_org;
         }
@@ -590,14 +593,14 @@ gp_cofflink_make_cinit(gp_object_t *Object)
      section address relocations RELOCT_SCN*. */
   symbol = gp_coffgen_find_symbol(Object, "_cinit");
 
-  if ((symbol != NULL) && (symbol->section_number > 0)) {
+  if ((symbol != NULL) && (symbol->section_number > N_UNDEF)) {
     gp_error("_cinit symbol already exists.");
   }
   else {
     symbol = gp_coffgen_add_symbol(Object);
     symbol->name           = GP_Strdup("_cinit");
     symbol->value          = 0;
-    symbol->section_number = 1;
+    symbol->section_number = N_SCNUM;
     symbol->section        = NULL;
     symbol->type           = T_NULL;
     symbol->class          = C_EXT;
@@ -775,6 +778,7 @@ _set_used(const gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shi
   const char        *symbol_name;
   const char        *old_section_name;
   const char        *old_symbol_name;
+  int                addr_digits;
 
   if (P16e_align_needed && (Size & 1)) {
     /* code_pack --> STYP_BPACK */
@@ -782,22 +786,23 @@ _set_used(const gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shi
     ++Size;
   }
 
-  gp_debug("      marking %#x (%u) words from %#x to %#x as used",
-           Size, Size,
-           gp_byte_to_org(Org_to_byte_shift, Byte_address),
-           gp_byte_to_org(Org_to_byte_shift, Byte_address + Size - 1));
+  addr_digits = Object->class->addr_digits;
+  gp_debug("      marking %#x (%u) words from 0x%0*X to 0x%0*X as used", Size, Size,
+           addr_digits, gp_byte_to_org(Org_to_byte_shift, Byte_address),
+           addr_digits, gp_byte_to_org(Org_to_byte_shift, Byte_address + Size - 1));
 
   for ( ; Size > 0; Byte_address++, Size--) {
     if (b_memory_get(M, Byte_address, &data, &old_section_name, &old_symbol_name)) {
       if ((old_section_name != NULL) && (Section_name != NULL)) {
         symbol      = gp_symbol_find(Object, Section_name, Byte_address);
         symbol_name = (symbol != NULL) ? symbol->name : NULL;
-        gp_error("More %s sections use same address: %#x -- \"%s/%s\", \"%s/%s\"",
-                 Type, gp_byte_to_org(Org_to_byte_shift, Byte_address),
+        gp_error("More %s sections use same address: 0x%0*X -- \"%s/%s\", \"%s/%s\"", Type,
+                 addr_digits, gp_byte_to_org(Org_to_byte_shift, Byte_address),
                  old_section_name, old_symbol_name, Section_name, symbol_name);
       }
       else {
-        gp_error("More %s sections use same address: %#x", Type, gp_byte_to_org(Org_to_byte_shift, Byte_address));
+        gp_error("More %s sections use same address: 0x%0*X", Type,
+                 addr_digits, gp_byte_to_org(Org_to_byte_shift, Byte_address));
       }
       return;
     }
@@ -913,10 +918,9 @@ _find_big_section(gp_section_t *Section, uint32_t Flags)
    block. */
 
 static gp_boolean
-_search_memory(const MemBlock_t *M, unsigned int Org_to_byte_shift,
-               unsigned int Start, unsigned int Stop, unsigned int Size,
-               unsigned int *Block_address, unsigned int *Block_size,
-               gp_boolean Stop_at_first)
+_search_memory(const MemBlock_t *M, unsigned int Org_to_byte_shift, unsigned int Start,
+               unsigned int Stop, unsigned int Size, unsigned int *Block_address,
+               unsigned int *Block_size, gp_boolean Stop_at_first)
 {
   unsigned int address;
   unsigned int current_address = 0;
@@ -1447,7 +1451,7 @@ gp_cofflink_update_table(gp_object_t *Object, unsigned int Org_to_byte_shift)
 
   symbol = Object->symbol_list;
   while (symbol != NULL) {
-    if (symbol->section_number > 0) {
+    if (symbol->section_number > N_UNDEF) {
       sym_sect = symbol->section;
       assert(sym_sect != NULL);
 
@@ -1807,22 +1811,24 @@ gp_cofflink_patch(gp_object_t *Object)
 MemBlock_t *
 gp_cofflink_make_memory(gp_object_t *Object)
 {
-  const gp_section_t *section;
   MemBlock_t         *m;
+  const gp_section_t *section;
+  proc_class_t        class;
+  pic_processor_t     processor;
+  int                 addr_digits;
   unsigned int        addr;
   unsigned int        org;
   unsigned int        stop;
   const char         *section_name;
   const char         *symbol_name;
   uint8_t             byte;
-  proc_class_t        class;
-  pic_processor_t     processor;
   gp_boolean          not_8_bit;
 
-  m         = i_memory_create();
-  section   = Object->section_list;
-  class     = Object->class;
-  processor = Object->processor;
+  m           = i_memory_create();
+  section     = Object->section_list;
+  class       = Object->class;
+  processor   = Object->processor;
+  addr_digits = class->addr_digits;
 
   if ((class == PROC_CLASS_PIC12)  || (class == PROC_CLASS_PIC12E) ||
       (class == PROC_CLASS_PIC12I) || (class == PROC_CLASS_SX)     ||
@@ -1838,7 +1844,8 @@ gp_cofflink_make_memory(gp_object_t *Object)
     if (section->flags & STYP_ROM_AREA) {
       addr = section->address;
       stop = addr + section->size;
-      gp_debug("   make memory: section \"%s\" (0x%06X - 0x%06X)", section->name, addr, stop - 1);
+      gp_debug("   make memory: section \"%s\" (0x%0*X - 0x%0*X)", section->name,
+               addr_digits, addr, addr_digits, stop - 1);
 
       for ( ; addr < stop; addr++) {
         /* fetch the current contents of the memory */

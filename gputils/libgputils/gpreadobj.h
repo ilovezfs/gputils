@@ -37,10 +37,10 @@ typedef struct gp_binary {
   uint8_t *file;                /* file contents */
 } gp_binary_t;
 
-extern gp_coff_t gp_identify_coff_file(const char *filename);
-extern gp_binary_t *gp_read_file(const char *filename);
-extern void gp_free_file(gp_binary_t *data);
-extern gp_object_t *gp_convert_file(const char *filename, const gp_binary_t *data);
-extern gp_object_t *gp_read_coff(const char *filename);
+extern gp_coff_t gp_identify_coff_file(const char *File_name);
+extern gp_binary_t *gp_read_file(const char *File_name);
+extern void gp_free_file(gp_binary_t *Data);
+extern gp_object_t *gp_convert_file(const char *File_name, const gp_binary_t *Data);
+extern gp_object_t *gp_read_coff(const char *File_name);
 
 #endif
