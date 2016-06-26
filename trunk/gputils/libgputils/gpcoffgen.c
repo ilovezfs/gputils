@@ -1142,12 +1142,32 @@ gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation)
   (Section->num_reloc)--;
 
   symbol = Relocation->symbol;
+  assert(symbol != NULL);
 
-  if (symbol->num_reloc_link > 0) {
-    (symbol->num_reloc_link)--;
+  if (symbol->reloc_count_all_section > 0) {
+    (symbol->reloc_count_all_section)--;
+
+    if (symbol->section == Section) {
+      /*  Relocation reference from own section. */
+      if (symbol->reloc_count_own_section > 0) {
+        (symbol->reloc_count_own_section)--;
+      }
+      else {
+        gp_warning("Number of relocation references from own section is zero: '%s'", symbol->name);
+      }
+    }
+    else {
+      /*  Relocation reference from another section. */
+      if (symbol->reloc_count_other_section > 0) {
+        (symbol->reloc_count_other_section)--;
+      }
+      else {
+        gp_warning("Number of relocation references from another section is zero: '%s'", symbol->name);
+      }
+    }
   }
   else {
-    gp_warning("Number of relocation links of symbol is zero: '%s'", symbol->name);
+    gp_warning("Number of relocation references from all section is zero: '%s'", symbol->name);
   }
 
   free(Relocation);
@@ -1487,8 +1507,59 @@ gp_coffgen_find_linenum(const gp_section_t *Section, const gp_symbol_t *Symbol,
   linenum.line_number = Line_number;
   ptr = &linenum;
   ret = (gp_linenum_t **)bsearch(&ptr, Section->line_numbers_array, Section->line_numbers_array_length,
-                                    sizeof(gp_linenum_t *), _linenum_cmp);
+                                 sizeof(gp_linenum_t *), _linenum_cmp);
   return ((ret != NULL) ? *ret : NULL);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+gp_coffgen_check_relocations(const gp_object_t *Object, gp_boolean Enable_cinit_warns)
+{
+  proc_class_t  class;
+  gp_section_t *section;
+  gp_symbol_t  *symbol;
+  gp_reloc_t   *relocation;
+
+  class   = Object->class;
+  section = Object->section_list;
+  while (section != NULL) {
+    relocation = section->relocation_list;
+    while (relocation != NULL) {
+      symbol = relocation->symbol;
+      (symbol->reloc_count_all_section)++;
+
+      if (symbol->section == NULL) {
+        if (Enable_cinit_warns || (strcmp(symbol->name, "_cinit") != 0)) {
+          gp_warning("Relocation symbol \"%s\" [0x%0*X] has no section.",
+                     symbol->name, class->addr_digits, relocation->address);
+        }
+      }
+      else {
+        (symbol->section->reloc_count)++;
+
+        if (symbol->section == section) {
+          (symbol->reloc_count_own_section)++;
+        }
+        else {
+          (symbol->reloc_count_other_section)++;
+        }
+      }
+
+      relocation = relocation->next;
+    }
+    section = section->next;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Determine if any relocation uses the section. */
+
+gp_boolean
+gp_coffgen_section_has_reloc(const gp_section_t *Section)
+{
+  return ((Section->reloc_count > 0) ? true : false);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1498,7 +1569,7 @@ gp_coffgen_find_linenum(const gp_section_t *Section, const gp_symbol_t *Symbol,
 gp_boolean
 gp_coffgen_symbol_has_reloc(const gp_symbol_t *Symbol)
 {
-  return ((Symbol->num_reloc_link > 0) ? true : false);
+  return ((Symbol->reloc_count_all_section > 0) ? true : false);
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -7,9 +7,9 @@
 	__config 	_OSC_XT & _WDT_OFF & _CP_ON & _MCLRE_OFF
 
 insn macro file
-	ADDWF	file, 1
+	ADDWF	file, f
 	ANDLW	0xff
-	ANDWF	file, 1
+	ANDWF	file, f
 	BCF	file, 7
 	BSF	file, 7
 	BTFSC	file, 1
@@ -18,28 +18,28 @@ insn macro file
 	CLRF	file
 	CLRW
 	CLRWDT
-	COMF	file, 1
-	DECF	file, 1
+	COMF	file, f
+	DECF	file, f
 	DECFSZ	file, 1
 	GOTO	0x100
-	INCF	file, 1
+	INCF	file, f
 	INCFSZ	file, 1
 	IORLW	0xff
-	IORWF	file, 1
-	MOVF	file, 1
+	IORWF	file, f
+	MOVF	file, f
 	MOVLW	0xff
 	MOVWF	file
 	NOP
 	OPTION 
 	RETLW	0
-	RLF	file, 1
-	RRF	file, 1
+	RLF	file, f
+	RRF	file, f
 	SLEEP
-	SUBWF	file, 1
-	SWAPF	file, 1
+	SUBWF	file, f
+	SWAPF	file, f
 	TRIS	7
 	XORLW	0xff
-	XORWF	file, 1
+	XORWF	file, f
     endm
 
 	org 0

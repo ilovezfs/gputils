@@ -119,13 +119,10 @@ gp_coffopt_remove_weak(gp_object_t *Object)
 /* Remove any relocatable section that doesn't have a symbol pointed to by a relocation. */
 
 void
-gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass, gp_boolean Enable_cinit_warns)
+gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass)
 {
   gp_section_t *section;
   gp_section_t *section_next;
-  gp_symbol_t  *symbol;
-  gp_reloc_t   *relocation;
-  gp_section_t *rel_sect;
   gp_boolean    section_removed;
 
   do {
@@ -134,37 +131,8 @@ gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass, gp_boolean Enable
 
     section = Object->section_list;
     while (section != NULL) {
-      /* Mark all sections as unused. */
-      section->is_used = false;
-      section = section->next;
-    }
-
-    section = Object->section_list;
-    while (section != NULL) {
-      /* Mark all sections that relocations point to as used. */
-      relocation = section->relocation_list;
-      while (relocation != NULL) {
-        symbol = relocation->symbol;
-        if ((rel_sect = symbol->section) != NULL) {
-          if (rel_sect != section) {
-            rel_sect->is_used = true;
-          }
-        }
-        else {
-          if (Enable_cinit_warns || (strcmp(symbol->name, "_cinit") != 0)) {
-            gp_warning("Relocation symbol %s has no section.", symbol->name);
-          }
-        }
-        relocation = relocation->next;
-      }
-      section = section->next;
-    }
-
-    section = Object->section_list;
-    while (section != NULL) {
       section_next = section->next;
-      /* FIXME: Maybe don't remove if it is in protected memory. */
-      if ((!section->is_used) && FlagsIsAllClr(section->flags, STYP_ABS | STYP_DATA)) {
+      if (!gp_coffgen_section_has_reloc(section)) {
         gp_debug("Removing section \"%s\".", section->name);
         /* It is not allowed to deleted because the gplink/cod.c will need these. */
         gp_coffgen_move_reserve_section_symbols(Object, section);
@@ -179,6 +147,7 @@ gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass, gp_boolean Enable
     ++Pass;
   } while (section_removed);
 }
+
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -611,7 +580,7 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
   reloc_pipe[0].label           = gp_symbol_find_by_value(Section->label_array, Section->num_labels, reloc_insn_addr);
   reloc_pipe[0].instruction     = (Class->find_insn != NULL) ? Class->find_insn(Class, data) : NULL;
   reloc_pipe[0].state           = COPT_NULL;
-  reloc_pipe[0].protected       = ((reloc_pipe[0].label != NULL) && (reloc_pipe[0].label->num_reloc_link > 1)) ? true : false;
+  reloc_pipe[0].protected       = ((reloc_pipe[0].label != NULL) && (reloc_pipe[0].label->reloc_count_all_section > 1)) ? true : false;
   reloc_pipe[0].target_page     = target_page;
   reloc_pipe[0].reloc_page      = reloc_page;
   reloc_pipe[0].reloc_byte_addr = reloc_byte_addr;
@@ -1103,7 +1072,7 @@ _banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section
     reloc_pipe[0].label             = gp_symbol_find_by_value(Section->label_array, Section->num_labels, reloc_insn_addr);
     reloc_pipe[0].instruction       = (Class->find_insn != NULL) ? Class->find_insn(Class, data) : NULL;
     reloc_pipe[0].state             = COPT_BANKSEL;
-    reloc_pipe[0].protected         = ((reloc_pipe[0].label != NULL) && (reloc_pipe[0].label->num_reloc_link > 1)) ? true : false;
+    reloc_pipe[0].protected         = ((reloc_pipe[0].label != NULL) && (reloc_pipe[0].label->reloc_count_all_section > 1)) ? true : false;
     reloc_pipe[0].reloc_page        = reloc_page;
     reloc_pipe[0].reloc_byte_addr   = reloc_byte_addr;
     reloc_pipe[0].reloc_insn_addr   = reloc_insn_addr;

@@ -687,7 +687,7 @@ _export_sym_table(gp_object_t *object)
   symbol = object->symbol_list;
 
   while (symbol != NULL) {
-    if ((state.export.enabled) && (symbol->class == C_EXT) && (symbol->section_number > 0)) {
+    if ((state.export.enabled) && (symbol->class == C_EXT) && (symbol->section_number > N_UNDEF)) {
       _coff_type(symbol->type, buffer, sizeof(buffer));
       fprintf(state.export.f, "  extern %s ; %s\n", symbol->name, buffer);
     }

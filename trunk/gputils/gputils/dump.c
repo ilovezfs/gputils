@@ -270,7 +270,7 @@ dump_directory_blocks(void)
  */
 
 void
-dump_memmap(proc_class_t proc_class)
+dump_memmap(proc_class_t class)
 {
   unsigned int  _64k_base;
   DirBlockInfo *dbi;
@@ -305,8 +305,8 @@ dump_memmap(proc_class_t proc_class)
 
           if (!((start == 0) && (last == 0))) {
             printf("using ROM %06x to %06x\n",
-                   gp_processor_byte_to_org(proc_class, _64k_base + start),
-                   gp_processor_byte_to_org(proc_class, _64k_base + last + 1) - 1);
+                   gp_processor_byte_to_org(class, _64k_base + start),
+                   gp_processor_byte_to_org(class, _64k_base + last + 1) - 1);
           }
         }
       }
@@ -328,7 +328,7 @@ dump_memmap(proc_class_t proc_class)
  */
 
 void
-dump_code(proc_class_t proc_class)
+dump_code(proc_class_t class)
 {
   unsigned int  _64k_base;
   uint16_t      i;
@@ -338,7 +338,7 @@ dump_code(proc_class_t proc_class)
   gp_boolean    all_zero_line;
   DirBlockInfo *dbi;
 
-  dump_memmap(proc_class);
+  dump_memmap(class);
 
   printf("Formatted Code Dump:\n"
          "--------------------\n");
@@ -365,7 +365,7 @@ dump_code(proc_class_t proc_class)
             i += 8;
           }
           else {
-            printf("%06x:  ", gp_processor_byte_to_org(proc_class, _64k_base + 2 * (i + k * 256)));
+            printf("%06x:  ", gp_processor_byte_to_org(class, _64k_base + 2 * (i + k * 256)));
 
             for (j = 0; j < 8; j++) {
               printf("%04x ", gp_getu16(&temp[2 * i++]));

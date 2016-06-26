@@ -307,7 +307,7 @@ _add_linker_symbol(const char *name)
   found   = NULL;
   current = state.object->symbol_list;
   while (current != NULL) {
-    if ((current->name != NULL) && (strcmp(current->name, name) == 0) && (current->section_number > 0)) {
+    if ((current->name != NULL) && (strcmp(current->name, name) == 0) && (current->section_number > N_UNDEF)) {
       found = current;
       break;
     }
@@ -916,9 +916,10 @@ _linker(void)
 
   /* clean up symbol table */
   gp_cofflink_clean_table(state.object, state.symbol.definition);
+  gp_coffgen_check_relocations(state.object, enable_cinit_wanings);
 
   if (state.optimize.dead_sections) {
-    gp_coffopt_remove_dead_sections(state.object, 0, enable_cinit_wanings);
+    gp_coffopt_remove_dead_sections(state.object, 0);
   }
 
   /* combine overlay sections */

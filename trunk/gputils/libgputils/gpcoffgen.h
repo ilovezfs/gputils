@@ -35,13 +35,14 @@ extern void gp_coffgen_transfer_object_data(gp_object_t *Receiver, gp_object_t *
 extern gp_boolean gp_coffgen_update_all_object_id(gp_object_t *Object);
 
 extern gp_section_t *gp_coffgen_find_section(gp_object_t *Object, gp_section_t *Start,
-                                                const char *Name);
+                                             const char *Name);
 
 extern gp_section_t *gp_coffgen_new_section(const char *Name, MemBlock_t *Data);
+extern gp_section_t *gp_coffgen_make_block_section(gp_object_t *Object);
 extern gp_section_t *gp_coffgen_add_exists_section(gp_object_t *Object, gp_section_t *Section);
 
 extern gp_section_t *gp_coffgen_insert_section(gp_object_t *Object, gp_section_t *Ancestor,
-                                                  gp_section_t *Following);
+                                               gp_section_t *Following);
 
 extern gp_section_t *gp_coffgen_add_section(gp_object_t *Object, const char *Name, MemBlock_t *Data);
 extern void gp_coffgen_transfer_section_data(gp_section_t *Receiver, gp_section_t *Sender);
@@ -51,24 +52,29 @@ extern void gp_coffgen_del_section_symbols(gp_object_t *Object, gp_section_t *Se
 extern void gp_coffgen_move_reserve_section_symbols(gp_object_t *Object, gp_section_t *Section);
 extern gp_section_t *gp_coffgen_move_reserve_section(gp_object_t *Object, gp_section_t *Section);
 extern gp_boolean gp_coffgen_del_section(gp_object_t *Object, gp_section_t *Section);
+
 extern gp_section_t **gp_coffgen_make_section_array(gp_object_t *Object, unsigned int *Num_sections,
-                                                       unsigned int Page_addr, uint32_t Flags);
+                                                    unsigned int Page_addr, uint32_t Flags);
 
 extern gp_symbol_t *gp_coffgen_find_symbol(gp_object_t *Object, const char *Name);
 extern gp_symbol_t *gp_coffgen_find_section_symbol(gp_object_t *Object, const char *Name);
 
 extern gp_symbol_t *gp_coffgen_find_symbol_section_value(gp_object_t *Object,
-                                                            const char *Section_section, long Value);
+                                                         const char *Section_section, long Value);
 
+extern gp_symbol_t *gp_coffgen_make_block_symbol(gp_object_t *Object);
 extern gp_symbol_t *gp_coffgen_add_symbol(gp_object_t *Object);
 extern gp_aux_t *gp_coffgen_add_aux(gp_object_t *Object, gp_symbol_t *Symbol);
+extern gp_aux_t *gp_coffgen_make_block_aux(gp_symbol_t *Symbol);
 extern gp_symbol_t *gp_coffgen_move_reserve_symbol(gp_object_t *Object, gp_symbol_t *Symbol);
 extern gp_boolean gp_coffgen_del_symbol(gp_object_t *Object, gp_symbol_t *Symbol);
 
+extern gp_reloc_t *gp_coffgen_make_block_reloc(gp_section_t *Section);
 extern gp_reloc_t *gp_coffgen_add_reloc(gp_section_t *Section);
 extern gp_boolean gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation);
 extern const char *gp_coffgen_reloc_type_to_str(uint16_t Type);
 
+extern gp_linenum_t *gp_coffgen_make_block_linenum(gp_section_t *Section);
 extern gp_linenum_t *gp_coffgen_add_linenum(gp_section_t *Section);
 extern gp_linenum_t *gp_coffgen_find_linenum_by_address(gp_section_t *Section, unsigned int Address);
 extern gp_boolean gp_coffgen_del_linenum(gp_section_t *Section, gp_linenum_t *Linenum);
@@ -79,20 +85,18 @@ extern unsigned int gp_coffgen_del_linenum_by_address_area(gp_section_t *Section
 extern void gp_coffgen_make_linenum_arrays(gp_object_t *Object);
 
 extern gp_linenum_t *gp_coffgen_find_linenum(const gp_section_t *Section, const gp_symbol_t *Symbol,
-                                                unsigned int Line_number);
+                                             unsigned int Line_number);
 
 
+extern void gp_coffgen_check_relocations(const gp_object_t *Object, gp_boolean Enable_cinit_warns);
+
+extern gp_boolean gp_coffgen_section_has_reloc(const gp_section_t *Section);
 extern gp_boolean gp_coffgen_symbol_has_reloc(const gp_symbol_t *Symbol);
+
 extern gp_boolean gp_coffgen_is_global_symbol(const gp_symbol_t *Symbol);
 extern gp_boolean gp_coffgen_is_external_symbol(const gp_symbol_t *Symbol);
 extern gp_boolean gp_coffgen_is_debug_symbol(const gp_symbol_t *Symbol);
 extern gp_boolean gp_coffgen_is_absolute_symbol(const gp_symbol_t *Symbol);
-
-extern gp_section_t *gp_coffgen_make_block_section(gp_object_t *Object);
-extern gp_symbol_t *gp_coffgen_make_block_symbol(gp_object_t *Object);
-extern gp_reloc_t *gp_coffgen_make_block_reloc(gp_section_t *Section);
-extern gp_linenum_t *gp_coffgen_make_block_linenum(gp_section_t *Section);
-extern gp_aux_t *gp_coffgen_make_block_aux(gp_symbol_t *Symbol);
 
 extern void gp_coffgen_free_section(gp_section_t *Section);
 extern unsigned int gp_coffgen_free_symbol(gp_symbol_t *Symbol);

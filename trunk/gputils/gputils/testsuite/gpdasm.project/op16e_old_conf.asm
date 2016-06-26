@@ -18,10 +18,6 @@
 
 MAXROM = 0x3FFF
 MAXRAM = 0x0FFF
-W       EQU     0
-F       EQU     1
-A       EQU     0
-B       EQU     1
 
         ADDLW   0
         ADDLW   'A'

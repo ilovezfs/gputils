@@ -302,7 +302,7 @@ _write_symbols(void)
     else if (symbol->class == C_EOF) {
       stack = _pop_file(stack);
     }
-    else if ((symbol->section_number > 0) && (symbol->class != C_SECTION)) {
+    else if ((symbol->section_number > N_UNDEF) && (symbol->class != C_SECTION)) {
       if (stack == NULL) {
         /* the symbol is not between a .file/.eof pair */
         syms[num_syms].file = NULL;
