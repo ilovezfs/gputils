@@ -330,7 +330,7 @@ struct px {
   int           num_banks;
   /* These bank bits exists in the reality. */
   int           bank_bits;
-  /* The bounds of common (access) RAM, if exist in the PIC12, PIC12E, PIC12I, PIC14, PIC14E and PIC14EX families. */
+  /* The bounds of common (access) RAM, if exist in the PIC12, PIC12E, PIC12I, PIC14, PIC14E, PIC14EX, PIC16 and PIC16E families. */
   int           common_ram_addrs[2];
   int           common_ram_max;
   /* The bounds of linear RAM in the PIC14E family. */

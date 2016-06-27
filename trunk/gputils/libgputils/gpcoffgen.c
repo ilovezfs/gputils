@@ -1536,13 +1536,12 @@ gp_coffgen_check_relocations(const gp_object_t *Object, gp_boolean Enable_cinit_
         }
       }
       else {
-        (symbol->section->reloc_count)++;
-
         if (symbol->section == section) {
           (symbol->reloc_count_own_section)++;
         }
         else {
           (symbol->reloc_count_other_section)++;
+          (symbol->section->reloc_count)++;
         }
       }
 
