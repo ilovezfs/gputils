@@ -1,3 +1,7 @@
+2016-06-27  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/device-manager.pl:
+	  Unified handling of RAM bank properties.
+
 2016-06-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/build-register-db.pl, tools/cfg-import.pl:
 	  Changed types: unsigned short --> uint16_t

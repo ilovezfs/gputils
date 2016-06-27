@@ -147,8 +147,8 @@ extern unsigned int b_memory_get_unlisted_size(const MemBlock_t *M, unsigned int
 extern gp_boolean b_memory_set_addr_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type,
                                          unsigned int Dest_byte_addr);
 
-extern unsigned int b_memory_get_addr_type(const MemBlock_t *M, unsigned int Address, const char **Label_name,
-                                           unsigned int *Dest_byte_addr);
+extern unsigned int b_memory_get_addr_type(const MemBlock_t *M, unsigned int Byte_address,
+                                           const char **Label_name, unsigned int *Dest_byte_addr);
 
 extern gp_boolean b_memory_set_addr_name(MemBlock_t *M, unsigned int Byte_address, const char *Name);
 

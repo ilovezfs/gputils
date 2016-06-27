@@ -2014,7 +2014,7 @@ sub new_px_row($$$$)
                            ],
            COFF_TYPE    => $Info->{COFF},
            NUM_PAGES    => ($p16e) ? 0 : $num_pages,
-           NUM_BANKS    => ($p16e) ? ($Info->{ACCESS} + 1) : $Info->{BANKS},
+           NUM_BANKS    => $Info->{BANKS},
            BANK_BITS    => ($lkr_ram_max > 0) ? (create_mask($lkr_ram_max) & $class_features_list[$class]->{BANK_MASK}) : 0,
            COMMON_RAM   => [ $lkr_common_start, $lkr_common_end ],
            COMMON_MAX   => $lkr_common_max,
@@ -2333,10 +2333,7 @@ EOT
 ;
       printf "coff_type   : 0x%04X\n", $_->{COFF_TYPE};
       print  "num_pages   : $_->{NUM_PAGES}\n";
-
-      print  'num_banks   : ';
-      $i = $_->{NUM_BANKS};
-      printf((($i <= 32) ? "%u\n"  : "0x%02X\n"), $i);
+      print  "num_banks   : $_->{NUM_BANKS}\n";
       print ('common_ram  : ' . neg_form($_->{COMMON_RAM}->[0], 2) . ', ' . neg_form($_->{COMMON_RAM}->[1], 2) . "\n");
       print ('common_max  : ' . neg_form($_->{COMMON_MAX}, 3) . "\n");
       print ('linear_ram  : ' . neg_form($_->{LINEAR_RAM}->[0], 4) . ', ' . neg_form($_->{LINEAR_RAM}->[1], 4) . "\n");
@@ -2409,8 +2406,8 @@ sub create_one_px_row($$)
                     $Row->{COFF_TYPE}, $Row->{NUM_PAGES});
     }
 
-  $i = $Row->{NUM_BANKS};
-  $line .= sprintf((($pic16) ? '0x%02X, ' : '%4u, '), $i);
+  $line .= sprintf "%4u", $Row->{NUM_BANKS};
+  $line .= ', ';
   $line .= neg_form($Row->{BANK_BITS}, 4);
   $line .= ', ';
 
