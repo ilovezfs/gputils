@@ -36,7 +36,7 @@ struct symbol_table {
   symbol_table_t  *prev;
   symbol_t       **symbol_array;
   size_t           symbol_array_size;
-  size_t           count;
+  size_t           num_symbol;
   gp_boolean       case_insensitive;
 };
 
@@ -62,7 +62,7 @@ _make_symbol(const char *String, hash128_t *Hash)
 /*------------------------------------------------------------------------------------------------*/
 
 static symbol_t *
-_get_symbol_from_table(symbol_table_t *Table, hash128_t *Hash)
+_get_symbol_from_table(const symbol_table_t *Table, hash128_t *Hash)
 {
   symbol_t **base;
   symbol_t **current;
@@ -72,12 +72,12 @@ _get_symbol_from_table(symbol_table_t *Table, hash128_t *Hash)
   assert(Table != NULL);
   assert(Hash != NULL);
 
-  if ((Table->symbol_array == NULL) || (Table->count == 0)) {
+  if ((Table->symbol_array == NULL) || (Table->num_symbol == 0)) {
     return NULL;
   }
 
   base = Table->symbol_array;
-  len  = Table->count;
+  len  = Table->num_symbol;
   do {
     mid     = len >> 1;
     current = &base[mid];
@@ -163,14 +163,14 @@ sym_add_symbol(symbol_table_t *Table, const char *Name)
 
   assert(Table != NULL);
   assert(Name != NULL);
-  assert(Table->count <= UINT32_MAX);
+  assert(Table->num_symbol <= UINT32_MAX);
 
   if (Table->symbol_array == NULL) {
     Table->symbol_array      = (symbol_t **)GP_Malloc(HASH_TABLE_SIZE_MIN * sizeof(symbol_t *));
     Table->symbol_array_size = HASH_TABLE_SIZE_MIN;
-    Table->count             = 0;
+    Table->num_symbol        = 0;
   }
-  else if (Table->count >= Table->symbol_array_size) {
+  else if (Table->num_symbol >= Table->symbol_array_size) {
     /* Doubles the size of the table. */
     len = Table->symbol_array_size * 2;
     Table->symbol_array      = (symbol_t **)GP_Realloc(Table->symbol_array, len * sizeof(symbol_t *));
@@ -180,16 +180,16 @@ sym_add_symbol(symbol_table_t *Table, const char *Name)
   gp_hash_init(&hash);
   gp_hash_str(&hash, Name, Table->case_insensitive);
 
-  if (Table->count == 0) {
+  if (Table->num_symbol == 0) {
     /* Empty the table. */
     sym = _make_symbol(Name, &hash);
     Table->symbol_array[0] = sym;
-    Table->count           = 1;
+    Table->num_symbol      = 1;
     return sym;
   }
 
   base = Table->symbol_array;
-  len  = Table->count;
+  len  = Table->num_symbol;
   do {
     mid     = len >> 1;
     current = &base[mid];
@@ -210,7 +210,7 @@ sym_add_symbol(symbol_table_t *Table, const char *Name)
         ++idx;
       }
 
-      len = (Table->count - idx) * sizeof(symbol_t *);
+      len = (Table->num_symbol - idx) * sizeof(symbol_t *);
       if (len > 0) {
 	/* The new element will not be the end of the table. */
         memmove(&base[idx + 1], &base[idx], len);
@@ -218,7 +218,7 @@ sym_add_symbol(symbol_table_t *Table, const char *Name)
 
       sym = _make_symbol(Name, &hash);
       base[idx] = sym;
-      ++Table->count;
+      ++(Table->num_symbol);
       return sym;
     }
     else if ((hash.high.u64 < (*current)->hash.high.u64) ||
@@ -246,15 +246,15 @@ sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index)
 
   assert(Table != NULL);
 
-  if ((Table->symbol_array == NULL) || (Table->count == 0)) {
+  if ((Table->symbol_array == NULL) || (Table->num_symbol == 0)) {
     return false;
   }
 
-  if (Index >= Table->count) {
+  if (Index >= Table->num_symbol) {
     return false;
   }
 
-  len  = (Table->count - Index - 1) * sizeof(symbol_t *);
+  len  = (Table->num_symbol - Index - 1) * sizeof(symbol_t *);
   base = Table->symbol_array;
   sym  = base[Index];
 
@@ -262,7 +262,7 @@ sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index)
     memmove(&base[Index], &base[Index + 1], len);
   }
 
-  --Table->count;
+  --(Table->num_symbol);
 
   if (sym->name != NULL) {
     free((void *)sym->name);
@@ -289,14 +289,14 @@ sym_remove_symbol(symbol_table_t *Table, const char *Name)
   assert(Table != NULL);
   assert(Name != NULL);
 
-  if ((Table->symbol_array == NULL) || (Table->count == 0)) {
+  if ((Table->symbol_array == NULL) || (Table->num_symbol == 0)) {
     return false;
   }
 
   gp_hash_init(&hash);
   gp_hash_str(&hash, Name, Table->case_insensitive);
   base = Table->symbol_array;
-  len  = Table->count;
+  len  = Table->num_symbol;
   do {
     mid     = len >> 1;
     current = &base[mid];
@@ -331,13 +331,13 @@ sym_get_symbol_count(const symbol_table_t *Table)
 {
   assert(Table != NULL);
 
-  return Table->count;
+  return Table->num_symbol;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 symbol_t *
-sym_get_symbol(symbol_table_t *Table, const char *Name)
+sym_get_symbol(const symbol_table_t *Table, const char *Name)
 {
   symbol_t  *sym;
   hash128_t  hash;
@@ -363,7 +363,7 @@ sym_get_symbol(symbol_table_t *Table, const char *Name)
 /*------------------------------------------------------------------------------------------------*/
 
 symbol_t *
-sym_get_symbol_len(symbol_table_t *Table, const char *Name, size_t Len)
+sym_get_symbol_len(const symbol_table_t *Table, const char *Name, size_t Len)
 {
   symbol_t  *sym;
   hash128_t  hash;
@@ -389,10 +389,10 @@ sym_get_symbol_len(symbol_table_t *Table, const char *Name, size_t Len)
 /*------------------------------------------------------------------------------------------------*/
 
 symbol_t *
-sym_get_symbol_with_index(symbol_table_t *Table, size_t Index)
+sym_get_symbol_with_index(const symbol_table_t *Table, size_t Index)
 {
   assert(Table != NULL);
-  assert(Index < Table->count);
+  assert(Index < Table->num_symbol);
 
   return Table->symbol_array[Index];
 }
@@ -403,23 +403,23 @@ const symbol_t **
 sym_clone_symbol_array(const symbol_table_t *Table, symbol_compare_t Cmp)
 {
   size_t           size;
-  const symbol_t **symbol_array;
+  const symbol_t **array;
 
   assert(Table != NULL);
 
-  if (Table->count == 0) {
+  if (Table->num_symbol == 0) {
     return NULL;
   }
 
-  size = Table->count * sizeof(symbol_t *);
-  symbol_array = (const symbol_t **)GP_Malloc(size);
-  memcpy(symbol_array, Table->symbol_array, size);
+  size  = Table->num_symbol * sizeof(symbol_t *);
+  array = (const symbol_t **)GP_Malloc(size);
+  memcpy(array, Table->symbol_array, size);
 
   if (Cmp != NULL) {
-    qsort(symbol_array, Table->count, sizeof(symbol_t *), Cmp);
+    qsort(array, Table->num_symbol, sizeof(symbol_t *), Cmp);
   }
 
-  return symbol_array;
+  return array;
 }
 
 /*------------------------------------------------------------------------------------------------*/

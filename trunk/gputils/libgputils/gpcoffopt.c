@@ -104,7 +104,7 @@ gp_coffopt_remove_weak(gp_object_t *Object)
   /* Search the symbol table for extern symbols. */
   symbol = Object->symbol_list;
   while (symbol != NULL) {
-    if (gp_coffgen_is_external_symbol(symbol) && (!gp_coffgen_symbol_has_reloc(symbol))) {
+    if (gp_coffgen_is_external_symbol(symbol) && (!gp_coffgen_symbol_has_reloc(symbol, COFF_SYM_RELOC_ALL))) {
       gp_debug("  removed weak symbol \"%s\"", symbol->name);
       /* It is not allowed to deleted because the gplink/cod.c will need this. */
       gp_coffgen_move_reserve_symbol(Object, symbol);
@@ -119,7 +119,7 @@ gp_coffopt_remove_weak(gp_object_t *Object)
 /* Remove any relocatable section that doesn't have a symbol pointed to by a relocation. */
 
 void
-gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass)
+gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass, gp_boolean Enable_cinit_wanings)
 {
   gp_section_t *section;
   gp_section_t *section_next;
@@ -129,10 +129,12 @@ gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass)
     section_removed = false;
     gp_debug("Removing dead sections pass %i.", Pass);
 
+    gp_coffgen_check_relocations(Object, Enable_cinit_wanings);
     section = Object->section_list;
     while (section != NULL) {
       section_next = section->next;
-      if (!gp_coffgen_section_has_reloc(section)) {
+
+      if (FlagIsClr(section->opt_flags, OPT_FLAGS_PROTECTED_SECTION)) {
         gp_debug("Removing section \"%s\".", section->name);
         /* It is not allowed to deleted because the gplink/cod.c will need these. */
         gp_coffgen_move_reserve_section_symbols(Object, section);

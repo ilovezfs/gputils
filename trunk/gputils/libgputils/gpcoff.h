@@ -262,7 +262,7 @@ struct __attribute__ ((packed)) syment {
 #define T_INT                   4   /* integer */
 #define T_LONG                  5   /* long integer */
 #define T_FLOAT                 6   /* floating point */
-#define T_DOUBLE                7   /* double length floating point */
+#define T_DOUBLE                7   /* double floating point */
 #define T_STRUCT                8   /* structure */
 #define T_UNION                 9   /* union */
 #define T_ENUM                  10  /* enumeration */
@@ -529,8 +529,8 @@ typedef struct gp_aux {
 /* A optimize constant for the gpsymbol.c module. */
 #define OPT_FLAGS_GPSYMBOL_MODULE       (1 << 2)
 
-/* A relocation symbol has no section. */
-#define WARN_RELOC_SYM_NO_SECTION       (1 << 16)
+/* This is a non-erasable section. */
+#define OPT_FLAGS_PROTECTED_SECTION     (1 << 16)
 
 /* symbol linked list */
 
@@ -664,7 +664,7 @@ typedef struct gp_section {
   /* linenumber pointer, only valid when writing coff file */
   uint32_t            lineno_ptr;
 
-  /* number of relocation links */
+  /* number of relocation references */
   unsigned int        reloc_count;
 
   /* unique identification number of owner object */

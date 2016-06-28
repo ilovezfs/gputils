@@ -919,7 +919,7 @@ _linker(void)
   gp_coffgen_check_relocations(state.object, enable_cinit_wanings);
 
   if (state.optimize.dead_sections) {
-    gp_coffopt_remove_dead_sections(state.object, 0);
+    gp_coffopt_remove_dead_sections(state.object, 0, enable_cinit_wanings);
   }
 
   /* combine overlay sections */
@@ -1002,9 +1002,13 @@ _linker(void)
   /* patch raw data with the relocated symbol values */
   gp_cofflink_patch(state.object);
 
-  /* modify the executable object data */
-  state.object->filename = GP_Strdup(state.objfilename);
-  state.object->flags |= F_EXEC;
+  /* Modify the executable object name. */
+  if (state.object->filename != NULL) {
+    free(state.object->filename);
+  }
+
+  state.object->filename  = GP_Strdup(state.objfilename);
+  state.object->flags    |= F_EXEC;
 
   if (state.objfile == OUT_NORMAL) {
     /* write the executable object in memory */
@@ -1035,6 +1039,7 @@ _linker(void)
   make_map();
 
   i_memory_free(state.i_memory);
+  gp_coffgen_free_object(state.object);
 
   return (gp_num_errors <= 0);
 }

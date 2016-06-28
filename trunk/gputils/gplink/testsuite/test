@@ -208,13 +208,17 @@ test_gplink_sub()
         # a hex file exists so these files must not have errors
         tested=$((tested+1))
         echo "linking $basefilename.o"
-        if [ $basefilename == "dead_code" ]; then
-          echo "$GPLINKBIN -O2 -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
-          "$GPLINKBIN" -O2 -o "$basefilename.hex" $GPLINKFLAGS -I "$LKR" -s "$basefilename.lkr"
-        else
-          echo "$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
-          "$GPLINKBIN" -o "$basefilename.hex" $GPLINKFLAGS -I "$LKR" -s "$basefilename.lkr"
-        fi
+        case "$basefilename" in
+          dead_code*)
+            echo "$GPLINKBIN -O2 -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr"
+            "$GPLINKBIN" -O2 -o "$basefilename.hex" $GPLINKFLAGS -I "$LKR" -s "$basefilename.lkr"
+            ;;
+
+          *)
+            echo "$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr"
+            "$GPLINKBIN" -o "$basefilename.hex" $GPLINKFLAGS -I "$LKR" -s "$basefilename.lkr"
+            ;;
+        esac
         if test -e "$basefilename.hex"; then
           compiled=$((compiled+1))
           diff -s -u "../hexfiles/$basefilename.hex" "$basefilename.hex"
