@@ -1,3 +1,0 @@
-files dead_code1.o dead_code2.o
-
-include 16f877a_g.lkr

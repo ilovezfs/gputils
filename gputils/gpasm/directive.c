@@ -1908,7 +1908,8 @@ _do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
 static gpasmVal
 _do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  pnode_t *p;
+  pnode_t  *p;
+  symbol_t *curr_def;
 
   if (_check_processor_select(name)) {
     return r;
@@ -1930,9 +1931,8 @@ _do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
         gperror_verror(GPE_DUPLAB, NULL, p->value.string);
       }
       else {
-        symbol_t *curr_def = sym_add_symbol(state.stDefines, p->value.string);
-
-        p = TAIL(parms);
+        curr_def = sym_add_symbol(state.stDefines, p->value.string);
+        p        = TAIL(parms);
 
         if (p != NULL) {
           assert(p->tag == PTAG_LIST);
@@ -2039,10 +2039,10 @@ _do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
 static gpasmVal
 _do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
-  pnode_t       *p;
-  int            value;
-  uint8_t        direct_command = 0;
-  const char    *direct_string  = NULL;
+  pnode_t    *p;
+  int         value;
+  uint8_t     direct_command = 0;
+  const char *direct_string  = NULL;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -3123,7 +3123,7 @@ _do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
     assert(parms->tag == PTAG_LIST);
     p = HEAD(parms);
 
-    state.lst.line.linetype = LTY_CONFIG;
+    state.lst.line.linetype  = LTY_CONFIG;
     state.lst.config_address = idreg;
     max_bytes = state.processor->idlocs_addrs[1] - idreg + 1;
     n = 0;
@@ -3228,7 +3228,7 @@ _do_if(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   _enter_if();
 
@@ -3263,7 +3263,7 @@ _do_elif(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   _enter_elif();
 
@@ -3291,7 +3291,7 @@ _do_ifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   _enter_if();
 
@@ -3333,7 +3333,7 @@ _do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   _enter_elif();
 
@@ -3368,7 +3368,7 @@ _do_ifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   _enter_if();
 
@@ -3410,7 +3410,7 @@ _do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   _enter_elif();
 
@@ -3492,12 +3492,10 @@ _do_line(gpasmVal r, const char *name, int arity, pnode_t *parms)
  * options in *parms
  *
  * Inputs:
- *   gpasmVal r - not used, but is returned
- *   char *name - not used, but contains the directive name 'list'.
- *   int arity - not used, but should contain '1'
+ *   gpasmVal r     - not used, but is returned
+ *   char *name     - not used, but contains the directive name 'list'.
+ *   int arity      - not used, but should contain '1'
  *   pnode_t *parms - a linked list of the parsed parameters
- *
- *
  *
  ************************************************************************/
 
@@ -3505,8 +3503,11 @@ static gpasmVal
 _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
+  char          *lhs;
+  int            value;
+  char           message[BUFSIZ];
 
-  state.lst.enabled = true;
+  state.lst.enabled       = true;
   state.lst.line.linetype = LTY_DIR;
 
   for (; parms != NULL; parms = TAIL(parms)) {
@@ -3514,32 +3515,24 @@ _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
-        char *lhs;
-
         lhs = p->value.binop.p0->value.symbol;
 
         if (strcasecmp(lhs, "b") == 0) {
-          int b;
+          value = maybe_evaluate(p->value.binop.p1);
 
-          b = maybe_evaluate(p->value.binop.p1);
-
-          if (b != 0) {
-            state.lst.tabstop = b;
+          if (value != 0) {
+            state.lst.tabstop = value;
           }
         }
         else if (strcasecmp(lhs, "c") == 0) {
-          int c;
+          value = maybe_evaluate(p->value.binop.p1);
 
-          c = maybe_evaluate(p->value.binop.p1);
-
-          if (c > LST_SRC_POS) {
-            state.lst.line_width = c;
+          if (value > LST_SRC_POS) {
+            state.lst.line_width = value;
           }
           else {
-            char message[BUFSIZ];
-
             snprintf(message, sizeof(message),
-                     "Argument out of range: Column_width{%i} <= LST_SRC_POS{%i}", c, LST_SRC_POS);
+                     "Argument out of range: Column_width{%i} <= LST_SRC_POS{%i}", value, LST_SRC_POS);
             gperror_error(GPE_RANGE, message);
           }
         }
@@ -3549,16 +3542,14 @@ _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
           }
         }
         else if (strcasecmp(lhs, "l") == 0) {
-          ; /* Ignore this for now: page length */
+          ; /* Ignore this for now: Page length. */
         }
         else if (strcasecmp(lhs, "m") == 0) {
           /* Undocumented, only found in MEMORY.INC and MCP250XX.INC. */
           if (can_evaluate(p->value.binop.p1)) {
-            int value = evaluate(p->value.binop.p1);
+            value = evaluate(p->value.binop.p1);
 
             if (value < state.maxrom) {
-              char message[BUFSIZ];
-
               snprintf(message, sizeof(message),
                        "Argument out of range, must be greater than or equal to %ld.",
                        state.maxrom);
@@ -3605,7 +3596,7 @@ _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
           state.lst.symboltable = _off_or_on(p->value.binop.p1);
         }
         else if (strcasecmp(lhs, "t") == 0) {
-          ; /* Ignore this for now: always wrap long list lines */
+          ; /* Ignore this for now: Always wrap long list lines. */
         }
         else if (strcasecmp(lhs, "w") == 0) {
           select_errorlevel(maybe_evaluate(p->value.binop.p1));
@@ -3641,8 +3632,7 @@ _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  /* The .list symbol is only added to the COFF file if its only action is to turn on
-     the listing */
+  /* The .list symbol is only added to the COFF file if its only action is to turn on the listing. */
   if (arity == 0) {
     coff_add_listsym();
   }
@@ -3657,6 +3647,8 @@ _do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
   gp_boolean     first;
+  char          *lhs;
+  gpasmVal       val;
 
   if (_check_processor_select(name)) {
     return r;
@@ -3676,9 +3668,6 @@ _do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
       if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
         if (enforce_simple(p->value.binop.p0)) {
-          char *lhs;
-          gpasmVal val;
-
           /* fetch the symbol */
           lhs = p->value.binop.p0->value.symbol;
           val = maybe_evaluate(p->value.binop.p1);
@@ -4049,10 +4038,12 @@ _do_pageselw_wrapper(gpasmVal r, const char *name, int arity, pnode_t *parms)
 static gpasmVal
 _do_processor(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
+  const pnode_t *p;
+
   state.lst.line.linetype = LTY_DIR;
 
   if (enforce_arity(arity, 1)) {
-    const pnode_t *p = HEAD(parms);
+    p = HEAD(parms);
 
     if (enforce_simple(p)) {
       select_processor(p->value.symbol);
@@ -4175,6 +4166,7 @@ static gpasmVal
 _do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   const pnode_t *p;
+  int            i;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -4188,8 +4180,6 @@ _do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
         p = HEAD(parms);
 
         if (can_evaluate(p)) {
-          int i;
-
           for (i = evaluate(p); i > 0; i--) {
             lst_line("");
           }

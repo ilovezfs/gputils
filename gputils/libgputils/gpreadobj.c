@@ -621,11 +621,6 @@ _read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data
       }
     }
 
-    if (FlagsIsNotAllClr(section->flags, STYP_ABS | STYP_DATA)) {
-      /* This is a protected section. */
-      (section->reloc_count)++;
-    }
-
     section = section->next;
   }
 }

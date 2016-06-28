@@ -370,9 +370,8 @@ gp_archive_read(const char *File_name)
 
     list = new;
 
-    /* Some malformed libs have a couple of extra bytes on the end.  The
-       while eof test passes, but there are no other members.  Test for
-       it. */
+    /* Some malformed libs have a couple of extra bytes on the end. The while eof
+       test passes, but there are no other members. Test for it. */
     fgetpos(infile, &position);
     if (fread(&tmp_header, 1, AR_HDR_SIZ, infile) != AR_HDR_SIZ) {
       break;
@@ -418,10 +417,9 @@ gp_archive_remove_index(gp_archive_t *Archive)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Create a symbol index for the archive.  This is always done to make
-   sure duplicate symbols don't get into the library.  This data can
-   and should be stored in the file.  The only reason not to is if you
-   need compatibility with other tools.  */
+/* Create a symbol index for the archive. This is always done to make sure duplicate
+   symbols don't get into the library. This data can and should be stored in the file.
+   The only reason not to is if you need compatibility with other tools. */
 
 void
 gp_archive_make_index(gp_archive_t *Archive, symbol_table_t *Definition)
@@ -557,9 +555,9 @@ gp_archive_add_symbol(symbol_table_t *Table, const char *Name, gp_archive_t *Mem
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* This function reads the symbol index in the archive.  The symbols are
-placed in the archive symbol table.  This table stores the name of the
-symbol and the archive member that the symbol is defined in. */
+/* This function reads the symbol index in the archive. The symbols are placed in
+   the archive symbol table.  This table stores the name of the symbol and
+   the archive member that the symbol is defined in. */
 
 void
 gp_archive_read_index(symbol_table_t *Table, gp_archive_t *Archive)

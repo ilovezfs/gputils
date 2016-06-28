@@ -71,6 +71,7 @@ extern gp_boolean gp_coffgen_del_symbol(gp_object_t *Object, gp_symbol_t *Symbol
 
 extern gp_reloc_t *gp_coffgen_make_block_reloc(gp_section_t *Section);
 extern gp_reloc_t *gp_coffgen_add_reloc(gp_section_t *Section);
+extern void gp_coffgen_check_relocations(const gp_object_t *Object, gp_boolean Enable_cinit_warns);
 extern gp_boolean gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation);
 extern const char *gp_coffgen_reloc_type_to_str(uint16_t Type);
 
@@ -88,10 +89,12 @@ extern gp_linenum_t *gp_coffgen_find_linenum(const gp_section_t *Section, const 
                                              unsigned int Line_number);
 
 
-extern void gp_coffgen_check_relocations(const gp_object_t *Object, gp_boolean Enable_cinit_warns);
+/* gp_coffgen_symbol_has_reloc() "Type" parameter */
+#define COFF_SYM_RELOC_ALL          0
+#define COFF_SYM_RELOC_OWN          1
+#define COFF_SYM_RELOC_OTHER        2
 
-extern gp_boolean gp_coffgen_section_has_reloc(const gp_section_t *Section);
-extern gp_boolean gp_coffgen_symbol_has_reloc(const gp_symbol_t *Symbol);
+extern gp_boolean gp_coffgen_symbol_has_reloc(const gp_symbol_t *Symbol, int Type);
 
 extern gp_boolean gp_coffgen_is_global_symbol(const gp_symbol_t *Symbol);
 extern gp_boolean gp_coffgen_is_external_symbol(const gp_symbol_t *Symbol);

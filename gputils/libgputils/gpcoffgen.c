@@ -24,6 +24,9 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+#define CHECK_RELOCATIONS_PASS_MAX      20
+#define CHECK_RELOCATIONS_DEPTH_MAX     100
+
 static unsigned int object_serial_id  = 0;
 static unsigned int section_serial_id = 0;
 
@@ -541,6 +544,54 @@ gp_coffgen_del_section_symbols(gp_object_t *Object, gp_section_t *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
+static void
+_decrease_relocation_counts(gp_section_t *Section)
+{
+  gp_reloc_t   *relocation;
+  gp_symbol_t  *symbol;
+  gp_section_t *sym_sect;
+
+  relocation = Section->relocation_list;
+  while (relocation != NULL) {
+    symbol   = relocation->symbol;
+    sym_sect = symbol->section;
+
+    if (symbol->reloc_count_all_section > 0) {
+      (symbol->reloc_count_all_section)--;
+
+      if (sym_sect == Section) {
+        /*  Relocation reference from own section. */
+        if (symbol->reloc_count_own_section > 0) {
+          (symbol->reloc_count_own_section)--;
+        }
+        else {
+          gp_warning("Number of relocation references of symbol from own section is zero: '%s'", symbol->name);
+        }
+      }
+      else {
+        /*  Relocation reference from another section. */
+        if (symbol->reloc_count_other_section > 0) {
+          (symbol->reloc_count_other_section)--;
+
+          if (sym_sect->reloc_count > 0) {
+            (sym_sect->reloc_count)--;
+          }
+          else {
+            gp_warning("Number of relocation references of section from another section is zero: '%s'", sym_sect->name);
+          }
+        }
+        else {
+          gp_warning("Number of relocation references of symbol from another section is zero: '%s'", symbol->name);
+        }
+      }
+    }
+
+    relocation = relocation->next;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* Move a section to dead list. */
 
 gp_section_t *
@@ -577,16 +628,18 @@ gp_coffgen_move_reserve_section(gp_object_t *Object, gp_section_t *Section)
   /* Put into the dead linked list. */
   if (Object->dead_section_list == NULL) {
     /* the list is empty */
-    Object->dead_section_list = Section;
     Section->prev = NULL;
+    Object->dead_section_list = Section;
   }
   else {
     Section->prev = Object->dead_section_list_tail;
     Object->dead_section_list_tail->next = Section;
-    Section->next = NULL;
   }
 
   Object->dead_section_list_tail = Section;
+  Section->next = NULL;
+
+  _decrease_relocation_counts(Section);
   return Section;
 }
 
@@ -973,21 +1026,22 @@ gp_coffgen_move_reserve_symbol(gp_object_t *Object, gp_symbol_t *Symbol)
     Symbol->next->prev = Symbol->prev;
   }
 
-  Object->num_symbols -= Symbol->num_auxsym + 1;
+  Object->num_symbols -= 1 + Symbol->num_auxsym;
 
   /* Put in the dead linked list. */
   if (Object->dead_symbol_list == NULL) {
     /* the list is empty */
-    Object->dead_symbol_list = Symbol;
     Symbol->prev = NULL;
+    Object->dead_symbol_list = Symbol;
   }
   else {
     Symbol->prev = Object->dead_symbol_list_tail;
     Object->dead_symbol_list_tail->next = Symbol;
-    Symbol->next = NULL;
   }
 
+  Symbol->next = NULL;
   Object->dead_symbol_list_tail = Symbol;
+
   return Symbol;
 }
 
@@ -1106,12 +1160,161 @@ gp_coffgen_add_reloc(gp_section_t *Section)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Clears all relocation counters. */
+
+static void
+_clear_relocation_counts(const gp_object_t *Object)
+{
+  gp_section_t *section;
+  gp_symbol_t  *symbol;
+
+  section = Object->section_list;
+  while (section != NULL) {
+    section->reloc_count = 0;
+
+    if (FlagsIsNotAllClr(section->flags, STYP_ABS | STYP_DATA)) {
+      /* This section get protection immediately. The additional sections' protection
+         is based on this. */
+      FlagSet(section->opt_flags, OPT_FLAGS_PROTECTED_SECTION);
+    }
+    else {
+      FlagClr(section->opt_flags, OPT_FLAGS_PROTECTED_SECTION);
+    }
+
+    section = section->next;
+  }
+
+  symbol = Object->symbol_list;
+  while (symbol != NULL) {
+    symbol->reloc_count_all_section   = 0;
+    symbol->reloc_count_own_section   = 0;
+    symbol->reloc_count_other_section = 0;
+    symbol = symbol->next;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static gp_boolean
+_check_section_relocations(proc_class_t Class, gp_section_t *Section, unsigned int Pass,
+                           gp_boolean Enable_cinit_warns, unsigned int Level)
+{
+  gp_reloc_t   *relocation;
+  gp_symbol_t  *symbol;
+  gp_section_t *sym_sect;
+  gp_boolean    use_counters;
+  gp_boolean    change;
+
+  if (Level >= CHECK_RELOCATIONS_DEPTH_MAX) {
+    gp_warning("Depth of relocations check reached the limit: %u", CHECK_RELOCATIONS_DEPTH_MAX);
+    return false;
+  }
+
+  use_counters = (Pass == 0) ? true : false;
+  change       = false;
+  relocation   = Section->relocation_list;
+  while (relocation != NULL) {
+    symbol = relocation->symbol;
+    if (use_counters) {
+      (symbol->reloc_count_all_section)++;
+    }
+
+    sym_sect = symbol->section;
+    if (sym_sect == NULL) {
+      /* This is an orphan symbol. */
+      if (Enable_cinit_warns || (strcmp(symbol->name, "_cinit") != 0)) {
+        gp_warning("Relocation symbol \"%s\" [0x%0*X] has no section. (pass %u)",
+                   symbol->name, Class->addr_digits, relocation->address, Pass);
+      }
+    }
+    else {
+      if (sym_sect == Section) {
+        /* In this case not change the level of protection. */
+        if (use_counters) {
+          (symbol->reloc_count_own_section)++;
+        }
+      }
+      else {
+        /* The symbol is located another section. */
+        if (use_counters) {
+          (symbol->reloc_count_other_section)++;
+          (sym_sect->reloc_count)++;
+        }
+
+        if (FlagIsSet(Section->opt_flags, OPT_FLAGS_PROTECTED_SECTION)) {
+          /* If the section of reference is protected, then the section of symbol also will
+             be protected. */
+          if (FlagIsClr(sym_sect->opt_flags, OPT_FLAGS_PROTECTED_SECTION)) {
+            /* Only then modify and check if have not been under protection. */
+            FlagSet(sym_sect->opt_flags, OPT_FLAGS_PROTECTED_SECTION);
+            change = _check_section_relocations(Class, sym_sect, Pass, Enable_cinit_warns, Level + 1);
+          }
+        }
+      }
+    }
+    relocation = relocation->next;
+  }
+
+  return change;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static gp_boolean
+_check_object_relocations(const gp_object_t *Object, unsigned int Pass, gp_boolean Enable_cinit_warns)
+{
+  proc_class_t  class;
+  gp_section_t *section;
+  gp_boolean    change;
+  unsigned int  level;
+
+  level   = 0;
+  change  = false;
+  class   = Object->class;
+  section = Object->section_list;
+  while (section != NULL) {
+    change |= _check_section_relocations(class, section, Pass, Enable_cinit_warns, level);
+    section = section->next;
+  }
+
+  return change;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Handle the relocation counters of sections and symbols. */
+
+void
+gp_coffgen_check_relocations(const gp_object_t *Object, gp_boolean Enable_cinit_warns)
+{
+  unsigned int pass;
+
+  _clear_relocation_counts(Object);
+  pass = 0;
+  while (true) {
+    /* Need for further rounds because may occur back and forth references. */
+    if (!_check_object_relocations(Object, pass, Enable_cinit_warns)) {
+      break;
+    }
+
+    ++pass;
+
+    if (pass > CHECK_RELOCATIONS_PASS_MAX) {
+      gp_warning("Number of relocations check reached the limit: %u", CHECK_RELOCATIONS_PASS_MAX);
+      break;
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* Delete the relocation from the section. */
 
 gp_boolean
 gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation)
 {
-  gp_symbol_t *symbol;
+  gp_section_t *section;
+  gp_symbol_t  *symbol;
 
   if ((Section->relocation_list == NULL) || (Section->num_reloc == 0)) {
     return false;
@@ -1141,8 +1344,10 @@ gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation)
 
   (Section->num_reloc)--;
 
-  symbol = Relocation->symbol;
+  symbol  = Relocation->symbol;
   assert(symbol != NULL);
+  section = symbol->section;
+  assert(section != NULL);
 
   if (symbol->reloc_count_all_section > 0) {
     (symbol->reloc_count_all_section)--;
@@ -1153,21 +1358,28 @@ gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation)
         (symbol->reloc_count_own_section)--;
       }
       else {
-        gp_warning("Number of relocation references from own section is zero: '%s'", symbol->name);
+        gp_warning("Number of relocation references of symbol from own section is zero: '%s'", symbol->name);
       }
     }
     else {
       /*  Relocation reference from another section. */
       if (symbol->reloc_count_other_section > 0) {
         (symbol->reloc_count_other_section)--;
+
+        if (section->reloc_count > 0) {
+          (section->reloc_count)--;
+        }
+        else {
+          gp_warning("Number of relocation references of section from another section is zero: '%s'", section->name);
+        }
       }
       else {
-        gp_warning("Number of relocation references from another section is zero: '%s'", symbol->name);
+        gp_warning("Number of relocation references of symbol from another section is zero: '%s'", symbol->name);
       }
     }
   }
   else {
-    gp_warning("Number of relocation references from all section is zero: '%s'", symbol->name);
+    gp_warning("Number of relocation references of symbol from all section is zero: '%s'", symbol->name);
   }
 
   free(Relocation);
@@ -1447,7 +1659,7 @@ _linenum_cmp(const void *P0, const void *P1)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Create line number array. Use gplink/glink.c */
+/* Create line number array. Use gplink/gplink.c */
 
 void
 gp_coffgen_make_linenum_arrays(gp_object_t *Object)
@@ -1513,62 +1725,22 @@ gp_coffgen_find_linenum(const gp_section_t *Section, const gp_symbol_t *Symbol,
 
 /*------------------------------------------------------------------------------------------------*/
 
-void
-gp_coffgen_check_relocations(const gp_object_t *Object, gp_boolean Enable_cinit_warns)
-{
-  proc_class_t  class;
-  gp_section_t *section;
-  gp_symbol_t  *symbol;
-  gp_reloc_t   *relocation;
-
-  class   = Object->class;
-  section = Object->section_list;
-  while (section != NULL) {
-    relocation = section->relocation_list;
-    while (relocation != NULL) {
-      symbol = relocation->symbol;
-      (symbol->reloc_count_all_section)++;
-
-      if (symbol->section == NULL) {
-        if (Enable_cinit_warns || (strcmp(symbol->name, "_cinit") != 0)) {
-          gp_warning("Relocation symbol \"%s\" [0x%0*X] has no section.",
-                     symbol->name, class->addr_digits, relocation->address);
-        }
-      }
-      else {
-        if (symbol->section == section) {
-          (symbol->reloc_count_own_section)++;
-        }
-        else {
-          (symbol->reloc_count_other_section)++;
-          (symbol->section->reloc_count)++;
-        }
-      }
-
-      relocation = relocation->next;
-    }
-    section = section->next;
-  }
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* Determine if any relocation uses the section. */
-
-gp_boolean
-gp_coffgen_section_has_reloc(const gp_section_t *Section)
-{
-  return ((Section->reloc_count > 0) ? true : false);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 /* Determine if any relocation uses the symbol. */
 
 gp_boolean
-gp_coffgen_symbol_has_reloc(const gp_symbol_t *Symbol)
+gp_coffgen_symbol_has_reloc(const gp_symbol_t *Symbol, int Type)
 {
-  return ((Symbol->reloc_count_all_section > 0) ? true : false);
+  switch (Type) {
+    case COFF_SYM_RELOC_ALL:
+    default:
+      return ((Symbol->reloc_count_all_section > 0) ? true : false);
+
+    case COFF_SYM_RELOC_OWN:
+      return ((Symbol->reloc_count_own_section > 0) ? true : false);
+
+    case COFF_SYM_RELOC_OTHER:
+      return ((Symbol->reloc_count_other_section > 0) ? true : false);
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1618,27 +1790,27 @@ gp_coffgen_is_absolute_symbol(const gp_symbol_t *Symbol)
 void
 gp_coffgen_free_section(gp_section_t *Section)
 {
+  gp_reloc_t   *reloc_list;
   gp_reloc_t   *relocation;
+  gp_linenum_t *line_list;
   gp_linenum_t *line_number;
-  gp_reloc_t   *old_relocation;
-  gp_linenum_t *old_line_number;
 
   if (Section->data != NULL) {
     i_memory_free(Section->data);
   }
 
-  relocation = Section->relocation_list;
-  while (relocation != NULL) {
-    old_relocation = relocation;
-    relocation     = relocation->next;
-    free(old_relocation);
+  reloc_list = Section->relocation_list;
+  while (reloc_list != NULL) {
+    relocation = reloc_list;
+    reloc_list = reloc_list->next;
+    free(relocation);
   }
 
-  line_number = Section->line_number_list;
-  while (line_number != NULL) {
-    old_line_number = line_number;
-    line_number     = line_number->next;
-    free(old_line_number);
+  line_list = Section->line_number_list;
+  while (line_list != NULL) {
+    line_number = line_list;
+    line_list   = line_list->next;
+    free(line_number);
   }
 
   if (Section->line_numbers_array != NULL) {
@@ -1656,8 +1828,8 @@ gp_coffgen_free_section(gp_section_t *Section)
 unsigned int
 gp_coffgen_free_symbol(gp_symbol_t *Symbol)
 {
+  gp_aux_t     *aux_list;
   gp_aux_t     *aux;
-  gp_aux_t     *old_aux;
   unsigned int  num_auxsym;
 
   if (Symbol == NULL) {
@@ -1667,14 +1839,17 @@ gp_coffgen_free_symbol(gp_symbol_t *Symbol)
   /* free the auxilary symbols */
   num_auxsym = Symbol->num_auxsym;
 
-  aux = Symbol->aux_list;
-  while (aux != NULL) {
-    old_aux = aux;
-    aux     = aux->next;
-    free(old_aux);
+  aux_list = Symbol->aux_list;
+  while (aux_list != NULL) {
+    aux      = aux_list;
+    aux_list = aux_list->next;
+    free(aux);
   }
 
-  free(Symbol->name);
+  if (Symbol->name != NULL) {
+    free(Symbol->name);
+  }
+
   free(Symbol);
 
   return num_auxsym;
@@ -1687,27 +1862,45 @@ gp_coffgen_free_symbol(gp_symbol_t *Symbol)
 gp_boolean
 gp_coffgen_free_object(gp_object_t *Object)
 {
+  gp_section_t *section_list;
   gp_section_t *section;
+  gp_symbol_t  *symbol_list;
   gp_symbol_t  *symbol;
-  gp_section_t *old_section;
-  gp_symbol_t  *old_symbol;
 
   if (Object == NULL) {
     return false;
   }
 
-  symbol = Object->symbol_list;
-  while (symbol != NULL) {
-    old_symbol = symbol;
-    symbol     = symbol->next;
-    gp_coffgen_free_symbol(old_symbol);
+  section_list = Object->section_list;
+  while (section_list != NULL) {
+    section      = section_list;
+    section_list = section_list->next;
+    gp_coffgen_free_section(section);
   }
 
-  symbol = Object->dead_symbol_list;
-  while (symbol != NULL) {
-    old_symbol = symbol;
-    symbol     = symbol->next;
-    gp_coffgen_free_symbol(old_symbol);
+  section_list = Object->dead_section_list;
+  while (section_list != NULL) {
+    section      = section_list;
+    section_list = section_list->next;
+    gp_coffgen_free_section(section);
+  }
+
+  if (Object->section_ptr_array != NULL) {
+    free(Object->section_ptr_array);
+  }
+
+  symbol_list = Object->symbol_list;
+  while (symbol_list != NULL) {
+    symbol      = symbol_list;
+    symbol_list = symbol_list->next;
+    gp_coffgen_free_symbol(symbol);
+  }
+
+  symbol_list = Object->dead_symbol_list;
+  while (symbol_list != NULL) {
+    symbol      = symbol_list;
+    symbol_list = symbol_list->next;
+    gp_coffgen_free_symbol(symbol);
   }
 
   if (Object->symbol_ptr_array != NULL) {
@@ -1718,25 +1911,10 @@ gp_coffgen_free_object(gp_object_t *Object)
     free(Object->symbol_hashtable);
   }
 
-  section = Object->section_list;
-  while (section != NULL) {
-    old_section = section;
-    section     = section->next;
-    gp_coffgen_free_section(old_section);
+  if (Object->filename != NULL) {
+    free(Object->filename);
   }
 
-  section = Object->dead_section_list;
-  while (section != NULL) {
-    old_section = section;
-    section     = section->next;
-    gp_coffgen_free_section(old_section);
-  }
-
-  if (Object->section_ptr_array != NULL) {
-    free(Object->section_ptr_array);
-  }
-
-  free(Object->filename);
   free(Object);
 
   return true;

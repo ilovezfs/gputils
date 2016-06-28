@@ -5,11 +5,11 @@
 	extern	func_selfrefd
 	extern	func_nonrefd
 
-main_VEC_reset.code	code	0
+code_reset	code	0x0000
 	pagesel	main
 	goto	main
 
-main.code	code
+code_main	code
 
 main:
 	pagesel	func_refd

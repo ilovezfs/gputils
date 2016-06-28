@@ -5,30 +5,30 @@
 	global	func_selfrefd
 	global	func_nonrefd
 
-dead_code_tmp.udata_shr	udata_shr
+udata_shr_dead_temp	udata_shr
 temp	res	1
 
-live_code_A.code	code
+code_live_A	code
 
 func_refd:
 
 	retlw	0xAB
 	return
 
-dead_code_A.code	code
+code_dead_A	code
 
 func_selfrefd:
 
 	movwf	temp
-	btfss	temp, 7
 	pagesel	__2
+	btfss	temp, 7
 	goto	__2
 
 	retlw	0x12
 __2:
 	retlw	0x21
 
-dead_code_B.code	code
+code_dead_B	code
 
 func_nonrefd:
 

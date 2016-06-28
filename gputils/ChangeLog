@@ -1,3 +1,29 @@
+2016-06-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gplink/testsuite/gplink.project/asmfiles/,
+    gplink/testsuite/gplink.project/hexfiles/,
+    gplink/testsuite/gplink.project/lkrfiles/:
+    Renamed "dead_code*" to "dead_code1*" and added "dead_code2*".
+
+  * gplink/testsuite/test:
+    Minor improvement.
+
+  * gplink/gplink.c:
+    Bugfix and minor improvement.
+
+  * gputils/gpstrip.c:
+    The gp_coffgen_symbol_has_reloc use a new parameter.
+
+  * libgputils/gpcoff.h, libgputils/gpcoffgen.c, libgputils/gpcoffgen.h,
+    libgputils/gpcoffopt.c, libgputils/gpcoffopt.h, libgputils/gpreadobj.c:
+    Improved detection of dead sections.
+
+  * libgputils/gpsym.c, libgputils/gpsym.h:
+    Renamed a item of symbol_table_t type from count to num_symbol.
+    In some places use "symbol_table_t" instead of "const symbol_table_t".
+
+  * gpasm/directive.c, libgputils/gparchive.c:
+    Code formatting.
+
 2016-06-27  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcoffgen.c
     bugfix
