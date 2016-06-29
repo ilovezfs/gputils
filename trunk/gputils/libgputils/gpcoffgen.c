@@ -891,12 +891,13 @@ gp_coffgen_make_block_symbol(gp_object_t *Object)
 /* Add a new symbol to the object. */
 
 gp_symbol_t *
-gp_coffgen_add_symbol(gp_object_t *Object)
+gp_coffgen_add_symbol(gp_object_t *Object, const char *Name)
 {
   gp_symbol_t *new;
 
   /* allocate memory for the symbol */
   new = (gp_symbol_t *)GP_Calloc(1, sizeof(gp_symbol_t));
+  new->name   = GP_Strdup(Name);
   new->number = Object->num_symbols;
 
   if (Object->symbol_list == NULL) {

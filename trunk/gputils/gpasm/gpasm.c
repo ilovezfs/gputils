@@ -99,7 +99,92 @@ static list_params_t list_options;
 
 /*------------------------------------------------------------------------------------------------*/
 
-static void set_global_constants(void)
+static void
+_show_usage(void)
+{
+  printf("Usage: gpasm [options] file\n");
+  printf("Options: [defaults in brackets after descriptions]\n");
+  printf("  -a FMT, --hex-format FMT       Select hex file format. [inhx32]\n");
+  printf("  -c, --object                   Output relocatable object.\n");
+  printf("  -C, --old-coff                 Use old Microchip COFF format.\n");
+  printf("  -d, --debug                    Output debug messages.\n");
+  printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
+  printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
+  printf("  -f, --full-address             Show full address in .lst file at the memory map region.\n");
+  printf("  -g, --debug-info               Use debug directives for COFF.\n");
+  printf("  -h, --help                     Show this usage message.\n");
+  printf("  -i, --ignore-case              Case insensitive.\n");
+  printf("  -I DIR, --include DIR          Specify include directory.\n");
+  printf("  -j, --sdcc-dev16-list          Help to the extension of the pic16devices.txt file\n"
+         "                                 in the sdcc project. Using by itself, displays the all\n"
+         "                                 '16e' devices. Along with the '-p' option, shows only\n"
+         "                                 the specified device.\n");
+  printf("  -k, --error                    Enables creation of the error file.\n");
+  printf("  -l[12[ce]|14[cef]|16[ce]], --list-chips[=([12[ce]|14[cef]|16[ce]])]\n"
+         "                                 Lists the names of the supported processors, based on\n"
+         "                                 various aspects. ('f' mean 'x')\n");
+  printf("  -L, --force-list               Ignore nolist directives.\n");
+  printf("  -m, --dump                     Memory dump.\n");
+  printf("      --mpasm-compatible         MPASM(X) compatibility mode.\n");
+  printf("  -M, --deps                     Output dependency file.\n");
+#ifndef HAVE_DOS_BASED_FILE_SYSTEM
+  printf("  -n, --dos                      Use DOS newlines in hex file.\n");
+#endif
+  printf("  -o FILE, --output FILE         Alternate name of output files. Option effect of:\n"
+         "                                 -- If the \"-c\" option included in the command line:\n"
+         "                                      FILE.o, FILE.lst, FILE.err\n"
+         "                                        (The \"FILE.o\" should specified.)\n");
+  printf("                                 -- If the \"-c\" option not included in the command line:\n"
+         "                                      FILE.hex, FILE.cod, FILE.lst, FILE.err\n"
+         "                                        (The \"FILE.hex\" should specified.)\n");
+  printf("  -p PROC, --processor PROC      Select processor.\n");
+  printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE.\n");
+  printf("  -q, --quiet                    Suppress anything sent to standard output.\n");
+  printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
+  printf("  -s[12[ce]|14[cef]|16[ce]], --list-processor-properties[=([12[ce]|14[cef]|16[ce]])]\n"
+         "                                 Lists properties of the processors. Using by itself,\n"
+         "                                 displays the all devices or group of the devices. Along\n"
+         "                                 with the '-p' option, shows only the specified device.\n"
+         "                                   ('f' mean 'x')\n");
+  printf("  -S [0|1|2], --strict [0|1|2]   Set the strict level of the recommended instruction-parameters\n"
+         "                                 (W or F and A or B) and the \"Undefined Processor\" messages.\n"
+         "                                 The \"strict messages\" have higher priority than the warnings.\n"
+         "                                 (See: -w [0|1|2]) [0]\n");
+  printf("                                     0: Is the default. No strict messages.\n"
+         "                                     1: Show warning messages if one of is missing.\n"
+         "                                     2: Show error messages if one of is missing.\n");
+  printf("  -t, --sdcc-dev14-list          Help to the extension of the pic14devices.txt file\n"
+         "                                 in the sdcc project. Using by itself, displays the all\n"
+         "                                 '14', '14e' and '14f' devices. Along with the '-p'\n"
+         "                                 option, shows only the specified device.\n");
+  printf("      --strict-options           If this is set, then an option may not be parameter\n"
+         "                                 of an another option. For example: -I -c\n");
+  printf("  -u, --absolute                 Use absolute paths. \n");
+  printf("  -v, --version                  Show version information and exit.\n");
+  printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n"
+         "                                     0: Is the default. It will allow all messages,\n"
+         "                                        warnings and errors to be reported.\n"
+         "                                     1: Will suppress the messages.\n"
+         "                                     2: Will suppress the messages and warnings.\n");
+  printf("  -X, --macro-dereference        Use the source from where the macro was invoked for errors.\n");
+  printf("  -y, --extended                 Enable 18xx extended mode.\n\n");
+#ifdef USE_DEFAULT_PATHS
+  if (gp_header_path != NULL) {
+    printf("Default header file path %s\n", gp_header_path);
+  }
+  else {
+    printf("Default header file path NOT SET.\n");
+  }
+  printf("\n");
+#endif
+  printf("Report bugs to:\n");
+  printf("%s\n", PACKAGE_BUGREPORT);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_set_global_constants(void)
 {
   if (!state.mpasm_compatible) {
     set_global("__GPUTILS_SVN_VERSION",   GPUTILS_SVN_VERSION,   LFT_PERMANENT, GVT_CONSTANT, false);
@@ -192,7 +277,7 @@ init(void)
 /* This is a sdcc specific helper function. */
 
 static void
-pic14_lister(pic_processor_t processor)
+_pic14_lister(pic_processor_t processor)
 {
   const gp_cfg_device_t *dev;
   proc_class_t class;
@@ -277,7 +362,7 @@ pic14_lister(pic_processor_t processor)
 /* This is a sdcc specific helper function. */
 
 static void
-pic16e_lister(pic_processor_t processor)
+_pic16e_lister(pic_processor_t processor)
 {
   const gp_cfg_device_t *dev;
   proc_class_t           class;
@@ -328,7 +413,7 @@ pic16e_lister(pic_processor_t processor)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-lister_of_devices(pic_processor_t processor)
+_lister_of_devices(pic_processor_t processor)
 {
   const gp_cfg_device_t *dev;
   proc_class_t           class;
@@ -427,91 +512,7 @@ lister_of_devices(pic_processor_t processor)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-show_usage(void)
-{
-  printf("Usage: gpasm [options] file\n");
-  printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -a FMT, --hex-format FMT       Select hex file format. [inhx32]\n");
-  printf("  -c, --object                   Output relocatable object.\n");
-  printf("  -C, --old-coff                 Use old Microchip COFF format.\n");
-  printf("  -d, --debug                    Output debug messages.\n");
-  printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
-  printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
-  printf("  -f, --full-address             Show full address in .lst file at the memory map region.\n");
-  printf("  -g, --debug-info               Use debug directives for COFF.\n");
-  printf("  -h, --help                     Show this usage message.\n");
-  printf("  -i, --ignore-case              Case insensitive.\n");
-  printf("  -I DIR, --include DIR          Specify include directory.\n");
-  printf("  -j, --sdcc-dev16-list          Help to the extension of the pic16devices.txt file\n"
-         "                                 in the sdcc project. Using by itself, displays the all\n"
-         "                                 '16e' devices. Along with the '-p' option, shows only\n"
-         "                                 the specified device.\n");
-  printf("  -k, --error                    Enables creation of the error file.\n");
-  printf("  -l[12[ce]|14[cef]|16[ce]], --list-chips[=([12[ce]|14[cef]|16[ce]])]\n"
-         "                                 Lists the names of the supported processors, based on\n"
-         "                                 various aspects. ('f' mean 'x')\n");
-  printf("  -L, --force-list               Ignore nolist directives.\n");
-  printf("  -m, --dump                     Memory dump.\n");
-  printf("      --mpasm-compatible         MPASM(X) compatibility mode.\n");
-  printf("  -M, --deps                     Output dependency file.\n");
-#ifndef HAVE_DOS_BASED_FILE_SYSTEM
-  printf("  -n, --dos                      Use DOS newlines in hex file.\n");
-#endif
-  printf("  -o FILE, --output FILE         Alternate name of output files. Option effect of:\n"
-         "                                 -- If the \"-c\" option included in the command line:\n"
-         "                                      FILE.o, FILE.lst, FILE.err\n"
-         "                                        (The \"FILE.o\" should specified.)\n");
-  printf("                                 -- If the \"-c\" option not included in the command line:\n"
-         "                                      FILE.hex, FILE.cod, FILE.lst, FILE.err\n"
-         "                                        (The \"FILE.hex\" should specified.)\n");
-  printf("  -p PROC, --processor PROC      Select processor.\n");
-  printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE.\n");
-  printf("  -q, --quiet                    Suppress anything sent to standard output.\n");
-  printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
-  printf("  -s[12[ce]|14[cef]|16[ce]], --list-processor-properties[=([12[ce]|14[cef]|16[ce]])]\n"
-         "                                 Lists properties of the processors. Using by itself,\n"
-         "                                 displays the all devices or group of the devices. Along\n"
-         "                                 with the '-p' option, shows only the specified device.\n"
-         "                                   ('f' mean 'x')\n");
-  printf("  -S [0|1|2], --strict [0|1|2]   Set the strict level of the recommended instruction-parameters\n"
-         "                                 (W or F and A or B) and the \"Undefined Processor\" messages.\n"
-         "                                 The \"strict messages\" have higher priority than the warnings.\n"
-         "                                 (See: -w [0|1|2]) [0]\n");
-  printf("                                     0: Is the default. No strict messages.\n"
-         "                                     1: Show warning messages if one of is missing.\n"
-         "                                     2: Show error messages if one of is missing.\n");
-  printf("  -t, --sdcc-dev14-list          Help to the extension of the pic14devices.txt file\n"
-         "                                 in the sdcc project. Using by itself, displays the all\n"
-         "                                 '14', '14e' and '14f' devices. Along with the '-p'\n"
-         "                                 option, shows only the specified device.\n");
-  printf("      --strict-options           If this is set, then an option may not be parameter\n"
-         "                                 of an another option. For example: -I -c\n");
-  printf("  -u, --absolute                 Use absolute paths. \n");
-  printf("  -v, --version                  Show version information and exit.\n");
-  printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n"
-         "                                     0: Is the default. It will allow all messages,\n"
-         "                                        warnings and errors to be reported.\n"
-         "                                     1: Will suppress the messages.\n"
-         "                                     2: Will suppress the messages and warnings.\n");
-  printf("  -X, --macro-dereference        Use the source from where the macro was invoked for errors.\n");
-  printf("  -y, --extended                 Enable 18xx extended mode.\n\n");
-#ifdef USE_DEFAULT_PATHS
-  if (gp_header_path != NULL) {
-    printf("Default header file path %s\n", gp_header_path);
-  }
-  else {
-    printf("Default header file path NOT SET.\n");
-  }
-  printf("\n");
-#endif
-  printf("Report bugs to:\n");
-  printf("%s\n", PACKAGE_BUGREPORT);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-add_path(const char *path)
+_add_path(const char *path)
 {
   if (path[0] == '\0') {
     /* This is an empty path. */
@@ -655,7 +656,7 @@ process_args(int argc, char *argv[])
       break;
 
     case 'I':
-      add_path(optarg);
+      _add_path(optarg);
       break;
 
     case 'i':
@@ -894,11 +895,11 @@ process_args(int argc, char *argv[])
     list_options.processor = (cmd_processor) ? gp_find_processor(processor_name) : NULL;
 
     if (list_options.processor != NULL) {
-      lister_of_devices(list_options.processor);
+      _lister_of_devices(list_options.processor);
     }
     else {
       gp_processor_invoke_custom_lister(list_options.class0, list_options.class1,
-                                        list_options.class2, lister_of_devices);
+                                        list_options.class2, _lister_of_devices);
     }
 
     exit(0);
@@ -907,10 +908,10 @@ process_args(int argc, char *argv[])
     list_options.processor = (cmd_processor) ? gp_find_processor(processor_name) : NULL;
 
     if (list_options.processor != NULL) {
-      pic14_lister(list_options.processor);
+      _pic14_lister(list_options.processor);
     }
     else {
-      gp_processor_invoke_custom_lister(PROC_CLASS_PIC14, PROC_CLASS_PIC14E, PROC_CLASS_PIC14EX, pic14_lister);
+      gp_processor_invoke_custom_lister(PROC_CLASS_PIC14, PROC_CLASS_PIC14E, PROC_CLASS_PIC14EX, _pic14_lister);
     }
 
     exit(0);
@@ -919,10 +920,10 @@ process_args(int argc, char *argv[])
     list_options.processor = (cmd_processor) ? gp_find_processor(processor_name) : NULL;
 
     if (list_options.processor != NULL) {
-      pic16e_lister(list_options.processor);
+      _pic16e_lister(list_options.processor);
     }
     else {
-      gp_processor_invoke_custom_lister(PROC_CLASS_PIC16E, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, pic16e_lister);
+      gp_processor_invoke_custom_lister(PROC_CLASS_PIC16E, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, _pic16e_lister);
     }
 
     exit(0);
@@ -936,14 +937,14 @@ process_args(int argc, char *argv[])
   }
 
   if (usage) {
-    show_usage();
+    _show_usage();
     exit(usage_code);
   }
 
   /* Add the header path to the include paths list last, so that the user
      specified directories are searched first. */
   if (gp_header_path != NULL) {
-    add_path(gp_header_path);
+    _add_path(gp_header_path);
   }
 
   if (state.use_absolute_path) {
@@ -988,7 +989,7 @@ assemble(void)
     state.cmd_line.processor = true;
   }
 
-  set_global_constants();
+  _set_global_constants();
 
   state.pass = 1;
   open_src(state.srcfilename, false);
@@ -1045,7 +1046,7 @@ assemble(void)
     state.cmd_line.processor = true;
   }
 
-  set_global_constants();
+  _set_global_constants();
 
   open_src(state.srcfilename, false);
   yydebug = (!gp_debug_disable) ? true : false;

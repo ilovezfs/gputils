@@ -236,7 +236,7 @@ _err(err_type_t err_type, unsigned int code, const char *message)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static char *
+static const char *
 _geterror(unsigned int code)
 {
   switch(code) {
@@ -364,19 +364,21 @@ _geterror(unsigned int code)
 void
 gperror_error(unsigned int code, const char *message)
 {
-  if (state.pass == 2) {
-    if (message == NULL) {
-      message = _geterror(code);
-    }
-
-    /* standard output */
-    _err(ET_ERROR, code, message);
-
-    /* list file output */
-    lst_line("Error[%03d]  : %s", code, message);
-
-    state.num.errors++;
+  if (state.pass != 2) {
+    return;
   }
+
+  if (message == NULL) {
+    message = _geterror(code);
+  }
+
+  /* standard output */
+  _err(ET_ERROR, code, message);
+
+  /* list file output */
+  lst_line("Error[%03d]  : %s", code, message);
+
+  state.num.errors++;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -384,34 +386,37 @@ gperror_error(unsigned int code, const char *message)
 void
 gperror_verror(unsigned int code, const char *message, ...)
 {
-  char buf[BUFSIZ];
+  va_list     ap;
+  const char *msg;
+  char        buf[BUFSIZ];
 
-  if (state.pass == 2) {
-    va_list(ap);
-    const char *msg = _geterror(code);
-
-    if ((message != NULL) && (*message != '\0')) {
-      snprintf(buf, sizeof(buf), "%s %s", msg, message);
-      msg = buf;
-    }
-
-    /* standard output */
-    va_start(ap, message);
-    _verr(ET_ERROR, code, msg, ap);
-    va_end(ap);
-
-    /* list file output */
-    va_start(ap, message);
-    lst_err_line("Error", code, msg, ap);
-    va_end(ap);
-
-    state.num.errors++;
+  if (state.pass != 2) {
+    return;
   }
+
+  msg = _geterror(code);
+
+  if ((message != NULL) && (*message != '\0')) {
+    snprintf(buf, sizeof(buf), "%s %s", msg, message);
+    msg = buf;
+  }
+
+  /* standard output */
+  va_start(ap, message);
+  _verr(ET_ERROR, code, msg, ap);
+  va_end(ap);
+
+  /* list file output */
+  va_start(ap, message);
+  lst_err_line("Error", code, msg, ap);
+  va_end(ap);
+
+  state.num.errors++;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-static char *
+static const char *
 _getwarning(unsigned int code)
 {
   switch(code) {
@@ -474,22 +479,24 @@ _getwarning(unsigned int code)
 void
 gperror_warning(unsigned int code, const char *message)
 {
-  if (state.pass == 2) {
-    if ((state.error_level <= 1) && _check_code(code)) {
-      if (message == NULL) {
-        message = _getwarning(code);
-      }
+  if (state.pass != 2) {
+    return;
+  }
 
-      /* standard output */
-      _err(ET_WARNING, code, message);
-
-      /* list file output */
-      lst_line("Warning[%03d]: %s", code, message);
-
-      state.num.warnings++;
-    } else {
-      state.num.warnings_suppressed++;
+  if ((state.error_level <= 1) && _check_code(code)) {
+    if (message == NULL) {
+      message = _getwarning(code);
     }
+
+    /* standard output */
+    _err(ET_WARNING, code, message);
+
+    /* list file output */
+    lst_line("Warning[%03d]: %s", code, message);
+
+    state.num.warnings++;
+  } else {
+    state.num.warnings_suppressed++;
   }
 }
 
@@ -498,44 +505,47 @@ gperror_warning(unsigned int code, const char *message)
 void
 gperror_vwarning(unsigned int code, const char *message, ...)
 {
-  if (state.pass == 2) {
-    if ((state.error_level <= 1) && _check_code(code)) {
-      va_list(ap);
-      const char *msg = _getwarning(code);
+  va_list     ap;
+  const char *msg;
+  char        buf[BUFSIZ];
 
-      if ((message != NULL) && (*message != '\0')) {
-        char buf[BUFSIZ];
+  if (state.pass != 2) {
+    return;
+  }
 
-        snprintf(buf, sizeof(buf), "%s %s", msg, message);
-        msg = buf;
-      }
+  if ((state.error_level <= 1) && _check_code(code)) {
+    msg = _getwarning(code);
 
-      /* standard output */
-      va_start(ap, message);
-      _verr(ET_WARNING, code, msg, ap);
-      va_end(ap);
-
-      va_start(ap, message);
-      lst_err_line("Warning", code, msg, ap);
-      va_end(ap);
-
-      state.num.warnings++;
-    } else {
-      state.num.warnings_suppressed++;
+    if ((message != NULL) && (*message != '\0')) {
+      snprintf(buf, sizeof(buf), "%s %s", msg, message);
+      msg = buf;
     }
+
+    /* standard output */
+    va_start(ap, message);
+    _verr(ET_WARNING, code, msg, ap);
+    va_end(ap);
+
+    va_start(ap, message);
+    lst_err_line("Warning", code, msg, ap);
+    va_end(ap);
+
+    state.num.warnings++;
+  } else {
+    state.num.warnings_suppressed++;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-static char *
+static const char *
 _getmessage(unsigned int code)
 {
   switch(code) {
   case GPM_USER:
     return "MESSAGE: \"%s\"";
   case GPM_BANK:
-    return "Register in operand not in bank %d. Ensure that bank bits are correct.";
+    return "Register in operand not in RAM Bank %u. Ensure that Bank bits are correct.";
   case GPM_RANGE:
     return "Program word too large. Truncated to core size: 0x%04X";
   case GPM_IDLOC:
@@ -564,7 +574,7 @@ _getmessage(unsigned int code)
   case GPM_NOA:
     return "Using default access of 0 (Access Bank).";
   case GPM_NOB:
-    return "RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank %d from now on.";
+    return "RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank %u from now on.";
 
   case GPM_UNKNOWN:
   default:
@@ -577,22 +587,24 @@ _getmessage(unsigned int code)
 void
 gperror_message(unsigned int code, const char *message)
 {
-  if (state.pass == 2) {
-    if ((state.error_level == 0) && _check_code(code)) {
-      if (message == NULL) {
-        message = _getmessage(code);
-      }
+  if (state.pass != 2) {
+    return;
+  }
 
-      /* standard output */
-      _err(ET_MESSAGE, code, message);
-
-      /* list file output */
-      lst_line("Message[%03d]: %s", code, message);
-
-      state.num.messages++;
-    } else {
-      state.num.messages_suppressed++;
+  if ((state.error_level == 0) && _check_code(code)) {
+    if (message == NULL) {
+      message = _getmessage(code);
     }
+
+    /* standard output */
+    _err(ET_MESSAGE, code, message);
+
+    /* list file output */
+    lst_line("Message[%03d]: %s", code, message);
+
+    state.num.messages++;
+  } else {
+    state.num.messages_suppressed++;
   }
 }
 
@@ -601,31 +613,35 @@ gperror_message(unsigned int code, const char *message)
 void
 gperror_vmessage(unsigned int code, const char *message, ...)
 {
-  if (state.pass == 2) {
-    if ((state.error_level == 0) && _check_code(code)) {
-      va_list(ap);
-      const char *msg = _getmessage(code);
+  va_list     ap;
+  const char *msg;
+  char        buf[BUFSIZ];
 
-      if ((message != NULL) && (*message != '\0')) {
-        char buf[BUFSIZ];
+  if (state.pass != 2) {
+    return;
+  }
 
-        snprintf(buf, sizeof(buf), "%s %s", msg, message);
-        msg = buf;
-      }
-      /* standard output */
-      va_start(ap, message);
-      _verr(ET_MESSAGE, code, msg, ap);
-      va_end(ap);
+  if ((state.error_level == 0) && _check_code(code)) {
+    msg = _getmessage(code);
 
-      /* list file output */
-      va_start(ap, message);
-      lst_err_line("Message", code, msg, ap);
-      va_end(ap);
-
-      state.num.messages++;
-    } else {
-      state.num.messages_suppressed++;
+    if ((message != NULL) && (*message != '\0')) {
+      snprintf(buf, sizeof(buf), "%s %s", msg, message);
+      msg = buf;
     }
+
+    /* standard output */
+    va_start(ap, message);
+    _verr(ET_MESSAGE, code, msg, ap);
+    va_end(ap);
+
+    /* list file output */
+    va_start(ap, message);
+    lst_err_line("Message", code, msg, ap);
+    va_end(ap);
+
+    state.num.messages++;
+  } else {
+    state.num.messages_suppressed++;
   }
 }
 

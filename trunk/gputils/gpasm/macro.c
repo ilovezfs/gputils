@@ -82,7 +82,7 @@ void macro_setup(macro_head_t *h, int arity, const pnode_t *parms)
   const pnode_t *pToH;
   symbol_t      *sym;
 
-  if (enforce_arity(arity, list_length(h->parms))) {
+  if (eval_enforce_arity(arity, eval_list_length(h->parms))) {
     /* push table for the marco parms */
     state.stMacroParams = sym_push_table(state.stMacroParams, state.case_insensitive);
 
@@ -91,19 +91,19 @@ void macro_setup(macro_head_t *h, int arity, const pnode_t *parms)
     if (arity > 0) {
       pTo = parms;
 
-      for (pFrom = h->parms; pFrom != NULL; pFrom = TAIL(pFrom)) {
-        pToH = HEAD(pTo);
-        pFromH = HEAD(pFrom);
-        assert(pFromH->tag == PTAG_SYMBOL);
-        assert(pToH->tag == PTAG_SYMBOL);
+      for (pFrom = h->parms; pFrom != NULL; pFrom = PnListTail(pFrom)) {
+        pToH   = PnListHead(pTo);
+        pFromH = PnListHead(pFrom);
+        assert(PnIsSymbol(pFromH));
+        assert(PnIsSymbol(pToH));
 
-        sym = sym_add_symbol(state.stMacroParams, pFromH->value.symbol);
-        sym_annotate_symbol(sym, mk_list(mk_string(GP_Strdup(pToH->value.symbol)), NULL));
-        pTo = TAIL(pTo);
+        sym = sym_add_symbol(state.stMacroParams, PnSymbol(pFromH));
+        sym_annotate_symbol(sym, mk_list(mk_string(GP_Strdup(PnSymbol(pToH))), NULL));
+        pTo = PnListTail(pTo);
       }
     }
 
-    state.next_state = STATE_MACRO;
+    state.next_state        = STATE_MACRO;
     state.next_buffer.macro = h;
     state.lst.line.linetype = LTY_NONE;
   }
