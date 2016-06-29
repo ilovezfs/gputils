@@ -862,7 +862,7 @@ _found_eof(void)
   enum src_types prev_type;
 
   if (IN_WHILE_EXPANSION) {
-    if (maybe_evaluate(state.src->mac_head->parms)) {
+    if (eval_maybe_evaluate(state.src->mac_head->parms)) {
       if (state.src->loop_number > WHILE_LOOP_COUNT_MAX) {
         gperror_verror(GPE_BAD_WHILE_LOOP, NULL);
       }

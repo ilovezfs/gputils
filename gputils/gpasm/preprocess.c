@@ -1,5 +1,5 @@
 /* gpasm preprocessor implementation
-   Copyright (C) 1012 Borut Razem
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 
@@ -57,6 +57,7 @@ _check_defines(char *symbol, int symlen, pnode_t **param_list_p)
 {
   symbol_t   *sym;
   pnode_t    *p;
+  pnode_t    *p2;
   const char *subst = NULL;
 
   *param_list_p = NULL;
@@ -66,13 +67,13 @@ _check_defines(char *symbol, int symlen, pnode_t **param_list_p)
     p = sym_get_symbol_annotation(sym);
 
     if (p != NULL) {
-      pnode_t *p2 = HEAD(p);
+      p2 = PnListHead(p);
 
-      assert(p->tag == PTAG_LIST);
-      assert(p2->tag == PTAG_STRING);
-      subst = p2->value.string;
+      assert(PnIsList(p));
+      assert(PnIsString(p2));
+      subst = PnString(p2);
 
-      *param_list_p = TAIL(p);
+      *param_list_p = PnListTail(p);
 
       if (subst == NULL) {
         subst = "";
@@ -171,8 +172,8 @@ _substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, i
 
   /* find argument */
   while (parp != NULL) {
-    assert(HEAD(parp)->tag == PTAG_SYMBOL);
-    if (strncmp(&buf[begin], HEAD(parp)->value.symbol, mlen) == 0) {
+    assert(PnIsSymbol(PnListHead(parp)));
+    if (strncmp(&buf[begin], PnSymbol(PnListHead(parp)), mlen) == 0) {
       /* substitute */
       len = strlen(argp->str);
 
@@ -187,7 +188,7 @@ _substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, i
         return true;
       }
     }
-    parp = TAIL(parp);
+    parp = PnListTail(parp);
     argp = argp->next;
   }
 
@@ -220,7 +221,7 @@ _substitute_define(char *buf, int begin, int *end, int *n, int max_size, int lev
   }
 
   if ((sub = _check_defines(&buf[begin], mlen, &param_list)) != NULL) {
-    n_params = list_length(param_list);
+    n_params = eval_list_length(param_list);
 
     DBG_printf("define %*.*s has %d parameters\n", mlen, mlen, &buf[begin], n_params);
     if (n_params != 0) {
@@ -684,13 +685,12 @@ _check_macro_params(char *symbol, int symlen)
   if ((sym = sym_get_symbol_len(state.stMacroParams, symbol, symlen)) != NULL) {
     p = sym_get_symbol_annotation(sym);
     if (p != NULL) {
-      p2 = HEAD(p);
+      p2 = PnListHead(p);
 
-      assert(p->tag == PTAG_LIST);
-      assert(p2->tag == PTAG_STRING);
-      subst = p2->value.string;
-
-      assert(NULL == TAIL(p));
+      assert(PnIsList(p));
+      assert(PnListTail(p) == NULL);
+      assert(PnIsString(p2));
+      subst = PnString(p2);
 
       if (subst == NULL) {
         subst = "";

@@ -278,7 +278,6 @@ gpasm_magic(const char *c)
   is translated to:
 
   This is a escaped quote: "
-
 */
 
 char *
@@ -291,7 +290,7 @@ convert_escaped_char(char *str, char c)
     return str;
   }
 
-  while (*src) {
+  while (*src != '\0') {
     if ((*src =='\\') && (src[1] == c)) {
       src++;
     }
@@ -393,13 +392,13 @@ coerce_str1(pnode_t *exp)
   int         value;
   const char *pc;
 
-  if ((exp != NULL) && (exp->tag == PTAG_STRING)) {
-    pc = convert_escape_chars(exp->value.string, &value);
+  if ((exp != NULL) && PnIsString(exp)) {
+    pc = convert_escape_chars(PnString(exp), &value);
 
     if (*pc == '\0') {
       /* castable string, make the conversion */
       exp->tag = PTAG_CONSTANT;
-      exp->value.constant = value;
+      PnConstant(exp) = value;
     }
   }
 }
@@ -703,6 +702,7 @@ select_radix(const char *radix_name)
 /*------------------------------------------------------------------------------------------------*/
 
 /* Function to append a line to an ongoing macro definition. */
+
 void
 macro_append(void)
 {
@@ -745,46 +745,37 @@ do_or_append_insn(const char *op, pnode_t *parms)
   }
 }
 
+
 /*------------------------------------------------------------------------------------------------*/
 
-/*static void
-_print_pnode(const pnode_t *p)
+const char *
+pnode_symbol_value(const pnode_t *Pnode, int *Value)
 {
-  if (p == NULL) {
-    printf("Null\n");
-    return;
+  const symbol_t   *sym;
+  const variable_t *var;
+
+  if (!PnIsSymbol(Pnode)) {
+    return NULL;
   }
 
-  switch(p->tag) {
-  case PTAG_CONSTANT:
-    printf("  constant: %d\n", p->value.constant);
-    break;
-
-  case PTAG_SYMBOL:
-    printf("  symbol: %s\n", p->value.symbol);
-    break;
-
-  case PTAG_UNOP:
-    printf("  unop: %d\n", p->value.unop.op);
-    break;
-
-  case PTAG_BINOP:
-    printf("  binop: %d\n", p->value.binop.op);
-    break;
-
-  case PTAG_STRING:
-    printf("  string: %s\n", p->value.string);
-    break;
-
-  case PTAG_LIST:
-    printf("  list:\n");
-    break;
-
-  default:
-    printf("unknown type\n");
+  if (strcmp(PnSymbol(Pnode), "$") == 0) {
+    *Value = (IS_RAM_ORG ? state.byte_addr :
+                           gp_processor_byte_to_real(state.processor, state.byte_addr));
   }
+  else {
+    sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
+    assert(sym != NULL);
+    var = sym_get_symbol_annotation(sym);
+    assert(var != NULL);
+    *Value = var->value;
+  }
+
+  return PnSymbol(Pnode);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
+/*
 static void
 print_macro_node(const macro_body_t *mac)
 {
@@ -818,15 +809,12 @@ add_file(unsigned int type, const char *name)
   file_context_t *new;
 
   /* First check to make sure this file is not already in the list. */
-
-  if (last != NULL) {
-    new = last;
-    do {
-      if (strcmp(new->name, name) == 0) {
-        return new;
-      }
-      new = new->prev;
-    } while(new != NULL);
+  new = last;
+  while (new != NULL) {
+    if (strcmp(new->name, name) == 0) {
+      return new;
+    }
+    new = new->prev;
   }
 
   new = GP_Malloc(sizeof(*new));

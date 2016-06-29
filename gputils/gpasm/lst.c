@@ -1052,6 +1052,7 @@ _lst_symbol_cmp(const void *p0, const void *p1)
 void
 lst_symbol_table(void)
 {
+  const pnode_t   *p0;
   const symbol_t **clone;
   size_t           sym_count;
   lst_symbol_t    *lst;
@@ -1132,11 +1133,14 @@ lst_symbol_table(void)
 
     case LST_DEFINE:
       /* define */
-      if (p != NULL) {
-        assert(((const pnode_t *)p)->tag == PTAG_LIST);
-        assert(HEAD((const pnode_t *)p)->tag == PTAG_STRING);
+      p0 = (const pnode_t *)p;
+
+      if (p0 != NULL) {
+        assert(PnIsList(p0));
+        assert(PnIsString(PnListHead(p0)));
       }
-      lst_line("%-32s  %s", name, (p != NULL) ? HEAD((const pnode_t *)p)->value.string : "");
+
+      lst_line("%-32s  %s", name, (p0 != NULL) ? PnString(PnListHead(p0)) : "");
       break;
 
     case LST_MACRO:

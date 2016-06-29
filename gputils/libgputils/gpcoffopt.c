@@ -59,7 +59,7 @@ Boston, MA 02111-1307, USA.  */
 #define COPT_PAGESEL_MASK                   (COPT_PAGESEL_CURR_PAGE | COPT_PAGESEL_OTHER_PAGE)
 
 /* Number of reloc_properties_t type in an array. */
-#define RELOC_PIPE_LENGTH                      4
+#define RELOC_PIPE_LENGTH                   4
 
 typedef struct reloc_properties {
   gp_reloc_t        *relocation;
@@ -153,7 +153,7 @@ gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass, gp_boolean Enable
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Deletes all states from relocation tube. */
+/* Deletes all states from relocation pipe. */
 
 static void
 _reloc_pipe_clear(void)
@@ -204,7 +204,7 @@ _reloc_pipe_shift(gp_boolean Forward)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Deletes one state from the relocation tube. */
+/* Deletes one state from the relocation pipe. */
 
 static void
 _reloc_pipe_delete_state(size_t State_index)
@@ -464,7 +464,6 @@ _destroy_insn_and_update_addr(proc_class_t Class, gp_section_t *First_section, g
   uint32_t      insn_addr_curr;
   uint32_t      insn_length_curr;
   uint32_t      byte_addr_next;
-//  uint32_t      insn_addr_next;
   const char   *sym_name;
 
   byte_addr_curr   = reloc_pipe[Insn_index].reloc_byte_addr;
@@ -472,7 +471,6 @@ _destroy_insn_and_update_addr(proc_class_t Class, gp_section_t *First_section, g
   insn_addr_curr   = reloc_pipe[Insn_index].reloc_insn_addr;
   insn_length_curr = reloc_pipe[Insn_index].reloc_insn_length;
   byte_addr_next   = byte_addr_curr + byte_length_curr;
-//  insn_addr_next   = insn_addr_curr + insn_length_curr;
   start_page       = reloc_pipe[Insn_index].reloc_page;
   sym_name         = (reloc_pipe[Insn_index].relocation->symbol != NULL) ?
                                         reloc_pipe[Insn_index].relocation->symbol->name : NULL;
@@ -491,7 +489,6 @@ _destroy_insn_and_update_addr(proc_class_t Class, gp_section_t *First_section, g
   _reloc_decrease_addresses(Class, reloc_pipe[Insn_index].relocation->next, start_page, insn_length_curr,
                             byte_length_curr);
 
-//  _label_array_decrease_addresses(Class, Section, insn_addr_next, insn_length_curr);
   gp_coffgen_del_reloc(Section, reloc_pipe[Insn_index].relocation);
 
   /* Decrease the address of instruction in newer (younger) states. */

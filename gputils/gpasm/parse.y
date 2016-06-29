@@ -130,7 +130,7 @@ pnode_t *mk_constant(int value)
 {
   pnode_t *new = mk_pnode(PTAG_CONSTANT);
 
-  new->value.constant = value;
+  PnConstant(new) = value;
   return new;
 }
 
@@ -138,15 +138,15 @@ pnode_t *mk_offset(pnode_t *p)
 {
   pnode_t *new = mk_pnode(PTAG_OFFSET);
 
-  new->value.offset = p;
+  PnOffset(new) = p;
   return new;
 }
 
-pnode_t *mk_symbol(char *value)
+pnode_t *mk_symbol(const char *value)
 {
   pnode_t *new = mk_pnode(PTAG_SYMBOL);
 
-  new->value.symbol = value;
+  PnSymbol(new) = value;
   return new;
 }
 
@@ -154,7 +154,7 @@ pnode_t *mk_string(char *value)
 {
   pnode_t *new = mk_pnode(PTAG_STRING);
 
-  new->value.string = value;
+  PnString(new) = value;
   return new;
 }
 
@@ -162,8 +162,8 @@ pnode_t *mk_list(pnode_t *head, pnode_t *tail)
 {
   pnode_t *new = mk_pnode(PTAG_LIST);
 
-  new->value.list.head = head;
-  new->value.list.tail = tail;
+  PnListHead(new) = head;
+  PnListTail(new) = tail;
   return new;
 }
 
@@ -171,9 +171,9 @@ pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1)
 {
   pnode_t *new = mk_pnode(PTAG_BINOP);
 
-  new->value.binop.op = op;
-  new->value.binop.p0 = p0;
-  new->value.binop.p1 = p1;
+  PnBinOpOp(new) = op;
+  PnBinOpP0(new) = p0;
+  PnBinOpP1(new) = p1;
   return new;
 }
 
@@ -181,8 +181,8 @@ pnode_t *mk_1op(int op, pnode_t *p0)
 {
   pnode_t *new = mk_pnode(PTAG_UNOP);
 
-  new->value.unop.op = op;
-  new->value.unop.p0 = p0;
+  PnUnOpOp(new) = op;
+  PnUnOpP0(new) = p0;
   return new;
 }
 

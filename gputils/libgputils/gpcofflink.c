@@ -315,12 +315,11 @@ gp_cofflink_make_stack(gp_object_t *Object, unsigned int Num_bytes)
     gp_error("_stack symbol already exists");
   }
   else {
-    symbol = gp_coffgen_add_symbol(Object);
-    symbol->name           = GP_Strdup("_stack");
-    symbol->value          = 0;
+    symbol = gp_coffgen_add_symbol(Object, "_stack");
+//    symbol->value          = 0;
     symbol->section_number = N_SCNUM;
     symbol->section        = new;
-    symbol->type           = T_NULL;
+//    symbol->type           = T_NULL;
     symbol->class          = C_EXT;
   }
 
@@ -330,12 +329,11 @@ gp_cofflink_make_stack(gp_object_t *Object, unsigned int Num_bytes)
     gp_error("_stack_end symbol already exists.");
   }
   else {
-    symbol = gp_coffgen_add_symbol(Object);
-    symbol->name           = GP_Strdup("_stack_end");
+    symbol = gp_coffgen_add_symbol(Object, "_stack_end");
     symbol->value          = Num_bytes - 1;
     symbol->section_number = N_SCNUM;
     symbol->section        = new;
-    symbol->type           = T_NULL;
+//    symbol->type           = T_NULL;
     symbol->class          = C_EXT;
   }
 }
@@ -597,12 +595,10 @@ gp_cofflink_make_cinit(gp_object_t *Object)
     gp_error("_cinit symbol already exists.");
   }
   else {
-    symbol = gp_coffgen_add_symbol(Object);
-    symbol->name           = GP_Strdup("_cinit");
-    symbol->value          = 0;
+    symbol = gp_coffgen_add_symbol(Object, "_cinit");
+//    symbol->value          = 0;
     symbol->section_number = N_SCNUM;
-    symbol->section        = NULL;
-    symbol->type           = T_NULL;
+//    symbol->type           = T_NULL;
     symbol->class          = C_EXT;
   }
 }

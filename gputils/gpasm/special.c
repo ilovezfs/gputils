@@ -43,7 +43,7 @@ _make_constant_list(int value1, int value2)
 static pnode_t *
 _add_symbol_constant(pnode_t *parms, int value)
 {
-  return mk_list(HEAD(parms), mk_list(mk_constant(value), NULL));
+  return mk_list(PnListHead(parms), mk_list(mk_constant(value), NULL));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -256,7 +256,7 @@ _do_movfw(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   (void)name;
 
-  if (enforce_arity(arity, 1)) {
+  if (eval_enforce_arity(arity, 1)) {
     do_insn("movf", _add_symbol_constant(parms, 0));
   }
 
@@ -274,7 +274,7 @@ _do_negf(gpasmVal r, const char *name, int arity, pnode_t *parms)
     do_insn("comf", _add_symbol_constant(parms, 1));
     do_insn("incf", parms);
   } else {
-    enforce_arity(arity, 2);
+    eval_enforce_arity(arity, 2);
   }
 
   return r;
@@ -459,7 +459,7 @@ _do_tstf(gpasmVal r, const char *name, int arity, pnode_t *parms)
 {
   (void)name;
 
-  if (enforce_arity(arity, 1)) {
+  if (eval_enforce_arity(arity, 1)) {
     do_insn("movf", _add_symbol_constant(parms, 1));
   }
 
@@ -475,12 +475,12 @@ _do_mode(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   (void)name;
 
-  if (enforce_arity(arity, 1)) {
-    val = HEAD(parms);
+  if (eval_enforce_arity(arity, 1)) {
+    val = PnListHead(parms);
 
-    if ((val->tag == PTAG_CONSTANT) && (val->value.constant > 0x1f)) {
+    if (PnIsConstant(val) && (PnConstant(val) > 0x1f)) {
       gperror_vwarning(GPW_RANGE, NULL);
-      val->value.constant &= 0x1f;
+      PnConstant(val) &= 0x1f;
     }
 
     do_insn("movlw", parms);

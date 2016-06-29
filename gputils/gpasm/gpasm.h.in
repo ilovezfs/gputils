@@ -321,18 +321,20 @@ typedef struct variable {
 typedef struct pnode {
   enum pnode_tag {
     PTAG_CONSTANT,
-    PTAG_OFFSET,
     PTAG_SYMBOL,
     PTAG_STRING,
+    PTAG_OFFSET,
     PTAG_LIST,
     PTAG_BINOP,
     PTAG_UNOP
   } tag;
 
   union {
-    int           constant;
-    struct pnode *offset;
-    char         *symbol;
+    int             constant;
+    const char     *symbol;
+    char           *string;
+
+    struct pnode   *offset;
 
     struct {
       struct pnode *head;
@@ -349,10 +351,28 @@ typedef struct pnode {
       int           op;
       struct pnode *p0;
     } unop;
-
-    char *string;
   } value;
 } pnode_t;
+
+#define PnIsConstant(Node)              ((Node)->tag == PTAG_CONSTANT)
+#define PnIsSymbol(Node)                ((Node)->tag == PTAG_SYMBOL)
+#define PnIsString(Node)                ((Node)->tag == PTAG_STRING)
+#define PnIsOffset(Node)                ((Node)->tag == PTAG_OFFSET)
+#define PnIsList(Node)                  ((Node)->tag == PTAG_LIST)
+#define PnIsBinOp(Node)                 ((Node)->tag == PTAG_BINOP)
+#define PnIsUnOp(Node)                  ((Node)->tag == PTAG_UNOP)
+
+#define PnConstant(Node)                ((Node)->value.constant)
+#define PnSymbol(Node)                  ((Node)->value.symbol)
+#define PnString(Node)                  ((Node)->value.string)
+#define PnOffset(Node)                  ((Node)->value.offset)
+#define PnListHead(Node)                ((Node)->value.list.head)
+#define PnListTail(Node)                ((Node)->value.list.tail)
+#define PnBinOpOp(Node)                 ((Node)->value.binop.op)
+#define PnBinOpP0(Node)                 ((Node)->value.binop.p0)
+#define PnBinOpP1(Node)                 ((Node)->value.binop.p1)
+#define PnUnOpOp(Node)                  ((Node)->value.unop.op)
+#define PnUnOpP0(Node)                  ((Node)->value.unop.p0)
 
 /************************************************************************/
 
@@ -414,6 +434,11 @@ extern void select_strictlevel(int level);
 extern void select_expand(const char *expand);
 extern void select_hexformat(const char *format_name);
 extern void select_radix(const char *name);
+/* START OF DEBUG CODE LINES */
+extern void pnode_print(const pnode_t *p);
+extern void pnode_print_chain(const pnode_t *Pnode, unsigned int Level);
+/* END OF DEBUG CODE LINES */
+extern const char *pnode_symbol_value(const pnode_t *Pnode, int *Value);
 extern file_context_t *add_file(unsigned int type, const char *name);
 extern void free_files(void);
 extern void macro_append(void);
@@ -425,7 +450,7 @@ extern void add_path(const char *path);
 /* parse.y */
 extern pnode_t *mk_constant(int value);
 extern pnode_t *mk_offset(pnode_t *p);
-extern pnode_t *mk_symbol(char *value);
+extern pnode_t *mk_symbol(const char *value);
 extern pnode_t *mk_string(char *value);
 extern pnode_t *mk_list(pnode_t *head, pnode_t *tail);
 extern pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1);

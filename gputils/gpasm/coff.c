@@ -96,12 +96,11 @@ _new_config_section(const char *name, unsigned int addr, unsigned int flags, Mem
   state.obj.section->flags = flags;
 
   /* add a section symbol */
-  new = gp_coffgen_add_symbol(state.obj.object);
-  new->name           = GP_Strdup(name);
+  new = gp_coffgen_add_symbol(state.obj.object, name);
   new->value          = IS_RAM_ORG ? addr : gp_processor_byte_to_org(state.device.class, addr);
   new->section_number = state.obj.section_num;  /* Modified later. */
   new->section        = state.obj.section;
-  new->type           = T_NULL;
+//  new->type           = T_NULL;
   new->class          = C_SECTION;
 
   state.obj.section->symbol = new;
@@ -286,12 +285,11 @@ coff_new_section(const char *name, unsigned int addr, unsigned int flags)
   state.obj.section->flags          = flags;
 
   /* add a section symbol */
-  new = gp_coffgen_add_symbol(state.obj.object);
-  new->name           = GP_Strdup(name);
+  new = gp_coffgen_add_symbol(state.obj.object, name);
   new->value          = IS_RAM_ORG ? addr : gp_processor_byte_to_org(state.device.class, addr);
   new->section_number = state.obj.section_num;  /* Modified later. */
   new->section        = state.obj.section;
-  new->type           = T_NULL;
+//  new->type           = T_NULL;
   new->class          = C_SECTION;
 
   state.obj.section->symbol = new;
@@ -446,12 +444,11 @@ coff_add_sym(const char *name, gp_symvalue_t value, enum gpasmValTypes type)
     gperror_error(GPE_DUPLAB, message);
   }
   else {
-    new = gp_coffgen_add_symbol(state.obj.object);
-    new->name           = GP_Strdup(name);
+    new = gp_coffgen_add_symbol(state.obj.object, name);
     new->value          = value;
     new->section_number = section_number;
     new->section        = state.obj.section;
-    new->type           = T_NULL;
+//    new->type           = T_NULL;
     new->class          = class;
   }
 
@@ -475,12 +472,10 @@ coff_add_filesym(const char *name, gp_boolean isinclude)
   }
 
   /* add .file symbol */
-  new = gp_coffgen_add_symbol(state.obj.object);
-  new->name           = GP_Strdup(".file");
-  new->value          = 0;
+  new = gp_coffgen_add_symbol(state.obj.object, ".file");
+//  new->value          = 0;
   new->section_number = N_DEBUG;
-  new->section        = NULL;
-  new->type           = T_NULL;
+//  new->type           = T_NULL;
   new->class          = C_FILE;
 
   new_aux = gp_coffgen_add_aux(state.obj.object, new);
@@ -514,12 +509,10 @@ coff_add_eofsym(void)
   }
 
   /* add .eof symbol */
-  new = gp_coffgen_add_symbol(state.obj.object);
-  new->name           = GP_Strdup(".eof");
-  new->value          = 0;
+  new = gp_coffgen_add_symbol(state.obj.object, ".eof");
+//  new->value          = 0;
   new->section_number = N_DEBUG;
-  new->section        = NULL;
-  new->type           = T_NULL;
+//  new->type           = T_NULL;
   new->class          = C_EOF;
 }
 
@@ -543,12 +536,10 @@ coff_add_listsym(void)
   }
 
   /* add .list symbol */
-  new = gp_coffgen_add_symbol(state.obj.object);
-  new->name           = GP_Strdup(".list");
+  new = gp_coffgen_add_symbol(state.obj.object, ".list");
   new->value          = state.src->line_number;
   new->section_number = N_DEBUG;
-  new->section        = NULL;
-  new->type           = T_NULL;
+//  new->type           = T_NULL;
   new->class          = C_LIST;
 }
 
@@ -572,12 +563,10 @@ coff_add_nolistsym(void)
   }
 
   /* add .nolist symbol */
-  new = gp_coffgen_add_symbol(state.obj.object);
-  new->name           = GP_Strdup(".nolist");
+  new = gp_coffgen_add_symbol(state.obj.object, ".nolist");
   new->value          = state.src->line_number;
   new->section_number = N_DEBUG;
-  new->section        = NULL;
-  new->type           = T_NULL;
+//  new->type           = T_NULL;
   new->class          = C_LIST;
 }
 
@@ -598,13 +587,12 @@ coff_add_directsym(uint8_t command, const char *string)
   }
 
   /* add .direct symbol */
-  new = gp_coffgen_add_symbol(state.obj.object);
-  new->name           = GP_Strdup(".direct");
+  new = gp_coffgen_add_symbol(state.obj.object, ".direct");
   new->value          = gp_processor_byte_to_org(state.device.class, state.byte_addr);
   new->section_number = state.obj.section_num;
   new->section        = state.obj.section;
-  new->type           = T_NULL;
-  new->class          = C_NULL;
+/*  new->type           = T_NULL;
+  new->class          = C_NULL;*/
 
   new_aux = gp_coffgen_add_aux(state.obj.object, new);
   new_aux->type = AUX_DIRECT;
@@ -629,13 +617,11 @@ coff_add_identsym(const char *string)
   }
 
   /* add .ident symbol */
-  new = gp_coffgen_add_symbol(state.obj.object);
-  new->name           = GP_Strdup(".ident");
-  new->value          = 0;
+  new = gp_coffgen_add_symbol(state.obj.object, ".ident");
+//  new->value          = 0;
   new->section_number = N_DEBUG;
-  new->section        = NULL;
-  new->type           = T_NULL;
-  new->class          = C_NULL;
+/*  new->type           = T_NULL;
+  new->class          = C_NULL;*/
 
   new_aux = gp_coffgen_add_aux(state.obj.object, new);
   new_aux->type = AUX_IDENT;

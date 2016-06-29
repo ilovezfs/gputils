@@ -220,7 +220,7 @@ select_processor(const char *name)
             if (class == PROC_CLASS_PIC16E) {
               set_global("__EXTENDED", 1, LFT_PERMANENT, GVT_CONSTANT, true);
 
-              _make_bank_constants(found, 16);
+              _make_bank_constants(found, num_of_banks);
             }
 
             _make_page_constants(found, num_of_pages);

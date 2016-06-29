@@ -22,14 +22,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __OPCODE_H__
 #define __OPCODE_H__
 
-#define HEAD(L)                     (L)->value.list.head
-#define TAIL(L)                     (L)->value.list.tail
-
-#define CORE_8BIT_MASK              0x00ff
-#define CORE_12BIT_MASK             0x0fff
-#define CORE_14BIT_MASK             0x3fff
-#define CORE_16BIT_MASK             0xffff
-
 extern gpasmVal do_insn(const char *name, struct pnode *parms);
 extern void opcode_init(int stage);
 extern void begin_cblock(const struct pnode *c);
