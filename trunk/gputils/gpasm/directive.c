@@ -44,6 +44,7 @@ Boston, MA 02111-1307, USA.  */
 extern pnode_t *mk_constant(int value);
 
 static gp_boolean prev_btfsx = false;
+static gp_boolean prev_err_msg;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -65,7 +66,7 @@ _check_write(uint16_t value)
   }
 
   if (IS_PIC16_CORE && (state.byte_addr > 0x1ffff)) {
-    gperror_verror(GPE_ADDROVF, "Address{0x%0*x}",
+    gperror_verror(GPE_ADDROVF, "Address{0x%0*X}",
                    state.device.class->addr_digits, state.byte_addr);
   }
   else if ((!IS_PIC16E_CORE) && ((state.byte_addr & 0x1ffff) == 0) && ((int)state.byte_addr > 0)) {
@@ -122,7 +123,7 @@ _check_write(uint16_t value)
 
   if (state.maxrom >= 0) {
     if (org > state.maxrom) {
-      gperror_vwarning(GPW_EXCEED_ROM, "Address{0x%0*x} > MAXROM{0x%0*x}",
+      gperror_vwarning(GPW_EXCEED_ROM, "Address{0x%0*X} > MAXROM{0x%0*X}",
                        state.device.class->addr_digits, org,
                        state.device.class->addr_digits, state.maxrom);
     }
@@ -132,7 +133,7 @@ _check_write(uint16_t value)
 
       for (cur_badrom = state.badrom; cur_badrom != NULL; cur_badrom = cur_badrom->next) {
         if ((org >= cur_badrom->start) && (org <= cur_badrom->end)) {
-          gperror_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*x} <= Address{0x%0*x} <= BADROM_END{0x%0*x}",
+          gperror_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*X} <= Address{0x%0*X} <= BADROM_END{0x%0*X}",
                            state.device.class->addr_digits, cur_badrom->start,
                            state.device.class->addr_digits, org,
                            state.device.class->addr_digits, cur_badrom->end);
@@ -197,7 +198,7 @@ _emit_byte(uint16_t value, const char *name)
 
     if (!IS_RAM_ORG) {
       if (IS_PIC16_CORE && (state.byte_addr > 0x1ffff)) {
-        gperror_verror(GPE_ADDROVF, "Address{0x%0*x} > 0x1ffff",
+        gperror_verror(GPE_ADDROVF, "Address{0x%0*X} > 0x1ffff",
                        state.device.class->addr_digits, state.byte_addr);
       }
       else if ((!IS_PIC16E_CORE) && ((state.byte_addr & 0x1ffff) == 0) && ((int)state.byte_addr > 0)) {
@@ -220,7 +221,7 @@ _emit_byte(uint16_t value, const char *name)
 
       if (state.maxrom >= 0) {
         if (org > state.maxrom) {
-          gperror_vwarning(GPW_EXCEED_ROM, "Address{0x%0*x} > MAXROM{0x%0*x}",
+          gperror_vwarning(GPW_EXCEED_ROM, "Address{0x%0*X} > MAXROM{0x%0*X}",
                            state.device.class->addr_digits, org,
                            state.device.class->addr_digits, state.maxrom);
         }
@@ -228,7 +229,7 @@ _emit_byte(uint16_t value, const char *name)
           /* check if current org is within a bad address range */
           for (cur_badrom = state.badrom; cur_badrom != NULL; cur_badrom = cur_badrom->next) {
             if ((org >= cur_badrom->start) && (org <= cur_badrom->end)) {
-              gperror_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*x} <= Address{0x%0*x} <= BADROM_END{0x%0*x}",
+              gperror_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*X} <= Address{0x%0*X} <= BADROM_END{0x%0*X}",
                                state.device.class->addr_digits, cur_badrom->start,
                                state.device.class->addr_digits, org,
                                state.device.class->addr_digits, cur_badrom->end);
@@ -523,7 +524,7 @@ _do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
           end = eval_evaluate(PnBinOpP1(p));
 
           if (end < start) {
-            gperror_vwarning(GPW_INVALID_RAM, "Start{0x%0*x} > End{0x%0*x}",
+            gperror_vwarning(GPW_INVALID_RAM, "Start{0x%0*X} > End{0x%0*X}",
                              state.device.class->addr_digits, start,
                              state.device.class->addr_digits, end);
           }
@@ -531,7 +532,7 @@ _do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
             gperror_vwarning(GPW_INVALID_RAM, "Start{%i} < 0", start);
           }
           else if (end > maxram) {
-            gperror_vwarning(GPW_INVALID_RAM, "End{0x%0*x} > MAXRAM{0x%0*x}",
+            gperror_vwarning(GPW_INVALID_RAM, "End{0x%0*X} > MAXRAM{0x%0*X}",
                              state.device.class->addr_digits, end,
                              state.device.class->addr_digits, maxram);
           }
@@ -3009,12 +3010,12 @@ _do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     if (IS_PIC16E_CORE) {
       if (idreg < state.processor->idlocs_addrs[0]) {
-        gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*x} < IDLOCS_MIN{0x%0*x}",
+        gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} < IDLOCS_MIN{0x%0*X}",
                        state.device.class->addr_digits, idreg,
                        state.device.class->addr_digits, state.processor->idlocs_addrs[0]);
       }
       else if (idreg > state.processor->idlocs_addrs[1]) {
-        gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*x} > IDLOCS_MAX{0x%0*x}",
+        gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} > IDLOCS_MAX{0x%0*X}",
                        state.device.class->addr_digits, idreg,
                        state.device.class->addr_digits, state.processor->idlocs_addrs[1]);
       }
@@ -3135,13 +3136,13 @@ _do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
     m = (state.mode == MODE_RELOCATABLE) ? state.obj.section->data : state.c_memory;
 
     if (idreg < state.processor->idlocs_addrs[0]) {
-      gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*x} < IDLOCS_MIN{0x%0*x}",
+      gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} < IDLOCS_MIN{0x%0*X}",
                      state.device.class->addr_digits, idreg,
                      state.device.class->addr_digits, state.processor->idlocs_addrs[0]);
       return r;
     }
     else if (idreg > state.processor->idlocs_addrs[1]) {
-      gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*x} > IDLOCS_MAX{0x%0*x}",
+      gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} > IDLOCS_MAX{0x%0*X}",
                      state.device.class->addr_digits, idreg,
                      state.device.class->addr_digits, state.processor->idlocs_addrs[1]);
       return r;
@@ -3896,7 +3897,7 @@ _do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
           ((gp_processor_is_config_org(state.processor, r) < 0) &&
            (gp_processor_is_eeprom_org(state.processor, r) < 0))) {
         if (IS_PIC16E_CORE && (r & 1)) {
-          gperror_verror(GPE_ORG_ODD, "Address{0x%0*x}", state.device.class->addr_digits, r);
+          gperror_verror(GPE_ORG_ODD, "Address{0x%0*X}", state.device.class->addr_digits, r);
         }
       }
 
@@ -4626,83 +4627,6 @@ _core_sfr_or_common_ram(int file)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Check that a register file address is ok. */
-
-static void
-_addr_ok(unsigned int file)
-{
-  int               bank_addr;
-  int               bank_num;
-  int               reg_offs;
-  int               bank_assume;
-  const variable_t *var;
-
-  /* Don't check address, the linker takes care of it. */
-  if (state.mode == MODE_RELOCATABLE) {
-    return;
-  }
-
-  if (file > state.maxram) {
-    gperror_vwarning(GPW_INVALID_RAM, "Register{0x%0*x} > MAXRAM{0x%0*x}",
-                     state.device.class->addr_digits, file,
-                     state.device.class->addr_digits, state.maxram);
-  }
-  else if (state.badram[file]) {
-    gperror_vwarning(GPW_INVALID_RAM, "Address{0x%0*x} in BADRAM.",
-                     state.device.class->addr_digits, file);
-  }
-
-  bank_addr = gp_processor_bank_addr(state.processor, file);
-  bank_num  = gp_processor_bank_num(state.processor, file);
-  reg_offs  = gp_processor_reg_offs(state.processor, file);
-
-  if (state.mpasm_compatible || IS_PIC16_CORE) {
-    /* Only so much can be done compatibility reasons. */
-    if (bank_addr > 0) {
-      gperror_vmessage(GPM_BANK, "Bank_bits = 0x%0*x, register{0x%0*x}.", 0,
-                       state.device.class->addr_digits, bank_addr,
-                       state.device.class->addr_digits, reg_offs);
-    }
-
-    return;
-  }
-
-  /* Don't check bank if common ram or core SFR is addressed. */
-  if (_core_sfr_or_common_ram(file)) {
-    return;
-  }
-
-  /* The __ACTIVE_BANK_ADDR variable shows the register which used for BANKSEL directive last time. */
-  if ((var = get_global_constant(GLOBAL_ACT_BANK_ADDR)) == NULL) {
-    gperror_verror(GPE_INTERNAL, NULL, "The \"" GLOBAL_ACT_BANK_ADDR "\" variable not exists.");
-    return;
-  }
-
-  bank_assume = var->value;
-
-  /* Check if we are in correct bank. Negative __ACTIVE_BANK_ADDR value means bank is not set yet. */
-  if (bank_assume >= 0) {
-    /* Necessary only the selected bank address. */
-    bank_assume = gp_processor_bank_addr(state.processor, bank_assume);
-    bank_num    = gp_processor_bank_num(state.processor, bank_assume);
-    if (bank_assume != bank_addr) {
-      gperror_vmessage(GPM_BANK, "Bank_bits = 0x%0*x, register{0x%0*x}.", bank_num,
-                       state.device.class->addr_digits, bank_addr,
-                       state.device.class->addr_digits, reg_offs);
-    }
-  }
-  else {
-    if (gp_processor_num_banks(state.processor) > 1) {
-      gperror_vmessage(GPM_NOB, NULL, bank_num);
-    }
-
-    /* If no bank is explicitly selected, set bank to this register now. */
-    set_global(GLOBAL_ACT_BANK_ADDR, file, LFT_TEMPORARY, GVT_CONSTANT, true);
-  }
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 static void
 _emit_check(unsigned int insn, int argument, int mask, const char *name)
 {
@@ -4974,11 +4898,337 @@ _check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageS
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Check that a register file address is ok. */
+
+static void
+_addr_ok(unsigned int reg_address, const char *reg_name)
+{
+  unsigned int      bank_addr;
+  unsigned int      bank_num;
+  unsigned int      reg_offs;
+  unsigned int      bank_assume;
+  unsigned int      bank_assume_num;
+  int               word_digits;
+  const variable_t *var;
+
+  /* Don't check address, the linker takes care of it. */
+  if (state.mode == MODE_RELOCATABLE) {
+    return;
+  }
+
+  word_digits = state.device.class->word_digits;
+
+  if (reg_address > state.maxram) {
+    if ((!state.mpasm_compatible) && (reg_name != NULL)) {
+      gperror_vwarning(GPW_INVALID_RAM, "'%s' -- {0x%0*X} > MAXRAM{0x%0*X}", reg_name,
+                       word_digits, reg_address,
+                       word_digits, state.maxram);
+    }
+    else {
+      gperror_vwarning(GPW_INVALID_RAM, "Address{0x%0*X} > MAXRAM{0x%0*X}",
+                       word_digits, reg_address,
+                       word_digits, state.maxram);
+    }
+  }
+  else if (state.badram[reg_address]) {
+    if ((!state.mpasm_compatible) && (reg_name != NULL)) {
+      gperror_vwarning(GPW_INVALID_RAM, "'%s' -- {0x%0*X} in BADRAM", reg_name,
+                       word_digits, reg_address);
+    }
+    else {
+      gperror_vwarning(GPW_INVALID_RAM, "Address{0x%0*X} in BADRAM",
+                       word_digits, reg_address);
+    }
+  }
+
+  bank_addr = gp_processor_bank_addr(state.processor, reg_address);
+  bank_num  = gp_processor_bank_num(state.processor, reg_address);
+  reg_offs  = gp_processor_reg_offs(state.processor, reg_address);
+
+  if (state.mpasm_compatible || IS_PIC16_CORE) {
+    /* Only so much can be done compatibility reasons. */
+    if (bank_addr > 0) {
+      if (reg_name != NULL) {
+        gperror_vmessage(GPM_BANK, "'%s' (Bank_%u: 0x%0*X; Offs: 0x%0*X)", 0,
+                         reg_name,
+                         bank_num,
+                         word_digits, bank_addr,
+                         word_digits, reg_offs);
+      }
+      else {
+        gperror_vmessage(GPM_BANK, "Bank_%u: 0x%0*X; Offs: 0x%0*X", 0,
+                         bank_num,
+                         word_digits, bank_addr,
+                         word_digits, reg_offs);
+      }
+    }
+
+    return;
+  }
+
+  /* Don't check bank if common ram or core SFR is addressed. */
+  if (_core_sfr_or_common_ram(reg_address)) {
+    return;
+  }
+
+  /* The __ACTIVE_BANK_ADDR variable shows the register which used for BANKSEL directive last time. */
+  if ((var = get_global_constant(GLOBAL_ACT_BANK_ADDR)) == NULL) {
+    gperror_verror(GPE_INTERNAL, NULL, "The \"" GLOBAL_ACT_BANK_ADDR "\" variable not exists.");
+    return;
+  }
+
+  bank_assume = var->value;
+
+  /* Check if we are in correct bank. Negative __ACTIVE_BANK_ADDR value means bank is not set yet. */
+  if (bank_assume >= 0) {
+    /* Necessary only the selected bank address. */
+    if (prev_err_msg) {
+      return;
+    }
+
+    bank_assume     = gp_processor_bank_addr(state.processor, bank_assume);
+    bank_assume_num = gp_processor_bank_num(state.processor, bank_assume);
+
+    if (bank_assume != bank_addr) {
+      if (reg_name != NULL) {
+        gperror_vmessage(GPM_BANK, "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                         bank_assume_num, reg_name,
+                         word_digits, reg_address,
+                         bank_num,
+                         word_digits, bank_addr,
+                         word_digits, reg_offs);
+      }
+      else {
+        gperror_vmessage(GPM_BANK, "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                         bank_assume_num,
+                         word_digits, reg_address,
+                         bank_num,
+                         word_digits, bank_addr,
+                         word_digits, reg_offs);
+      }
+
+      prev_err_msg = true;
+    }
+  }
+  else {
+    if (gp_processor_num_banks(state.processor) > 1) {
+      gperror_vmessage(GPM_NOB, NULL, bank_num);
+    }
+
+    /* If no bank is explicitly selected, set bank to this register now. */
+    set_global(GLOBAL_ACT_BANK_ADDR, reg_address, LFT_TEMPORARY, GVT_CONSTANT, true);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Create the message: This register is not located on the Access RAM. */
+
+static void
+_msg_this_no_access_ram(unsigned int reg_address, const char *reg_name)
+{
+  unsigned int bank_addr;
+  unsigned int bank_num;
+  unsigned int reg_offs;
+  int          word_digits;
+
+  bank_addr   = gp_processor_bank_addr(state.processor, reg_address);
+  bank_num    = gp_processor_bank_num(state.processor, reg_address);
+  reg_offs    = gp_processor_reg_offs(state.processor, reg_address);
+  word_digits = state.device.class->word_digits;
+
+  if (state.strict_level == 2) {
+    if (reg_name != NULL) {
+      gperror_verror(GPE_NO_ACCRAM, "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                     reg_name,
+                     word_digits, reg_address,
+                     bank_num,
+                     word_digits, bank_addr,
+                     word_digits, reg_offs);
+    }
+    else {
+      gperror_verror(GPE_NO_ACCRAM, "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                     word_digits, reg_address,
+                     bank_num,
+                     word_digits, bank_addr,
+                     word_digits, reg_offs);
+    }
+  }
+  else {
+    if (reg_name != NULL) {
+      gperror_vwarning(GPW_NO_ACCRAM, "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                       reg_name,
+                       word_digits, reg_address,
+                       bank_num,
+                       word_digits, bank_addr,
+                       word_digits, reg_offs);
+    }
+    else {
+      gperror_vwarning(GPW_NO_ACCRAM, "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                       word_digits, reg_address,
+                       bank_num,
+                       word_digits, bank_addr,
+                       word_digits, reg_offs);
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Create the message: The register is located on the Access RAM. */
+
+static void
+_msg_this_is_access_ram(unsigned int reg_address, const char *reg_name)
+{
+  unsigned int bank_addr;
+  unsigned int bank_num;
+  unsigned int reg_offs;
+  int          word_digits;
+
+  bank_addr   = gp_processor_bank_addr(state.processor, reg_address);
+  bank_num    = gp_processor_bank_num(state.processor, reg_address);
+  reg_offs    = gp_processor_reg_offs(state.processor, reg_address);
+  word_digits = state.device.class->word_digits;
+
+  if (state.strict_level == 2) {
+    if (reg_name != NULL) {
+      gperror_verror(GPE_IS_ACCRAM, "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                     reg_name,
+                     word_digits, reg_address,
+                     bank_num,
+                     word_digits, bank_addr,
+                     word_digits, reg_offs);
+    }
+    else {
+      gperror_verror(GPE_IS_ACCRAM, "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                     word_digits, reg_address,
+                     bank_num,
+                     word_digits, bank_addr,
+                     word_digits, reg_offs);
+    }
+  }
+  else {
+    if (reg_name != NULL) {
+      gperror_vwarning(GPW_IS_ACCRAM, "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                       reg_name,
+                       word_digits, reg_address,
+                       bank_num,
+                       word_digits, bank_addr,
+                       word_digits, reg_offs);
+    }
+    else {
+      gperror_vwarning(GPW_IS_ACCRAM, "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                       word_digits, reg_address,
+                       bank_num,
+                       word_digits, bank_addr,
+                       word_digits, reg_offs);
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_msg_access_nosel_def(unsigned int reg_address, const char *reg_name)
+{
+  unsigned int bank_addr;
+  unsigned int bank_num;
+  unsigned int reg_offs;
+  int          word_digits;
+
+  if (prev_err_msg) {
+    return;
+  }
+
+  bank_addr   = gp_processor_bank_addr(state.processor, reg_address);
+  bank_num    = gp_processor_bank_num(state.processor, reg_address);
+  reg_offs    = gp_processor_reg_offs(state.processor, reg_address);
+  word_digits = state.device.class->word_digits;
+
+  if (state.strict_level == 2) {
+    if (reg_name != NULL) {
+      gperror_verror(GPE_ACC_NOSEL, "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                     reg_name,
+                     word_digits, reg_address,
+                     bank_num,
+                     word_digits, bank_addr,
+                     word_digits, reg_offs);
+    }
+    else {
+      gperror_verror(GPE_ACC_NOSEL, "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                     word_digits, reg_address,
+                     bank_num,
+                     word_digits, bank_addr,
+                     word_digits, reg_offs);
+    }
+  }
+  else {
+    if (reg_name != NULL) {
+      gperror_vmessage(GPM_ACC_DEF, "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                       reg_name,
+                       word_digits, reg_address,
+                       bank_num,
+                       word_digits, bank_addr,
+                       word_digits, reg_offs);
+    }
+    else {
+      gperror_vmessage(GPM_ACC_DEF, "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)",
+                       word_digits, reg_address,
+                       bank_num,
+                       word_digits, bank_addr,
+                       word_digits, reg_offs);
+    }
+  }
+
+  prev_err_msg = true;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_msg_ram_bank(unsigned int reg_address, const char *reg_name)
+{
+  unsigned int bank_addr;
+  unsigned int bank_num;
+  unsigned int reg_offs;
+  int          word_digits;
+
+  if (prev_err_msg) {
+    return;
+  }
+
+  bank_addr   = gp_processor_bank_addr(state.processor, reg_address);
+  bank_num    = gp_processor_bank_num(state.processor, reg_address);
+  reg_offs    = gp_processor_reg_offs(state.processor, reg_address);
+  word_digits = state.device.class->word_digits;
+
+  if (reg_name != NULL) {
+    gperror_vmessage(GPM_BANK, "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)", 0,
+                     reg_name,
+                     word_digits, reg_address,
+                     bank_num,
+                     word_digits, bank_addr,
+                     word_digits, reg_offs);
+  }
+  else {
+    gperror_vmessage(GPM_BANK, "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)", 0,
+                     word_digits, reg_address,
+                     bank_num,
+                     word_digits, bank_addr,
+                     word_digits, reg_offs);
+  }
+
+  prev_err_msg = true;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 gpasmVal
 do_insn(const char *Op_name, pnode_t *Parameters)
 {
   pnode_t          *p;
   const symbol_t   *sym;
+  int               addr_digits;
   int               arity;
   int               file;            /* register file address, if applicable */
   unsigned int      bank_num;
@@ -4987,13 +5237,22 @@ do_insn(const char *Op_name, pnode_t *Parameters)
   const insn_t     *ins;
   enum common_insn  icode;
   const char       *sym_name;
+  const char       *str;
 
   /* We want to have r as the value to assign to label. */
   r = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(state.device.class, state.byte_addr);
 
-  arity = eval_list_length(Parameters);
+  prev_err_msg = false;
 
-  sym = sym_get_symbol(state.stBuiltin, Op_name);
+  if (state.device.class != NULL) {
+    addr_digits = state.device.class->addr_digits;
+  }
+  else {
+    addr_digits = 4;
+  }
+
+  arity       = eval_list_length(Parameters);
+  sym         = sym_get_symbol(state.stBuiltin, Op_name);
 
   if (sym != NULL) {
     sym_name = sym_get_symbol_name(sym);
@@ -5024,6 +5283,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LIT3_PAGE:
         /* SX page */
         if (state.processor == NULL) {
@@ -5036,6 +5297,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(ins->opcode, (eval_reloc_evaluate(p, RELOCT_F) >> PIC12_SHIFT_PAGE_ADDR), SX_BMSK_PAGE, sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_LIT1:
         /* PIC16E (retfie, return) */
@@ -5063,6 +5326,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LIT3:
         /* PIC12E, PIC12I movlb */
         if (state.processor == NULL) {
@@ -5085,6 +5350,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LIT4:
         /* SX mode */
         if (state.processor == NULL) {
@@ -5097,6 +5364,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(ins->opcode, eval_reloc_evaluate(p, RELOCT_F), SX_BMSK_MODE, sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_LIT4L:
 	/* PIC16E movlb */
@@ -5122,6 +5391,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LIT4H:
         /* PIC16 movlr */
         if (state.processor == NULL) {
@@ -5134,6 +5405,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(ins->opcode, (eval_reloc_evaluate(p, RELOCT_MOVLR) << 4), PIC16_BMSK_MOVLR, sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_LIT5:
         /* PIC14E movlb */
@@ -5157,6 +5430,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LITBSR_6:
         /* PIC14EX movlb */
         if (state.processor == NULL) {
@@ -5179,6 +5454,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LIT6:
         /* PIC16E (addulnk, subulnk) */
         if (state.processor == NULL) {
@@ -5194,6 +5471,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LIT7:
         /* PIC14E movlp */
         if (state.processor == NULL) {
@@ -5204,7 +5483,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (eval_enforce_arity(arity, 1)) {
           int page;
 
-          p = PnListHead(Parameters);
+          p    = PnListHead(Parameters);
           page = eval_reloc_evaluate(p, RELOCT_PAGESEL_MOVLP);
           _emit_check(ins->opcode, page, PIC14E_BMSK_PAGE512, sym_name);
 
@@ -5215,6 +5494,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_LIT8:
         /* PIC1xx (addlw, andlw, iorlw, movlw, retlw, sublw, xorlw),
@@ -5241,6 +5522,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LIT8C12:
         /* PIC12x call, SX call */
         if (state.processor == NULL) {
@@ -5254,26 +5537,28 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           if ((state.obj.new_sect_flags & STYP_ABS) && eval_can_evaluate_value(p)) {
             int value = eval_evaluate(p);
 
-            /* PC is 11 bits.  mpasm checks the maximum device address. */
+            /* PC is 11 bits. Mpasm checks the maximum device address. */
             if (value & (~PIC12_PC_MASK)) {
               gperror_verror(GPE_RANGE, "Address{%#x} > %#x.", value, PIC12_PC_MASK);
             }
 
             if ((value & PIC12_PAGE_BITS) != (r & PIC12_PAGE_BITS)) {
-              gperror_vmessage(GPM_PAGE, "0x%0*x != 0x%0*x",
-                               state.device.class->addr_digits, (value & PIC12_PAGE_BITS),
-                               state.device.class->addr_digits, (r & PIC12_PAGE_BITS));
+              gperror_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+                               addr_digits, (value & PIC12_PAGE_BITS),
+                               addr_digits, (r & PIC12_PAGE_BITS));
             }
 
             if (value & 0x100) {
-              gperror_verror(GPE_BAD_CALL_ADDR, "%ins (0x%0*x)", value,
-                             state.device.class->addr_digits, value);
+              gperror_verror(GPE_BAD_CALL_ADDR, "%ins (0x%0*X)", value,
+                             addr_digits, value);
             }
           }
 
           _emit(ins->opcode | (eval_reloc_evaluate(p, RELOCT_CALL) & PIC12_BMSK_CALL), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_LIT8C16:
         /* PIC16 lcall */
@@ -5285,17 +5570,19 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (eval_enforce_arity(arity, 1)) {
           int value;
 
-          p = PnListHead(Parameters);
+          p     = PnListHead(Parameters);
           value = eval_reloc_evaluate(p, RELOCT_LOW);
 
-          /* PC is 16 bits.  mpasm checks the maximum device address. */
+          /* PC is 16 bits. Mpasm checks the maximum device address. */
           if (value & (~0xffff)) {
-            gperror_verror(GPE_RANGE, "Address{0x%0*x} > 0xffff.", state.device.class->addr_digits, value);
+            gperror_verror(GPE_RANGE, "Address{0x%0*X} > 0xffff.", addr_digits, value);
           }
 
           _emit(ins->opcode | (value & 0xff), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_LIT9:
         /* PIC12 goto, SX goto */
@@ -5310,23 +5597,24 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           if ((state.obj.new_sect_flags & STYP_ABS) && eval_can_evaluate_value(p)) {
             int value = eval_evaluate(p);
 
-            /* PC is 11 bits.  mpasm checks the maximum device address. */
+            /* PC is 11 bits. Mpasm checks the maximum device address. */
             if (value & (~PIC12_PC_MASK)) {
-              gperror_verror(GPE_RANGE, "Address{0x%0*x} > 0x%0*x.",
-                             state.device.class->addr_digits, value,
-                             state.device.class->addr_digits, PIC12_PC_MASK);
+              gperror_verror(GPE_RANGE, "Address{0x%0*X} > 0x%0*X.",
+                             addr_digits, value, addr_digits, PIC12_PC_MASK);
             }
 
             if ((value & PIC12_PAGE_BITS) != (r & PIC12_PAGE_BITS)) {
-              gperror_vmessage(GPM_PAGE, "0x%0*x != 0x%0*x",
-                               state.device.class->addr_digits, (value & PIC12_PAGE_BITS),
-                               state.device.class->addr_digits, (r & PIC12_PAGE_BITS));
+              gperror_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+                               addr_digits, (value & PIC12_PAGE_BITS),
+                               addr_digits, (r & PIC12_PAGE_BITS));
             }
           }
 
           _emit(ins->opcode | (eval_reloc_evaluate(p, RELOCT_GOTO) & PIC12_BMSK_GOTO), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_LIT11:
         /* PIC14x (call, goto) */
@@ -5342,31 +5630,29 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             int value = eval_evaluate(p);
 
             if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
-              /* PC is 15 bits.  mpasm checks the maximum device address. */
+              /* PC is 15 bits. Mpasm checks the maximum device address. */
               if (value & (~PIC14E_PC_MASK)) {
-                gperror_verror(GPE_RANGE, "Address{0x%0*x} > 0x%0*x.",
-                               state.device.class->addr_digits, value,
-                               state.device.class->addr_digits, PIC14E_PC_MASK);
+                gperror_verror(GPE_RANGE, "Address{0x%0*X} > 0x%0*X.",
+                               addr_digits, value, addr_digits, PIC14E_PC_MASK);
               }
 
               if ((value & PIC14E_PAGE_BITS) != (r & PIC14E_PAGE_BITS)) {
-                gperror_vmessage(GPM_PAGE, "0x%0*x != 0x%0*x",
-                                 state.device.class->addr_digits, (value & PIC14E_PAGE_BITS),
-                                 state.device.class->addr_digits, (r & PIC14E_PAGE_BITS));
+                gperror_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+                                 addr_digits, (value & PIC14E_PAGE_BITS),
+                                 addr_digits, (r & PIC14E_PAGE_BITS));
               }
             }
             else {
               /* PC is 13 bits.  mpasm checks the maximum device address. */
               if (value & (~PIC14_PC_MASK)) {
-                gperror_verror(GPE_RANGE, "Address{0x%0*x} > 0x%0*x.",
-                               state.device.class->addr_digits, value,
-                               state.device.class->addr_digits, PIC14_PC_MASK);
+                gperror_verror(GPE_RANGE, "Address{0x%0*X} > 0x%0*X.",
+                               addr_digits, value, addr_digits, PIC14_PC_MASK);
               }
 
               if ((value & PIC14_PAGE_BITS) != (r & PIC14_PAGE_BITS)) {
-                gperror_vmessage(GPM_PAGE, "0x%0*x != 0x%0*x",
-                                 state.device.class->addr_digits, (value & PIC14_PAGE_BITS),
-                                 state.device.class->addr_digits, (r & PIC14_PAGE_BITS));
+                gperror_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+                                 addr_digits, (value & PIC14_PAGE_BITS),
+                                 addr_digits, (r & PIC14_PAGE_BITS));
               }
             }
           }
@@ -5377,6 +5663,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 	        sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_LIT13:
         /* PIC16 (call, goto) */
@@ -5393,15 +5681,14 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
             /* PC is 16 bits.  mpasm checks the maximum device address. */
             if (value & (~PIC16_PC_MASK)) {
-              gperror_verror(GPE_RANGE, "Address{0x%0*x} > 0x%0*x.",
-                             state.device.class->addr_digits, value,
-                             state.device.class->addr_digits, PIC16_PC_MASK);
+              gperror_verror(GPE_RANGE, "Address{0x%0*X} > 0x%0*X.",
+                             addr_digits, value, addr_digits, PIC16_PC_MASK);
             }
 
             if ((value & PIC16_PAGE_BITS) != (r & PIC16_PAGE_BITS)) {
-              gperror_vmessage(GPM_PAGE, "0x%0*x != 0x%0*x",
-                               state.device.class->addr_digits, (value & PIC16_PAGE_BITS),
-                               state.device.class->addr_digits, (r & PIC16_PAGE_BITS));
+              gperror_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+                               addr_digits, (value & PIC16_PAGE_BITS),
+                               addr_digits, (r & PIC16_PAGE_BITS));
             }
           }
 
@@ -5411,6 +5698,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 	        sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_LITFSR_14:
         /* PIC14E addfsr */
@@ -5423,12 +5712,12 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           int value;
           int fsr;
 
-          p = PnListHead(Parameters);
+          p   = PnListHead(Parameters);
           fsr = eval_maybe_evaluate(p);
 
           if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
             fsr = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
-            p = PnListHead(PnListTail(Parameters));
+            p   = PnListHead(PnListTail(Parameters));
             /* the offset cannot be a relocatable address */
             value = eval_maybe_evaluate(p);
 
@@ -5447,6 +5736,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LITFSR_16:
         /* PIC16E (addfsr, subfsr) */
         if (state.processor == NULL) {
@@ -5460,7 +5751,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           _check_16e_arg_types(Parameters, arity, 0);
 
-          p = PnListHead(Parameters);
+          p   = PnListHead(Parameters);
           fsr = eval_maybe_evaluate(p);
 
           if (fsr < 0) {
@@ -5470,7 +5761,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             gperror_verror(GPE_RANGE, "FSR{%ins} > 2.", fsr);
           }
 
-          p = PnListHead(PnListTail(Parameters));
+          p     = PnListHead(PnListTail(Parameters));
           /* the offset cannot be a relocatable address */
           value = eval_maybe_evaluate(p);
 
@@ -5481,6 +5772,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit(ins->opcode | ((fsr & 0x3) << 6) | (value & 0x3f), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_RBRA8:
         /* PIC16E (bc, bn, bnc, bnn, bnov, bnz, bov, bz) */
@@ -5515,6 +5808,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_RBRA9:
         /* PIC14E bra */
         if (state.processor == NULL) {
@@ -5541,6 +5836,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check_relative(ins->opcode, offset, PIC14E_BMSK_RBRA9, 255, sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_RBRA11:
         /* PIC16E (bra, rcall) */
@@ -5575,6 +5872,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_LIT20:
         /* PIC16E goto */
         if (state.processor == NULL) {
@@ -5587,7 +5886,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           _check_16e_arg_types(Parameters, arity, 0);
 
-          p = PnListHead(Parameters);
+          p    = PnListHead(Parameters);
           dest = eval_reloc_evaluate(p, RELOCT_GOTO);
           dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
           _emit(ins->opcode | (dest & PIC16E_BMSK_BRANCH_LOWER), sym_name);
@@ -5595,6 +5894,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(0xf000, dest >> 8, PIC16E_BMSK_BRANCH_HIGHER, sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_CALL20:
         /* PIC16E call */
@@ -5647,6 +5948,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_FLIT12:
         /* PIC16E lfsr */
         if (state.processor == NULL) {
@@ -5659,7 +5962,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           _check_16e_arg_types(Parameters, arity, 0);
 
-          p = PnListHead(Parameters);
+          p    = PnListHead(Parameters);
           file = eval_maybe_evaluate(p);
 
           if (file > 3) {
@@ -5673,6 +5976,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit(0xf000 | (k & 0xff), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_FF:
         /* PIC16E movff */
@@ -5707,6 +6012,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_FP:
         /* PIC16 movfp */
         if (state.processor == NULL) {
@@ -5717,9 +6024,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (eval_enforce_arity(arity, 2)) {
           int reg = 0;
 
-          file = eval_reloc_evaluate(PnListHead(Parameters), RELOCT_F);
+          p    = PnListHead(Parameters);
+          file = eval_reloc_evaluate(p, RELOCT_F);
+          str  = pnode_symbol_name(p);
           reg  = eval_reloc_evaluate(PnListHead(PnListTail(Parameters)), RELOCT_P);
-          _addr_ok(file);
+          _addr_ok(file, str);
 
           if (reg & ~0xf1f) {
             gperror_vwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
@@ -5728,6 +6037,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_PF:
         /* PIC16 movpf */
@@ -5737,11 +6048,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
 
         if (eval_enforce_arity(arity, 2)) {
-          int reg = 0;
+          int reg;
 
-          file = eval_reloc_evaluate(PnListHead(PnListTail(Parameters)), RELOCT_F);
+          p    = PnListHead(PnListTail(Parameters));
+          file = eval_reloc_evaluate(p, RELOCT_F);
+          str  = pnode_symbol_name(p);
           reg  = eval_reloc_evaluate(PnListHead(Parameters), RELOCT_P);
-          _addr_ok(file);
+          _addr_ok(file, str);
 
           if (reg & ~0xf1f) {
             gperror_vwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
@@ -5750,6 +6063,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_SF:
         /* PIC16E movsf */
@@ -5764,10 +6079,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           _check_16e_arg_types(Parameters, arity, AR_INDEX);
 
-          p = PnListHead(Parameters);
+          p      = PnListHead(Parameters);
           source = eval_maybe_evaluate(p);
 
-          p = PnListHead(PnListTail(Parameters));
+          p    = PnListHead(PnListTail(Parameters));
           dest = eval_maybe_evaluate(p);
 
           /* The destination can't be the PCL, TOSU, TOSH or TOSL. */
@@ -5789,6 +6104,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_SS:
         /* PIC16E movss */
         if (state.processor == NULL) {
@@ -5802,16 +6119,18 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           _check_16e_arg_types(Parameters, arity, (AR_INDEX << AR_BITS) | AR_INDEX);
 
-          p = PnListHead(Parameters);
+          p      = PnListHead(Parameters);
           source = eval_maybe_evaluate(p);
 
-          p = PnListHead(PnListTail(Parameters));
+          p    = PnListHead(PnListTail(Parameters));
           dest = eval_maybe_evaluate(p);
 
           _emit_check(ins->opcode, source, 0x7f, sym_name);
           _emit_check(0xf000, dest, 0x7f, sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_OPF3:
         /* PIC12 tris */
@@ -5821,12 +6140,14 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
 
         if (eval_enforce_arity(arity, 1)) {
-          p = PnListHead(Parameters);
+          p    = PnListHead(Parameters);
           file = eval_reloc_evaluate(p, RELOCT_TRIS_3BIT);
-          _addr_ok(file);
+          _addr_ok(file, NULL);
           _emit(ins->opcode | (file & PIC12_BMSK_TRIS), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_OPF5:
         /* {PIC12x, SX} (clrf, movwf), SX tris */
@@ -5840,22 +6161,25 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           if (IS_SX_CORE && (icode == ICODE_TRIS)) {
             file = eval_reloc_evaluate(p, RELOCT_TRIS);
+            str  = NULL;
           }
           else {
             file = eval_reloc_evaluate(p, RELOCT_F);
+            str  = pnode_symbol_name(p);
           }
 
-          _addr_ok(file);
+          _addr_ok(file, str);
           _emit(ins->opcode | (file & PIC12_BMSK_FILE), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_OPWF5:
         /* {PIC12x, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
                          iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
         {
-          const pnode_t *p2; /* second parameter */
-          int d; /* Default destination of 1 (file). */
+          int d;
 
           if (state.processor == NULL) {
             gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5867,25 +6191,28 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             break;
           }
 
-          d = 1; /* Default destination of 1 (file). */
-          p = PnListHead(Parameters);
+          d    = F;     /* Default destination of 1 (file). */
+          p    = PnListHead(Parameters);
+          file = eval_reloc_evaluate(p, RELOCT_F);
+          str  = pnode_symbol_name(p);
+
           switch (arity) {
           case 2:
-            p2 = PnListHead(PnListTail(Parameters));
+            p = PnListHead(PnListTail(Parameters));
             /* Allow "w" and "f" as destinations. */
-            if (PnIsSymbol(p2) && (strcasecmp(PnSymbol(p2), "f") == 0)) {
-              d = 1;
+            if (PnIsSymbol(p) && (strcasecmp(PnSymbol(p), "f") == 0)) {
+              d = F;
             }
-            else if (PnIsSymbol(p2) && (strcasecmp(PnSymbol(p2), "w") == 0)) {
-              d = 0;
+            else if (PnIsSymbol(p) && (strcasecmp(PnSymbol(p), "w") == 0)) {
+              d = W;
             }
             else {
-              d = _check_flag(eval_maybe_evaluate(p2));
+              d = _check_flag(eval_maybe_evaluate(p));
             }
             break;
 
           case 1:
-            d = 1;
+            d = F;
             gperror_vmessage(GPM_NOF, NULL);
             break;
 
@@ -5893,18 +6220,17 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             eval_enforce_arity(arity, 2);
           }
 
-          file = eval_reloc_evaluate(p, RELOCT_F);
-          _addr_ok(file);
+          _addr_ok(file, str);
           _emit(ins->opcode | (d << 5) | (file & PIC12_BMSK_FILE), sym_name);
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_B5:
         /* {PIC12x, SX} (bcf, bsf, btfsc, btfss) */
         {
-          const pnode_t *b;
-          const pnode_t *f;
-          int            bit;
+          int bit;
 
           if (state.processor == NULL) {
             gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5912,10 +6238,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           if (eval_enforce_arity(arity, 2)) {
-            f    = PnListHead(Parameters);
-            b    = PnListHead(PnListTail(Parameters));
-            file = eval_reloc_evaluate(f, RELOCT_F);
-            bit  = eval_maybe_evaluate(b);
+            p    = PnListHead(Parameters);
+            file = eval_reloc_evaluate(p, RELOCT_F);
+            str  = pnode_symbol_name(p);
+            p    = PnListHead(PnListTail(Parameters));
+            bit  = eval_maybe_evaluate(p);
 
             if (bit < 0) {
               gperror_vwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
@@ -5924,7 +6251,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               gperror_vwarning(GPW_RANGE, "Bit{%ins} > 7.", bit);
             }
 
-            _addr_ok(file);
+            _addr_ok(file, str);
             bit &= 7;
 
             if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
@@ -5955,12 +6282,12 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_B8:
         /* PIC16 (bcf, bsf, btfsc, btfss, btg) */
         {
-          const pnode_t *b;
-          const pnode_t *f;
-          int            bit;
+          int bit;
 
           if (state.processor == NULL) {
             gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5968,10 +6295,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           if (eval_enforce_arity(arity, 2)) {
-            f    = PnListHead(Parameters);
-            b    = PnListHead(PnListTail(Parameters));
-            file = eval_reloc_evaluate(f, RELOCT_F);
-            bit  = eval_maybe_evaluate(b);
+            p    = PnListHead(Parameters);
+            file = eval_reloc_evaluate(p, RELOCT_F);
+            str  = pnode_symbol_name(p);
+            p    = PnListHead(PnListTail(Parameters));
+            bit  = eval_maybe_evaluate(p);
 
             if (bit < 0) {
               gperror_vwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
@@ -5980,7 +6308,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               gperror_vwarning(GPW_RANGE, "Bit{%ins} > 7.", bit);
             }
 
-            _addr_ok(file);
+            _addr_ok(file, str);
 
             if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
               is_btfsx = true;
@@ -5990,6 +6318,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_OPF7:
         /* PIC14x (clrf, movwf, tris) */
@@ -6004,15 +6334,19 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           if (icode == ICODE_TRIS) {
             gperror_vwarning(GPW_NOT_RECOMMENDED, "\"tris\"");
             file = eval_reloc_evaluate(p, RELOCT_TRIS);
+            str  = NULL;
           }
           else {
             file = eval_reloc_evaluate(p, RELOCT_F);
+            str  = pnode_symbol_name(p);
           }
 
-          _addr_ok(file);
+          _addr_ok(file, str);
           _emit(ins->opcode | (file & PIC14_BMSK_FILE), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_OPF8:
         /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
@@ -6024,17 +6358,19 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         if (eval_enforce_arity(arity, 1)) {
           p    = PnListHead(Parameters);
           file = eval_reloc_evaluate(p, RELOCT_F);
-          _addr_ok(file);
+          str  = pnode_symbol_name(p);
+          _addr_ok(file, str);
           _emit(ins->opcode | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_OPWF7:
         /* PIC14x (addwf, andwf, comf, decf, decfsz, incf, incfsz, iorwf, movf,
                    rlf, rrf, subwf, swapf, xorwf)
            PIC14E (addwfc, asrf, lslf, lsrf, subwfb) */
         {
-          const pnode_t *p2; /* second parameter */
           int d;
 
           if (state.processor == NULL) {
@@ -6047,25 +6383,28 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             break;
           }
 
-          d = 1; /* Default destination of 1 (file). */
-          p = PnListHead(Parameters);
+          d    = F;     /* Default destination of 1 (file). */
+          p    = PnListHead(Parameters);
+          file = eval_reloc_evaluate(p, RELOCT_F);
+          str  = pnode_symbol_name(p);
+
           switch (arity) {
           case 2:
-            p2 = PnListHead(PnListTail(Parameters));
+            p = PnListHead(PnListTail(Parameters));
             /* Allow "w" and "f" as destinations. */
-            if (PnIsSymbol(p2) && (strcasecmp(PnSymbol(p2), "f") == 0)) {
-              d = 1;
+            if (PnIsSymbol(p) && (strcasecmp(PnSymbol(p), "f") == 0)) {
+              d = F;
             }
-            else if (PnIsSymbol(p2) && (strcasecmp(PnSymbol(p2), "w") == 0)) {
-              d = 0;
+            else if (PnIsSymbol(p) && (strcasecmp(PnSymbol(p), "w") == 0)) {
+              d = W;
             }
             else {
-              d = _check_flag(eval_maybe_evaluate(p2));
+              d = _check_flag(eval_maybe_evaluate(p));
             }
             break;
 
           case 1:
-            d = 1;
+            d = F;
             gperror_vmessage(GPM_NOF, NULL);
             break;
 
@@ -6073,18 +6412,18 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             eval_enforce_arity(arity, 2);
           }
 
-          file = eval_reloc_evaluate(p, RELOCT_F);
-          _addr_ok(file);
+          _addr_ok(file, str);
           _emit(ins->opcode | (d << 7) | (file & PIC14_BMSK_FILE), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_OPWF8:
         /* PIC16 (addwf, addwfc, andwf, clrf, comf, daw, decf, decfsz, dcfsnz, incf,
                   incfsz, infsnz, iorwf, rlcf, rlncf, rrcf, rrncf, setf, subwf, subwfb,
                   swapf, xorwf) */
         {
-          const pnode_t *p2; /* second parameter */
           int d;
 
           if (state.processor == NULL) {
@@ -6097,25 +6436,28 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             break;
           }
 
-          d = 1; /* Default destination of 1 (file). */
-          p = PnListHead(Parameters);
+          d    = F;     /* Default destination of 1 (file). */
+          p    = PnListHead(Parameters);
+          file = eval_reloc_evaluate(p, RELOCT_F);
+          str  = pnode_symbol_name(p);
+
           switch (arity) {
           case 2:
-            p2 = PnListHead(PnListTail(Parameters));
+            p = PnListHead(PnListTail(Parameters));
             /* Allow "w" and "f" as destinations. */
-            if (PnIsSymbol(p2) && (strcasecmp(PnSymbol(p2), "f") == 0)) {
-              d = 1;
+            if (PnIsSymbol(p) && (strcasecmp(PnSymbol(p), "f") == 0)) {
+              d = F;
             }
-            else if (PnIsSymbol(p2) && (strcasecmp(PnSymbol(p2), "w") == 0)) {
-              d = 0;
+            else if (PnIsSymbol(p) && (strcasecmp(PnSymbol(p), "w") == 0)) {
+              d = W;
             }
             else {
-              d = _check_flag(eval_maybe_evaluate(p2));
+              d = _check_flag(eval_maybe_evaluate(p));
             }
             break;
 
           case 1:
-            d = 1;
+            d = F;
             gperror_vmessage(GPM_NOF, NULL);
             break;
 
@@ -6123,18 +6465,17 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             eval_enforce_arity(arity, 2);
           }
 
-          file = eval_reloc_evaluate(p, RELOCT_F);
-          _addr_ok(file);
+          _addr_ok(file, str);
           _emit(ins->opcode | (d << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_B7:
         /* PIC14x (bcf, bsf, btfsc, btfss) */
         {
-          const pnode_t *b;
-          const pnode_t *f;
-          int            bit;
+          int bit;
 
           if (state.processor == NULL) {
             gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6142,10 +6483,12 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           if (eval_enforce_arity(arity, 2)) {
-            f    = PnListHead(Parameters);
-            b    = PnListHead(PnListTail(Parameters));
-            file = eval_reloc_evaluate(f, RELOCT_F);
-            bit  = eval_maybe_evaluate(b);
+            p    = PnListHead(Parameters);
+            file = eval_reloc_evaluate(p, RELOCT_F);
+            str  = pnode_symbol_name(p);
+
+            p    = PnListHead(PnListTail(Parameters));
+            bit  = eval_maybe_evaluate(p);
 
             if (bit < 0) {
               gperror_vwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
@@ -6154,7 +6497,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
               gperror_vwarning(GPW_RANGE, "Bit{%ins} > 7.", bit);
             }
 
-            _addr_ok(file);
+            _addr_ok(file, str);
             bit &= 7;
 
             if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
@@ -6185,11 +6528,15 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_OPFA8:
         /* PIC16E (clrf, cpfseq, cpfsgt, cpfslt, movwf, mulwf, negf, setf, tstfsz) */
         {
           const pnode_t *par; /* second parameter */
-          int            a;   /* Default destination of 0 (access). */
+          int            a;
+          gp_boolean     isAccessGPR;
+          gp_boolean     isAccessSFR;
           gp_boolean     isAccess;
 
           if (state.processor == NULL) {
@@ -6202,20 +6549,21 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             break;
           }
 
-          a        = 0;
+          a        = ACCESS;    /* Default destination of 0 (access). */
           isAccess = false;
           _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
 
           p    = PnListHead(Parameters);
+          str  = pnode_symbol_name(p);
           file = eval_reloc_evaluate(p, RELOCT_F);
-          _addr_ok(file);
+          _addr_ok(file, str);
 
           /* Add relocation for the access bit, if necessary. */
           if (arity < 2) {
             eval_reloc_evaluate(p, RELOCT_ACCESS);
           }
 
-          /* Default access (use the BSR unless access is to special registers) */
+          /* Default access (use the BSR unless access is to special registers). */
           /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
            * so I commented it out:
            *
@@ -6223,17 +6571,17 @@ do_insn(const char *Op_name, pnode_t *Parameters)
            * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
           if ((state.extended_pic16e == true) && (file <= 0x5f)) {
             if (PnIsOffset(p)) {
-              a = 0;
+              a = ACCESS;
             }
             else {
-              a = 1;
+              a = BANKED;
             }
           }
           else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
-            a = 0;
+            a = ACCESS;
           }
           else {
-            a = 1;
+            a = BANKED;
           }
            * and replaced it with the following, according to the Data Sheet:
            *
@@ -6245,19 +6593,30 @@ do_insn(const char *Op_name, pnode_t *Parameters)
            * is set on the basis of the target address. Declaring the
            * Access RAM bit in this mode will also generate an error
            * in the MPASM Assembler.": */
-          isAccess = ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) ? true : false;
-          a = ((state.extended_pic16e != true) && (!isAccess)) ? 1 : 0;
+          isAccessGPR = (file < state.device.bsr_boundary) ? true : false;
+          isAccessSFR = (file >= (0xf00 + state.device.bsr_boundary)) ? true : false;
+          isAccess    = (isAccessGPR || isAccessSFR) ? true : false;
+
+          a = ((state.extended_pic16e != true) && (!isAccess)) ? BANKED : ACCESS;
 
           switch (arity) {
           case 2:
             par = PnListHead(PnListTail(Parameters));
-            /* Prohibit "a" for BSR to select RAM bank. */
             if ((!state.mpasm_compatible) && PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "a") == 0)) {
-              a = 0;
+              /* Prohibit "a" for BSR to select RAM bank. */
+              a = ACCESS;
+
+              if ((state.strict_level > 0) && (!isAccess)) {
+                _msg_this_no_access_ram(file, str);
+              }
             }
-            /* Allow "b" for BSR to select RAM bank. */
             else if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "b") == 0)) {
-              a = 1;
+              /* Allow "b" for BSR to select RAM bank. */
+              a = BANKED;
+
+              if ((!state.mpasm_compatible) && (state.strict_level > 0) && (isAccessSFR)) {
+                _msg_this_is_access_ram(file, str);
+              }
             }
             else {
               a = _check_flag(eval_maybe_evaluate(par));
@@ -6268,15 +6627,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             /* use default a */
             if ((!state.mpasm_compatible) && (state.strict_level > 0)) {
               if (isAccess) {
-                if (state.strict_level == 2) {
-                  gperror_verror(GPE_NOA, NULL);
-                }
-                else {
-                  gperror_vmessage(GPM_NOA, NULL);
-                }
+                _msg_access_nosel_def(file, str);
               }
               else {
-                gperror_vmessage(GPM_BANK, NULL, 0);
+                _msg_ram_bank(file, str);
               }
             }
             break;
@@ -6289,14 +6643,16 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_BA8:
         /* PIC16E (bcf, bsf, btfsc, btfss, btg) */
         {
-          const pnode_t *b;
-          const pnode_t *f;
           const pnode_t *par;
           int            bit;
           int            a;
+          gp_boolean     isAccessGPR;
+          gp_boolean     isAccessSFR;
           gp_boolean     isAccess;
 
           if (state.processor == NULL) {
@@ -6309,49 +6665,61 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             break;
           }
 
-          a        = 0;
+          a        = ACCESS;
           isAccess = false;
           _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
 
-          f    = PnListHead(Parameters);
-          file = eval_reloc_evaluate(f, RELOCT_F);
+          p    = PnListHead(Parameters);
+          str  = pnode_symbol_name(p);
+          file = eval_reloc_evaluate(p, RELOCT_F);
+
+          isAccessGPR = (file < state.device.bsr_boundary) ? true : false;
+          isAccessSFR = (file >= (0xf00 + state.device.bsr_boundary)) ? true : false;
+          isAccess    = (isAccessGPR || isAccessSFR) ? true : false;
 
           if (arity == 3) {
             par = PnListHead(PnListTail(PnListTail(Parameters)));
 
-            /* Prohibit "a" for BSR to select RAM bank. */
             if ((!state.mpasm_compatible) && PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "a") == 0)) {
-              a = 0;
+              /* Prohibit "a" for BSR to select RAM bank. */
+              a = ACCESS;
+
+              if ((state.strict_level > 0) && (!isAccess)) {
+                _msg_this_no_access_ram(file, str);
+              }
             }
-            /* Allow "b" for BSR to select RAM bank. */
             else if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "b") == 0)) {
-              a = 1;
+              /* Allow "b" for BSR to select RAM bank. */
+              a = BANKED;
+
+              if ((!state.mpasm_compatible) && (state.strict_level > 0) && (isAccessSFR)) {
+                _msg_this_is_access_ram(file, str);
+              }
             }
             else {
               a = _check_flag(eval_maybe_evaluate(par));
             }
           }
           else {
-            /* Default access (use the BSR unless access is to special
-               registers) */
+            /* Default access (use the BSR unless access is to special registers). */
             /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
              * so I commented it out:
              *
              * If extended instructions are enabled, access bit should default to 1 for low-end *
              * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
             if ((state.extended_pic16e == true) && (file <= 0x5f)) {
-              if (PnIsOffset(f)) {
-                a = 0;
+              if (PnIsOffset(p)) {
+                a = ACCESS;
               }
               else {
-                a = 1;
+                a = BANKED;
               }
             }
             else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
-              a = 0;
+              a = ACCESS;
             }
             else {
-              a = 1;
+              a = BANKED;
             }
              * and replaced it with the following, according to the Data Sheet:
              *
@@ -6363,33 +6731,27 @@ do_insn(const char *Op_name, pnode_t *Parameters)
              * is set on the basis of the target address. Declaring the
              * Access RAM bit in this mode will also generate an error
              * in the MPASM Assembler.": */
-            isAccess = ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) ? true : false;
-            a = ((state.extended_pic16e != true) && (!isAccess)) ? 1 : 0;
+            a = ((state.extended_pic16e != true) && (!isAccess)) ? BANKED : ACCESS;
 
             if ((!state.mpasm_compatible) && (state.strict_level > 0)) {
               if (isAccess) {
-                if (state.strict_level == 2) {
-                  gperror_verror(GPE_NOA, NULL);
-                }
-                else {
-                  gperror_vmessage(GPM_NOA, NULL);
-                }
+                _msg_access_nosel_def(file, str);
               }
               else {
-                gperror_vmessage(GPM_BANK, NULL, 0);
+                _msg_ram_bank(file, str);
               }
             }
           }
 
           /* add relocation for the access bit, if necessary */
           if (arity < 3) {
-            eval_reloc_evaluate(f, RELOCT_ACCESS);
+            eval_reloc_evaluate(p, RELOCT_ACCESS);
           }
 
-          _addr_ok(file);
+          _addr_ok(file, str);
 
-          b = PnListHead(PnListTail(Parameters));
-          bit = eval_maybe_evaluate(b);
+          p   = PnListHead(PnListTail(Parameters));
+          bit = eval_maybe_evaluate(p);
 
           if (bit < 0) {
             gperror_vwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
@@ -6406,14 +6768,18 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_OPWFA8:
         /* PIC16E (addwf, addwfc, andwf, comf, decf, decfsz, dcfsnz, incf, incfsz,
                    infsnz, iorwf, movf, rlcf, rlncf, rrcf, rrncf, subfwb, subwf,
                    subwfb, swapf, xorwf) */
         {
           const pnode_t *par; /* second parameter */
-          int            d;   /* Default destination of 1 (file). */
+          int            d;
           int            a;
+          gp_boolean     isAccessGPR;
+          gp_boolean     isAccessSFR;
           gp_boolean     isAccess;
           gp_boolean     thereIsA;
           gp_boolean     thereIsD;
@@ -6428,17 +6794,18 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             break;
           }
 
-          d        = 1; /* Default destination of 1 (file). */
-          a        = 0;
+          d        = F;         /* Default destination of 1 (file). */
+          a        = ACCESS;
           isAccess = false;
           thereIsA = false;
           thereIsD = false;
 
           _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
 
-          p = PnListHead(Parameters);
+          p    = PnListHead(Parameters);
+          str  = pnode_symbol_name(p);
           file = eval_reloc_evaluate(p, RELOCT_F);
-          _addr_ok(file);
+          _addr_ok(file, str);
 
           /* Add relocation for the access bit, if necessary. */
           if (arity < 3) {
@@ -6453,17 +6820,17 @@ do_insn(const char *Op_name, pnode_t *Parameters)
            * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
           if ((state.extended_pic16e == true) && (file <= 0x5f)) {
             if (PnIsOffset(p)) {
-              a = 0;
+              a = ACCESS;
             }
             else {
-              a = 1;
+              a = BANKED;
             }
           }
           else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
-            a = 0;
+            a = ACCESS;
           }
           else {
-            a = 1;
+            a = BANKED;
           }
            * and replaced it with the following, according to the Data Sheet:
            *
@@ -6475,20 +6842,31 @@ do_insn(const char *Op_name, pnode_t *Parameters)
            * is set on the basis of the target address. Declaring the
            * Access RAM bit in this mode will also generate an error
            * in the MPASM Assembler.": */
-          isAccess = ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) ? true : false;
-          a = ((state.extended_pic16e != true) && (!isAccess)) ? 1 : 0;
+          isAccessGPR = (file < state.device.bsr_boundary) ? true : false;
+          isAccessSFR = (file >= (0xf00 + state.device.bsr_boundary)) ? true : false;
+          isAccess    = (isAccessGPR || isAccessSFR) ? true : false;
+
+          a = ((state.extended_pic16e != true) && (!isAccess)) ? BANKED : ACCESS;
 
           switch (arity) {
           case 3:
             par = PnListHead(PnListTail(PnListTail(Parameters)));
 
-            /* Prohibit "a" for BSR to select RAM bank. */
             if ((!state.mpasm_compatible) && PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "a") == 0)) {
-              a = 0;
+              /* Prohibit "a" for BSR to select RAM bank. */
+              a = ACCESS;
+
+              if ((state.strict_level > 0) && (!isAccess)) {
+                _msg_this_no_access_ram(file, str);
+              }
             }
-            /* Allow "b" for BSR to select RAM bank. */
             else if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "b") == 0)) {
-              a = 1;
+              /* Allow "b" for BSR to select RAM bank. */
+              a = BANKED;
+
+              if ((!state.mpasm_compatible) && (state.strict_level > 0) && (isAccessSFR)) {
+                _msg_this_is_access_ram(file, str);
+              }
             }
             else {
               a = _check_flag(eval_maybe_evaluate(par));
@@ -6501,10 +6879,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             par = PnListHead(PnListTail(Parameters));
             /* Allow "w" and "f" as destinations. */
             if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "f") == 0)) {
-              d = 1;
+              d = F;
             }
             else if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "w") == 0)) {
-              d = 0;
+              d = W;
             }
             else {
               d = _check_flag(eval_maybe_evaluate(par));
@@ -6533,15 +6911,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
             if (!thereIsA) {
               if (isAccess) {
-                if (state.strict_level == 2) {
-                  gperror_verror(GPE_NOA, NULL);
-                }
-                else {
-                  gperror_vmessage(GPM_NOA, NULL);
-                }
+                _msg_access_nosel_def(file, str);
               }
               else {
-                gperror_vmessage(GPM_BANK, NULL, 0);
+                _msg_ram_bank(file, str);
               }
             }
           }
@@ -6549,6 +6922,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit(ins->opcode | (d << 9) | (a << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_IMPLICIT:
         /* PIC12x  (clrw, clrwdt, nop, option, return, sleep)
@@ -6575,6 +6950,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         _emit(ins->opcode, sym_name);
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_TBL:
         /* PIC16E (tblrd, tblwt) */
@@ -6605,6 +6982,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_TBL2:
         /* PIC16 (tlrd, tlwt) */
         if (state.processor == NULL) {
@@ -6613,20 +6992,22 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
 
         if (eval_enforce_arity(arity, 2)) {
-          const pnode_t *p2; /* second parameter */
-          int            t;  /* read low byte by default */
+          int t;  /* read low byte by default */
 
           /* "0" (lower byte) and "1" (upper byte) */
           p = PnListHead(Parameters);
           t = _check_flag(eval_maybe_evaluate(p));
 
-          p2   = PnListHead(PnListTail(Parameters));
-          file = eval_reloc_evaluate(p2, RELOCT_F);
+          p    = PnListHead(PnListTail(Parameters));
+          file = eval_reloc_evaluate(p, RELOCT_F);
+          str  = pnode_symbol_name(p);
 
-          _addr_ok(file);
+          _addr_ok(file, str);
           _emit(ins->opcode | (t << 9) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_TBL3:
         /* PIC16 (tablrd, tablwt) */
@@ -6636,26 +7017,27 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         }
 
         if (eval_enforce_arity(arity, 3)) {
-          const pnode_t *p2; /* second parameter */
-          const pnode_t *p3; /* third parameter */
-          int            t;
-          int            inc;
+          int t;
+          int inc;
 
           /* "0" (lower byte) and "1" (upper byte) */
           p = PnListHead(Parameters);
           t = _check_flag(eval_maybe_evaluate(p));
 
           /* "0" (no change) and "1" (postincrement) */
-          p2  = PnListHead(PnListTail(Parameters));
-          inc = _check_flag(eval_maybe_evaluate(p2));
+          p   = PnListHead(PnListTail(Parameters));
+          inc = _check_flag(eval_maybe_evaluate(p));
 
-          p3   = PnListHead(PnListTail(PnListTail(Parameters)));
-          file = eval_reloc_evaluate(p3, RELOCT_F);
+          p    = PnListHead(PnListTail(PnListTail(Parameters)));
+          file = eval_reloc_evaluate(p, RELOCT_F);
+          str  = pnode_symbol_name(p);
 
-          _addr_ok(file);
+          _addr_ok(file, str);
           _emit(ins->opcode | (t << 9) | (inc << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       case INSN_CLASS_MOVINDF:
         /* PIC14E (moviw, movwi) */
@@ -6790,9 +7172,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
         } /* switch (arity) */
         break;
 
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
       case INSN_CLASS_FUNC:
         r = (*ins->doer)(r, Op_name, arity, Parameters);
         break;
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
       default:
         assert(0);

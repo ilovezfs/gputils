@@ -37,16 +37,15 @@ eval_enforce_arity(int arity, int must_be)
   if (arity == must_be) {
     return true;
   }
-  else {
-    if (arity < must_be) {
-      gperror_verror(GPE_MISSING_ARGU, NULL);
-    }
-    else {
-      gperror_verror(GPE_TOO_MANY_ARGU, NULL);
-    }
 
-    return false;
+  if (arity < must_be) {
+    gperror_verror(GPE_MISSING_ARGU, NULL);
   }
+  else {
+    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+  }
+
+  return false;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -104,38 +103,36 @@ eval_can_evaluate(const pnode_t *p)
     }
     return eval_can_evaluate(PnOffset(p));
 
-  case PTAG_SYMBOL:
-    {
-      /* '$' means current org, which we can always evaluate */
-      if (strcmp(PnSymbol(p), "$") == 0) {
-        return true;
+  case PTAG_SYMBOL: {
+    /* '$' means current org, which we can always evaluate */
+    if (strcmp(PnSymbol(p), "$") == 0) {
+      return true;
+    }
+
+    /* Otherwise look it up. */
+    sym = sym_get_symbol(state.stTop, PnSymbol(p));
+
+    if (sym == NULL) {
+      var = NULL;
+
+      if (PnSymbol(p)[0] == '\0') {
+        gperror_verror(GPE_MISSING_ARGU, NULL);
       }
       else {
-        /* Otherwise look it up. */
-        sym = sym_get_symbol(state.stTop, PnSymbol(p));
-
-        if (sym == NULL) {
-          var = NULL;
-
-          if (PnSymbol(p)[0] == '\0') {
-            gperror_verror(GPE_MISSING_ARGU, NULL);
-          }
-          else {
-            gperror_verror(GPE_NOSYM, NULL, PnSymbol(p));
-          }
-        }
-        else {
-          var = sym_get_symbol_annotation(sym);
-
-          if (var == NULL) {
-            snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", PnSymbol(p));
-            gperror_warning(GPW_UNKNOWN, buf);
-          }
-        }
-
-        return ((sym != NULL) && (var != NULL));
+        gperror_verror(GPE_NOSYM, NULL, PnSymbol(p));
       }
     }
+    else {
+      var = sym_get_symbol_annotation(sym);
+
+      if (var == NULL) {
+        snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", PnSymbol(p));
+        gperror_warning(GPW_UNKNOWN, buf);
+      }
+    }
+
+    return ((sym != NULL) && (var != NULL));
+  }
 
   case PTAG_UNOP:
     return eval_can_evaluate(PnUnOpP0(p));
@@ -172,39 +169,37 @@ eval_can_evaluate_value(const pnode_t *p)
     }
     return eval_can_evaluate_value(PnOffset(p));
 
-  case PTAG_SYMBOL:
+  case PTAG_SYMBOL: {
     /* '$' means current org, which we can evaluate if section at absolute address */
     if (strcmp(PnSymbol(p), "$") == 0) {
       return (((state.obj.new_sect_flags & STYP_ABS) != 0) ? true : false);
     }
-    else {
-      /* Otherwise look it up */
-      sym = sym_get_symbol(state.stTop, PnSymbol(p));
 
-      if (sym == NULL) {
-        return false;
-      }
-      else {
-        var = sym_get_symbol_annotation(sym);
+    /* Otherwise look it up */
+    sym = sym_get_symbol(state.stTop, PnSymbol(p));
 
-        if (NULL == var) {
-          return false;
-        }
-        else {
-          switch (var->type) {
-          case GVT_EXTERN:
-          case GVT_GLOBAL:
-          case GVT_STATIC:
-          case GVT_ABSOLUTE:
-          case GVT_DEBUG:
-            return false;
-
-          default:
-            return true;
-          }
-        }
-      }
+    if (sym == NULL) {
+      return false;
     }
+
+    var = sym_get_symbol_annotation(sym);
+
+    if (var == NULL) {
+      return false;
+    }
+
+    switch (var->type) {
+      case GVT_EXTERN:
+      case GVT_GLOBAL:
+      case GVT_STATIC:
+      case GVT_ABSOLUTE:
+      case GVT_DEBUG:
+        return false;
+
+      default:
+        return true;
+    }
+  }
 
   case PTAG_UNOP:
     return eval_can_evaluate_value(PnUnOpP0(p));
@@ -254,6 +249,7 @@ eval_evaluate(const pnode_t *p)
   const variable_t *var;
   gpasmVal          p0;
   gpasmVal          p1;
+  gpasmVal          val;
 
   switch (p->tag) {
   case PTAG_CONSTANT:
@@ -262,22 +258,20 @@ eval_evaluate(const pnode_t *p)
   case PTAG_OFFSET:
     return eval_evaluate(PnOffset(p));
 
-  case PTAG_SYMBOL:
-    {
-      if (strcmp(PnSymbol(p), "$") == 0) {
-        return (IS_RAM_ORG ? state.byte_addr :
-                             gp_processor_byte_to_real(state.processor, state.byte_addr));
-      }
-      else {
-        sym = sym_get_symbol(state.stTop, PnSymbol(p));
-        assert(sym != NULL);
-
-        var = sym_get_symbol_annotation(sym);
-        assert(var != NULL);
-
-        return var->value;
-      }
+  case PTAG_SYMBOL: {
+    if (strcmp(PnSymbol(p), "$") == 0) {
+      return (IS_RAM_ORG ? state.byte_addr :
+                           gp_processor_byte_to_real(state.processor, state.byte_addr));
     }
+
+    sym = sym_get_symbol(state.stTop, PnSymbol(p));
+    assert(sym != NULL);
+
+    var = sym_get_symbol_annotation(sym);
+    assert(var != NULL);
+
+    return var->value;
+  }
 
   case PTAG_UNOP:
     switch (PnUnOpOp(p)) {
@@ -296,17 +290,16 @@ eval_evaluate(const pnode_t *p)
     case UPPER:
       return ((eval_evaluate(PnUnOpP0(p)) >> 16) & 0xff);
 
-    case HIGH:
-      {
-        gpasmVal val = (eval_evaluate(PnUnOpP0(p)) >> 8) & 0xff;
-        /* Set 7th bit if in absolute mode and PROC_CLASS_PIC14E or PROC_CLASS_PIC14EX and
-         * address relative mode is handled by the linker. */
-        if ((state.mode == MODE_ABSOLUTE) && (IS_PIC14E_CORE || IS_PIC14EX_CORE) &&
-            _is_program_segment(PnUnOpP0(p))) {
-          val |= PIC14E_FSRxH_FLASH_SEL;
-        }
-        return val;
+    case HIGH: {
+      val = (eval_evaluate(PnUnOpP0(p)) >> 8) & 0xff;
+      /* Set 7th bit if in absolute mode and PROC_CLASS_PIC14E or PROC_CLASS_PIC14EX and
+       * address relative mode is handled by the linker. */
+      if ((state.mode == MODE_ABSOLUTE) && (IS_PIC14E_CORE || IS_PIC14EX_CORE) &&
+          _is_program_segment(PnUnOpP0(p))) {
+        val |= PIC14E_FSRxH_FLASH_SEL;
       }
+      return val;
+    }
 
     case LOW:
       return (eval_evaluate(PnUnOpP0(p)) & 0xff);
@@ -422,6 +415,7 @@ eval_evaluate(const pnode_t *p)
   default:
     assert(0); /* Unhandled parse node tag. */
   }
+
   return 0;    /* Should never reach here. */
 }
 
@@ -433,16 +427,11 @@ eval_evaluate(const pnode_t *p)
 gpasmVal
 eval_maybe_evaluate(const pnode_t *p)
 {
-  gpasmVal r;
-
   if ((p != NULL) && eval_can_evaluate(p)) {
-    r = eval_evaluate(p);
-  }
-  else {
-    r = 0;
+    return eval_evaluate(p);
   }
 
-  return r;
+  return 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -466,18 +455,18 @@ eval_count_reloc(const pnode_t *p)
   case PTAG_OFFSET:
     return eval_count_reloc(PnOffset(p));
 
-  case PTAG_SYMBOL:
+  case PTAG_SYMBOL: {
     if (strcmp(PnSymbol(p), "$") == 0) {
       return 1;
     }
-    else {
-      sym = sym_get_symbol(state.stTop, PnSymbol(p));
 
-      if (sym != NULL) {
-        var = sym_get_symbol_annotation(sym);
+    sym = sym_get_symbol(state.stTop, PnSymbol(p));
 
-        if (var != NULL) {
-          switch (var->type) {
+    if (sym != NULL) {
+      var = sym_get_symbol_annotation(sym);
+
+      if (var != NULL) {
+        switch (var->type) {
           case GVT_EXTERN:
           case GVT_GLOBAL:
           case GVT_STATIC:
@@ -486,11 +475,12 @@ eval_count_reloc(const pnode_t *p)
 
           default:
             return 0;
-          }
         }
       }
     }
+
     return 0;
+  }
 
   case PTAG_UNOP:
     return eval_count_reloc(PnUnOpP0(p));
@@ -710,7 +700,7 @@ gpasmVal
 eval_reloc_evaluate(const pnode_t *p, uint16_t type)
 {
   gpasmVal r = 0;
-  int      count = 0;
+  int      count;
 
   if (state.mode == MODE_ABSOLUTE) {
     r = eval_maybe_evaluate(p);

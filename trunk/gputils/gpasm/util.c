@@ -749,28 +749,45 @@ do_or_append_insn(const char *op, pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 const char *
-pnode_symbol_value(const pnode_t *Pnode, int *Value)
+pnode_symbol_name(const pnode_t *Pnode)
+{
+  return (PnIsSymbol(Pnode) ? PnSymbol(Pnode) : NULL);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+int
+pnode_symbol_value(const pnode_t *Pnode)
 {
   const symbol_t   *sym;
   const variable_t *var;
+  int               addr;
 
-  if (!PnIsSymbol(Pnode)) {
-    return NULL;
-  }
-
-  if (strcmp(PnSymbol(Pnode), "$") == 0) {
-    *Value = (IS_RAM_ORG ? state.byte_addr :
+  if (PnIsSymbol(Pnode)) {
+    if (strcmp(PnSymbol(Pnode), "$") == 0) {
+      addr = (IS_RAM_ORG ? state.byte_addr :
                            gp_processor_byte_to_real(state.processor, state.byte_addr));
+      return addr;
+    }
+    else {
+      sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      assert(sym != NULL);
+      var = sym_get_symbol_annotation(sym);
+      assert(var != NULL);
+      return var->value;
+    }
   }
   else {
-    sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
-    assert(sym != NULL);
-    var = sym_get_symbol_annotation(sym);
-    assert(var != NULL);
-    *Value = var->value;
+    return 0;
   }
+}
 
-  return PnSymbol(Pnode);
+/*------------------------------------------------------------------------------------------------*/
+
+const char *
+pnode_string(const pnode_t *Pnode)
+{
+  return (PnIsString(Pnode) ? PnString(Pnode) : NULL);
 }
 
 /*------------------------------------------------------------------------------------------------*/

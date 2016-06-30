@@ -348,11 +348,15 @@ _geterror(unsigned int code)
   case GPE_IDLOCS_P16E:
     return "IDLOCS directive use solely to the pic18 family.";
   case GPE_NOF:
-    return "The destination of the storage is not selected (W or F).";
-  case GPE_NOA:
-    return "The access of RAM is not selected (A or B).";
+    return "The destination of the storage is not selected, use W or F.";
+  case GPE_ACC_NOSEL:
+    return "The access of RAM is not selected, use A or B:";
   case GPE_TOO_LONG:
     return "The string (\"%s\") too length (%zu bytes). It cannot be more than %zu bytes.";
+  case GPE_IS_ACCRAM:
+    return "This register is located on the Access RAM:";
+  case GPE_NO_ACCRAM:
+    return "This register is not located on the Access RAM:";
 
   default:
     return "UNKNOWN";
@@ -466,6 +470,10 @@ _getwarning(unsigned int code)
     return "%s after skip instruction. I this really what you intended?";
   case GPW_UNDEF_PROC:
     return "Processor type is undefined.";
+  case GPW_IS_ACCRAM:
+    return "This register is located on the Access RAM:";
+  case GPW_NO_ACCRAM:
+    return "This register is not located on the Access RAM:";
   case GPW_USER:
     return "WARNING: (%s)";
 
@@ -545,7 +553,7 @@ _getmessage(unsigned int code)
   case GPM_USER:
     return "MESSAGE: \"%s\"";
   case GPM_BANK:
-    return "Register in operand not in RAM Bank %u. Ensure that Bank bits are correct.";
+    return "Register in operand not located in RAM Bank %u. Ensure that Bank bits are correct:";
   case GPM_RANGE:
     return "Program word too large. Truncated to core size: 0x%04X";
   case GPM_IDLOC:
@@ -571,8 +579,8 @@ _getmessage(unsigned int code)
   case GPM_SPECIAL_MNEMONIC:
     return "Special Instruction Mnemonic used.";
 
-  case GPM_NOA:
-    return "Using default access of 0 (Access Bank).";
+  case GPM_ACC_DEF:
+    return "Using default access of 0 (Access Bank):";
   case GPM_NOB:
     return "RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank %u from now on.";
 

@@ -22,6 +22,11 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __OPCODE_H__
 #define __OPCODE_H__
 
+#define W                   0
+#define F                   1
+#define ACCESS              0
+#define BANKED              1
+
 extern gpasmVal do_insn(const char *name, struct pnode *parms);
 extern void opcode_init(int stage);
 extern void begin_cblock(const struct pnode *c);

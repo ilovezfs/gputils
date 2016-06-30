@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jun 23
+2016 Jun 29
 \end_layout
 
 \begin_layout Standard
@@ -12248,6 +12248,14 @@ CONFIG and __CONFIG directives cannot both be used in the same project.
 1504 A string too length.
 \end_layout
 
+\begin_layout Description
+1505 A register is located on the Access RAM.
+\end_layout
+
+\begin_layout Description
+1506 A register is not located on the Access RAM.
+\end_layout
+
 \begin_layout Subsection
 Warnings
 \end_layout
@@ -12422,7 +12430,15 @@ gpasm encountered an invalid ROM location as specified by the __MAXROM and
 \end_layout
 
 \begin_layout Description
-1203 A user-generated warning.
+1203 A register is located on the Access RAM.
+\end_layout
+
+\begin_layout Description
+1204 A register is not located on the Access RAM.
+\end_layout
+
+\begin_layout Description
+1299 A user-generated warning.
 \end_layout
 
 \begin_layout Subsection

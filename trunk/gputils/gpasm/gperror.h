@@ -115,8 +115,10 @@ enum GPE_codes {
 
   GPE_IDLOCS_P16E      = 1501,  /* IDLOCS directive use solely to the PIC16E family. */
   GPE_NOF              = 1502,  /* The destination of the storage is not selected. */
-  GPE_NOA              = 1503,  /* The access of RAM is not selected. */
-  GPE_TOO_LONG         = 1504   /* A string too long. */
+  GPE_ACC_NOSEL        = 1503,  /* The access of RAM is not selected. */
+  GPE_TOO_LONG         = 1504,  /* A string too long. */
+  GPE_IS_ACCRAM        = 1505,  /* A register is located on the Access RAM. */
+  GPE_NO_ACCRAM        = 1506   /* A register is not located on the Access RAM. */
 };
 
 /* Warning codes
@@ -152,7 +154,9 @@ enum GPW_codes {
   /* gputils special warnings */
   GPW_BANK_PAGE_SEL_AFTER_SKIP = 1201, /* %s after skip instruction. I this really what you intended? */
   GPW_UNDEF_PROC       = 1202,
-  GPW_USER             = 1203
+  GPW_IS_ACCRAM        = 1203, /* A register is located on the Access RAM. */
+  GPW_NO_ACCRAM        = 1204, /* A register is not located on the Access RAM. */
+  GPW_USER             = 1299
 };
 
 /* Message codes
@@ -180,7 +184,7 @@ enum GPM_codes {
   GPM_UNKNOWN          = 319,
 
   /* gputils special errors */
-  GPM_NOA              = 1301,
+  GPM_ACC_DEF          = 1301,
   GPM_NOB              = 1302
 };
 
