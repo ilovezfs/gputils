@@ -1,3 +1,11 @@
+2016-06-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/directive.h,
+    gpasm/gpasm.h.in, gpasm/gperror.c, gpasm/gperror.h:
+    Some messages give more information.
+
+  * gpasm/evaluate.c, gpasm/util.c:
+    Minor improvement.
+
 2016-06-29  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/coff.c, libgputils/gpcoffgen.c, libgputils/gpcoffgen.h,
     libgputils/gpcofflink.c:

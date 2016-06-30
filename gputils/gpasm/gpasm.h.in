@@ -438,7 +438,9 @@ extern void select_radix(const char *name);
 extern void pnode_print(const pnode_t *p);
 extern void pnode_print_chain(const pnode_t *Pnode, unsigned int Level);
 /* END OF DEBUG CODE LINES */
-extern const char *pnode_symbol_value(const pnode_t *Pnode, int *Value);
+extern const char *pnode_symbol_name(const pnode_t *Pnode);
+extern int pnode_symbol_value(const pnode_t *Pnode);
+extern const char *pnode_string(const pnode_t *Pnode);
 extern file_context_t *add_file(unsigned int type, const char *name);
 extern void free_files(void);
 extern void macro_append(void);
