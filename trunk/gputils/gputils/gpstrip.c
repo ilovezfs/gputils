@@ -108,7 +108,7 @@ _remove_sections(void)
 
   for (i = 0; i < sym_get_symbol_count(state.section_remove); ++i) {
     sym     = sym_get_symbol_with_index(state.section_remove, i);
-    section = gp_coffgen_find_section(state.object, state.object->section_list, sym_get_symbol_name(sym));
+    section = gp_coffgen_find_section(state.object, state.object->section_list.first, sym_get_symbol_name(sym));
     if (section != NULL) {
       if (verbose) {
         gp_message("removing section \"%s\"", sym_get_symbol_name(sym));
@@ -151,25 +151,19 @@ _strip_all(void)
   gp_section_t *section;
 
   if (state.object->flags & F_EXEC) {
-    section = state.object->section_list;
+    section = state.object->section_list.first;
     while (section != NULL) {
-      /* remove the line numbers, have too because the symbols will be removed */
-      section->num_lineno            = 0;
-      section->line_number_list      = NULL;
-      section->line_number_list_tail = NULL;
-
-      /* remove the relocations, they should already be removed */
-      section->num_reloc            = 0;
-      section->relocation_list      = NULL;
-      section->relocation_list_tail = NULL;
+      /* Remove the line numbers, have too because the symbols will be removed. */
+      gp_list_delete(&section->line_number_list);
+      /* Remove the relocations, they should already be removed. */
+      gp_list_delete(&section->relocation_list);
     
       section = section->next;
     }  
 
     /* remove all symbols */
-    state.object->num_symbols      = 0;
-    state.object->symbol_list      = NULL;
-    state.object->symbol_list_tail = NULL;
+    state.object->num_symbols = 0;
+    gp_list_delete(&state.object->symbol_list);
   } else {
     gp_error("can not strip all symbols because the object file is not executable");
   }
@@ -184,17 +178,15 @@ _strip_debug(void)
   gp_symbol_t  *list;
   gp_symbol_t  *symbol;
 
-  section = state.object->section_list;
+  section = state.object->section_list.first;
   while (section != NULL) {
     /* remove the line numbers */
-    section->num_lineno            = 0;
-    section->line_number_list      = NULL;
-    section->line_number_list_tail = NULL;
+    gp_list_delete(&section->line_number_list);
     
     section = section->next;
   }
 
-  list = state.object->symbol_list;
+  list = state.object->symbol_list.first;
   while (list != NULL) {
     /* remove any debug symbols */
     symbol = list;
@@ -213,7 +205,7 @@ _strip_unneeded(void)
   gp_symbol_t *list;
   gp_symbol_t *symbol;
 
-  list = state.object->symbol_list;
+  list = state.object->symbol_list.first;
   while (list != NULL) {
     symbol = list;
     list   = list->next;
@@ -233,7 +225,7 @@ _discard_all(void)
   gp_symbol_t *list;
   gp_symbol_t *symbol;
 
-  list = state.object->symbol_list;
+  list = state.object->symbol_list.first;
   while (list != NULL) {
     symbol = list;
     list   = list->next;

@@ -32,9 +32,9 @@ static void
 _update_section_symbol(gp_section_t *section)
 {
   /* write data to the auxiliary section symbol */
-  section->symbol->aux_list->_aux_symbol._aux_scn.length  = section->size;
-  section->symbol->aux_list->_aux_symbol._aux_scn.nreloc  = section->num_reloc;
-  section->symbol->aux_list->_aux_symbol._aux_scn.nlineno = section->num_lineno;
+  section->symbol->aux_list.first->_aux_symbol._aux_scn.length  = section->size;
+  section->symbol->aux_list.first->_aux_symbol._aux_scn.nreloc  = section->relocation_list.num_nodes;
+  section->symbol->aux_list.first->_aux_symbol._aux_scn.nlineno = section->line_number_list.num_nodes;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -46,11 +46,11 @@ _update_reloc_ptr(void)
   gp_symbol_t  *symbol;
   gp_reloc_t   *reloc;
 
-  section = state.obj.object->section_list;
+  section = state.obj.object->section_list.first;
   while (section != NULL) {
-    reloc = section->relocation_list;
+    reloc = section->relocation_list.first;
     while (reloc != NULL) {
-      symbol = state.obj.object->symbol_list;
+      symbol = state.obj.object->symbol_list.first;
       while (symbol != NULL) {
         if (reloc->symbol_number == symbol->number) {
           reloc->symbol = symbol;
@@ -263,8 +263,7 @@ coff_new_section(const char *name, unsigned int addr, unsigned int flags)
   /* store data from the last section */
   coff_close_section();
 
-  found = gp_coffgen_find_section(state.obj.object, state.obj.object->section_list, name);
-
+  found = gp_coffgen_find_section(state.obj.object, state.obj.object->section_list.first, name);
   if (found != NULL) {
     if ((flags & STYP_OVERLAY) && (found->flags & STYP_OVERLAY)) {
       /* Overlayed sections can be duplicated.  This allows multiple code

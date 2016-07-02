@@ -110,7 +110,7 @@ gp_symbol_make_hash_table(gp_object_t *Object)
   }
 
   n_symbols = 0;
-  symbol    = Object->symbol_list;
+  symbol    = Object->symbol_list.first;
   while (symbol != NULL) {
     FlagClr(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
 
@@ -128,7 +128,7 @@ gp_symbol_make_hash_table(gp_object_t *Object)
   Object->symbol_hashtable_size = n_symbols;
 
   tp     = table;
-  symbol = Object->symbol_list;
+  symbol = Object->symbol_list.first;
   while (symbol != NULL) {
     if (FlagIsSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE)) {
       h = &tp->hash;
@@ -272,7 +272,7 @@ gp_symbol_make_register_array(gp_object_t *Object, unsigned int *Num_registers)
   }
 
   n_registers = 0;
-  symbol      = Object->symbol_list;
+  symbol      = Object->symbol_list.first;
   while (symbol != NULL) {
     FlagClr(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE);
 
@@ -291,7 +291,7 @@ gp_symbol_make_register_array(gp_object_t *Object, unsigned int *Num_registers)
   array = (gp_symbol_t **)GP_Malloc(n_registers * sizeof(gp_symbol_t *));
 
   i      = 0;
-  symbol = Object->symbol_list;
+  symbol = Object->symbol_list.first;
   while (symbol != NULL) {
     if (FlagIsSet(symbol->opt_flags, OPT_FLAGS_GPSYMBOL_MODULE)) {
       array[i] = symbol;

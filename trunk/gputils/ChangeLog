@@ -1,3 +1,15 @@
+2016-07-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/coff.c, gpasm/lst.c, gplink/cod.c, gplink/gplink.c,
+    gplink/lst.c, gplink/map.c, gputils/gpstrip.c, gputils/gpvo.c,
+    libgputils/Makefile.am, libgputils/Makefile.in, libgputils/gpcoff.h,
+    libgputils/gpcoffgen.c, libgputils/gpcoffgen.h,
+    libgputils/gpcofflink.c, libgputils/gpcoffopt.c,
+    libgputils/gplist.c, libgputils/gplist.h, libgputils/gpreadobj.c,
+    libgputils/gpsymbol.c, libgputils/gpsystem.c, libgputils/gpsystem.h,
+    libgputils/gpwriteobj.c, libgputils/libgputils.h:
+    The unified treatment of the doubly linked lists is a new module
+    with help. (libgputils/gplist.[ch])
+
 2016-06-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/directive.c, gpasm/directive.h,
     gpasm/gpasm.h.in, gpasm/gperror.c, gpasm/gperror.h:

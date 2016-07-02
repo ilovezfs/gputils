@@ -132,7 +132,7 @@ _find_line_number(const gp_symbol_t *symbol, unsigned int line_number)
   const gp_section_t *section;
   const gp_linenum_t *linenum;
 
-  section = state.object->section_list;
+  section = state.object->section_list.first;
   while (section != NULL) {
     linenum = gp_coffgen_find_linenum(section, symbol, line_number);
 
@@ -373,7 +373,7 @@ lst_write(void)
     return;
   }
 
-  symbol        = state.object->symbol_list;
+  symbol        = state.object->symbol_list.first;
   list_enabled  = true;
   first_time    = true;
   state.lst.src = NULL;
@@ -382,7 +382,7 @@ lst_write(void)
   while (symbol != NULL) {
     if (symbol->class == C_FILE) {
       /* open a new file */
-      aux = symbol->aux_list;
+      aux = symbol->aux_list.first;
       assert(aux != NULL);
 
       if (aux->_aux_symbol._aux_file.line_number) {

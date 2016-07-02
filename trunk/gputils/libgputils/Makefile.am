@@ -10,47 +10,49 @@ noinst_LIBRARIES = libgputils.a
 
 libgputils_a_SOURCES =\
 	gparchive.c \
+	gparchive.h \
 	gpcfg.c \
+	gpcfg.h \
 	gpcfg-table.c \
 	gpcod.c \
-	gpcoffgen.c \
-	gpcofflink.c \
-	gpcoffopt.c \
-	gpdis.c \
-	gphash.c \
-	gpmemory.c \
-	gpmessage.c \
-	gpopcode.c \
-	gpprocessor.c \
-	gpreadhex.c \
-	gpreadobj.c \
-	gpreg-table.c \
-	gpregister.c \
-	gpsym.c \
-	gpsymbol.c \
-	gpsystem.c \
-	gpwritehex.c \
-	gpwriteobj.c \
-	gparchive.h \
-	gpcfg.h \
 	gpcod.h \
 	gpcoff.h \
+	gpcoffgen.c \
 	gpcoffgen.h \
+	gpcofflink.c \
 	gpcofflink.h \
+	gpcoffopt.c \
 	gpcoffopt.h \
+	gpdis.c \
 	gpdis.h \
+	gphash.c \
 	gphash.h \
+	gplist.c \
+	gplist.h \
+	gpmemory.c \
 	gpmemory.h \
+	gpmessage.c \
 	gpmessage.h \
+	gpopcode.c \
 	gpopcode.h \
+	gpprocessor.c \
 	gpprocessor.h \
+	gpreadhex.c \
 	gpreadhex.h \
+	gpreadobj.c \
 	gpreadobj.h \
+	gpreg-table.c \
+	gpregister.c \
 	gpregister.h \
+	gpsym.c \
 	gpsym.h \
+	gpsymbol.c \
 	gpsymbol.h \
+	gpsystem.c \
 	gpsystem.h \
 	gptypes.h \
+	gpwritehex.c \
 	gpwritehex.h \
+	gpwriteobj.c \
 	gpwriteobj.h \
 	libgputils.h
