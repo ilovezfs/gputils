@@ -123,7 +123,7 @@ _find_reloc_by_address(uint16_t address)
 {
   gp_reloc_t *p;
 
-  for (p = state.obj.section->relocation_list; p != NULL; p = p->next) {
+  for (p = state.obj.section->relocation_list.first; p != NULL; p = p->next) {
     if (p->address == address) {
       break;
     }
@@ -141,11 +141,11 @@ _prev_reloc_type(void)
 {
   gp_reloc_t *p;
 
-  if (state.obj.section->relocation_list == state.obj.section->relocation_list_tail) {
+  if (state.obj.section->relocation_list.first == state.obj.section->relocation_list.last) {
     return 0;
   }
 
-  p = state.obj.section->relocation_list_tail->prev;
+  p = state.obj.section->relocation_list.last->prev;
   assert(p != NULL);
   return ((p->address == p->next->address) ? p->type : 0);
 }
@@ -827,20 +827,22 @@ lst_format_line(const char *src_line, unsigned int value)
   unsigned int  pos = 0;
   uint16_t      reloc_type;
   MemBlock_t   *m = state.i_memory;
+  uint32_t      addr;
   uint16_t      word;
   gp_reloc_t   *p;
 
   assert(src_line != NULL);
 
   if ((state.mode == MODE_RELOCATABLE) && (state.obj.section != NULL) &&
-      (state.obj.new_sect_flags & STYP_TEXT) && (state.obj.section->relocation_list_tail != NULL)) {
-      if ((state.obj.section->address + state.obj.section->relocation_list_tail->address) > state.lst.line.was_byte_addr) {
+      (state.obj.new_sect_flags & STYP_TEXT) && (state.obj.section->relocation_list.last != NULL)) {
+      addr = state.obj.section->address + state.obj.section->relocation_list.last->address;
+      if (addr > state.lst.line.was_byte_addr) {
         /* already passed it, go back to the history */
         p = _find_reloc_by_address(state.lst.line.was_byte_addr);
         reloc_type = (p != NULL) ? p->type : 0;
       }
-      else if ((state.obj.section->address + state.obj.section->relocation_list_tail->address) == state.lst.line.was_byte_addr) {
-        reloc_type = state.obj.section->relocation_list_tail->type;
+      else if (addr == state.lst.line.was_byte_addr) {
+        reloc_type = state.obj.section->relocation_list.last->type;
       }
       else {
         reloc_type = 0;

@@ -2,6 +2,8 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
+   Copyright (C) 2014-2016 Molnar Karoly
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -24,6 +26,8 @@ Boston, MA 02111-1307, USA.  */
 
 /* library files */
 #include "gptypes.h"
+#include "gplist.h"
+#include "gphash.h"
 #include "gpsystem.h"
 #include "gpmessage.h"
 
@@ -48,8 +52,7 @@ Boston, MA 02111-1307, USA.  */
 /* COD files */
 #include "gpcod.h"
 
-#include "gphash.h"
 #include "gpregister.h"
 #include "gpsymbol.h"
 
-#endif
+#endif /* __LIBGPUTILS_H__ */

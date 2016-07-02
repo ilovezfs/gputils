@@ -79,10 +79,10 @@ _assign_file_id(void)
   /* build a case sensitive file table */
   file_table = sym_push_table(NULL, false);
 
-  symbol = state.object->symbol_list;
+  symbol = state.object->symbol_list.first;
   while (symbol != NULL) {
     if (symbol->class == C_FILE) {
-      aux = symbol->aux_list;
+      aux = symbol->aux_list.first;
       assert(aux != NULL);
       sym = sym_get_symbol(file_table, aux->_aux_symbol._aux_file.filename);
 
@@ -150,7 +150,7 @@ _write_file_block(void)
   BlockList         *fb = NULL;
   int                file_id = 0;
 
-  symbol = state.object->symbol_list;
+  symbol = state.object->symbol_list.first;
   while (symbol != NULL) {
     if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * FILE_SIZE))) {
       fb = gp_blocks_append(&main_dir->src, gp_blocks_new());
@@ -168,7 +168,7 @@ _write_file_block(void)
        */
 
       gp_cod_strncpy(&fb->block[main_dir->src.offset + 1],
-                     symbol->aux_list->_aux_symbol._aux_file.filename, FILE_SIZE - 1);
+                     symbol->aux_list.first->_aux_symbol._aux_file.filename, FILE_SIZE - 1);
 
       main_dir->src.offset += FILE_SIZE;
     }
@@ -453,11 +453,11 @@ _write_debug(void)
   }
 
   db     = NULL;
-  symbol = state.object->symbol_list;
+  symbol = state.object->symbol_list.first;
   while (symbol != NULL) {
     if (strcasecmp(".direct", symbol->name) == 0) {
-      assert(symbol->num_auxsym == 1);
-      aux = symbol->aux_list;
+      assert(symbol->aux_list.num_nodes == 1);
+      aux = symbol->aux_list.first;
       assert(aux != NULL);
 
       command = aux->_aux_symbol._aux_direct.command;

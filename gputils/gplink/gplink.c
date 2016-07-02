@@ -305,7 +305,7 @@ _add_linker_symbol(const char *name)
   gp_symbol_t *found;
 
   found   = NULL;
-  current = state.object->symbol_list;
+  current = state.object->symbol_list.first;
   while (current != NULL) {
     if ((current->name != NULL) && (strcmp(current->name, name) == 0) && (current->section_number > N_UNDEF)) {
       found = current;
@@ -330,7 +330,7 @@ _search_idata(void)
 
   object = state.object;
   while (object != NULL) {
-    section = object->section_list;
+    section = object->section_list.first;
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
         state.has_idata = true;
@@ -948,7 +948,7 @@ _linker(void)
     /* allocate cinit section to the lowest possible address */
     gp_section_t *cinit_section;
 
-    cinit_section = gp_coffgen_find_section(state.object, state.object->section_list, ".cinit");
+    cinit_section = gp_coffgen_find_section(state.object, state.object->section_list.first, ".cinit");
 
     if (cinit_section != NULL) {
       gp_cofflink_reloc_cinit(state.object, program, state.class->org_to_byte_shift,
@@ -992,7 +992,7 @@ _linker(void)
     gp_coffopt_remove_unnecessary_banksel(state.object);
   }
 
-  gp_coffgen_make_linenum_arrays(state.object);
+  gp_coffgen_make_linenum_array(state.object);
 
   gp_cofflink_fill_pages(state.object, program, state.section.definition);
 

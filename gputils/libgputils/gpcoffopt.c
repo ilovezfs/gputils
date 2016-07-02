@@ -102,7 +102,7 @@ gp_coffopt_remove_weak(gp_object_t *Object)
   gp_debug("Removing weak symbols from \"%s\".", Object->filename);
 
   /* Search the symbol table for extern symbols. */
-  symbol = Object->symbol_list;
+  symbol = Object->symbol_list.first;
   while (symbol != NULL) {
     if (gp_coffgen_is_external_symbol(symbol) && (!gp_coffgen_symbol_has_reloc(symbol, COFF_SYM_RELOC_ALL))) {
       gp_debug("  removed weak symbol \"%s\"", symbol->name);
@@ -130,7 +130,7 @@ gp_coffopt_remove_dead_sections(gp_object_t *Object, int Pass, gp_boolean Enable
     gp_debug("Removing dead sections pass %i.", Pass);
 
     gp_coffgen_check_relocations(Object, Enable_cinit_wanings);
-    section = Object->section_list;
+    section = Object->section_list.first;
     while (section != NULL) {
       section_next = section->next;
 
@@ -424,7 +424,7 @@ _linenum_decrease_addresses(proc_class_t Class, gp_section_t *First_section,
 
   section = First_section;
   while (section != NULL) {
-    linenum = section->line_number_list;
+    linenum = section->line_number_list.first;
     while (linenum != NULL) {
       /* Prevents the modification of linenumbers on other pages. */
       if ((_page_addr_from_byte_addr(Class, linenum->address) == Relocation_page) &&
@@ -902,7 +902,7 @@ gp_coffopt_remove_unnecessary_pagesel(gp_object_t *Object)
   gp_debug("Removing unnecessary pagesel instructions.");
   _reloc_pipe_clear();
   num_pages     = gp_processor_num_pages(Object->processor);
-  first_section = Object->section_list;
+  first_section = Object->section_list.first;
 
   section = first_section;
   while (section != NULL) {
@@ -916,7 +916,7 @@ gp_coffopt_remove_unnecessary_pagesel(gp_object_t *Object)
       _label_arrays_make(class);
 
       if (section->label_array != NULL) {
-        reloc_curr = section->relocation_list;
+        reloc_curr = section->relocation_list.first;
         if (reloc_curr != NULL) {
           i = 0;
           do {
@@ -1176,7 +1176,7 @@ gp_coffopt_remove_unnecessary_banksel(gp_object_t *Object)
 
   _reloc_pipe_clear();
   num_banks     = gp_processor_num_banks(Object->processor);
-  first_section = Object->section_list;
+  first_section = Object->section_list.first;
 
   section = first_section;
   while (section != NULL) {
@@ -1189,7 +1189,7 @@ gp_coffopt_remove_unnecessary_banksel(gp_object_t *Object)
                               gp_processor_page_addr(class, gp_processor_byte_to_org(class, section->address)),
                               STYP_ROM_AREA);
       _label_arrays_make(class);
-      reloc_curr = section->relocation_list;
+      reloc_curr = section->relocation_list.first;
       if (reloc_curr != NULL) {
         i = 0;
         while (reloc_curr != NULL) {

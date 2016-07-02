@@ -101,7 +101,7 @@ _write_filehdr(const gp_object_t *Object, FILE *Fp)
   /* 'f_magic'  -- magic number */
   gp_fputl16((Object->isnew ? MICROCHIP_MAGIC_v2 : MICROCHIP_MAGIC_v1), Fp);
   /* 'f_nscns'  -- number of sections */
-  gp_fputl16(Object->num_sections, Fp);
+  gp_fputl16(Object->section_list.num_nodes, Fp);
   /* 'f_timdat' -- time and date stamp */
   gp_fputl32(Object->time, Fp);
   /* 'f_symptr' -- file ptr to symtab */
@@ -156,7 +156,7 @@ _write_scnhdr(const gp_section_t *Section, unsigned int Org_to_byte_shift, uint8
 {
   uint32_t section_address;
 
-  if ((Section->flags & STYP_ROM_AREA) == 0) {
+  if (FlagsIsAllClr(Section->flags, STYP_ROM_AREA)) {
     Org_to_byte_shift = 0;
   }
 
@@ -175,9 +175,9 @@ _write_scnhdr(const gp_section_t *Section, unsigned int Org_to_byte_shift, uint8
   /* 's_lnnoptr' -- file ptr to line numbers */
   gp_fputl32(Section->lineno_ptr, Fp);
   /* 's_nreloc'  -- # reloc entries */
-  gp_fputl16(Section->num_reloc, Fp);
+  gp_fputl16(Section->relocation_list.num_nodes, Fp);
   /* 's_nlnno'   -- # line number entries */
-  gp_fputl16(Section->num_lineno, Fp);
+  gp_fputl16(Section->line_number_list.num_nodes, Fp);
   /* 's_flags'   -- Don't write internal section flags. */
   gp_fputl32(Section->flags & ~(STYP_RELOC | STYP_BPACK), Fp);
 }
@@ -216,7 +216,7 @@ _write_reloc(const gp_section_t *Section, FILE *Fp)
 {
   gp_reloc_t *current;
 
-  current = Section->relocation_list;
+  current = Section->relocation_list.first;
   while (current != NULL) {
     /* 'r_vaddr'  -- entry relative virtual address */
     gp_fputl32(current->address, Fp);
@@ -244,7 +244,7 @@ _write_linenum(const gp_section_t *Section, unsigned int Org_to_byte_shift, FILE
     Org_to_byte_shift = 0;
   }
 
-  current = Section->line_number_list;
+  current = Section->line_number_list.first;
   while (current != NULL) {
     /* 'l_srcndx' -- symbol table index of associated source file */
     gp_fputl32(current->symbol->number, Fp);
@@ -356,7 +356,7 @@ _write_symbols(const gp_object_t *Object, uint8_t *Table, FILE *Fp)
   gp_boolean   isnew;
 
   isnew   = Object->isnew;
-  current = Object->symbol_list;
+  current = Object->symbol_list.first;
   while (current != NULL) {
     _add_name(current->name, Table, Fp);
     gp_fputl32(current->value, Fp);
@@ -375,10 +375,10 @@ _write_symbols(const gp_object_t *Object, uint8_t *Table, FILE *Fp)
     }
 
     fputc(current->class, Fp);
-    fputc(current->num_auxsym, Fp);
+    fputc(current->aux_list.num_nodes, Fp);
 
-    if (current->num_auxsym > 0) {
-      _write_auxsymbols(current->aux_list, Table, isnew, Fp);
+    if (current->aux_list.num_nodes > 0) {
+      _write_auxsymbols(current->aux_list.first, Table, isnew, Fp);
     }
 
     current = current->next;
@@ -398,13 +398,14 @@ _updateptr(gp_object_t *Object)
   unsigned int  section_number;
   unsigned int  symbol_number;
 
-  data_idx = (Object->isnew) ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2 + (SEC_HDR_SIZ_v2 * Object->num_sections)) :
-                               (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ_v1 * Object->num_sections));
+  section_number = Object->section_list.num_nodes;
+  data_idx = (Object->isnew) ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2 + (SEC_HDR_SIZ_v2 * section_number)) :
+                               (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ_v1 * section_number));
 
   section_number = N_SCNUM;
 
   /* update the data pointers in the section headers */
-  section = Object->section_list;
+  section = Object->section_list.first;
   while (section != NULL) {
     section->number = section_number;
     section_number++;
@@ -418,25 +419,25 @@ _updateptr(gp_object_t *Object)
   }
 
   /* update the relocation pointers in the section headers */
-  section = Object->section_list;
+  section = Object->section_list.first;
   while (section != NULL) {
     section->reloc_ptr = 0;
 
-    if (section->num_reloc != 0) {
+    if (section->relocation_list.num_nodes > 0) {
       section->reloc_ptr = data_idx;
-      data_idx += (section->num_reloc * RELOC_SIZ);
+      data_idx += (section->relocation_list.num_nodes * RELOC_SIZ);
     }
     section = section->next;
   }
 
   /* update the line number pointers in the section headers */
-  section = Object->section_list;
+  section = Object->section_list.first;
   while (section != NULL) {
     section->lineno_ptr = 0;
 
-    if (section->num_lineno != 0) {
+    if (section->line_number_list.num_nodes > 0) {
       section->lineno_ptr = data_idx;
-      data_idx += (section->num_lineno * LINENO_SIZ);
+      data_idx += (section->line_number_list.num_nodes * LINENO_SIZ);
     }
     section = section->next;
   }
@@ -446,10 +447,10 @@ _updateptr(gp_object_t *Object)
 
   /* update the symbol numbers */
   symbol_number = 0;
-  symbol        = Object->symbol_list;
+  symbol        = Object->symbol_list.first;
   while (symbol != NULL) {
     symbol->number = symbol_number;
-    symbol_number += 1 + symbol->num_auxsym;
+    symbol_number += 1 + symbol->aux_list.num_nodes;
     symbol = symbol->next;
   }
 }
@@ -514,14 +515,14 @@ gp_write_coff(gp_object_t *Object, int Num_errors)
   _write_opthdr(Object, coff);
 
   /* write section headers */
-  section = Object->section_list;
+  section = Object->section_list.first;
   while (section != NULL) {
     _write_scnhdr(section, org_to_byte_shift, &table[0], coff);
     section = section->next;
   }
 
   /* write section data */
-  section = Object->section_list;
+  section = Object->section_list.first;
   while (section != NULL) {
     if (gp_has_data(section)) {
       _write_data(Object->processor, section, coff);
@@ -530,18 +531,18 @@ gp_write_coff(gp_object_t *Object, int Num_errors)
   }
 
   /* write section relocations */
-  section = Object->section_list;
+  section = Object->section_list.first;
   while (section != NULL) {
-    if (section->num_reloc != 0) {
+    if (section->relocation_list.num_nodes > 0) {
       _write_reloc(section, coff);
     }
     section = section->next;
   }
 
   /* write section line numbers */
-  section = Object->section_list;
+  section = Object->section_list.first;
   while (section != NULL) {
-    if (section->num_lineno != 0) {
+    if (section->line_number_list.num_nodes > 0) {
       _write_linenum(section, org_to_byte_shift, coff);
     }
     section = section->next;
@@ -569,10 +570,12 @@ gp_is_absolute_object(const gp_object_t *Object)
 {
   gp_section_t *section;
 
-  for (section = Object->section_list; section != NULL; section = section->next) {
-    if ((section->num_reloc != 0) || !(section->flags & STYP_ABS)) {
+  section = Object->section_list.first;
+  while (section != NULL) {
+    if ((section->relocation_list.num_nodes > 0) || FlagIsClr(section->flags, STYP_ABS)) {
       return false;
     }
+    section = section->next;
   }
 
   return true;

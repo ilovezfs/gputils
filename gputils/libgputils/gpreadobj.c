@@ -90,16 +90,16 @@ _read_file_header(gp_object_t *Object, const uint8_t *File, const gp_binary_t *D
     gp_error("Invalid magic number in \"%s\".", Object->filename);
   }
 
-  Object->isnew        = isnew;
-  Object->version      = version;
+  Object->isnew                  = isnew;
+  Object->version                = version;
   /* 'f_nscns'  -- number of sections */
-  Object->num_sections = _check_getl16(&File[2], Data);
+  Object->section_list.num_nodes = _check_getl16(&File[2], Data);
   /* 'f_timdat' -- time and date stamp */
-  Object->time         = _check_getl32(&File[4], Data);
+  Object->time                   = _check_getl32(&File[4], Data);
   /* 'f_symptr' -- file ptr to symtab */
-  Object->symbol_ptr   = _check_getl32(&File[8], Data);
+  Object->symbol_ptr             = _check_getl32(&File[8], Data);
   /* 'f_nsyms'  -- # symtab entries */
-  Object->num_symbols  = _check_getl32(&File[12], Data);
+  Object->num_symbols            = _check_getl32(&File[12], Data);
 
   /* 'f_opthdr' -- sizeof(opt hdr) */
   opt_hdr = _check_getl16(&File[16], Data);
@@ -233,20 +233,20 @@ _read_section_header(gp_object_t *Object, gp_section_t *Section, const uint8_t *
   }
 
   /* 's_size'    -- section size */
-  Section->size       = _check_getl32(&File[16], Data);
+  Section->size                       = _check_getl32(&File[16], Data);
   /* 's_scnptr'  -- file ptr to raw data */
-  Section->data_ptr   = _check_getl32(&File[20], Data);
+  Section->data_ptr                   = _check_getl32(&File[20], Data);
   /* 's_relptr'  -- file ptr to relocation */
-  Section->reloc_ptr  = _check_getl32(&File[24], Data);
+  Section->reloc_ptr                  = _check_getl32(&File[24], Data);
   /* 's_lnnoptr' -- file ptr to line numbers */
-  Section->lineno_ptr = _check_getl32(&File[28], Data);
+  Section->lineno_ptr                 = _check_getl32(&File[28], Data);
   /* 's_nreloc'  -- # reloc entries */
-  Section->num_reloc  = _check_getl16(&File[32], Data);
+  Section->relocation_list.num_nodes  = _check_getl16(&File[32], Data);
   /* 's_nlnno'   -- # line number entries */
-  Section->num_lineno = _check_getl16(&File[34], Data);
+  Section->line_number_list.num_nodes = _check_getl16(&File[34], Data);
   /* 's_flags'   -- section flags */
-  Section->flags      = _check_getl32(&File[36], Data);
-  Section->data       = (Section->data_ptr != 0) ? i_memory_create() : NULL;
+  Section->flags                      = _check_getl32(&File[36], Data);
+  Section->data                       = (Section->data_ptr != 0) ? i_memory_create() : NULL;
 
   if (FlagsIsNotAllClr(Section->flags, STYP_ROM_AREA)) {
     Section->address = gp_processor_org_to_byte(Object->class, Section->address);
@@ -316,7 +316,7 @@ _read_symbol(gp_object_t *Object, int i, gp_symbol_t *Symbol, const uint8_t *Fil
   Symbol->class = File[data_idx];
   data_idx += 1;
   /* 'num_auxsym' -- number of auxiliary symbols */
-  Symbol->num_auxsym = File[data_idx];
+  Symbol->aux_list.num_nodes = File[data_idx];
   data_idx += 1;
 
   Lazy_linking[i].read.symbol = Symbol;
@@ -492,7 +492,7 @@ _read_symbol_table(gp_object_t *Object, const uint8_t *File, const gp_binary_t *
 
   /* read the symbols */
   File         = &File[Object->symbol_ptr];
-  symbol       = Object->symbol_list;
+  symbol       = Object->symbol_list.first;
   section_name = NULL;
 
   for (i = 0; i < number; i++) {
@@ -505,11 +505,11 @@ _read_symbol_table(gp_object_t *Object, const uint8_t *File, const gp_binary_t *
 
     symbol->section_name = section_name;
     symbol->number  = i;
-    num_auxsym      = symbol->num_auxsym;
+    num_auxsym      = symbol->aux_list.num_nodes;
     File           += Object->symbol_size;
 
     if (num_auxsym > 0) {
-      aux      = gp_coffgen_make_block_aux(symbol);
+      aux      = gp_coffgen_make_block_aux(symbol, num_auxsym);
       aux_type = gp_coffgen_determine_aux_symbol(symbol);
 
       /* read the aux symbols */
@@ -527,7 +527,7 @@ _read_symbol_table(gp_object_t *Object, const uint8_t *File, const gp_binary_t *
 
       /* advance the through the list */
       for (j = 0; j < num_auxsym; j++) {
-        /* COFF places all symbols inluding auxiliary, in the symbol table.
+        /* COFF places all symbols including auxiliary, in the symbol table.
            However, in memory, gputils attaches auxiliary symbols to their
            associated primary symbol. When reading COFF, space is reserved
            for the auxiliary symbols but not used. Later the space is freed.
@@ -555,6 +555,7 @@ _read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data
   gp_section_t  *section;
   gp_reloc_t    *relocation;
   gp_linenum_t  *linenum;
+  unsigned int   num_sections;
   unsigned int   number;
   uint32_t       byte_addr;
   uint32_t       header_size;
@@ -569,19 +570,20 @@ _read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data
   /* setup pointer to string table */
   string_table = (const char *)&File[Object->symbol_ptr + (Object->symbol_size * Object->num_symbols)];
 
-  section = gp_coffgen_make_block_section(Object);
+  num_sections = Object->section_list.num_nodes;
+  section      = gp_coffgen_make_block_section(Object, num_sections);
 
-  for (i = 0; i < Object->num_sections; i++) {
+  for (i = 0; i < num_sections; i++) {
     _read_section_header(Object, section, section_ptr, string_table, Data);
 
     section->number  = i + 1;
     section_ptr     += header_size;
 
     /* read the data */
-    if ((section->size > 0) && (section->data_ptr > 0)) {
+    number = section->size;
+    if ((number > 0) && (section->data_ptr > 0)) {
       byte_addr = section->address;
       data_ptr  = &File[section->data_ptr];
-      number    = section->size;
 
       for (j = 0; j < number; j++) {
         b_memory_put(section->data, byte_addr + j, data_ptr[j], section->name, NULL);
@@ -589,10 +591,10 @@ _read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data
     }
 
     /* read the relocations */
-    if ((section->num_reloc > 0) && (section->reloc_ptr > 0)) {
+    number = section->relocation_list.num_nodes;
+    if ((number > 0) && (section->reloc_ptr > 0)) {
       data_ptr   = &File[section->reloc_ptr];
-      number     = section->num_reloc;
-      relocation = gp_coffgen_make_block_reloc(section);
+      relocation = gp_coffgen_make_block_reloc(section, number);
 
       for (j = 0; j < number; j++) {
         _read_reloc(Object, section, relocation, data_ptr, Data);
@@ -602,7 +604,8 @@ _read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data
     }
 
     /* read the line numbers */
-    if ((section->num_lineno > 0) && (section->lineno_ptr > 0)) {
+    number = section->line_number_list.num_nodes;
+    if ((number > 0) && (section->lineno_ptr > 0)) {
       if (FlagsIsNotAllClr(section->flags, STYP_ROM_AREA)) {
         org_to_byte_shift = Object->class->org_to_byte_shift;
       }
@@ -611,8 +614,7 @@ _read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data
       }
 
       data_ptr = &File[section->lineno_ptr];
-      number   = section->num_lineno;
-      linenum  = gp_coffgen_make_block_linenum(section);
+      linenum  = gp_coffgen_make_block_linenum(section, number);
 
       for (j = 0; j < number; j++) {
         _read_lineno(Object, section, org_to_byte_shift, linenum, data_ptr, Data);
@@ -637,7 +639,7 @@ _clean_symbol_table(gp_object_t *Object)
   gp_symbol_t  *aux_symbol;
   unsigned int  i;
 
-  curr_symbol = Object->symbol_list;
+  curr_symbol = Object->symbol_list.first;
   while (curr_symbol != NULL) {
     if (curr_symbol->section_number > N_UNDEF) {
       /* Assign section pointer, section numbers start at 1 (N_SCNUM) not 0 (N_UNDEF). */
@@ -647,10 +649,10 @@ _clean_symbol_table(gp_object_t *Object)
       curr_symbol->section = NULL;
     }
 
-    if (curr_symbol->num_auxsym > 0) {
+    if (curr_symbol->aux_list.num_nodes > 0) {
       /* Omit from chain this auxiliary entries. */
       next_symbol = curr_symbol->next;
-      for (i = 0; i < curr_symbol->num_auxsym; ++i) {
+      for (i = 0; i < curr_symbol->aux_list.num_nodes; ++i) {
         aux_symbol  = next_symbol;
         next_symbol = next_symbol->next;
         gp_coffgen_del_symbol(Object, aux_symbol);

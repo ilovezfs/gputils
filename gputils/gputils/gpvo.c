@@ -113,7 +113,7 @@ _print_header(const gp_object_t *object)
          (i < NELEM(magic)) ? magic[i].magic_name : "unknown");
   printf("Processor Type       %s\n",  processor_name);
   printf("Time Stamp           %s\n",  time_str);
-  printf("Number of Sections   %u\n",  object->num_sections);
+  printf("Number of Sections   %zu\n",  object->section_list.num_nodes);
   printf("Number of Symbols    %u\n",  object->num_symbols);
   printf("Characteristics      %#x\n", object->flags);
 
@@ -195,7 +195,7 @@ _print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber)
       filename = linenumber->symbol->name;
     }
     else {
-      filename = linenumber->symbol->aux_list->_aux_symbol._aux_file.filename;
+      filename = linenumber->symbol->aux_list.first->_aux_symbol._aux_file.filename;
     }
 
     printf("%-8i %#-8x %s\n",
@@ -282,8 +282,8 @@ _print_sec_header(proc_class_t class, const gp_section_t *section)
   printf("Physical address        %#x\n", gp_byte_to_org(org_to_byte_shift, section->address));
   printf("Virtual address         %#x\n", gp_byte_to_org(org_to_byte_shift, section->virtual_address));
   printf("Size of Section         %u\n",  section->size);
-  printf("Number of Relocations   %u\n",  section->num_reloc);
-  printf("Number of Line Numbers  %u\n",  section->num_lineno);
+  printf("Number of Relocations   %zu\n", section->relocation_list.num_nodes);
+  printf("Number of Line Numbers  %zu\n", section->line_number_list.num_nodes);
   printf("Flags                   %#x\n", section->flags);
 
   if (section->flags & STYP_TEXT) {
@@ -330,8 +330,9 @@ _print_sec_header(proc_class_t class, const gp_section_t *section)
 static void
 _print_sec_list(const gp_object_t *object)
 {
-  const gp_section_t *section = object->section_list;
+  const gp_section_t *section;
 
+  section = object->section_list.first;
   while (section != NULL) {
     _print_sec_header(object->class, section);
 
@@ -339,12 +340,12 @@ _print_sec_list(const gp_object_t *object)
       _print_data(object->class, object->processor, section);
     }
 
-    if ((section->num_reloc > 0)) {
-      _print_relocation_list(object->class, section->relocation_list);
+    if (section->relocation_list.num_nodes > 0) {
+      _print_relocation_list(object->class, section->relocation_list.first);
     }
 
-    if ((section->num_lineno > 0)) {
-      _print_linenum_list(object->class, section->line_number_list);
+    if (section->line_number_list.num_nodes > 0) {
+      _print_linenum_list(object->class, section->line_number_list.first);
     }
 
     section = section->next;
@@ -577,11 +578,10 @@ _print_sym_table(const gp_object_t *object)
   char         buffer_derived_type[8];
   char         buffer_class[8];
 
-  symbol = object->symbol_list;
-
   printf("Symbol Table\n");
   printf("Idx  Name                     Section          Value      Type     DT           Class     NumAux\n");
 
+  symbol = object->symbol_list.first;
   while (symbol != NULL) {
     if (symbol->section_number == N_DEBUG) {
       section = "DEBUG";
@@ -602,7 +602,7 @@ _print_sym_table(const gp_object_t *object)
       }
     }
 
-    printf("%04d %-24s %-16s %#-10lx %-8s %-12s %-9s %-4u\n",
+    printf("%04d %-24s %-16s %#-10lx %-8s %-12s %-9s %-4zu\n",
            idx,
            symbol->name,
            section,
@@ -610,9 +610,9 @@ _print_sym_table(const gp_object_t *object)
            _format_sym_type(symbol->type, buffer_type, sizeof(buffer_type)),
            _format_sym_derived_type(symbol->derived_type, buffer_derived_type, sizeof(buffer_derived_type)),
            _format_sym_class(symbol->class, buffer_class, sizeof(buffer_class)),
-           symbol->num_auxsym);
+           symbol->aux_list.num_nodes);
 
-    aux = symbol->aux_list;
+    aux = symbol->aux_list.first;
     while (aux != NULL) {
 
 #define AUX_INDENT "      "
@@ -684,8 +684,7 @@ _export_sym_table(gp_object_t *object)
   gp_symbol_t *symbol;
   char         buffer[BUFSIZ];
 
-  symbol = object->symbol_list;
-
+  symbol = object->symbol_list.first;
   while (symbol != NULL) {
     if ((state.export.enabled) && (symbol->class == C_EXT) && (symbol->section_number > N_UNDEF)) {
       _coff_type(symbol->type, buffer, sizeof(buffer));

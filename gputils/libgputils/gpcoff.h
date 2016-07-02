@@ -438,6 +438,9 @@ struct __attribute__ ((packed)) aux_fcn_calls {
 /* relocation linked list */
 
 typedef struct gp_reloc {
+  /* This always should be the first item! (gplist.c) */
+  GPNodeHeader(struct gp_reloc);
+
   /* entry relative address in bytes */
   uint32_t          address;
 
@@ -455,14 +458,21 @@ typedef struct gp_reloc {
 
   /* unique identification number of owner section */
   unsigned int      section_id;
-
-  struct gp_reloc  *prev;
-  struct gp_reloc  *next;
 } gp_reloc_t;
+
+typedef struct gp_reloc_list {
+  /* head of relocations
+   * tail of relocations
+   * number of relocations */
+  GPListHeader(gp_reloc_t);
+} gp_reloc_list_t;
 
 /* line number linked list */
 
 typedef struct gp_linenum {
+  /* This always should be the first item! (gplist.c) */
+  GPNodeHeader(struct gp_linenum);
+
   /* source file symbol */
   const struct gp_symbol *symbol;
 
@@ -474,14 +484,21 @@ typedef struct gp_linenum {
 
   /* unique identification number of owner section */
   unsigned int            section_id;
-
-  struct gp_linenum      *prev;
-  struct gp_linenum      *next;
 } gp_linenum_t;
+
+typedef struct gp_linenum_list {
+  /* head of line numbers
+   * tail of line numbers
+   * number of line numbers */
+  GPListHeader(gp_linenum_t);
+} gp_linenum_list_t;
 
 /* auxiliary symbol linked list */
 
 typedef struct gp_aux {
+  /* This always should be the first item! (gplist.c) */
+  GPNodeHeader(struct gp_aux);
+
   /* auxiliary symbol type */
   uint32_t type;
 
@@ -515,10 +532,14 @@ typedef struct gp_aux {
 
     uint8_t data[SYMBOL_SIZE_v2];
   } _aux_symbol;
-
-  struct gp_aux *prev;
-  struct gp_aux *next;
 } gp_aux_t;
+
+typedef struct gp_aux_list {
+  /* head of auxiliary symbols
+   * tail of auxiliary symbols
+   * number of auxiliary symbols */
+  GPListHeader(gp_aux_t);
+} gp_aux_list_t;
 
 /* A optimize constant for the gpcoffgen.c module. */
 #define OPT_FLAGS_GPCOFFGEN_MODULE      (1 << 0)
@@ -535,6 +556,9 @@ typedef struct gp_aux {
 /* symbol linked list */
 
 typedef struct gp_symbol {
+  /* This always should be the first item! (gplist.c) */
+  GPNodeHeader(struct gp_symbol);
+
   /* symbol name */
   char              *name;
 
@@ -560,14 +584,8 @@ typedef struct gp_symbol {
   /* storage class */
   uint8_t            class;
 
-  /* number of auxiliary symbols */
-  uint8_t            num_auxsym;
-
-  /* head of auxiliary symbols */
-  gp_aux_t          *aux_list;
-
-  /* tail of auxiliary symbols */
-  gp_aux_t          *aux_list_tail;
+  /* list of auxiliary symbols (See above.) */
+  gp_aux_list_t      aux_list;
 
   /* symbol number, only valid when writing coff or cod file */
   uint32_t           number;
@@ -582,9 +600,6 @@ typedef struct gp_symbol {
   /* unique identification number of owner object */
   unsigned int       object_id;
 
-  struct gp_symbol  *prev;
-  struct gp_symbol  *next;
-
   /*****************************************************************************
    *
    *                    Optimization part of this structure.
@@ -596,6 +611,13 @@ typedef struct gp_symbol {
   unsigned int       opt_flags;
 } gp_symbol_t;
 
+typedef struct gp_symbol_list {
+  /* head of symbols
+   * tail of symbols
+   * number of symbols */
+  GPListHeader(gp_symbol_t);
+} gp_symbol_list_t;
+
 /* hash table for find symbol name */
 
 typedef struct gp_hash {
@@ -606,6 +628,9 @@ typedef struct gp_hash {
 /* section linked list */
 
 typedef struct gp_section {
+  /* This always should be the first item! (gplist.c) */
+  GPNodeHeader(struct gp_section);
+
   /* section name */
   char               *name;
 
@@ -630,23 +655,11 @@ typedef struct gp_section {
   /* memory linked list */
   MemBlock_t         *data;
 
-  /* number of relocations */
-  uint16_t            num_reloc;
+  /* list of relocations (See above.) */
+  gp_reloc_list_t     relocation_list;
 
-  /* head of relocations */
-  gp_reloc_t         *relocation_list;
-
-  /* tail of relocations */
-  gp_reloc_t         *relocation_list_tail;
-
-  /* number of line numbers */
-  uint16_t            num_lineno;
-
-  /* head of line numbers */
-  gp_linenum_t       *line_number_list;
-
-  /* tail of line numbers */
-  gp_linenum_t       *line_number_list_tail;
+  /* list of line numbers (See above.) */
+  gp_linenum_list_t   line_number_list;
 
   /* Ordered, filtered array unto binary searches. */
   gp_linenum_t      **line_numbers_array;
@@ -673,9 +686,6 @@ typedef struct gp_section {
   /* unique identification number */
   unsigned int        serial_id;
 
-  struct gp_section  *prev;
-  struct gp_section  *next;
-
   /*****************************************************************************
    *
    *                    Optimization part of this structure.
@@ -691,6 +701,13 @@ typedef struct gp_section {
   /* use the optimization -- "OPT_FLAGS_..." */
   uint32_t           opt_flags;
 } gp_section_t;
+
+typedef struct gp_section_list {
+  /* head of sections
+   * tail of sections
+   * number of sections */
+  GPListHeader(gp_section_t);
+} gp_section_list_t;
 
 typedef struct gp_object {
   /* object filename */
@@ -717,23 +734,14 @@ typedef struct gp_object {
   /* flags */
   uint16_t           flags;
 
-  /* number of sections */
-  uint16_t           num_sections;
-
   /* block of section pointers: Created by gp_coffgen_make_block_section function. */
   gp_section_t     **section_ptr_array;
 
-  /* head of section list */
-  gp_section_t      *section_list;
+  /* list of sections (See above.) */
+  gp_section_list_t  section_list;
 
-  /* tail of section list */
-  gp_section_t      *section_list_tail;
-
-  /* head the list of reserved sections: It is necessary for the gplink/cod.c. */
-  gp_section_t      *dead_section_list;
-
-  /* tail the list of reserved sections: It is necessary for the gplink/cod.c. */
-  gp_section_t      *dead_section_list_tail;
+  /* list of reserved sections: It is necessary for the gplink/cod.c. */
+  gp_section_list_t  dead_section_list;
 
   /* number of symbols */
   uint32_t           num_symbols;
@@ -741,17 +749,11 @@ typedef struct gp_object {
   /* block of symbol pointers: Created by gp_coffgen_make_block_symbol function. */
   gp_symbol_t      **symbol_ptr_array;
 
-  /* head of symbol list */
-  gp_symbol_t       *symbol_list;
+  /* list of symbols (See above.) */
+  gp_symbol_list_t   symbol_list;
 
-  /* tail of symbol list */
-  gp_symbol_t       *symbol_list_tail;
-
-  /* head the list of reserved symbols: It is necessary for the gplink/cod.c. */
-  gp_symbol_t       *dead_symbol_list;
-
-  /* tail the list of reserved symbols: It is necessary for the gplink/cod.c. */
-  gp_symbol_t       *dead_symbol_list_tail;
+  /* list of reserved symbols: It is necessary for the gplink/cod.c. */
+  gp_symbol_list_t   dead_symbol_list;
 
   /* pointer array for relocation symbols without section */
   gp_symbol_t      **orphan_reloc_symbol_ptr_array;

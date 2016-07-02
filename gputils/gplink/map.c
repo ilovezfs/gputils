@@ -132,10 +132,10 @@ _write_sections(void)
   unsigned int   num_sections;
   int            org_to_byte_shift;
 
-  num_sections = state.object->num_sections;
+  num_sections = state.object->section_list.num_nodes;
   section_list = GP_Malloc(sizeof(gp_section_t *) * num_sections);
 
-  section = state.object->section_list;
+  section = state.object->section_list.first;
   for (i = 0; i < num_sections; i++) {
     assert(section != NULL);
     section_list[i] = section;
@@ -207,7 +207,7 @@ _write_program_memory(void)
   _map_line("                              Program Memory Usage");
   _map_line("                               Start         End");
   _map_line("                           ---------   ---------");
-  section = state.object->section_list;
+  section = state.object->section_list.first;
 
   while (section != NULL) {
     if ((section->flags & STYP_ROM_AREA) && (section->size > 0)) {
@@ -292,9 +292,8 @@ _write_symbols(void)
 
   syms = GP_Malloc(sizeof(struct syms_s) * state.object->num_symbols);
 
-  symbol = state.object->symbol_list;
   num_syms = 0;
-
+  symbol   = state.object->symbol_list.first;
   while (symbol != NULL) {
     if (symbol->class == C_FILE) {
       stack = _push_file(stack, symbol);
@@ -310,7 +309,7 @@ _write_symbols(void)
       else {
         syms[num_syms].file = stack->symbol;
         assert(syms[num_syms].file != NULL);
-        assert(syms[num_syms].file->aux_list != NULL);
+        assert(syms[num_syms].file->aux_list.first != NULL);
       }
 
       assert(symbol->section != NULL);
@@ -334,7 +333,7 @@ _write_symbols(void)
     _map_line("%25s   0x%06x %10s %10s %s", sm->name, sm->value,
               (sm->section->flags & STYP_ROM_AREA) ? "program" : "data",
               (sm->class == C_EXT) ? "extern" : "static",
-              (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
+              (syms[i].file != NULL) ? syms[i].file->aux_list.first->_aux_symbol._aux_file.filename : "");
   }
   _map_line(NULL);
   _map_line(NULL);
@@ -351,7 +350,7 @@ _write_symbols(void)
     _map_line("%25s   0x%06x %10s %10s %s", sm->name, sm->value,
               (sm->section->flags & STYP_ROM_AREA) ? "program" : "data",
               (sm->class == C_EXT) ? "extern" : "static",
-              (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
+              (syms[i].file != NULL) ? syms[i].file->aux_list.first->_aux_symbol._aux_file.filename : "");
   }
 
   free(syms);

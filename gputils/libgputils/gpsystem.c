@@ -271,6 +271,7 @@ gp_realloc(void *Mem, size_t Size, const char *File, size_t Line, const char *Fu
   void *m;
 
   if (Size == 0) {
+    free(Mem);
     return NULL;
   }
 
@@ -436,48 +437,15 @@ gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t 
 size_t
 gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...)
 {
-  size_t l;
-  size_t length;
-  va_list(ap);
+  size_t  l;
+  size_t  length;
+  va_list ap;
 
   length = gp_align_text(Buffer, Buffer_length, Current_length, EXPLANATION_DISTANCE);
   va_start(ap, Format);
   l = vsnprintf(&Buffer[length], Buffer_length - length, Format, ap);
   va_end(ap);
   return ((l >= 0) ? (length + l) : Current_length);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* linked list functions */
-
-gp_linked_list *
-gp_list_make(void)
-{
-  gp_linked_list *new;
-
-  new = GP_Malloc(sizeof(*new));
-  new->annotation = NULL;
-  new->prev = NULL;
-  new->next = NULL;
-
-  return new;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-gp_list_annotate(gp_linked_list *link, void *a)
-{
-  link->annotation = a;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void *
-gp_list_get(gp_linked_list *link)
-{
-  return link->annotation;
 }
 
 /*------------------------------------------------------------------------------------------------*/
