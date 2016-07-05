@@ -89,32 +89,34 @@ typedef union {
   };
 } insn_flags_t;
 
-extern pnode_t *mk_constant(int value);
+extern pnode_t *mk_constant(int Value);
 
 static gp_boolean prev_btfsx = false;
 
 /*------------------------------------------------------------------------------------------------*/
 
 static uint16_t
-_check_write(uint16_t value)
+_check_write(uint16_t Value)
 {
+  int      addr_digits;
   uint16_t insn;
   int      org;
 
   if (state.mode == MODE_RELOCATABLE) {
     if (state.obj.section == NULL) {
       gperror_verror(GPE_WRONG_SECTION, NULL);
-      return value;
+      return Value;
     }
     /* Don't do program memory checks for data memory. */
     if (IS_RAM_ORG) {
-      return value;
+      return Value;
     }
   }
 
+  addr_digits = state.device.class->addr_digits;
+
   if (IS_PIC16_CORE && (state.byte_addr > 0x1ffff)) {
-    gperror_verror(GPE_ADDROVF, "Address{0x%0*X}",
-                   state.device.class->addr_digits, state.byte_addr);
+    gperror_verror(GPE_ADDROVF, "Address{0x%0*X}", addr_digits, state.byte_addr);
   }
   else if ((!IS_PIC16E_CORE) && ((state.byte_addr & 0x1ffff) == 0) && ((int)state.byte_addr > 0)) {
     /* We cast state.byte_addr to signed int on purpose to repeat a bug from
@@ -126,9 +128,9 @@ _check_write(uint16_t value)
 
   if (state.mpasm_compatible) {
     /* MPASM(X) compatible mode. */
-    if (value > state.device.class->core_mask) {
-      gperror_vmessage(GPM_RANGE, NULL, value);
-      value &= state.device.class->core_mask;
+    if (Value > state.device.class->core_mask) {
+      gperror_vmessage(GPM_RANGE, NULL, Value);
+      Value &= state.device.class->core_mask;
     }
 
     if ((state.num.errors == 0) &&
@@ -140,15 +142,15 @@ _check_write(uint16_t value)
     /* GPASM compatible mode. */
     gp_boolean is_config = (gp_processor_is_config_org(state.processor, org) >= 0) ? true : false;
 
-    if (value > state.device.class->core_mask) {
+    if (Value > state.device.class->core_mask) {
     /* The size of the config words may be differ the size of the program words. */
       if (!is_config) {
-        gperror_vmessage(GPM_RANGE, NULL, value);
-        value &= state.device.class->core_mask;
+        gperror_vmessage(GPM_RANGE, NULL, Value);
+        Value &= state.device.class->core_mask;
       }
-      else if (value > state.device.class->config_mask) {
-        gperror_vmessage(GPM_RANGE, NULL, value);
-        value &= state.device.class->config_mask;
+      else if (Value > state.device.class->config_mask) {
+        gperror_vmessage(GPM_RANGE, NULL, Value);
+        Value &= state.device.class->config_mask;
       }
     }
 
@@ -171,8 +173,8 @@ _check_write(uint16_t value)
   if (state.maxrom >= 0) {
     if (org > state.maxrom) {
       gperror_vwarning(GPW_EXCEED_ROM, "Address{0x%0*X} > MAXROM{0x%0*X}",
-                       state.device.class->addr_digits, org,
-                       state.device.class->addr_digits, state.maxrom);
+                       addr_digits, org,
+                       addr_digits, state.maxrom);
     }
     else {
       /* check if current org is within a bad address range */
@@ -181,15 +183,16 @@ _check_write(uint16_t value)
       for (cur_badrom = state.badrom; cur_badrom != NULL; cur_badrom = cur_badrom->next) {
         if ((org >= cur_badrom->start) && (org <= cur_badrom->end)) {
           gperror_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*X} <= Address{0x%0*X} <= BADROM_END{0x%0*X}",
-                           state.device.class->addr_digits, cur_badrom->start,
-                           state.device.class->addr_digits, org,
-                           state.device.class->addr_digits, cur_badrom->end);
+                           addr_digits, cur_badrom->start,
+                           addr_digits, org,
+                           addr_digits, cur_badrom->end);
           break;
         }
       }
     }
   }
-  return value;
+
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -217,12 +220,12 @@ _check_processor_select(const char *Name)
 /* Write a word into the memory image at the current location. */
 
 static void
-_emit(uint16_t value, const char *name)
+_emit(uint16_t Value, const char *Name)
 {
   /* only write the program data to memory on the second pass */
   if (state.pass == 2) {
-    value = _check_write(value);
-    state.device.class->i_memory_put(state.i_memory, state.byte_addr, value, name, NULL);
+    Value = _check_write(Value);
+    state.device.class->i_memory_put(state.i_memory, state.byte_addr, Value, Name, NULL);
   }
 
   state.byte_addr += 2;
@@ -231,14 +234,17 @@ _emit(uint16_t value, const char *name)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_emit_byte(uint16_t value, const char *name)
+_emit_byte(uint16_t Value, const char *Name)
 {
+  int           addr_digits;
   uint8_t       byte;
   uint16_t      word;
   unsigned int  org;
   range_pair_t *cur_badrom;
 
   if (state.pass == 2) {
+    addr_digits = state.device.class->addr_digits;
+
     if ((state.mode == MODE_RELOCATABLE) && (state.obj.section == NULL)) {
       gperror_verror(GPE_WRONG_SECTION, NULL);
     }
@@ -252,11 +258,11 @@ _emit_byte(uint16_t value, const char *name)
         gperror_error(GPE_ADDROVF, "Address wrapped around 0.");
       }
 
-      if (value > state.device.class->core_mask) {
-        word = value & state.device.class->core_mask;
+      if (Value > state.device.class->core_mask) {
+        word = Value & state.device.class->core_mask;
 
-        gperror_vwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", value, value, word, word);
-        value = word;
+        gperror_vwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", Value, Value, word, word);
+        Value = word;
       }
 
       org = gp_processor_byte_to_real(state.processor, state.byte_addr);
@@ -269,17 +275,17 @@ _emit_byte(uint16_t value, const char *name)
       if (state.maxrom >= 0) {
         if (org > state.maxrom) {
           gperror_vwarning(GPW_EXCEED_ROM, "Address{0x%0*X} > MAXROM{0x%0*X}",
-                           state.device.class->addr_digits, org,
-                           state.device.class->addr_digits, state.maxrom);
+                           addr_digits, org,
+                           addr_digits, state.maxrom);
         }
         else {
           /* check if current org is within a bad address range */
           for (cur_badrom = state.badrom; cur_badrom != NULL; cur_badrom = cur_badrom->next) {
             if ((org >= cur_badrom->start) && (org <= cur_badrom->end)) {
               gperror_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*X} <= Address{0x%0*X} <= BADROM_END{0x%0*X}",
-                               state.device.class->addr_digits, cur_badrom->start,
-                               state.device.class->addr_digits, org,
-                               state.device.class->addr_digits, cur_badrom->end);
+                               addr_digits, cur_badrom->start,
+                               addr_digits, org,
+                               addr_digits, cur_badrom->end);
               break;
             }
           }
@@ -287,26 +293,27 @@ _emit_byte(uint16_t value, const char *name)
       }
     }
 
-    b_memory_put(state.i_memory, state.byte_addr, (uint8_t)value, name, NULL);
+    b_memory_put(state.i_memory, state.byte_addr, (uint8_t)Value, Name, NULL);
   }
+
   ++state.byte_addr;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_off_or_on(pnode_t *p)
+_off_or_on(pnode_t *Pnode)
 {
   int had_error = false;
   int ret = false;
 
-  if (!PnIsSymbol(p)) {
+  if (!PnIsSymbol(Pnode)) {
     had_error = true;
   }
-  else if (strcasecmp(PnSymbol(p), "off") == 0) {
+  else if (strcasecmp(PnSymbol(Pnode), "off") == 0) {
     ret = false;
   }
-  else if (strcasecmp(PnSymbol(p), "on") == 0) {
+  else if (strcasecmp(PnSymbol(Pnode), "on") == 0) {
     ret = true;
   }
   else {
@@ -332,7 +339,7 @@ _off_or_on(pnode_t *p)
  */
 
 static unsigned int
-_emit_data(pnode_t *L, unsigned int char_shift, const char *name)
+_emit_data(pnode_t *List, unsigned int Char_shift, const char *Name)
 {
   const pnode_t *p;
   const char    *pc;
@@ -341,8 +348,8 @@ _emit_data(pnode_t *L, unsigned int char_shift, const char *name)
   uint16_t       word;
   unsigned int   n;
 
-  for (begin_org = state.byte_addr; L != NULL; L = PnListTail(L)) {
-    p = PnListHead(L);
+  for (begin_org = state.byte_addr; List != NULL; List = PnListTail(List)) {
+    p = PnListHead(List);
 
     if (PnIsString(p)) {
       pc = PnString(p);
@@ -351,11 +358,11 @@ _emit_data(pnode_t *L, unsigned int char_shift, const char *name)
         /* Special case of PIC16E strings in code. */
         for (n = 0; *pc != '\0'; ++n) {
           pc = convert_escape_chars(pc, &value);
-          _emit_byte(value, name);
+          _emit_byte(value, Name);
         }
         /* Pad using zero if 16-bit numbers. */
         if (n & 1) {
-          _emit_byte(0, name);
+          _emit_byte(0, Name);
         }
       }
       else {
@@ -367,29 +374,29 @@ _emit_data(pnode_t *L, unsigned int char_shift, const char *name)
             word = value;
           }
           else {
-            word = value << char_shift;
+            word = value << Char_shift;
 
             if (*pc != '\0') {
               pc = convert_escape_chars(pc, &value);
               word |= value & 0xff;
             }
           }
-          _emit(word, name);
+          _emit(word, Name);
         }
         /* For data and packed emit a terminating nul for strings. */
         if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
-          _emit('\0', name);
+          _emit('\0', Name);
         }
       }
     }
     else if (state.device.class->core_mask > 0xff) {
       word = eval_reloc_evaluate(p, RELOCT_ALL, NULL, NULL);
-      _emit(word, name);
+      _emit(word, Name);
     }
     else {
       /* FIXME: This case is for EEPROM8. Do we need the RELOCT_LOW? */
       word = eval_reloc_evaluate(p, RELOCT_LOW, NULL, NULL);
-      _emit_byte(word, name);
+      _emit_byte(word, Name);
     }
   }
 
@@ -442,14 +449,14 @@ _enter_elif(void)
 /* Checking that a macro definition's parameters are correct. */
 
 static gp_boolean
-_macro_parms_simple(pnode_t *parms)
+_macro_parms_simple(pnode_t *Parms)
 {
-  while (parms != NULL) {
-    if (!PnIsSymbol(PnListHead(parms))) {
+  while (Parms != NULL) {
+    if (!PnIsSymbol(PnListHead(Parms))) {
       gperror_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
       return false;
     }
-    parms = PnListTail(parms);
+    Parms = PnListTail(Parms);
   }
   return true;
 }
@@ -457,17 +464,17 @@ _macro_parms_simple(pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_macro_parm_unique(pnode_t *M, pnode_t *L)
+_macro_parm_unique(pnode_t *Macro, pnode_t *List)
 {
-  while (L != NULL) {
-    if (STRCMP(PnSymbol(M), PnSymbol(PnListHead(L))) == 0) {
-      char buf[BUFSIZ];
+  char buf[BUFSIZ];
 
-      snprintf(buf, sizeof(buf), "Duplicate macro parameter (%s).", PnSymbol(PnListHead(L)));
+  while (List != NULL) {
+    if (STRCMP(PnSymbol(Macro), PnSymbol(PnListHead(List))) == 0) {
+      snprintf(buf, sizeof(buf), "Duplicate macro parameter (%s).", PnSymbol(PnListHead(List)));
       gperror_error(GPE_UNKNOWN, buf);
       return false;
     }
-    L = PnListTail(L);
+    List = PnListTail(List);
   }
   return true;
 }
@@ -475,19 +482,19 @@ _macro_parm_unique(pnode_t *M, pnode_t *L)
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_macro_parms_ok(pnode_t *parms)
+_macro_parms_ok(pnode_t *Parms)
 {
   /* Check if all params are symbols. */
-  if (!_macro_parms_simple(parms)) {
+  if (!_macro_parms_simple(Parms)) {
     return false;
   }
 
   /* Check if params are unique. */
-  while (parms != NULL) {
-    if (!_macro_parm_unique(PnListHead(parms), PnListTail(parms))) {
+  while (Parms != NULL) {
+    if (!_macro_parm_unique(PnListHead(Parms), PnListTail(Parms))) {
       return false;
     }
-    parms = PnListTail(parms);
+    Parms = PnListTail(Parms);
   }
 
   return true;
@@ -496,23 +503,23 @@ _macro_parms_ok(pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_access_ovr(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    switch (arity) {
+    switch (Arity) {
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
@@ -522,24 +529,24 @@ _do_access_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     case 1:
       /* new absolute section */
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
       gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = eval_maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY | STYP_ABS;
       break;
 
     default:
-      eval_enforce_arity(arity, 1);
+      eval_enforce_arity(Arity, 1);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_badram(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   int            maxram;
@@ -547,13 +554,13 @@ _do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
   int            end;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
 
-  if (parms == NULL) {
+  if (Parms == NULL) {
     gperror_verror(GPE_MISSING_ARGU, NULL);
   }
   else {
@@ -562,8 +569,8 @@ _do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
       maxram = MAX_RAM - 1;
     }
 
-    for (; parms != NULL; parms = PnListTail(parms)) {
-      p = PnListHead(parms);
+    for (; Parms != NULL; Parms = PnListTail(Parms)) {
+      p = PnListHead(Parms);
 
       if (PnIsBinOp(p) && (PnBinOpOp(p) == '-')) {
         if (eval_can_evaluate(PnBinOpP0(p)) && eval_can_evaluate(PnBinOpP1(p))) {
@@ -607,17 +614,17 @@ _do_badram(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_badrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_badrom(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
@@ -625,35 +632,35 @@ _do_badrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
   /* FIXME: implement this directive */
   gperror_warning(GPW_UNKNOWN, "gpasm doesn't support the badrom directive yet.");
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_bankisel(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   int            num_reloc;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (((!IS_PIC14_CORE) && (!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE) && (!IS_PIC16_CORE)) ||
       (state.processor->num_banks == 1)) {
     state.lst.line.linetype = LTY_NONE;
     gperror_vmessage(GPM_EXTPAGE, NULL);
-    return r;
+    return Value;
   }
 
   if (prev_btfsx) {
     gperror_vwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, NULL, "Bankisel");
   }
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (state.mode == MODE_ABSOLUTE) {
       state.byte_addr += gp_processor_set_ibank(state.device.class,
@@ -672,7 +679,7 @@ _do_bankisel(gpasmVal r, const char *name, int arity, pnode_t *parms)
                                                   state.i_memory, state.byte_addr);
       }
       else if (num_reloc != 1) {
-        gperror_verror(GPE_UNRESOLVABLE, "\"%s\"", name);
+        gperror_verror(GPE_UNRESOLVABLE, "\"%s\"", Name);
       }
       else {
         eval_reloc_evaluate(p, RELOCT_IBANKSEL, NULL, NULL);
@@ -681,29 +688,29 @@ _do_bankisel(gpasmVal r, const char *name, int arity, pnode_t *parms)
           unsigned int mask;
 
           for (mask = 0x100; mask < (state.processor->num_banks << PIC14_BANK_SHIFT); mask <<= 1) {
-            _emit(0, name);
+            _emit(0, Name);
           }
         }
         else {
-          _emit(0, name);
+          _emit(0, Name);
         }
       }
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_eval_update_reloc_value(const pnode_t *p, uint16_t type)
+_eval_update_reloc_value(const pnode_t *Pnode, uint16_t Type)
 {
   gpasmVal   value;
   gp_boolean is_reloc;
   gpasmVal   reloc_val;
 
-  value = eval_reloc_evaluate(p, type, &is_reloc, &reloc_val);
+  value = eval_reloc_evaluate(Pnode, Type, &is_reloc, &reloc_val);
 
   if ((value == 0) && is_reloc) {
     value = reloc_val;
@@ -715,7 +722,7 @@ _eval_update_reloc_value(const pnode_t *p, uint16_t type)
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   int            address;
@@ -724,8 +731,8 @@ _do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
   gp_boolean     bank_var;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (state.processor->num_banks == 1) {
@@ -736,7 +743,7 @@ _do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
       set_global(GLOBAL_ACT_BANK_ADDR, 0, LFT_TEMPORARY, VAL_CONSTANT, true);
     }
 
-    return r;
+    return Value;
   }
 
   if (prev_btfsx) {
@@ -746,8 +753,8 @@ _do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
   bank_var = false;
   bank     = -1;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (state.mode == MODE_ABSOLUTE) {
       address = eval_maybe_evaluate(p);
@@ -775,37 +782,37 @@ _do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
         bank_var = true;
       }
       else if (num_reloc != 1) {
-        gperror_verror(GPE_UNRESOLVABLE, "\"%s\"", name);
+        gperror_verror(GPE_UNRESOLVABLE, "\"%s\"", Name);
       }
       else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_MOVLB);
         bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
         bank_var = true;
-        _emit(PIC12E_INSN_MOVLB, name);
+        _emit(PIC12E_INSN_MOVLB, Name);
       }
       else if (IS_PIC14E_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_MOVLB);
         bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
         bank_var = true;
-        _emit(PIC14E_INSN_MOVLB, name);
+        _emit(PIC14E_INSN_MOVLB, Name);
       }
       else if (IS_PIC14EX_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_MOVLB);
         bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
         bank_var = true;
-        _emit(PIC14EX_INSN_MOVLB, name);
+        _emit(PIC14EX_INSN_MOVLB, Name);
       }
       else if (IS_PIC16_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_BANKSEL);
         bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
         bank_var = true;
-        _emit(0x0000, name);
+        _emit(0x0000, Name);
       }
       else if (IS_PIC16E_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_BANKSEL);
         bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
         bank_var = true;
-        _emit(PIC16E_INSN_MOVLB, name);
+        _emit(PIC16E_INSN_MOVLB, Name);
       }
       else {
         switch (state.processor->num_banks) {
@@ -813,15 +820,15 @@ _do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
           address  = _eval_update_reloc_value(p, RELOCT_BANKSEL);
           bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
           bank_var = true;
-          _emit(0, name);
+          _emit(0, Name);
           break;
 
         case 4:
           address  = _eval_update_reloc_value(p, RELOCT_BANKSEL);
           bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
           bank_var = true;
-          _emit(0, name);
-          _emit(0, name);
+          _emit(0, Name);
+          _emit(0, Name);
           break;
         }
       }
@@ -838,29 +845,29 @@ _do_banksel(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_code(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_code(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    switch (arity) {
+    switch (Arity) {
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
@@ -870,30 +877,30 @@ _do_code(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     case 1:
       /* new absolute section */
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
       gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = gp_processor_org_to_byte(state.device.class, eval_maybe_evaluate(p));
       state.obj.new_sect_flags = STYP_TEXT | STYP_ABS;
       break;
 
     default:
-      eval_enforce_arity(arity, 1);
+      eval_enforce_arity(Arity, 1);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_code_pack(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (!IS_PIC16E_CORE) {
@@ -904,10 +911,10 @@ _do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
     state.next_state = STATE_SECTION;
 
     if (state.mode == MODE_ABSOLUTE) {
-      gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+      gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
     }
     else {
-      switch (arity) {
+      switch (Arity) {
       case 0:
         /* new relocatable section */
         gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
@@ -917,40 +924,40 @@ _do_code_pack(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
       case 1:
         /* new absolute section */
-        p = PnListHead(parms);
+        p = PnListHead(Parms);
         gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
         state.obj.new_sect_addr  = gp_processor_org_to_byte(state.device.class, eval_maybe_evaluate(p));
         state.obj.new_sect_flags = STYP_TEXT | STYP_BPACK | STYP_ABS;
         break;
 
       default:
-        eval_enforce_arity(arity, 1);
+        eval_enforce_arity(Arity, 1);
       }
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_constant(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_constant(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   gp_boolean     first;
   const char    *lhs;
   gpasmVal       val;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SET4;
 
   first = true;
-  for (; parms != NULL; parms = PnListTail(parms)) {
-    p = PnListHead(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
     if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (eval_enforce_simple(PnBinOpP0(p))) {
@@ -963,7 +970,7 @@ _do_constant(gpasmVal r, const char *name, int arity, pnode_t *parms)
         set_global(lhs, val, LFT_PERMANENT, VAL_CONSTANT, false);
 
         if (first) {
-          r = val;
+          Value = val;
           first = false;
         }
       }
@@ -973,7 +980,7 @@ _do_constant(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -986,11 +993,11 @@ _do_constant(gpasmVal r, const char *name, int arity, pnode_t *parms)
  * storing configuration data (e.g. code protection, wdt enable, etc.). Each
  * family of the pic microcontrollers treats this memory slightly different.
  *
- * do_config() - Called by the parser when a __CONFIG assembler directive
- *               is encountered.
+ * _do_config() - Called by the parser when a __CONFIG assembler directive
+ *                is encountered.
  *
- * do_gpasm_config() - Called by the parser to process MPASM(X) style CONFIG xx=yy
- *                     directives for all devices.
+ * _do_gpasm_config() - Called by the parser to process MPASM(X) style CONFIG xx=yy
+ *                      directives for all devices.
  */
 
 static gp_boolean config_us_used    = false;
@@ -1002,10 +1009,10 @@ static gp_boolean config_mpasm_used = false;
  */
 
 static MemBlock_t *
-_find_conf_sec_mem(unsigned int ca)
+_find_conf_sec_mem(unsigned int Ca)
 {
-  conf_mem_block_t *p;
-  int               ba = (IS_PIC16_CORE || IS_PIC16E_CORE) ? ca : (ca - (ca & 1));
+  const conf_mem_block_t *p;
+  int                     ba = (IS_PIC16_CORE || IS_PIC16E_CORE) ? Ca : (Ca - (Ca & 1));
 
   for (p = state.conf_sec_mem; p != NULL; p = p->next) {
     if (p->addr == ba) {
@@ -1019,14 +1026,13 @@ _find_conf_sec_mem(unsigned int ca)
 /*------------------------------------------------------------------------------------------------*/
 
 static MemBlock_t *
-_add_conf_sec_mem(unsigned int ca, gp_boolean new_config)
+_add_conf_sec_mem(unsigned int Ca, gp_boolean New_config)
 {
-  conf_mem_block_t *new = GP_Malloc(sizeof(conf_mem_block_t));
-  conf_mem_block_t *p;
+  conf_mem_block_t *new = GP_Calloc(1, sizeof(conf_mem_block_t));
 
-  new->addr = ((IS_PIC16_CORE || IS_PIC16E_CORE) && new_config) ? ca : (ca & ~1);
-  new->m = i_memory_create();
-  new->new_config = new_config;
+  new->addr       = ((IS_PIC16_CORE || IS_PIC16E_CORE) && New_config) ? Ca : (Ca & ~1);
+  new->m          = i_memory_create();
+  new->new_config = New_config;
 
   if (state.debug_info) {
     new->file_symbol = state.obj.debug_file;
@@ -1036,16 +1042,17 @@ _add_conf_sec_mem(unsigned int ca, gp_boolean new_config)
     new->file_symbol = state.src->file_symbol;
     new->line_number = state.src->line_number;
   }
-  new->next = NULL;
 
-  if (state.conf_sec_mem != NULL) {
-    for (p = state.conf_sec_mem; p->next != NULL; p = p->next)
-      ;
-    p->next = new;
-  }
-  else {
+  if (state.conf_sec_mem == NULL) {
+    /* The list is empty. */
     state.conf_sec_mem = new;
   }
+  else {
+    /* Append the new node to the end of the list. */
+    state.conf_sec_mem_last->next = new;
+  }
+
+  state.conf_sec_mem_last = new;
 
   return new->m;
 }
@@ -1053,22 +1060,21 @@ _add_conf_sec_mem(unsigned int ca, gp_boolean new_config)
 /*------------------------------------------------------------------------------------------------*/
 
 static MemBlock_t *
-_get_config_mem(unsigned int ca, gp_boolean new_config)
+_get_config_mem(unsigned int Ca, gp_boolean New_config)
 {
   MemBlock_t *mem;
 
   if (state.mode != MODE_RELOCATABLE) {
     return state.c_memory;
   }
-  else {
-    mem = _find_conf_sec_mem(ca);
 
-    if (mem == NULL) {
-      mem = _add_conf_sec_mem(ca, new_config);
-    }
+  mem = _find_conf_sec_mem(Ca);
 
-    return mem;
+  if (mem == NULL) {
+    mem = _add_conf_sec_mem(Ca, New_config);
   }
+
+  return mem;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1076,42 +1082,42 @@ _get_config_mem(unsigned int ca, gp_boolean new_config)
 /* helper to write configuration data, grabbing defaults when necessary */
 
 static void
-_config_16_set_byte_mem(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev, unsigned int ca,
-                        uint8_t byte, uint8_t mask)
+_config_16_set_byte_mem(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev, unsigned int Ca,
+                        uint8_t Byte, uint8_t Mask)
 {
   uint8_t old_byte;
   char    buf[BUFSIZ];
 
-  snprintf(buf, sizeof(buf), "CONFIG_%0*X", state.device.class->addr_digits, ca);
+  snprintf(buf, sizeof(buf), "CONFIG_%0*X", state.device.class->addr_digits, Ca);
 
-  if (!b_memory_get(config_mem, ca, &old_byte, NULL, NULL)) {
-    old_byte = (uint8_t)gp_cfg_get_default(p_dev, ca);
+  if (!b_memory_get(Config_mem, Ca, &old_byte, NULL, NULL)) {
+    old_byte = (uint8_t)gp_cfg_get_default(P_dev, Ca);
   }
 
-  b_memory_put(config_mem, ca, (old_byte & ~mask) | byte, buf, NULL);
+  b_memory_put(Config_mem, Ca, (old_byte & ~Mask) | Byte, buf, NULL);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_config_16_set_word_mem(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev,
-                        unsigned int ca, uint8_t byte, uint8_t mask)
+_config_16_set_word_mem(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev,
+                        unsigned int Ca, uint8_t Byte, uint8_t Mask)
 {
   uint8_t other_byte;
   char    buf[BUFSIZ];
 
-  if (!b_memory_get(config_mem, ca ^ 1, &other_byte, NULL, NULL)) {
-    snprintf(buf, sizeof(buf), "CONFIG_%0*X", state.device.class->addr_digits, ca);
-    other_byte = gp_cfg_get_default(p_dev, ca ^ 1);
-    b_memory_put(config_mem, ca ^ 1, other_byte, buf, NULL);
+  if (!b_memory_get(Config_mem, Ca ^ 1, &other_byte, NULL, NULL)) {
+    snprintf(buf, sizeof(buf), "CONFIG_%0*X", state.device.class->addr_digits, Ca);
+    other_byte = gp_cfg_get_default(P_dev, Ca ^ 1);
+    b_memory_put(Config_mem, Ca ^ 1, other_byte, buf, NULL);
   }
-  _config_16_set_byte_mem(config_mem, p_dev, ca, byte, mask);
+  _config_16_set_byte_mem(Config_mem, P_dev, Ca, Byte, Mask);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_config(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t         *p;
   int                    ca;
@@ -1122,15 +1128,15 @@ _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
   char                   buf[BUFSIZ];
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   config_us_used = true;
 
   if (config_mpasm_used) {
     gperror_verror(GPE_CONFIG_usCONFIG, NULL);
-    return r;
+    return Value;
   }
 
   if (IS_PIC16E_CORE) {
@@ -1139,7 +1145,7 @@ _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   state.lst.line.linetype = LTY_CONFIG;
 
-  switch(arity) {
+  switch(Arity) {
   case 1:
     /* FIXME: Whenever there are more than one configuration address, the
        address must be specified in MPASM. MPASM fails with error:
@@ -1153,17 +1159,17 @@ _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
 
     ca = state.processor->config_addrs[0];
-    p = PnListHead(parms);
+    p = PnListHead(Parms);
     break;
 
   case 2:
-    ca = eval_maybe_evaluate(PnListHead(parms));
-    p = PnListHead(PnListTail(parms));
+    ca = eval_maybe_evaluate(PnListHead(Parms));
+    p = PnListHead(PnListTail(Parms));
     break;
 
   default:
-    eval_enforce_arity(arity, 2);
-    return r;
+    eval_enforce_arity(Arity, 2);
+    return Value;
   }
 
   ca = gp_processor_org_to_byte(state.device.class, ca);
@@ -1209,7 +1215,7 @@ _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1217,9 +1223,9 @@ _do_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
 /* Sets defaults over unused portions of configuration memory. */
 
 static void
-_config_16_check_defaults(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev)
+_config_16_check_defaults(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev)
 {
-  const gp_cfg_addr_t *addrs = p_dev->addresses;
+  const gp_cfg_addr_t *addrs = P_dev->addresses;
   unsigned int         t;
   uint8_t              byte;
 
@@ -1233,9 +1239,9 @@ _config_16_check_defaults(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev)
    * nothing in the hex file for unspecified bytes. I'm not sure the best
    * approach here - defaults or nothing. Going to go with defaults.
    */
-  for (t = 0; t < p_dev->address_count; ++addrs, ++t) {
-    if (!b_memory_get(config_mem, addrs->address, &byte, NULL, NULL)) {
-      _config_16_set_byte_mem(config_mem, p_dev, addrs->address, addrs->def_value, 0xff);
+  for (t = 0; t < P_dev->address_count; ++addrs, ++t) {
+    if (!b_memory_get(Config_mem, addrs->address, &byte, NULL, NULL)) {
+      _config_16_set_byte_mem(Config_mem, P_dev, addrs->address, addrs->def_value, 0xff);
     }
   }
 }
@@ -1245,7 +1251,7 @@ _config_16_check_defaults(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev)
 /* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC16(E) devices. */
 
 static gpasmVal
-_do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
+_do_16_config(gpasmVal Value, const char *Name, int Arity, const pnode_t *Parms)
 {
   static uint8_t            double_mask[64] = { 0, };
 
@@ -1267,7 +1273,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 
   if (config_us_used) {
     gperror_verror(GPE_CONFIG_usCONFIG, NULL);
-    return r;
+    return Value;
   }
 
   /* make sure we an find our device in the config DB */
@@ -1275,22 +1281,22 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   if (p_dev == NULL) {
     gperror_verror(GPE_UNKNOWN, "The %s processor has no entries in the config db. CONFIG cannot be used.",
              state.processor->names[2]);
-    return r;
+    return Value;
   }
 
   /* validate argument format */
-  if ((parms == NULL) || !PnIsBinOp(parms) || (PnBinOpOp(parms) != '=')) {
+  if ((Parms == NULL) || !PnIsBinOp(Parms) || (PnBinOpOp(Parms) != '=')) {
     gperror_error(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use `CONFIG KEY = VALUE'");
-    return r;
+    return Value;
   }
 
   /* validate parameter types */
-  k = PnBinOpP0(parms);
-  v = PnBinOpP1(parms);
+  k = PnBinOpP0(Parms);
+  v = PnBinOpP1(Parms);
 
   if (!PnIsSymbol(k) || (!PnIsSymbol(v) && !PnIsConstant(v))) {
     gperror_error(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use 'CONFIG KEY = VALUE'");
-    return r;
+    return Value;
   }
 
   /* grab string representations */
@@ -1323,7 +1329,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
     snprintf(buf, sizeof(buf), "CONFIG Directive Error: Setting not found for %s processor: \"%s\"",
              state.processor->names[2], k_str);
     gperror_error(GPE_UNKNOWN, buf);
-    return r;
+    return Value;
   }
 
   /* Note address to lister, though it doesn't seem to use it. */
@@ -1334,7 +1340,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   if (p_opt == NULL) {
     snprintf(buf, sizeof(buf), "CONFIG Directive Error: Specified value not valid for directive: \"%s\"", v_str);
     gperror_error(GPE_UNKNOWN, buf);
-    return r;
+    return Value;
   }
 
   /* emit the bytes if appropriate */
@@ -1351,7 +1357,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
       if (double_mask[dm_addr] & p_dir->mask) {
         snprintf(buf, sizeof(buf), "CONFIG Directive Error: Multiple definitions found for %s setting.", k_str);
         gperror_error(GPE_UNKNOWN, buf);
-        return r;
+        return Value;
       }
       double_mask[dm_addr] |= p_dir->mask;
     }
@@ -1363,29 +1369,29 @@ _do_16_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
     _config_16_set_byte_mem(config_mem, p_dev, ca, (uint8_t)p_opt->value, (uint8_t)p_dir->mask);
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_config_12_14_set_word_mem(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev,
-                           unsigned int ca, uint16_t word, uint16_t mask)
+_config_12_14_set_word_mem(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev,
+                           unsigned int Ca, uint16_t Word, uint16_t Mask)
 {
   unsigned int org;
   uint16_t     old_word;
   char         buf[BUFSIZ];
 
-  org = gp_processor_byte_to_org(state.device.class, ca);
+  org = gp_processor_byte_to_org(state.device.class, Ca);
   snprintf(buf, sizeof(buf), "CONFIG_%0*X", state.device.class->addr_digits, org);
 
-  if (!state.device.class->i_memory_get(config_mem, ca, &old_word, NULL, NULL)) {
-    old_word = gp_cfg_get_default(p_dev, org);
+  if (!state.device.class->i_memory_get(Config_mem, Ca, &old_word, NULL, NULL)) {
+    old_word = gp_cfg_get_default(P_dev, org);
   }
 
-  word |= (old_word & ~mask);
-  word &= state.device.class->config_mask;
-  state.device.class->i_memory_put(config_mem, ca, word, buf, NULL);
+  Word |= (old_word & ~Mask);
+  Word &= state.device.class->config_mask;
+  state.device.class->i_memory_put(Config_mem, Ca, Word, buf, NULL);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1393,19 +1399,19 @@ _config_12_14_set_word_mem(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev,
 /* Sets defaults over unused portions of configuration memory. */
 
 static void
-_config_12_14_check_defaults(MemBlock_t *config_mem, const gp_cfg_device_t *p_dev)
+_config_12_14_check_defaults(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev)
 {
-  const gp_cfg_addr_t *addrs = p_dev->addresses;
+  const gp_cfg_addr_t *addrs = P_dev->addresses;
   unsigned int         addr;
   uint16_t             word;
   unsigned int         t;
 
-  for (t = 0; t < p_dev->address_count; ++addrs, ++t) {
+  for (t = 0; t < P_dev->address_count; ++addrs, ++t) {
     addr = gp_processor_org_to_byte(state.device.class, addrs->address);
 
-    if (!state.device.class->i_memory_get(config_mem, addr, &word, NULL, NULL)) {
+    if (!state.device.class->i_memory_get(Config_mem, addr, &word, NULL, NULL)) {
       word = addrs->def_value & state.device.class->config_mask;
-      state.device.class->i_memory_put(config_mem, addr, word, NULL, NULL);
+      state.device.class->i_memory_put(Config_mem, addr, word, NULL, NULL);
     }
   }
 }
@@ -1415,7 +1421,7 @@ _config_12_14_check_defaults(MemBlock_t *config_mem, const gp_cfg_device_t *p_de
 /* Support MPASM(X) style CONFIG xxx = yyy syntax for PIC14(E) and PIC12(E) devices. */
 
 static gpasmVal
-_do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
+_do_12_14_config(gpasmVal Value, const char *Name, int Arity, const pnode_t *Parms)
 {
   static uint16_t           double_mask[256] = { 0, };
 
@@ -1438,7 +1444,7 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
 
   if (config_us_used) {
     gperror_verror(GPE_CONFIG_usCONFIG, NULL);
-    return r;
+    return Value;
   }
 
   /* make sure we an find our device in the config DB */
@@ -1447,22 +1453,22 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
     gperror_verror(GPE_UNKNOWN,
                    "The %s processor has no entries in the config db. CONFIG cannot be used.",
                    state.processor->names[2]);
-    return r;
+    return Value;
   }
 
   /* validate argument format */
-  if ((parms == NULL) || !PnIsBinOp(parms) || (PnBinOpOp(parms) != '=')) {
+  if ((Parms == NULL) || !PnIsBinOp(Parms) || (PnBinOpOp(Parms) != '=')) {
     gperror_error(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use 'CONFIG KEY = VALUE'");
-    return r;
+    return Value;
   }
 
   /* validate parameter types */
-  k = PnBinOpP0(parms);
-  v = PnBinOpP1(parms);
+  k = PnBinOpP0(Parms);
+  v = PnBinOpP1(Parms);
 
   if (!PnIsSymbol(k) || (!PnIsSymbol(v) && !PnIsConstant(v))) {
     gperror_error(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use 'CONFIG KEY = VALUE'");
-    return r;
+    return Value;
   }
 
   /* grab string representations */
@@ -1496,7 +1502,7 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
     snprintf(buf, sizeof(buf), "CONFIG Directive Error: Setting not found for %s processor: \"%s\"",
              state.processor->names[2], k_str);
     gperror_error(GPE_UNKNOWN, buf);
-    return r;
+    return Value;
   }
 
   /* Note address to lister, though it doesn't seem to use it. */
@@ -1508,7 +1514,7 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
   if (p_opt == NULL) {
     snprintf(buf, sizeof(buf), "CONFIG Directive Error: Specified value not valid for directive: \"%s\"", v_str);
     gperror_error(GPE_UNKNOWN, buf);
-    return r;
+    return Value;
   }
 
   /* emit the bytes if appropriate */
@@ -1525,7 +1531,7 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
       if (double_mask[dm_addr] & p_dir->mask) {
         snprintf(buf, sizeof(buf), "CONFIG Directive Error: Multiple definitions found for %s setting.", k_str);
         gperror_error(GPE_UNKNOWN, buf);
-        return r;
+        return Value;
       }
       double_mask[dm_addr] |= p_dir->mask;
     }
@@ -1538,20 +1544,20 @@ _do_12_14_config(gpasmVal r, const char *name, int arity, const pnode_t *parms)
     _config_12_14_set_word_mem(config_mem, p_dev, ca, p_opt->value, p_dir->mask);
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_gpasm_config(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   char           buf[BUFSIZ];
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (state.mpasm_compatible) {
@@ -1561,7 +1567,7 @@ _do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
                "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive in MPASM(X) mode.",
                state.processor->names[2]);
       gperror_error(GPE_UNKNOWN, buf);
-      return r;
+      return Value;
     }
 
     /* store data from the last section */
@@ -1576,18 +1582,18 @@ _do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
                "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive.",
                state.processor->names[2]);
       gperror_error(GPE_UNKNOWN, buf);
-      return r;
+      return Value;
     }
   }
 
-  for (; parms != NULL; parms = PnListTail(parms)) {
-    p = PnListHead(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
     if (IS_PIC16_CORE || IS_PIC16E_CORE) {
-      _do_16_config(r, name, arity, p);
+      _do_16_config(Value, Name, Arity, p);
     }
     else {
-      _do_12_14_config(r, name, arity, p);
+      _do_12_14_config(Value, Name, Arity, p);
     }
   }
 
@@ -1596,7 +1602,7 @@ _do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
     state.obj.section = NULL;
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1607,13 +1613,13 @@ _do_gpasm_config(gpasmVal r, const char *name, int arity, pnode_t *parms)
  */
 
 static gpasmVal
-_do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_da(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   unsigned int char_shift;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   char_shift = (IS_PIC14_CORE || IS_PIC14E_CORE || IS_PIC14EX_CORE) ? 7 : 8;
@@ -1624,9 +1630,9 @@ _do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
     char_shift = 8;
   }
 
-  _emit_data(parms, char_shift, name);
+  _emit_data(Parms, char_shift, Name);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1645,11 +1651,11 @@ _do_da(gpasmVal r, const char *name, int arity, pnode_t *parms)
  */
 
 static gpasmVal
-_do_data(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_data(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if ((state.mode == MODE_RELOCATABLE) && (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
@@ -1657,9 +1663,9 @@ _do_data(gpasmVal r, const char *name, int arity, pnode_t *parms)
     state.lst.line.linetype = LTY_DATA;
   }
 
-  _emit_data(parms, 8, name);
+  _emit_data(Parms, 8, Name);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1673,7 +1679,7 @@ _do_data(gpasmVal r, const char *name, int arity, pnode_t *parms)
  */
 
 static gpasmVal
-_do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_db(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *L;
   const pnode_t *p;
@@ -1685,8 +1691,8 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
   unsigned int   n;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (state.mode == MODE_RELOCATABLE) {
@@ -1697,11 +1703,11 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
     else if (!(SECTION_FLAGS & STYP_TEXT)) {
       /* only valid in initialized data and text sections */
       gperror_verror(GPE_WRONG_SECTION, NULL);
-      return r;
+      return Value;
     }
   }
 
-  L = parms;
+  L = Parms;
 
   if (IS_PIC16E_CORE || (SECTION_FLAGS & STYP_DATA)) {
     begin_byte_addr = state.byte_addr;
@@ -1713,7 +1719,7 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
         pc = PnString(p);
         while (*pc != '\0') {
           pc = convert_escape_chars(pc, &value);
-          _emit_byte(value, name);
+          _emit_byte(value, Name);
         }
       }
       else {
@@ -1726,14 +1732,14 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
           gperror_vwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
         }
 
-        _emit_byte(value, name);
+        _emit_byte(value, Name);
       }
     }
 
     if (state.mpasm_compatible) {
       if ((state.mode == MODE_ABSOLUTE) || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
         if ((state.byte_addr - begin_byte_addr) & 1) {
-          _emit_byte(0, name);
+          _emit_byte(0, Name);
         }
       }
     }
@@ -1745,7 +1751,7 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
           (gp_processor_is_eeprom_org(state.processor, org) < 0)) {
         if ((state.mode == MODE_ABSOLUTE) || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
           if ((state.byte_addr - begin_byte_addr) & 1) {
-            _emit_byte(0, name);
+            _emit_byte(0, Name);
           }
         }
       }
@@ -1785,21 +1791,21 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
             v = value << 8;
           }
           else {
-            _emit(v | value, name);
+            _emit(v | value, Name);
           }
         }
         else {
           org = gp_processor_byte_to_real(state.processor, state.byte_addr);
 
           if (gp_processor_is_eeprom_org(state.processor, org) >= 0) {
-            _emit_byte(value, name);
+            _emit_byte(value, Name);
           }
           else {
             if (!(n & 1)) {
               v = value << 8;
             }
             else {
-              _emit(v | value, name);
+              _emit(v | value, Name);
             }
           }
         }
@@ -1815,7 +1821,7 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     if (state.mpasm_compatible) {
       if (n & 1) {
-        _emit(v, name);
+        _emit(v, Name);
       }
     }
     else {
@@ -1823,18 +1829,18 @@ _do_db(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
       if (gp_processor_is_eeprom_org(state.processor, org) < 0) {
         if (n & 1) {
-          _emit(v, name);
+          _emit(v, Name);
         }
       }
     }
   } /* else */
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_de(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   const char    *pc;
@@ -1842,32 +1848,32 @@ _do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
   uint16_t       v;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (IS_PIC16E_CORE) {
-    return _do_db(r, name, arity, parms);
+    return _do_db(Value, Name, Arity, Parms);
   }
 
-  for (; parms != NULL; parms = PnListTail(parms)) {
-    p = PnListHead(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
     if (PnIsString(p)) {
       pc = PnString(p);
 
       while (*pc != '\0') {
         pc = convert_escape_chars(pc, &value);
-        _emit(value & 0xff, name);
+        _emit(value & 0xff, Name);
       }
     }
     else {
       v = eval_reloc_evaluate(p, RELOCT_ALL, NULL, NULL);
-      _emit(v & 0xff, name);
+      _emit(v & 0xff, Name);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1875,7 +1881,7 @@ _do_de(gpasmVal r, const char *name, int arity, pnode_t *parms)
 /* Extension to MPASM(X), used at least by LLVM to emit debugging information. */
 
 static gpasmVal
-_do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t      *p;
   const char         *symbol_name;
@@ -1902,29 +1908,29 @@ _do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    if (arity < 2) {
-      eval_enforce_arity(arity, 2);
-      return r;
+    if (Arity < 2) {
+      eval_enforce_arity(Arity, 2);
+      return Value;
     }
 
-    /* the first argument is the symbol name */
-    p = PnListHead(parms);
+    /* the first argument is the symbol Name */
+    p = PnListHead(Parms);
 
     if (eval_enforce_simple(p)) {
       symbol_name = PnSymbol(p);
     }
     else {
-      return r;
+      return Value;
     }
 
-    parms = PnListTail(parms);
+    Parms = PnListTail(Parms);
 
     /* update the properties */
-    for (; parms != NULL; parms = PnListTail(parms)) {
-      p = PnListHead(parms);
+    for (; Parms != NULL; Parms = PnListTail(Parms)) {
+      p = PnListHead(Parms);
 
       if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
         if (eval_enforce_simple(PnBinOpP0(p))) {
@@ -2018,30 +2024,30 @@ _do_def(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_define(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   pnode_t  *p;
   symbol_t *curr_def;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit   = false;
 
-  if (arity < 1) {
+  if (Arity < 1) {
     gperror_verror(GPE_MISSING_ARGU, NULL);
   }
   else {
-    assert(PnIsList(parms));
-    p = PnListHead(parms);
+    assert(PnIsList(Parms));
+    p = PnListHead(Parms);
     assert(PnIsString(p));
 
     if (asm_enabled() && !IN_MACRO_WHILE_DEFINITION) {
@@ -2050,7 +2056,7 @@ _do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
       }
       else {
         curr_def = sym_add_symbol(state.stDefines, PnString(p));
-        p        = PnListTail(parms);
+        p        = PnListTail(Parms);
 
         if (p != NULL) {
           assert(PnIsList(p));
@@ -2060,7 +2066,7 @@ _do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2068,7 +2074,7 @@ _do_define(gpasmVal r, const char *name, int arity, pnode_t *parms)
 /* Extension to MPASM(X), used at least by LLVM to emit debugging information. */
 
 static gpasmVal
-_do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_dim(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   const char    *symbol_name;
@@ -2081,16 +2087,16 @@ _do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    if (arity < 3) {
-      eval_enforce_arity(arity, 1);
-      return r;
+    if (Arity < 3) {
+      eval_enforce_arity(Arity, 1);
+      return Value;
     }
 
     /* the first argument is the symbol name */
-    p = PnListHead(parms);
+    p = PnListHead(Parms);
 
     if (eval_enforce_simple(p)) {
       /* lookup the symbol */
@@ -2099,43 +2105,43 @@ _do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
       if (coff_symbol == NULL) {
         gperror_verror(GPE_NOSYM, NULL, symbol_name);
-        return r;
+        return Value;
       }
     }
     else {
-      return r;
+      return Value;
     }
-    parms = PnListTail(parms);
+    Parms = PnListTail(Parms);
 
     /* the second argument must be the number of aux symbols */
-    p = PnListHead(parms);
+    p = PnListHead(Parms);
     number_symbols = eval_maybe_evaluate(p);
 
     if ((number_symbols < 0) || (number_symbols > 127)) {
       gperror_error(GPE_UNKNOWN, "Number of auxiliary symbols must be less then 128 and positive.");
-      return r;
+      return Value;
     }
 
     state.obj.symbol_num += number_symbols;
-    parms = PnListTail(parms);
+    Parms = PnListTail(Parms);
 
     /* create the symbols */
     aux_list = gp_coffgen_add_aux(state.obj.object, coff_symbol);
 
     /* write the data to the auxiliary symbols */
     i = 0;
-    while (parms != NULL) {
-      p = PnListHead(parms);
+    while (Parms != NULL) {
+      p = PnListHead(Parms);
       value = eval_maybe_evaluate(p);
 
       if (value & (~0xff)) {
         gperror_verror(GPE_RANGE, "%i (%#x) > 0xff", value, value);
-        return r;
+        return Value;
       }
 
       if (aux_list == NULL) {
         gperror_error(GPE_UNKNOWN, "Insufficent number of auxiliary symbols.");
-        return r;
+        return Value;
       }
 
       if (i == (state.obj.newcoff ? SYMBOL_SIZE_v2 : SYMBOL_SIZE_v1)) {
@@ -2145,17 +2151,17 @@ _do_dim(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
       aux_list->_aux_symbol.data[i++] = value;
 
-      parms = PnListTail(parms);
+      Parms = PnListTail(Parms);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_direct(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   pnode_t    *p;
   int         value;
@@ -2165,10 +2171,10 @@ _do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
-  else if (eval_enforce_arity(arity, 2)) {
-    p = PnListHead(parms);
+  else if (eval_enforce_arity(Arity, 2)) {
+    p = PnListHead(Parms);
     coerce_str1(p);
     value = eval_maybe_evaluate(p);
 
@@ -2182,7 +2188,7 @@ _do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
       direct_command = value;
     }
 
-    p = PnListHead(PnListTail(parms));
+    p = PnListHead(PnListTail(Parms));
     if (PnIsString(p)) {
       if (strlen(PnString(p)) < 255) {
         direct_string = convert_escaped_char(PnString(p), '"');
@@ -2196,38 +2202,38 @@ _do_direct(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
 
     if (direct_string == NULL) {
-      return r;
+      return Value;
     }
 
     if (SECTION_FLAGS & STYP_TEXT) {
-      coff_add_directsym(direct_command, direct_string);
+      coff_add_direct_sym(direct_command, direct_string);
     }
     else {
       gperror_verror(GPE_WRONG_SECTION, NULL);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_dt(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   const char    *pc;
   int            retlw;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   retlw = gp_processor_retlw(state.device.class);
 
-  for (; parms != NULL; parms = PnListTail(parms)) {
-    p = PnListHead(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
     if (PnIsString(p)) {
       pc = PnString(p);
@@ -2236,24 +2242,24 @@ _do_dt(gpasmVal r, const char *name, int arity, pnode_t *parms)
         int value;
 
         pc = convert_escape_chars(pc, &value);
-        _emit((value & 0xff) | retlw, name);
+        _emit((value & 0xff) | retlw, Name);
       }
     }
     else {
       uint16_t v;
 
       v = eval_reloc_evaluate(p, RELOCT_ALL, NULL, NULL);
-      _emit((v & 0xff) | retlw, name);
+      _emit((v & 0xff) | retlw, Name);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_dtm(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t  *p;
   const symbol_t *s;
@@ -2262,19 +2268,19 @@ _do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
   uint16_t        v;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   s = sym_get_symbol(state.stBuiltin, "movlw");
   i = sym_get_symbol_annotation(s);
 
   if ((!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE)) {
-    gperror_verror(GPE_ILLEGAL_DIR, NULL, name);
+    gperror_verror(GPE_ILLEGAL_DIR, NULL, Name);
   }
 
-  for (; parms != NULL; parms = PnListTail(parms)) {
-    p = PnListHead(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
     if (PnIsString(p)) {
       pc = PnString(p);
@@ -2283,16 +2289,16 @@ _do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
         int value;
 
         pc = convert_escape_chars(pc, &value);
-        _emit(i->opcode | (value & 0xff), name);
+        _emit(i->opcode | (value & 0xff), Name);
       }
     }
     else {
       v = eval_reloc_evaluate(p, RELOCT_ALL, NULL, NULL);
-      _emit(i->opcode | (v & 0xff), name);
+      _emit(i->opcode | (v & 0xff), Name);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2305,11 +2311,11 @@ _do_dtm(gpasmVal r, const char *name, int arity, pnode_t *parms)
  */
 
 static gpasmVal
-_do_dw(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_dw(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (state.mode == MODE_RELOCATABLE) {
@@ -2320,22 +2326,22 @@ _do_dw(gpasmVal r, const char *name, int arity, pnode_t *parms)
     else if (!(SECTION_FLAGS & STYP_TEXT)) {
       /* only valid in initialized data and text sections */
       gperror_verror(GPE_WRONG_SECTION, NULL);
-      return r;
+      return Value;
     }
   }
   /* MPASM 5.34 seems to do this same for p18cxxx as for others. */
-  _emit_data(parms, 8, name);
+  _emit_data(Parms, 8, Name);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_else(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_else(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
@@ -2351,29 +2357,29 @@ _do_else(gpasmVal r, const char *name, int arity, pnode_t *parms)
     state.astack->enabled = !state.astack->before_else_enabled;
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_end(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_end(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   state.found_end = true;
   state.lst.line.linetype = LTY_DIR;
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_endif(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_endif(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   amode_t *old;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
@@ -2393,16 +2399,16 @@ _do_endif(gpasmVal r, const char *name, int arity, pnode_t *parms)
     free(old);
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_endm(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_endm(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   assert(state.mac_head == NULL);
@@ -2418,16 +2424,16 @@ _do_endm(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   state.mac_body = NULL;
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_endw(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_endw(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_NOLIST_DIR;
@@ -2449,47 +2455,47 @@ _do_endw(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.mac_prev = NULL;
   state.while_head = NULL;
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_eof(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_eof(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
-  else if (eval_enforce_arity(arity, 0)) {
+  else if (eval_enforce_arity(Arity, 0)) {
     if (state.debug_info) {
-      coff_add_eofsym();
+      coff_add_eof_sym();
     }
     else {
       gperror_warning(GPW_UNKNOWN, "Directive ignored when debug info is disabled.");
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_equ(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_equ(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_EQU;
 
-  if (eval_enforce_arity(arity, 1)) {
-    r = eval_maybe_evaluate(PnListHead(parms));
+  if (eval_enforce_arity(Arity, 1)) {
+    Value = eval_maybe_evaluate(PnListHead(Parms));
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2663,19 +2669,19 @@ _hv_macro_resolver(const char *String)
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_error(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_error(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   const char    *str;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (PnIsString(p)) {
       if ((str = _hv_macro_resolver(PnString(p))) != NULL) {
@@ -2687,7 +2693,7 @@ _do_error(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2696,33 +2702,33 @@ _do_error(gpasmVal r, const char *name, int arity, pnode_t *parms)
  * do_errlvl - parse the ERRORLEVEL directive
  *
  * If the file gpasm is assembling contains a ERRORLEVEL directive, then scan
- * the comma delimited list of options in *parms
+ * the comma delimited list of options in *Parms
  *
  * Inputs:
- *   gpasmVal r - not used, but is returned
- *   char *name - not used, but contains the directive name 'list'.
- *   int arity - not used, but should contain '1'
- *   pnode_t *parms - a linked list of the parsed parameters
+ *   gpasmVal Value - not used, but is returned
+ *   char *Name     - not used, but contains the directive name 'list'
+ *   int Arity      - not used, but should contain '1'
+ *   pnode_t *Parms - a linked list of the parsed parameters
  *
  *
  *
  ************************************************************************/
 
 static gpasmVal
-_do_errlvl(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_errlvl(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   gpasmVal       value;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
 
   if (state.pass == 2) {
-    for (; parms != NULL; parms = PnListTail(parms)) {
-      p = PnListHead(parms);
+    for (; Parms != NULL; Parms = PnListTail(Parms)) {
+      p = PnListHead(Parms);
 
       if (PnIsUnOp(p))  {
         value = eval_evaluate(PnUnOpP0(p));
@@ -2746,21 +2752,21 @@ _do_errlvl(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_exitm(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_exitm(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
 
-  if (eval_enforce_arity(arity, 0)) {
+  if (eval_enforce_arity(Arity, 0)) {
     if (state.stGlobal == state.stTop) {
       gperror_error(GPE_UNKNOWN, "Attempt to use \"exitm\" outside of macro.");
     }
@@ -2769,13 +2775,13 @@ _do_exitm(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_expand(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_expand(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
@@ -2783,28 +2789,28 @@ _do_expand(gpasmVal r, const char *name, int arity, pnode_t *parms)
     gperror_vmessage(GPM_SUPLIN, NULL);
   }
   else {
-    if (eval_enforce_arity(arity, 0)) {
+    if (eval_enforce_arity(Arity, 0)) {
       state.lst.expand = true;
     }
   }
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_extern(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_extern(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const char *p;
 
   state.lst.line.linetype = LTY_SET4;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    for (; parms != NULL; parms = PnListTail(parms)) {
-      p = PnSymbol(PnListHead(parms));
+    for (; Parms != NULL; Parms = PnListTail(Parms)) {
+      p = PnSymbol(PnListHead(Parms));
 
       if (p != NULL) {
         set_global(p, 0, LFT_PERMANENT, VAL_EXTERN, false);
@@ -2818,21 +2824,21 @@ _do_extern(gpasmVal r, const char *name, int arity, pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_file(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_file(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
-  else if (eval_enforce_arity(arity, 1)) {
+  else if (eval_enforce_arity(Arity, 1)) {
     if (state.debug_info) {
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
 
       if (PnIsString(p)) {
-        state.obj.debug_file = coff_add_filesym(PnString(p), 0);
+        state.obj.debug_file = coff_add_file_sym(PnString(p), 0);
       }
       else {
         gperror_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -2843,7 +2849,7 @@ _do_file(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2851,32 +2857,32 @@ _do_file(gpasmVal r, const char *name, int arity, pnode_t *parms)
 /* Filling constants is handled here. Filling instructions is handled in the parser. */
 
 static gpasmVal
-_do_fill(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_fill(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *h;
   int            number;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
-  if (eval_enforce_arity(arity, 2)) {
-    h = PnListHead(parms);
-    number = eval_fill_number(PnListHead(PnListTail(parms)));
+  if (eval_enforce_arity(Arity, 2)) {
+    h = PnListHead(Parms);
+    number = eval_fill_number(PnListHead(PnListTail(Parms)));
 
     for (; number > 0; --number) {
       /* we must evaluate each loop, because some symbols change (i.e. $) */
-      _emit(eval_maybe_evaluate(h), name);
+      _emit(eval_maybe_evaluate(h), Name);
     }
   }
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_global(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_global(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const char     *p;
   const symbol_t *s;
@@ -2886,11 +2892,11 @@ _do_global(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.lst.line.linetype = LTY_SET4;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    for (; parms != NULL; parms = PnListTail(parms)) {
-      p = PnSymbol(PnListHead(parms));
+    for (; Parms != NULL; Parms = PnListTail(Parms)) {
+      p = PnSymbol(PnListHead(Parms));
 
       if (p != NULL) {
         s = sym_get_symbol(state.stTop, p);
@@ -2934,26 +2940,26 @@ _do_global(gpasmVal r, const char *name, int arity, pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_idata(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_idata(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else if (IS_PIC12_CORE) {
-    gperror_verror(GPE_ILLEGAL_DIR, NULL, name);
+    gperror_verror(GPE_ILLEGAL_DIR, NULL, Name);
   }
   else {
-    switch (arity) {
+    switch (Arity) {
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
@@ -2963,43 +2969,43 @@ _do_idata(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     case 1:
       /* new absolute section */
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
       gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = eval_maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_DATA | STYP_ABS;
       break;
 
     default:
-     eval_enforce_arity(arity, 1);
+     eval_enforce_arity(Arity, 1);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_idata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_idata_acs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else if (IS_PIC12_CORE) {
-    gperror_verror(GPE_ILLEGAL_DIR, NULL, name);
+    gperror_verror(GPE_ILLEGAL_DIR, NULL, Name);
   }
   else {
-    switch (arity) {
+    switch (Arity) {
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
@@ -3009,50 +3015,50 @@ _do_idata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     case 1:
       /* new absolute section */
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
       gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = eval_maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_DATA | STYP_ACCESS | STYP_ABS;
       break;
 
     default:
-      eval_enforce_arity(arity, 1);
+      eval_enforce_arity(Arity, 1);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_ident(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_ident(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
-  else if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  else if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (PnIsString(p)) {
-      coff_add_identsym(PnString(p));
+      coff_add_ident_sym(PnString(p));
     }
     else {
       gperror_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   int           value;
   int           v;
@@ -3064,34 +3070,34 @@ _do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
   uint16_t      word;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   id_location = gp_processor_id_location(state.processor);
 
   if (id_location == 0) {
-    gperror_verror(GPE_ILLEGAL_DIR, NULL, name);
-    return r;
+    gperror_verror(GPE_ILLEGAL_DIR, NULL, Name);
+    return Value;
   }
 
   if (IS_PIC16E_CORE) {
-    if (eval_enforce_arity(arity, 2)) {
-      idreg = gp_processor_org_to_byte(state.device.class, eval_maybe_evaluate(PnListHead(parms)));
-      value = eval_maybe_evaluate(PnListHead(PnListTail(parms)));
+    if (eval_enforce_arity(Arity, 2)) {
+      idreg = gp_processor_org_to_byte(state.device.class, eval_maybe_evaluate(PnListHead(Parms)));
+      value = eval_maybe_evaluate(PnListHead(PnListTail(Parms)));
     }
     else {
       gperror_error(GPW_EXPECTED, "18cxxx devices should specify __IDLOC address.");
-      return r;
+      return Value;
     }
   }
   else {
-    if (eval_enforce_arity(arity, 1)) {
+    if (eval_enforce_arity(Arity, 1)) {
       idreg = id_location;
-      value = eval_maybe_evaluate(PnListHead(parms));
+      value = eval_maybe_evaluate(PnListHead(Parms));
     }
     else {
-      return r;
+      return Value;
     }
   }
 
@@ -3174,7 +3180,7 @@ _do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
   state.device.id_location = idreg;
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -3182,7 +3188,7 @@ _do_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 /* Support IDLOCS "abcdef" or IDLOCS 'a', 'b', 'c' syntax for PIC16E devices. */
 
 static gpasmVal
-_do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_16_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   static unsigned int last_idreg = 0;
 
@@ -3198,19 +3204,19 @@ _do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
   MemBlock_t    *m;
 
   if (state.mpasm_compatible) {
-    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
+    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", Name);
     gperror_error(GPE_UNKNOWN, buf);
-    return r;
+    return Value;
   }
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (!IS_PIC16E_CORE) {
     gperror_error(GPE_IDLOCS_P16E, NULL);
-    return r;
+    return Value;
   }
 
   idreg = (last_idreg == 0) ? gp_processor_id_location(state.processor) : last_idreg;
@@ -3219,7 +3225,7 @@ _do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
     snprintf(buf, sizeof(buf), "The IDLOCS registers not exist in the %s MCU.",
              state.processor->names[2]);
     gperror_error(GPE_UNKNOWN, buf);
-    return r;
+    return Value;
   }
 
   if ((state.mode == MODE_RELOCATABLE) && (!state.found_idlocs)) {
@@ -3234,25 +3240,25 @@ _do_16_idlocs(gpasmVal r, const char *name, int arity, pnode_t *parms)
       gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} < IDLOCS_MIN{0x%0*X}",
                      state.device.class->addr_digits, idreg,
                      state.device.class->addr_digits, state.processor->idlocs_addrs[0]);
-      return r;
+      return Value;
     }
     else if (idreg > state.processor->idlocs_addrs[1]) {
       gperror_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} > IDLOCS_MAX{0x%0*X}",
                      state.device.class->addr_digits, idreg,
                      state.device.class->addr_digits, state.processor->idlocs_addrs[1]);
-      return r;
+      return Value;
     }
 
-    assert(PnIsList(parms));
-    p = PnListHead(parms);
+    assert(PnIsList(Parms));
+    p = PnListHead(Parms);
 
     state.lst.line.linetype  = LTY_CONFIG;
     state.lst.config_address = idreg;
     max_bytes = state.processor->idlocs_addrs[1] - idreg + 1;
     n = 0;
 
-    for (; parms != NULL; parms = PnListTail(parms)) {
-      p = PnListHead(parms);
+    for (; Parms != NULL; Parms = PnListTail(Parms)) {
+      p = PnListHead(Parms);
 
       switch (p->tag) {
       case PTAG_SYMBOL:
@@ -3278,7 +3284,7 @@ constant:
 
         if (b_memory_get(m, idreg, &curvalue, NULL, NULL)) {
           gperror_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
-          return r;
+          return Value;
         }
 
         snprintf(buf, sizeof(buf), "IDLOCS_%0*X", state.device.class->addr_digits, idreg);
@@ -3306,7 +3312,7 @@ constant:
 
           if (b_memory_get(m, idreg, &curvalue, NULL, NULL)) {
             gperror_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
-            return r;
+            return Value;
           }
 
           snprintf(buf, sizeof(buf), "IDLOCS_%0*X", state.device.class->addr_digits, idreg);
@@ -3324,9 +3330,9 @@ constant:
 
       default:
         gperror_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
-        return r;
+        return Value;
       } /* switch (p->tag) */
-    } /* for (; parms != NULL; parms = PnListTail(parms)) */
+    } /* for (; Parms != NULL; Parms = PnListTail(Parms)) */
 warning:
 
     if (n > 0) {
@@ -3336,18 +3342,18 @@ warning:
 
   last_idreg = idreg;
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_if(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_if(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
@@ -3357,32 +3363,32 @@ _do_if(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   /* Only evaluate the conditional if it matters... */
   if (state.astack->upper_enabled) {
-    if (eval_enforce_arity(arity, 1)) {
-      p = PnListHead(parms);
+    if (eval_enforce_arity(Arity, 1)) {
+      p = PnListHead(Parms);
       state.astack->enabled             = eval_maybe_evaluate(p);
       state.astack->before_else_enabled = state.astack->enabled;
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_elif(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_elif(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   char           buf[BUFSIZ];
 
   if (state.mpasm_compatible) {
-    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
+    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", Name);
     gperror_error(GPE_UNKNOWN, buf);
-    return r;
+    return Value;
   }
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
@@ -3392,25 +3398,25 @@ _do_elif(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   /* Only evaluate the conditional elif it matters... */
   if (state.astack->upper_enabled) {
-    if (eval_enforce_arity(arity, 1)) {
-      p = PnListHead(parms);
+    if (eval_enforce_arity(Arity, 1)) {
+      p = PnListHead(Parms);
       state.astack->enabled              = eval_maybe_evaluate(p);
       state.astack->before_else_enabled |= state.astack->enabled;
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_ifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_ifdef(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
@@ -3420,8 +3426,8 @@ _do_ifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   /* Only evaluate the conditional ifdef it matters... */
   if (state.astack->upper_enabled) {
-    if (eval_enforce_arity(arity, 1)) {
-      p = PnListHead(parms);
+    if (eval_enforce_arity(Arity, 1)) {
+      p = PnListHead(Parms);
 
       if (!PnIsSymbol(p)) {
         gperror_error(GPE_ILLEGAL_LABEL, "Illegal label.");
@@ -3434,25 +3440,25 @@ _do_ifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_elifdef(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   char           buf[BUFSIZ];
 
   if (state.mpasm_compatible) {
-    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
+    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", Name);
     gperror_error(GPE_UNKNOWN, buf);
-    return r;
+    return Value;
   }
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
@@ -3462,8 +3468,8 @@ _do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   /* Only evaluate the conditional elifdef it matters... */
   if (state.astack->upper_enabled) {
-    if (eval_enforce_arity(arity, 1)) {
-      p = PnListHead(parms);
+    if (eval_enforce_arity(Arity, 1)) {
+      p = PnListHead(Parms);
 
       if (!PnIsSymbol(p)) {
         gperror_error(GPE_ILLEGAL_LABEL, "Illegal label.");
@@ -3476,18 +3482,18 @@ _do_elifdef(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_ifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_ifndef(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
@@ -3497,8 +3503,8 @@ _do_ifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   /* Only evaluate the conditional ifndef it matters... */
   if (state.astack->upper_enabled) {
-    if (eval_enforce_arity(arity, 1)) {
-      p = PnListHead(parms);
+    if (eval_enforce_arity(Arity, 1)) {
+      p = PnListHead(Parms);
 
       if (!PnIsSymbol(p)) {
         gperror_error(GPE_ILLEGAL_LABEL, "Illegal label.");
@@ -3511,25 +3517,25 @@ _do_ifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_elifndef(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   char           buf[BUFSIZ];
 
   if (state.mpasm_compatible) {
-    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", name);
+    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM(X) mode.", Name);
     gperror_error(GPE_UNKNOWN, buf);
-    return r;
+    return Value;
   }
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
@@ -3539,8 +3545,8 @@ _do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   /* Only evaluate the conditional elifndef it matters... */
   if (state.astack->upper_enabled) {
-    if (eval_enforce_arity(arity, 1)) {
-      p = PnListHead(parms);
+    if (eval_enforce_arity(Arity, 1)) {
+      p = PnListHead(Parms);
 
       if (!PnIsSymbol(p)) {
         gperror_error(GPE_ILLEGAL_LABEL, "Illegal label.");
@@ -3553,20 +3559,20 @@ _do_elifndef(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_include(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_include(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   state.lst.line.linetype = LTY_DIR;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (PnIsString(p)) {
       state.next_state = STATE_INCLUDE;
@@ -3577,24 +3583,24 @@ _do_include(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_line(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_line(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
-  else if (eval_enforce_arity(arity, 1)) {
+  else if (eval_enforce_arity(Arity, 1)) {
     if (state.debug_info) {
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
       state.obj.debug_line = eval_maybe_evaluate(p);
     }
     else {
@@ -3602,7 +3608,7 @@ _do_line(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -3612,18 +3618,18 @@ _do_line(gpasmVal r, const char *name, int arity, pnode_t *parms)
  *
  * If the file gpasm is assembling contains a LIST directive, then scan
  * and parse will call do_list and pass the comma delimited list of LIST
- * options in *parms
+ * options in *Parms
  *
  * Inputs:
- *   gpasmVal r     - not used, but is returned
- *   char *name     - not used, but contains the directive name 'list'.
- *   int arity      - not used, but should contain '1'
- *   pnode_t *parms - a linked list of the parsed parameters
+ *   gpasmVal Value - not used, but is returned
+ *   char *Name     - not used, but contains the directive name 'list'
+ *   int Arity      - not used, but should contain '1'
+ *   pnode_t *Parms - a linked list of the parsed parameters
  *
  ************************************************************************/
 
 static gpasmVal
-_do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   const char    *lhs;
@@ -3633,8 +3639,8 @@ _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.lst.enabled       = true;
   state.lst.line.linetype = LTY_DIR;
 
-  for (; parms != NULL; parms = PnListTail(parms)) {
-    p = PnListHead(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
     if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (eval_enforce_simple(PnBinOpP0(p))) {
@@ -3683,14 +3689,14 @@ _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
           }
         }
         else if (strcasecmp(lhs, "mm") == 0) {
-          state.lst.memorymap = _off_or_on(PnBinOpP1(p));
+          state.lst.memory_map = _off_or_on(PnBinOpP1(p));
         }
         else if (strcasecmp(lhs, "n") == 0) {
           if (eval_can_evaluate(PnBinOpP1(p))) {
             int number = eval_evaluate(PnBinOpP1(p));
 
             if ((number > 6) || (number == 0)) {
-              state.lst.linesperpage = number;
+              state.lst.lines_per_page = number;
             }
             else {
               gperror_verror(GPE_RANGE, "0 < n{%i} <= 6", number);
@@ -3715,7 +3721,7 @@ _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
           }
         }
         else if (strcasecmp(lhs, "st") == 0) {
-          state.lst.symboltable = _off_or_on(PnBinOpP1(p));
+          state.lst.symbol_table = _off_or_on(PnBinOpP1(p));
         }
         else if (strcasecmp(lhs, "t") == 0) {
           ; /* Ignore this for now: Always wrap long list lines. */
@@ -3755,25 +3761,25 @@ _do_list(gpasmVal r, const char *name, int arity, pnode_t *parms)
   }
 
   /* The .list symbol is only added to the COFF file if its only action is to turn on the listing. */
-  if (arity == 0) {
-    coff_add_listsym();
+  if (Arity == 0) {
+    coff_add_list_sym();
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_local(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   gp_boolean     first;
   const char    *lhs;
   gpasmVal       val;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   first = true;
@@ -3785,8 +3791,8 @@ _do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
     gperror_error(GPE_UNKNOWN, "Attempt to use \"local\" outside of macro.");
   }
   else {
-    for (; parms != NULL; parms = PnListTail(parms)) {
-      p = PnListHead(parms);
+    for (; Parms != NULL; Parms = PnListTail(Parms)) {
+      p = PnListHead(Parms);
 
       if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
         if (eval_enforce_simple(PnBinOpP0(p))) {
@@ -3798,7 +3804,7 @@ _do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
           set_global(lhs, val, LFT_TEMPORARY, VAL_CONSTANT, false);
 
           if (first) {
-            r = val;
+            Value = val;
             first = false;
           }
         }
@@ -3808,7 +3814,7 @@ _do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
         sym_add_symbol(state.stTop, PnSymbol(p));
 
         if (first) {
-          r = 0;
+          Value = 0;
           first = false;
         }
       }
@@ -3818,13 +3824,13 @@ _do_local(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_noexpand(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_noexpand(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
@@ -3832,17 +3838,17 @@ _do_noexpand(gpasmVal r, const char *name, int arity, pnode_t *parms)
     gperror_vmessage(GPM_SUPLIN, NULL);
   }
   else {
-    if (eval_enforce_arity(arity, 0)) {
+    if (eval_enforce_arity(Arity, 0)) {
       state.lst.expand = false;
     }
   }
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_nolist(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_nolist(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
@@ -3850,76 +3856,76 @@ _do_nolist(gpasmVal r, const char *name, int arity, pnode_t *parms)
     state.lst.enabled = false;
   }
 
-  coff_add_nolistsym();
+  coff_add_nolist_sym();
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_maxram(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_maxram(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SET;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (eval_can_evaluate(p)) {
-      r = state.maxram = eval_evaluate(p);
+      Value = state.maxram = eval_evaluate(p);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_maxrom(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_maxrom(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SET;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (eval_can_evaluate(p)) {
-      r = state.maxrom = eval_evaluate(p);
+      Value = state.maxrom = eval_evaluate(p);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_macro(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_macro(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   macro_head_t *head;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   head = GP_Malloc(sizeof(*head));
 
-  head->parms = parms;
-  head->body = NULL;
+  head->parms   = Parms;
+  head->body    = NULL;
   head->defined = false;
   /* Record data for the list, cod, and coff files. */
   head->line_number = state.src->line_number;
@@ -3929,32 +3935,32 @@ _do_macro(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   state.lst.line.linetype = LTY_DIR;
 
-  if (_macro_parms_ok(parms)) {
+  if (_macro_parms_ok(Parms)) {
     state.mac_head = head;
   }
 
   state.mac_prev = &(head->body);
   state.mac_body = NULL;
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_messg(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_messg(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   const char    *str;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (PnIsString(p)) {
       if ((str = _hv_macro_resolver(PnString(p))) != NULL) {
@@ -3966,33 +3972,33 @@ _do_messg(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_org(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   gpasmVal       new_byte_addr;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (eval_can_evaluate(p)) {
-      r = eval_evaluate(p);
-      new_byte_addr = gp_processor_real_to_byte(state.processor, r);
+      Value = eval_evaluate(p);
+      new_byte_addr = gp_processor_real_to_byte(state.processor, Value);
       if (state.mpasm_compatible ||
-          ((gp_processor_is_config_org(state.processor, r) < 0) &&
-           (gp_processor_is_eeprom_org(state.processor, r) < 0))) {
-        if (IS_PIC16E_CORE && (r & 1)) {
-          gperror_verror(GPE_ORG_ODD, "Address{0x%0*X}", state.device.class->addr_digits, r);
+          ((gp_processor_is_config_org(state.processor, Value) < 0) &&
+           (gp_processor_is_eeprom_org(state.processor, Value) < 0))) {
+        if (IS_PIC16E_CORE && (Value & 1)) {
+          gperror_verror(GPE_ORG_ODD, "Address{0x%0*X}", state.device.class->addr_digits, Value);
         }
       }
 
@@ -4003,7 +4009,7 @@ _do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
       else {
         /* Default section name, this will be overwritten if a label is present. */
         snprintf(state.obj.new_sect_name, sizeof(state.obj.new_sect_name), ".org_%0*X",
-                 state.device.class->addr_digits, r);
+                 state.device.class->addr_digits, Value);
         state.obj.new_sect_addr  = new_byte_addr;
         state.obj.new_sect_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype  = LTY_SEC;
@@ -4011,25 +4017,25 @@ _do_org(gpasmVal r, const char *name, int arity, pnode_t *parms)
       }
     }
     else {
-      r = 0;
+      Value = 0;
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_page(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_page(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   state.lst.line.linetype = LTY_DIR;
 
-  if (eval_enforce_arity(arity, 0) && state.lst.enabled) {
+  if (eval_enforce_arity(Arity, 0) && state.lst.enabled) {
     lst_page_start();
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -4038,7 +4044,7 @@ _do_page(gpasmVal r, const char *name, int arity, pnode_t *parms)
  * difference between them. */
 
 static gpasmVal
-_do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms, uint16_t reloc_type)
+_do_pagesel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms, uint16_t reloc_type)
 {
   const pnode_t *p;
   int            page;
@@ -4052,15 +4058,15 @@ _do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms, uint16_t re
   if (IS_EEPROM8 || IS_EEPROM16 || IS_PIC16E_CORE || (state.processor->num_pages == 1)) {
     state.lst.line.linetype = LTY_NONE;
     gperror_vmessage(GPM_EXTPAGE, NULL);
-    return r;
+    return Value;
   }
 
   if (IS_PIC16_CORE) {
     gperror_vmessage(GPM_W_MODIFIED, NULL);
   }
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (state.mode == MODE_ABSOLUTE) {
       page = gp_processor_check_page(state.device.class, eval_maybe_evaluate(p));
@@ -4090,127 +4096,127 @@ _do_pagesel(gpasmVal r, const char *name, int arity, pnode_t *parms, uint16_t re
       }
       else if (IS_PIC16_CORE) {
         eval_reloc_evaluate(p, RELOCT_PAGESEL_WREG, NULL, NULL);
-        _emit(0x0000, name);
-        _emit(0x0000, name);
+        _emit(0x0000, Name);
+        _emit(0x0000, Name);
       }
       else if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
         if (!use_wreg) {
           eval_reloc_evaluate(p, RELOCT_PAGESEL_MOVLP, NULL, NULL);
-          _emit(PIC14E_INSN_MOVLP, name);
+          _emit(PIC14E_INSN_MOVLP, Name);
         }
         else {
           eval_reloc_evaluate(p, RELOCT_PAGESEL_WREG, NULL, NULL);
-          _emit(0x0000, name);
-          _emit(0x0000, name);
+          _emit(0x0000, Name);
+          _emit(0x0000, Name);
         }
       }
       else {
         if (!use_wreg && (state.processor->num_pages == 2)) {
           eval_reloc_evaluate(p, RELOCT_PAGESEL_BITS, NULL, NULL);
-          _emit(0, name);
+          _emit(0, Name);
         }
         else if (state.processor->num_pages >= 2) {
           eval_reloc_evaluate(p, reloc_type, NULL, NULL);
-          _emit(0x0000, name);
-          _emit(0x0000, name);
+          _emit(0x0000, Name);
+          _emit(0x0000, Name);
         }
       }
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_pagesel_wrapper(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_pagesel_wrapper(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (prev_btfsx) {
     gperror_vwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, NULL, "Pagesel");
   }
 
-  return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_BITS);
+  return _do_pagesel(Value, Name, Arity, Parms, RELOCT_PAGESEL_BITS);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_pageselw_wrapper(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_pageselw_wrapper(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   if (prev_btfsx) {
     gperror_vwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, NULL, "Pageselw");
   }
 
-  return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_WREG);
+  return _do_pagesel(Value, Name, Arity, Parms, RELOCT_PAGESEL_WREG);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_processor(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_processor(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   state.lst.line.linetype = LTY_DIR;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (eval_enforce_simple(p)) {
       select_processor(PnSymbol(p));
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_radix(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_radix(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   state.lst.line.linetype = LTY_DIR;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (eval_enforce_simple(p)) {
       select_radix(PnSymbol(p));
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_res(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   int            count;
   int            i;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (eval_can_evaluate(p)) {
       count = eval_evaluate(p);
@@ -4225,7 +4231,7 @@ _do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
         count = gp_processor_org_to_byte(state.device.class, count);
 
         for (i = 0; (i + 1) < count; i += 2) {
-          _emit(state.device.class->core_mask, name);
+          _emit(state.device.class->core_mask, Name);
         }
       }
       else {
@@ -4240,52 +4246,52 @@ _do_res(gpasmVal r, const char *name, int arity, pnode_t *parms)
           }
           for (i = 0; (i + 1) < count; i += 2) {
             /* For some reason program memory is filled with a different value. */
-            _emit(state.device.class->core_mask, name);
+            _emit(state.device.class->core_mask, Name);
           }
         }
         else {
           for (i = 0; i < count; i++) {
-            _emit_byte(0, name);
+            _emit_byte(0, Name);
           }
         }
       }
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_set(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_set(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SET;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (eval_can_evaluate(p)) {
-      r = eval_evaluate(p);
+      Value = eval_evaluate(p);
     }
     else {
-      r = 0;
+      Value = 0;
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_space(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   int            i;
@@ -4293,13 +4299,13 @@ _do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.lst.line.linetype = LTY_DIR;
 
   if (state.pass == 2) {
-    switch (arity) {
+    switch (Arity) {
       case 0:
         /* do nothing */
         break;
 
       case 1:
-        p = PnListHead(parms);
+        p = PnListHead(Parms);
 
         if (eval_can_evaluate(p)) {
           for (i = eval_evaluate(p); i > 0; i--) {
@@ -4309,22 +4315,22 @@ _do_space(gpasmVal r, const char *name, int arity, pnode_t *parms)
         break;
 
       default:
-        eval_enforce_arity(arity, 1);
+        eval_enforce_arity(Arity, 1);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_subtitle(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_subtitle(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (PnIsString(p)) {
       gp_strncpy(state.lst.subtitle_name, PnString(p), sizeof(state.lst.subtitle_name));
@@ -4334,20 +4340,20 @@ _do_subtitle(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_title(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_title(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   state.lst.line.linetype = LTY_NONE;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (PnIsString(p)) {
       gp_strncpy(state.lst.title_name, PnString(p), sizeof(state.lst.title_name));
@@ -4357,13 +4363,13 @@ _do_title(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_type(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   const char    *symbol_name;
@@ -4373,11 +4379,11 @@ _do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
   state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
-  else if (eval_enforce_arity(arity, 2)) {
+  else if (eval_enforce_arity(Arity, 2)) {
     /* the first argument is the symbol name */
-    p = PnListHead(parms);
+    p = PnListHead(Parms);
 
     if (eval_enforce_simple(p)) {
       symbol_name = PnSymbol(p);
@@ -4387,7 +4393,7 @@ _do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
         gperror_verror(GPE_NOSYM, NULL, symbol_name);
       }
       else {
-        p = PnListHead(PnListTail(parms));
+        p = PnListHead(PnListTail(Parms));
         value = eval_maybe_evaluate(p);
 
         if (value < 0) {
@@ -4403,29 +4409,29 @@ _do_type(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_udata(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_udata(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    switch (arity) {
+    switch (Arity) {
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
@@ -4435,40 +4441,40 @@ _do_udata(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     case 1:
       /* new absolute section */
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
       gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = eval_maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_BSS | STYP_ABS;
       break;
 
     default:
-      eval_enforce_arity(arity, 1);
+      eval_enforce_arity(Arity, 1);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_udata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_udata_acs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    switch (arity) {
+    switch (Arity) {
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
@@ -4478,40 +4484,40 @@ _do_udata_acs(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     case 1:
       /* new absolute section */
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
       gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = eval_maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_BSS | STYP_ACCESS | STYP_ABS;
       break;
 
     default:
-      eval_enforce_arity(arity, 1);
+      eval_enforce_arity(Arity, 1);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_udata_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_udata_ovr(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    switch (arity) {
+    switch (Arity) {
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
@@ -4521,40 +4527,40 @@ _do_udata_ovr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     case 1:
       /* new absolute section */
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
       gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = eval_maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_BSS | STYP_OVERLAY | STYP_ABS;
       break;
 
     default:
-      eval_enforce_arity(arity, 1);
+      eval_enforce_arity(Arity, 1);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_udata_shr(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_udata_shr(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
   if (state.processor == NULL) {
-    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", name);
-    return r;
+    gperror_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
+    return Value;
   }
 
   state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
-    gperror_verror(GPE_OBJECT_ONLY, NULL, name);
+    gperror_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
-    switch (arity) {
+    switch (Arity) {
     case 0:
       /* new relocatable section */
       gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
@@ -4564,36 +4570,36 @@ _do_udata_shr(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
     case 1:
       /* new absolute section */
-      p = PnListHead(parms);
+      p = PnListHead(Parms);
       gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
       state.obj.new_sect_addr  = eval_maybe_evaluate(p);
       state.obj.new_sect_flags = STYP_BSS | STYP_SHARED | STYP_ABS;
       break;
 
     default:
-      eval_enforce_arity(arity, 1);
+      eval_enforce_arity(Arity, 1);
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_undefine(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_undefine(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
-  if (eval_enforce_arity(arity, 1)) {
-    p = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    p = PnListHead(Parms);
 
     if (PnIsSymbol(p)) {
       if (!sym_remove_symbol(state.stDefines, PnSymbol(p))) {
@@ -4605,28 +4611,28 @@ _do_undefine(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_variable(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   gp_boolean     first;
   const char    *lhs;
   gpasmVal       val;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   first = true;
   state.lst.line.linetype = LTY_SET4;
 
-  for (; parms != NULL; parms = PnListTail(parms)) {
-    p = PnListHead(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
     if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (eval_enforce_simple(PnBinOpP0(p))) {
@@ -4637,7 +4643,7 @@ _do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
         set_global(lhs, val, LFT_TEMPORARY, VAL_CONSTANT, false);
 
         if (first) {
-          r = val;
+          Value = val;
           first = false;
         }
       }
@@ -4647,7 +4653,7 @@ _do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
       set_global(PnSymbol(p), 0, LFT_TEMPORARY, VAL_CONSTANT, false);
 
       if (first) {
-        r = 0;
+        Value = 0;
         first = false;
       }
     }
@@ -4656,25 +4662,25 @@ _do_variable(gpasmVal r, const char *name, int arity, pnode_t *parms)
     }
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_while(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_while(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   macro_head_t *head;
 
-  if (_check_processor_select(name)) {
-    return r;
+  if (_check_processor_select(Name)) {
+    return Value;
   }
 
   assert(state.while_depth == 0);
 
   head = GP_Malloc(sizeof(*head));
   state.lst.line.linetype = LTY_DOLIST_DIR;
-  head->parms = (eval_enforce_arity(arity, 1)) ? PnListHead(parms) : NULL;
+  head->parms = (eval_enforce_arity(Arity, 1)) ? PnListHead(Parms) : NULL;
   head->body  = NULL;
 
   /* Record data for the list, cod, and coff files. */
@@ -4691,7 +4697,7 @@ _do_while(gpasmVal r, const char *name, int arity, pnode_t *parms)
 
   state.while_depth = 1;
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -4705,14 +4711,14 @@ asm_enabled(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_core_sfr_or_common_ram(int reg_address)
+_core_sfr_or_common_ram(int Reg_address)
 {
-  if (gp_processor_find_sfr(state.device.class, reg_address) != NULL) {
+  if (gp_processor_find_sfr(state.device.class, Reg_address) != NULL) {
     /* This is a core SFR. */
     return true;
   }
 
-  if (gp_processor_is_common_ram_addr(state.processor, reg_address) >= 0) {
+  if (gp_processor_is_common_ram_addr(state.processor, Reg_address) >= 0) {
     /* This is a common GPR. */
     return true;
   }
@@ -4723,21 +4729,21 @@ _core_sfr_or_common_ram(int reg_address)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_emit_check(unsigned int insn, int argument, int mask, const char *name)
+_emit_check(unsigned int Insn, int Argument, int Mask, const char *Name)
 {
-  int test = argument;
-  int v = argument & mask;
+  int test = Argument;
+  int v    = Argument & Mask;
 
   if (test < 0) {
     test = -test;
   }
 
   /* If there are bits that shouldn't be set then issue a warning. */
-  if (test & (~mask)) {
-    gperror_vwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", argument, argument, v, v);
+  if (test & (~Mask)) {
+    gperror_vwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", Argument, Argument, v, v);
   }
 
-  _emit(insn | v, name);
+  _emit(Insn | v, Name);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -4748,30 +4754,30 @@ _emit_check(unsigned int insn, int argument, int mask, const char *name)
 */
 
 static void
-_emit_check_relative(unsigned int insn, int argument, int mask, int range, const char *name)
+_emit_check_relative(unsigned int Insn, int Argument, int Mask, int Range, const char *Name)
 {
   char full_message[BUFSIZ];
 
   /* If the branch is too far then issue an error */
-  if ((argument > range) || (argument < -(range+1))) {
+  if ((Argument > Range) || (Argument < -(Range + 1))) {
     snprintf(full_message, sizeof(full_message),
-             "Argument out of range (%d not between %d and %d).", argument, -(range + 1), range);
+             "Argument out of range (%d not between %d and %d).", Argument, -(Range + 1), Range);
     gperror_error(GPE_RANGE, full_message);
   }
 
-  _emit(insn | (argument & mask), name);
+  _emit(Insn | (Argument & Mask), Name);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_check_flag(int flag)
+_check_flag(int Flag)
 {
-  if ((flag != 0) && (flag != 1)) {
-    gperror_vwarning(GPW_RANGE, "%i (%#x)", flag, flag);
+  if ((Flag != 0) && (Flag != 1)) {
+    gperror_vwarning(GPW_RANGE, "%i (%#x)", Flag, Flag);
   }
 
-  return (flag & 0x1);
+  return (Flag & 0x1);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -4788,7 +4794,7 @@ _check_flag(int flag)
 #define AR_BIT_BYTE         0x8000
 
 static gp_boolean
-_check_16e_arg_types(const pnode_t *parms, int arity, unsigned int types)
+_check_16e_arg_types(const pnode_t *Parms, int Arity, unsigned int Types)
 {
   const pnode_t *p;
   const pnode_t *p1;
@@ -4798,16 +4804,16 @@ _check_16e_arg_types(const pnode_t *parms, int arity, unsigned int types)
   char           buf[80];
 
   if (state.extended_pic16e) {
-    p = parms;
-    for (i = 0; i < arity; ++i) {
+    p = Parms;
+    for (i = 0; i < Arity; ++i) {
       assert(p != NULL);
 
-      if ((AR_GET(types, i) != AR_INDEX) && PnIsOffset(PnListHead(p))) {
+      if ((AR_GET(Types, i) != AR_INDEX) && PnIsOffset(PnListHead(p))) {
         gperror_error(GPE_BADCHAR, "Illegal character ([).");
         ret = false;
       }
-      else if (AR_BIT_BYTE & types) {
-        if ((AR_GET(types, i) == AR_INDEX) && PnIsOffset(PnListHead(p))) {
+      else if (AR_BIT_BYTE & Types) {
+        if ((AR_GET(Types, i) == AR_INDEX) && PnIsOffset(PnListHead(p))) {
           p1 = PnOffset(PnListHead(p));
 
           if (eval_can_evaluate_value(p1)) {
@@ -4825,7 +4831,7 @@ _check_16e_arg_types(const pnode_t *parms, int arity, unsigned int types)
           }
         }
       }
-      else if ((AR_GET(types, i) == AR_INDEX) && !PnIsOffset(PnListHead(p))) {
+      else if ((AR_GET(Types, i) == AR_INDEX) && !PnIsOffset(PnListHead(p))) {
         gperror_verror(GPE_MISSING_BRACKET, NULL);
         ret = false;
       }
@@ -4996,7 +5002,7 @@ _check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageS
 /* Create the message: The register is (not) located on the Access RAM. */
 
 static void
-_msg_this_access_ram(unsigned int reg_address, const char *reg_name, gp_boolean is_access)
+_msg_this_access_ram(unsigned int Reg_address, const char *Reg_name, gp_boolean Is_access)
 {
   unsigned int   bank_addr;
   unsigned int   bank_num;
@@ -5009,25 +5015,25 @@ _msg_this_access_ram(unsigned int reg_address, const char *reg_name, gp_boolean 
     return;
   }
 
-  bank_addr   = gp_processor_bank_addr(state.processor, reg_address);
-  bank_num    = gp_processor_bank_num(state.processor, reg_address);
-  reg_offs    = gp_processor_reg_offs(state.processor, reg_address);
+  bank_addr   = gp_processor_bank_addr(state.processor, Reg_address);
+  bank_num    = gp_processor_bank_num(state.processor, Reg_address);
+  reg_offs    = gp_processor_reg_offs(state.processor, Reg_address);
   word_digits = (state.device.class != NULL) ? state.device.class->word_digits : 4;
 
   if (state.strict_level == 2) {
     msg  = gperror_verror;
-    code = (is_access) ? GPE_IS_ACCRAM : GPE_NO_ACCRAM;
+    code = (Is_access) ? GPE_IS_ACCRAM : GPE_NO_ACCRAM;
   }
   else {
     msg  = gperror_vwarning;
-    code = (is_access) ? GPW_IS_ACCRAM : GPW_NO_ACCRAM;
+    code = (Is_access) ? GPW_IS_ACCRAM : GPW_NO_ACCRAM;
   }
 
-  if (reg_name != NULL) {
+  if (Reg_name != NULL) {
     (*msg)(code,
            "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)",
-           reg_name,
-           word_digits, reg_address,
+           Reg_name,
+           word_digits, Reg_address,
            bank_num,
            word_digits, bank_addr,
            word_digits, reg_offs);
@@ -5035,7 +5041,7 @@ _msg_this_access_ram(unsigned int reg_address, const char *reg_name, gp_boolean 
   else {
     (*msg)(code,
            "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)",
-           word_digits, reg_address,
+           word_digits, Reg_address,
            bank_num,
            word_digits, bank_addr,
            word_digits, reg_offs);
@@ -5045,7 +5051,7 @@ _msg_this_access_ram(unsigned int reg_address, const char *reg_name, gp_boolean 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_msg_access_nosel_def(int reg_address, const char *reg_name)
+_msg_access_nosel_def(int Reg_address, const char *Reg_name)
 {
   unsigned int   bank_addr;
   unsigned int   bank_num;
@@ -5067,17 +5073,17 @@ _msg_access_nosel_def(int reg_address, const char *reg_name)
     code = GPM_ACC_DEF;
   }
 
-  if (reg_address >= 0) {
-    bank_addr   = gp_processor_bank_addr(state.processor, reg_address);
-    bank_num    = gp_processor_bank_num(state.processor, reg_address);
-    reg_offs    = gp_processor_reg_offs(state.processor, reg_address);
+  if (Reg_address >= 0) {
+    bank_addr   = gp_processor_bank_addr(state.processor, Reg_address);
+    bank_num    = gp_processor_bank_num(state.processor, Reg_address);
+    reg_offs    = gp_processor_reg_offs(state.processor, Reg_address);
     word_digits = (state.device.class != NULL) ? state.device.class->word_digits : 4;
 
-    if (reg_name != NULL) {
+    if (Reg_name != NULL) {
       (*msg)(code,
              "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)",
-             reg_name,
-             word_digits, reg_address,
+             Reg_name,
+             word_digits, Reg_address,
              bank_num,
              word_digits, bank_addr,
              word_digits, reg_offs);
@@ -5085,17 +5091,17 @@ _msg_access_nosel_def(int reg_address, const char *reg_name)
     else {
       (*msg)(code,
              "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)",
-             word_digits, reg_address,
+             word_digits, Reg_address,
              bank_num,
              word_digits, bank_addr,
              word_digits, reg_offs);
     }
   }
   else {
-    if (reg_name != NULL) {
+    if (Reg_name != NULL) {
       (*msg)(code,
              "'%s' (Addr: 0x?\?\?\?; Bank_?: 0x?\?\?\?; Offs: 0x?\?\?\?)",
-             reg_name);
+             Reg_name);
     }
     else {
       (*msg)(code,
@@ -5107,7 +5113,7 @@ _msg_access_nosel_def(int reg_address, const char *reg_name)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_msg_ram_bank(int reg_address, const char *reg_name, int bank_number)
+_msg_ram_bank(int Reg_address, const char *Reg_name, int Bank_number)
 {
   unsigned int bank_addr;
   unsigned int bank_num;
@@ -5118,39 +5124,39 @@ _msg_ram_bank(int reg_address, const char *reg_name, int bank_number)
     return;
   }
 
-  if (bank_number < 0) {
-    bank_number = 0;
+  if (Bank_number < 0) {
+    Bank_number = 0;
   }
 
-  if (reg_address >= 0) {
-    bank_addr   = gp_processor_bank_addr(state.processor, reg_address);
-    bank_num    = gp_processor_bank_num(state.processor, reg_address);
-    reg_offs    = gp_processor_reg_offs(state.processor, reg_address);
+  if (Reg_address >= 0) {
+    bank_addr   = gp_processor_bank_addr(state.processor, Reg_address);
+    bank_num    = gp_processor_bank_num(state.processor, Reg_address);
+    reg_offs    = gp_processor_reg_offs(state.processor, Reg_address);
     word_digits = (state.device.class != NULL) ? state.device.class->word_digits : 4;
 
-    if (reg_name != NULL) {
+    if (Reg_name != NULL) {
       gperror_vmessage(GPM_BANK,
-                       "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)", bank_number,
-                       reg_name,
-                       word_digits, reg_address,
+                       "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)", Bank_number,
+                       Reg_name,
+                       word_digits, Reg_address,
                        bank_num,
                        word_digits, bank_addr,
                        word_digits, reg_offs);
     }
     else {
       gperror_vmessage(GPM_BANK,
-                       "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)", bank_number,
-                       word_digits, reg_address,
+                       "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)", Bank_number,
+                       word_digits, Reg_address,
                        bank_num,
                        word_digits, bank_addr,
                        word_digits, reg_offs);
     }
   }
   else {
-    if (reg_name != NULL) {
+    if (Reg_name != NULL) {
       gperror_vmessage(GPM_BANK, 
                        "'%s' (Addr: 0x?\?\?\?; Bank_?: 0x?\?\?\?; Offs: 0x?\?\?\?)", -1,
-                       reg_name);
+                       Reg_name);
     }
     else {
       gperror_vmessage(GPM_BANK,
@@ -5162,8 +5168,8 @@ _msg_ram_bank(int reg_address, const char *reg_name, int bank_number)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_reg_addr_check_reloc(int reg_address, const char *reg_name, unsigned int insn_flags,
-                      gpasmVal reloc_value, gp_boolean need_bank_check)
+_reg_addr_check_reloc(int Reg_address, const char *Reg_name, unsigned int Insn_flags,
+                      gpasmVal Reloc_value, gp_boolean Need_bank_check)
 {
   int               bank_addr;
   insn_flags_t      i_flags;
@@ -5171,10 +5177,10 @@ _reg_addr_check_reloc(int reg_address, const char *reg_name, unsigned int insn_f
   int               bank_assume;
   int               bank_assume_num;
 
-  i_flags.u = insn_flags;
+  i_flags.u = Insn_flags;
 
-  if ((reg_address == 0) && i_flags.isReloc) {
-    reg_address = reloc_value;
+  if ((Reg_address == 0) && i_flags.isReloc) {
+    Reg_address = Reloc_value;
   }
 
   switch (i_flags.dest_mode) {
@@ -5200,7 +5206,7 @@ _reg_addr_check_reloc(int reg_address, const char *reg_name, unsigned int insn_f
 
   switch (i_flags.bank_mode) {
     case IFLAG_BANK_NONE: {
-      if ((i_flags.isReloc) || (need_bank_check)) {
+      if ((i_flags.isReloc) || (Need_bank_check)) {
         if (!state.mpasm_compatible) {
           /* The __ACTIVE_BANK_ADDR variable shows the register which used for BANKSEL directive last time. */
           if ((var = get_global_constant(GLOBAL_ACT_BANK_ADDR)) == NULL) {
@@ -5217,14 +5223,14 @@ _reg_addr_check_reloc(int reg_address, const char *reg_name, unsigned int insn_f
         if (bank_assume >= 0) {
           bank_assume     = gp_processor_bank_addr(state.processor, bank_assume);
           bank_assume_num = gp_processor_bank_num(state.processor, bank_assume);
-          bank_addr       = (reg_address >= 0) ? gp_processor_bank_addr(state.processor, reg_address) : -1;
+          bank_addr       = (Reg_address >= 0) ? gp_processor_bank_addr(state.processor, Reg_address) : -1;
 
           if (bank_assume != bank_addr) {
-            _msg_ram_bank(reg_address, reg_name, bank_assume_num);
+            _msg_ram_bank(Reg_address, Reg_name, bank_assume_num);
           }
         }
         else {
-          _msg_ram_bank(reg_address, reg_name, -1);
+          _msg_ram_bank(Reg_address, Reg_name, -1);
         }
       }
       break;
@@ -5234,16 +5240,16 @@ _reg_addr_check_reloc(int reg_address, const char *reg_name, unsigned int insn_f
       if (i_flags.bank == IFLAG_BANK_DEF_ACCESS) {
         /* Default selected the Access Area. */
         if (i_flags.isAccess) {
-          _msg_access_nosel_def(reg_address, reg_name);
+          _msg_access_nosel_def(Reg_address, Reg_name);
         }
         else {
-          _msg_ram_bank(reg_address, reg_name, -1);
+          _msg_ram_bank(Reg_address, Reg_name, -1);
         }
       }
       else if (i_flags.bank == IFLAG_BANK_DEF_BANK) {
         /* Default selected a RAM Bank. */
         if (i_flags.isAccessSFR) {
-          _msg_this_access_ram(reg_address, reg_name, true);
+          _msg_this_access_ram(Reg_address, Reg_name, true);
         }
       }
       break;
@@ -5253,13 +5259,13 @@ _reg_addr_check_reloc(int reg_address, const char *reg_name, unsigned int insn_f
       if (i_flags.bank == IFLAG_BANK_SEL_ACCESS) {
         /* Selected the Access Area. */
         if (!i_flags.isAccess) {
-          _msg_this_access_ram(reg_address, reg_name, false);
+          _msg_this_access_ram(Reg_address, Reg_name, false);
         }
       }
       else if (i_flags.bank == IFLAG_BANK_SEL_BANK) {
         /* Selected a RAM Bank. */
         if (i_flags.isAccessSFR) {
-          _msg_this_access_ram(reg_address, reg_name, true);
+          _msg_this_access_ram(Reg_address, Reg_name, true);
         }
       }
       break;
@@ -5272,7 +5278,7 @@ _reg_addr_check_reloc(int reg_address, const char *reg_name, unsigned int insn_f
 /* Check that a register address is ok. */
 
 static void
-_reg_addr_check(int reg_address, const char *reg_name, unsigned int insn_flags, gpasmVal reloc_value)
+_reg_addr_check(int Reg_address, const char *Reg_name, unsigned int Insn_flags, gpasmVal Reloc_value)
 {
   insn_flags_t      i_flags;
   int               bank_addr;
@@ -5284,54 +5290,54 @@ _reg_addr_check(int reg_address, const char *reg_name, unsigned int insn_flags, 
   const variable_t *var;
   gp_boolean        need_bank_check;
 
-  i_flags.u = insn_flags;
+  i_flags.u = Insn_flags;
 
   /* Don't check address, the linker takes care of it. */
   if (state.mode == MODE_RELOCATABLE) {
-    if ((!i_flags.isReloc) && _core_sfr_or_common_ram(reg_address)) {
+    if ((!i_flags.isReloc) && _core_sfr_or_common_ram(Reg_address)) {
       return;
     }
 
-    _reg_addr_check_reloc(reg_address, reg_name, insn_flags, reloc_value, true);
+    _reg_addr_check_reloc(Reg_address, Reg_name, Insn_flags, Reloc_value, true);
     return;
   }
 
   word_digits = (state.device.class != NULL) ? state.device.class->word_digits : 4;
 
-  if (reg_address > state.maxram) {
-    if ((!state.mpasm_compatible) && (reg_name != NULL)) {
-      gperror_vwarning(GPW_INVALID_RAM, "'%s' -- {0x%0*X} > MAXRAM{0x%0*X}", reg_name,
-                       word_digits, reg_address,
+  if (Reg_address > state.maxram) {
+    if ((!state.mpasm_compatible) && (Reg_name != NULL)) {
+      gperror_vwarning(GPW_INVALID_RAM, "'%s' -- {0x%0*X} > MAXRAM{0x%0*X}", Reg_name,
+                       word_digits, Reg_address,
                        word_digits, state.maxram);
     }
     else {
       gperror_vwarning(GPW_INVALID_RAM, "Address{0x%0*X} > MAXRAM{0x%0*X}",
-                       word_digits, reg_address,
+                       word_digits, Reg_address,
                        word_digits, state.maxram);
     }
   }
-  else if (state.badram[reg_address]) {
-    if ((!state.mpasm_compatible) && (reg_name != NULL)) {
-      gperror_vwarning(GPW_INVALID_RAM, "'%s' -- {0x%0*X} in BADRAM", reg_name,
-                       word_digits, reg_address);
+  else if (state.badram[Reg_address]) {
+    if ((!state.mpasm_compatible) && (Reg_name != NULL)) {
+      gperror_vwarning(GPW_INVALID_RAM, "'%s' -- {0x%0*X} in BADRAM", Reg_name,
+                       word_digits, Reg_address);
     }
     else {
       gperror_vwarning(GPW_INVALID_RAM, "Address{0x%0*X} in BADRAM",
-                       word_digits, reg_address);
+                       word_digits, Reg_address);
     }
   }
 
-  bank_addr = gp_processor_bank_addr(state.processor, reg_address);
-  bank_num  = gp_processor_bank_num(state.processor, reg_address);
-  reg_offs  = gp_processor_reg_offs(state.processor, reg_address);
+  bank_addr = gp_processor_bank_addr(state.processor, Reg_address);
+  bank_num  = gp_processor_bank_num(state.processor, Reg_address);
+  reg_offs  = gp_processor_reg_offs(state.processor, Reg_address);
 
   if (state.mpasm_compatible || IS_PIC16_CORE) {
     /* Only so much can be done compatibility reasons. */
     if (bank_addr > 0) {
-      if (reg_name != NULL) {
+      if (Reg_name != NULL) {
         gperror_vmessage(GPM_BANK,
                          "'%s' -- (Bank_%u: 0x%0*X; Offs: 0x%0*X)", 0,
-                         reg_name,
+                         Reg_name,
                          bank_num,
                          word_digits, bank_addr,
                          word_digits, reg_offs);
@@ -5349,7 +5355,7 @@ _reg_addr_check(int reg_address, const char *reg_name, unsigned int insn_flags, 
   }
 
   /* Don't check bank if common ram or core SFR is addressed. */
-  if ((!i_flags.isReloc) && _core_sfr_or_common_ram(reg_address)) {
+  if ((!i_flags.isReloc) && _core_sfr_or_common_ram(Reg_address)) {
     return;
   }
 
@@ -5369,7 +5375,7 @@ _reg_addr_check(int reg_address, const char *reg_name, unsigned int insn_flags, 
     bank_assume_num = gp_processor_bank_num(state.processor, bank_assume);
 
     if ((!i_flags.isAccess) && (bank_assume != bank_addr)) {
-      _msg_ram_bank(reg_address, reg_name, bank_assume_num);
+      _msg_ram_bank(Reg_address, Reg_name, bank_assume_num);
       need_bank_check = false;
     }
   }
@@ -5379,10 +5385,10 @@ _reg_addr_check(int reg_address, const char *reg_name, unsigned int insn_flags, 
     }
 
     /* If no bank is explicitly selected, set bank to this register now. */
-    set_global(GLOBAL_ACT_BANK_ADDR, reg_address, LFT_TEMPORARY, VAL_CONSTANT, true);
+    set_global(GLOBAL_ACT_BANK_ADDR, Reg_address, LFT_TEMPORARY, VAL_CONSTANT, true);
   }
 
-  _reg_addr_check_reloc(reg_address, reg_name, insn_flags, reloc_value, need_bank_check);
+  _reg_addr_check_reloc(Reg_address, Reg_name, Insn_flags, Reloc_value, need_bank_check);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -7555,7 +7561,7 @@ const int num_op_1 = TABLE_SIZE(op_1);
 /*------------------------------------------------------------------------------------------------*/
 
 void
-opcode_init(int stage)
+opcode_init(int Stage)
 {
   const insn_t *base = NULL;
   int           i;
@@ -7563,130 +7569,136 @@ opcode_init(int stage)
   const char   *name;
   symbol_t     *sym;
 
-  switch (stage) {
-  case 0:
-    base  = op_0;
-    count = num_op_0;
-    break;
+  switch (Stage) {
+    case 0:
+      base  = op_0;
+      count = num_op_0;
+      break;
 
-  case 1:
-    base  = op_1;
-    count = num_op_1;
-    break;
+    case 1:
+      base  = op_1;
+      count = num_op_1;
+      break;
 
-  case 2:
-    state.device.class = gp_processor_class(state.processor);
-    base  = state.device.class->instructions;
-    count = (base == NULL) ? 0 : *state.device.class->num_instructions;
+    case 2: {
+      state.device.class = gp_processor_class(state.processor);
+      base  = state.device.class->instructions;
+      count = (base == NULL) ? 0 : *state.device.class->num_instructions;
 
-    if (IS_SX_CORE) {
-      /* The page instruction conflicts with the page directive. */
-      sym_remove_symbol(state.stBuiltin, "page");
-    }
-    else if (IS_PIC16E_CORE) {
-      state.device.bsr_boundary = gp_processor_bsr_boundary(state.processor);
-
-      /* The 16_bit core special macros are encoded directly into the
-       * symbol table like regular instructions. */
-      for (i = 0; i < num_op_18cxx_sp; i++) {
-        sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_18cxx_sp[i].name),
-                            (void *)&op_18cxx_sp[i]);
+      if (IS_SX_CORE) {
+        /* The page instruction conflicts with the page directive. */
+        sym_remove_symbol(state.stBuiltin, "page");
       }
+      else if (IS_PIC16E_CORE) {
+        state.device.bsr_boundary = gp_processor_bsr_boundary(state.processor);
 
-      if (state.extended_pic16e) {
-        /* Some 18xx devices have an extended instruction set. */
-        for (i = 0; i < num_op_18cxx_ext; i++) {
-          sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_18cxx_ext[i].name),
-                              (void *)&op_18cxx_ext[i]);
+        /* The 16_bit core special macros are encoded directly into the
+         * symbol table like regular instructions. */
+        for (i = 0; i < num_op_18cxx_sp; i++) {
+          sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_18cxx_sp[i].name),
+                              (void *)&op_18cxx_sp[i]);
+        }
+
+        if (state.extended_pic16e) {
+          /* Some 18xx devices have an extended instruction set. */
+          for (i = 0; i < num_op_18cxx_ext; i++) {
+            sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_18cxx_ext[i].name),
+                                (void *)&op_18cxx_ext[i]);
+          }
         }
       }
-    }
-    else if (IS_PIC14E_CORE) {
-      for (i = 0; i < num_op_16cxx_enh; i++) {
-        sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16cxx_enh[i].name),
-                            (void *)&op_16cxx_enh[i]);
+      else if (IS_PIC14E_CORE) {
+        for (i = 0; i < num_op_16cxx_enh; i++) {
+          sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16cxx_enh[i].name),
+                              (void *)&op_16cxx_enh[i]);
+        }
       }
-    }
-    else if (IS_PIC14EX_CORE) {
-      for (i = 0; i < num_op_16cxx_enhx; i++) {
-        sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16cxx_enhx[i].name),
-                            (void *)&op_16cxx_enhx[i]);
+      else if (IS_PIC14EX_CORE) {
+        for (i = 0; i < num_op_16cxx_enhx; i++) {
+          sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16cxx_enhx[i].name),
+                              (void *)&op_16cxx_enhx[i]);
+        }
       }
+
+      break;
     }
-    break;
 
-  case 3:
-    /* add 12 and 14 bit special macros */
-    base  = special;
-    count = num_op_special;
-    break;
+    case 3:
+      /* add 12 and 14 bit special macros */
+      base  = special;
+      count = num_op_special;
+      break;
 
-  default:
-    assert(0);
+    default:
+      assert(0);
   }
 
   for (i = 0; i < count; i++) {
     sym_annotate_symbol(sym_add_symbol(state.stBuiltin, base[i].name), (void *)&base[i]);
   }
 
-  switch (stage) {
-  case 1:
-    if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
-      /* The pageselw directive not supported on pic14 enhanced devices. */
-      sym_remove_symbol(state.stBuiltin, "pageselw");
+  switch (Stage) {
+    case 1: {
+      if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
+        /* The pageselw directive not supported on pic14 enhanced devices. */
+        sym_remove_symbol(state.stBuiltin, "pageselw");
+      }
+
+      break;
     }
-    break;
 
-  case 2:
-    if (state.processor != NULL) {
-      name = gp_processor_name(state.processor, 0);
+    case 2: {
+      if (state.processor != NULL) {
+        name = gp_processor_name(state.processor, 0);
 
-      /* Special case, some instructions not available on 17c42 devices. */
-      if (strcmp(name, "pic17c42") == 0) {
-        sym_remove_symbol(state.stBuiltin, "mulwf");
-        sym_remove_symbol(state.stBuiltin, "movlr");
-        sym_remove_symbol(state.stBuiltin, "mullw");
-      }
-      /* Special case, some instructions not available on 16f5x devices. */
-      else if ((strcmp(name, "pic16f54") == 0) || (strcmp(name, "pic16f57") == 0) ||
-               (strcmp(name, "pic16f59") == 0)) {
-        sym_remove_symbol(state.stBuiltin, "addlw");
-        sym_remove_symbol(state.stBuiltin, "sublw");
-        sym_remove_symbol(state.stBuiltin, "return");
-        sym_remove_symbol(state.stBuiltin, "retfie");
-      }
-      else if ((strcmp(name, "sx48bd") == 0) || (strcmp(name, "sx52bd") == 0)) {
-        sym = sym_get_symbol(state.stBuiltin, "mode");
-
-        if (sym != NULL) {
-          sym_annotate_symbol(sym, (void *)&op_sx_mode);
+        /* Special case, some instructions not available on 17c42 devices. */
+        if (strcmp(name, "pic17c42") == 0) {
+          sym_remove_symbol(state.stBuiltin, "mulwf");
+          sym_remove_symbol(state.stBuiltin, "movlr");
+          sym_remove_symbol(state.stBuiltin, "mullw");
         }
-      }
-      else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
-        sym_remove_symbol(state.stBuiltin, "return");
-        for (i = 0; i < num_op_16c5xx_enh; i++) {
-          sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16c5xx_enh[i].name),
-                              (void *)&op_16c5xx_enh[i]);
-        }
-
-        if ((strcmp(name, "pic12f529t39a") == 0) || (strcmp(name, "pic12f529t48a") == 0)) {
-          sym_remove_symbol(state.stBuiltin, "retfie");
+        /* Special case, some instructions not available on 16f5x devices. */
+        else if ((strcmp(name, "pic16f54") == 0) || (strcmp(name, "pic16f57") == 0) ||
+                 (strcmp(name, "pic16f59") == 0)) {
+          sym_remove_symbol(state.stBuiltin, "addlw");
+          sym_remove_symbol(state.stBuiltin, "sublw");
           sym_remove_symbol(state.stBuiltin, "return");
+          sym_remove_symbol(state.stBuiltin, "retfie");
+        }
+        else if ((strcmp(name, "sx48bd") == 0) || (strcmp(name, "sx52bd") == 0)) {
+          sym = sym_get_symbol(state.stBuiltin, "mode");
+
+          if (sym != NULL) {
+            sym_annotate_symbol(sym, (void *)&op_sx_mode);
+          }
+        }
+        else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
+          sym_remove_symbol(state.stBuiltin, "return");
+          for (i = 0; i < num_op_16c5xx_enh; i++) {
+            sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16c5xx_enh[i].name),
+                                (void *)&op_16c5xx_enh[i]);
+          }
+
+          if ((strcmp(name, "pic12f529t39a") == 0) || (strcmp(name, "pic12f529t48a") == 0)) {
+            sym_remove_symbol(state.stBuiltin, "retfie");
+            sym_remove_symbol(state.stBuiltin, "return");
+          }
         }
       }
+
+      break;
     }
-    break;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-begin_cblock(const pnode_t *c)
+begin_cblock(const pnode_t *Cblock)
 {
   if (asm_enabled()) {
     state.cblock_defined = true;
-    state.cblock = eval_maybe_evaluate(c);
+    state.cblock = eval_maybe_evaluate(Cblock);
   }
 }
 
@@ -7705,10 +7717,10 @@ continue_cblock(void)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-cblock_expr(const pnode_t *s)
+cblock_expr(const pnode_t *Expr)
 {
   if (asm_enabled()) {
-    set_global(PnSymbol(s), state.cblock, LFT_PERMANENT, VAL_CBLOCK, false);
+    set_global(PnSymbol(Expr), state.cblock, LFT_PERMANENT, VAL_CBLOCK, false);
     state.cblock++;
   }
 }
@@ -7716,10 +7728,10 @@ cblock_expr(const pnode_t *s)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-cblock_expr_incr(const pnode_t *s, const pnode_t *incr)
+cblock_expr_incr(const pnode_t *Expr, const pnode_t *Incr)
 {
   if (asm_enabled()) {
-    set_global(PnSymbol(s), state.cblock, LFT_PERMANENT, VAL_CBLOCK, false);
-    state.cblock += eval_maybe_evaluate(incr);
+    set_global(PnSymbol(Expr), state.cblock, LFT_PERMANENT, VAL_CBLOCK, false);
+    state.cblock += eval_maybe_evaluate(Incr);
   }
 }

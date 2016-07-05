@@ -411,7 +411,7 @@ _updateptr(gp_object_t *Object)
     section_number++;
     section->data_ptr = 0;
 
-    if (gp_has_data(section)) {
+    if (gp_writeobj_has_data(section)) {
       section->data_ptr = data_idx;
       data_idx += section->size;
     }
@@ -458,7 +458,7 @@ _updateptr(gp_object_t *Object)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-gp_has_data(const gp_section_t *Section)
+gp_writeobj_has_data(const gp_section_t *Section)
 {
   if (Section->size == 0) {
     return false;
@@ -484,7 +484,7 @@ gp_has_data(const gp_section_t *Section)
 /* write the coff file */
 
 gp_boolean
-gp_write_coff(gp_object_t *Object, int Num_errors)
+gp_writeobj_write_coff(gp_object_t *Object, int Num_errors)
 {
   FILE         *coff;
   unsigned int  org_to_byte_shift;
@@ -524,7 +524,7 @@ gp_write_coff(gp_object_t *Object, int Num_errors)
   /* write section data */
   section = Object->section_list.first;
   while (section != NULL) {
-    if (gp_has_data(section)) {
+    if (gp_writeobj_has_data(section)) {
       _write_data(Object->processor, section, coff);
     }
     section = section->next;
@@ -566,7 +566,7 @@ gp_write_coff(gp_object_t *Object, int Num_errors)
    are no relocations (undefined symbols) */
 
 gp_boolean
-gp_is_absolute_object(const gp_object_t *Object)
+gp_writeobj_is_absolute_object(const gp_object_t *Object)
 {
   gp_section_t *section;
 

@@ -31,25 +31,25 @@ deps_init(void)
 {
   char output_file[BUFSIZ];
 
-  if (state.depfile != OUT_NAMED) {
-    snprintf(state.depfilename, sizeof(state.depfilename), "%s.d", state.basefilename);
+  if (state.dep_file != OUT_NAMED) {
+    snprintf(state.dep_file_name, sizeof(state.dep_file_name), "%s.d", state.base_file_name);
   }
 
-  if (state.depfile == OUT_SUPPRESS) {
+  if (state.dep_file == OUT_SUPPRESS) {
     state.dep.enabled = false;
   } else {
-    state.dep.f = fopen(state.depfilename, "w");
+    state.dep.f = fopen(state.dep_file_name, "w");
     if (state.dep.f == NULL) {
-      perror(state.depfilename);
+      perror(state.dep_file_name);
       exit(1);
     }
     state.dep.enabled = true;
 
     /* output file names may not be setup, so make one */
     if (state.mode == MODE_RELOCATABLE) {
-      snprintf(output_file, sizeof(output_file), "%s.o", state.basefilename);
+      snprintf(output_file, sizeof(output_file), "%s.o", state.base_file_name);
     } else {
-      snprintf(output_file, sizeof(output_file), "%s.hex", state.basefilename);
+      snprintf(output_file, sizeof(output_file), "%s.hex", state.base_file_name);
     }
 
     fprintf(state.dep.f, "%s : ", output_file);

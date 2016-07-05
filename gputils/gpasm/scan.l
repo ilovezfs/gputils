@@ -715,7 +715,7 @@ open_src(const char *name, gp_boolean isinclude)
     new->mac_head = NULL;
     new->line_number = 1;
     new->loop_number = 1;
-    new->file_symbol = (state.debug_info) ? NULL : coff_add_filesym(new->name, isinclude);
+    new->file_symbol = (state.debug_info) ? NULL : coff_add_file_sym(new->name, isinclude);
     new->prev = state.src;
 
     state.src = new;
@@ -791,7 +791,7 @@ close_file(void)
     }
 
     if (!state.debug_info) {
-      coff_add_eofsym();
+      coff_add_eof_sym();
     }
     state.src = state.src->prev;
   }

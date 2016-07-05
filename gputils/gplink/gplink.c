@@ -1012,7 +1012,7 @@ _linker(void)
 
   if (state.objfile == OUT_NORMAL) {
     /* write the executable object in memory */
-    if (!gp_write_coff(state.object, gp_num_errors)) {
+    if (!gp_writeobj_write_coff(state.object, gp_num_errors)) {
       gp_error("Error while writing object file.");
       exit(1);
     }
@@ -1024,8 +1024,8 @@ _linker(void)
   state.i_memory = gp_cofflink_make_memory(state.object);
 
   /* write hex file */
-  if (!writehex(state.basefilename, state.i_memory, state.hex_format, gp_num_errors,
-                0, state.class->core_mask)) {
+  if (!gp_writehex(state.basefilename, state.i_memory, state.hex_format, gp_num_errors,
+                   0, state.class->core_mask)) {
     gp_error("Error while writing hex file.");
     exit(1);
   }

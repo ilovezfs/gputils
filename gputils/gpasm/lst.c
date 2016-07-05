@@ -59,8 +59,8 @@ typedef struct {
 static void
 _lst_check_page_start(void)
 {
-  if ((state.lst.linesperpage != 0) &&
-      ((state.lst.lineofpage == 0) || (state.lst.lineofpage > state.lst.linesperpage))) {
+  if ((state.lst.lines_per_page != 0) &&
+      ((state.lst.line_of_page == 0) || (state.lst.line_of_page > state.lst.lines_per_page))) {
     lst_page_start();
   }
 }
@@ -68,16 +68,16 @@ _lst_check_page_start(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_lst_spaces(unsigned int n)
+_lst_spaces(unsigned int Num)
 {
-  unsigned int i = n;
+  unsigned int i = Num;
 
   _lst_check_page_start();
-  while (i--) {
+  while (i-- != 0) {
     putc(' ', state.lst.f);
   }
 
-  return n;
+  return Num;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ _lst_eol(void)
   if (state.lst.f != NULL) {
     putc('\n', state.lst.f);
     state.lst.line_number++;
-    state.lst.lineofpage++;
+    state.lst.line_of_page++;
     cod_lst_line(COD_NORMAL_LST_LINE);
   }
 }
@@ -98,18 +98,18 @@ _lst_eol(void)
 /* Print part of a line. Output must not contain newline. Needs call to lst_eol at end of line. */
 
 static unsigned int
-_lst_printf(const char *format, ...)
+_lst_printf(const char *Format, ...)
 {
-  int r = 0;
+  int     r = 0;
+  va_list args;
 
   if (state.lst.f != NULL) {
-    va_list args;
-
     _lst_check_page_start();
-    va_start(args, format);
-    r = vfprintf(state.lst.f, format, args);
+    va_start(args, Format);
+    r = vfprintf(state.lst.f, Format, args);
     va_end(args);
   }
+
   assert(r >= 0);
   return (unsigned int)r;
 }
@@ -119,12 +119,12 @@ _lst_printf(const char *format, ...)
 /* find relocation by address */
 
 static gp_reloc_t *
-_find_reloc_by_address(uint16_t address)
+_find_reloc_by_address(uint16_t Address)
 {
   gp_reloc_t *p;
 
   for (p = state.obj.section->relocation_list.first; p != NULL; p = p->next) {
-    if (p->address == address) {
+    if (p->address == Address) {
       break;
     }
   }
@@ -165,330 +165,392 @@ _prev_reloc_type(void)
 #endif
 
 static unsigned int
-_print_reloc(uint16_t type, uint16_t current_value, unsigned int index)
+_print_reloc(uint16_t Type, uint16_t Current_value, unsigned int Index)
 {
   proc_class_t class = state.device.class;
 
-  switch (type) {
-  case RELOCT_CALL:
-    if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
-        (class == PROC_CLASS_SX)    || (class == PROC_CLASS_PIC16E)) {
-      ASSERT((current_value & PIC12_BMSK_CALL) == 0);
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT((current_value & PIC14_BMSK_CALL) == 0);
-      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
-    }
-    else if (class == PROC_CLASS_PIC16) {
-      ASSERT((current_value & PIC16_BMSK_CALL) == 0);
-      return _lst_printf("???? ");
-    }
-    else if (class == PROC_CLASS_PIC16E) {
-      ASSERT((current_value & PIC16E_BMSK_CALL0) == 0);
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else {
-      ASSERT(0);
-      return 0;
-    }
-    break;
+  switch (Type) {
+    case RELOCT_CALL: {
+      if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
+          (class == PROC_CLASS_SX)    || (class == PROC_CLASS_PIC16E)) {
+        ASSERT((Current_value & PIC12_BMSK_CALL) == 0);
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+        ASSERT((Current_value & PIC14_BMSK_CALL) == 0);
+        return _lst_printf("%X??? ", (Current_value & 0xf000) >> 12);
+      }
+      else if (class == PROC_CLASS_PIC16) {
+        ASSERT((Current_value & PIC16_BMSK_CALL) == 0);
+        return _lst_printf("???? ");
+      }
+      else if (class == PROC_CLASS_PIC16E) {
+        ASSERT((Current_value & PIC16E_BMSK_CALL0) == 0);
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
 
-  case RELOCT_GOTO:
-    if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
-        (class == PROC_CLASS_SX)) {
-      ASSERT((current_value & PIC12_BMSK_GOTO) == 0);
-      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
+      break;
     }
-    else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT((current_value & PIC14_BMSK_GOTO) == 0);
-      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
-    }
-    else if (class == PROC_CLASS_PIC16) {
-      ASSERT((current_value & PIC16_BMSK_GOTO) == 0);
-      return _lst_printf("???? ");
-    }
-    else if (class == PROC_CLASS_PIC16E) {
-      ASSERT((current_value & PIC16E_BMSK_GOTO0) == 0);
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else {
-      ASSERT(0);
-      return 0;
-    }
-    break;
 
-  case RELOCT_LOW:
-    /* On non-16bits devices DB directive generates values with
-     * low byte != 0 if more then one byte is defined, for example
-     * DB 0x12, 0x34 generates 0x1234, so the following assertion fails
-     * in such cases.
-     * TODO: This should be solved in DB directive handling function
-     * do_db(), file directive.c.
-     * ASSERT((current_value & 0xff) == 0); */
-    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    break;
+    /*..................................*/
 
-  case RELOCT_HIGH:
-  case RELOCT_LFSR2:
-  case RELOCT_UPPER:
-  case RELOCT_CONDBRA:
-    ASSERT((current_value & 0xff) == 0);
-    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    break;
+    case RELOCT_GOTO: {
+      if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I) ||
+          (class == PROC_CLASS_SX)) {
+        ASSERT((Current_value & PIC12_BMSK_GOTO) == 0);
+        return _lst_printf("%X??? ", (Current_value & 0xf000) >> 12);
+      }
+      else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+        ASSERT((Current_value & PIC14_BMSK_GOTO) == 0);
+        return _lst_printf("%X??? ", (Current_value & 0xf000) >> 12);
+      }
+      else if (class == PROC_CLASS_PIC16) {
+        ASSERT((Current_value & PIC16_BMSK_GOTO) == 0);
+        return _lst_printf("???? ");
+      }
+      else if (class == PROC_CLASS_PIC16E) {
+        ASSERT((Current_value & PIC16E_BMSK_GOTO0) == 0);
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
 
-  case RELOCT_P:
-    {
+      break;
+    }
+
+    /*..................................*/
+
+    case RELOCT_LOW:
+      /* On non-16bits devices DB directive generates values with
+       * low byte != 0 if more then one byte is defined, for example
+       * DB 0x12, 0x34 generates 0x1234, so the following assertion fails
+       * in such cases.
+       * TODO: This should be solved in DB directive handling function
+       * do_db(), file directive.c.
+       * ASSERT((Current_value & 0xff) == 0); */
+      return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      break;
+
+    /*..................................*/
+
+    case RELOCT_HIGH:
+    case RELOCT_LFSR2:
+    case RELOCT_UPPER:
+    case RELOCT_CONDBRA:
+      ASSERT((Current_value & 0xff) == 0);
+      return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      break;
+
+    /*..................................*/
+
+    case RELOCT_P: {
       char buf[5] = "????";
 
       if (RELOCT_F != _prev_reloc_type()) {
-        sprintf(&buf[2], "%02X", current_value & 0x00ff);
+        sprintf(&buf[2], "%02X", Current_value & 0x00ff);
       }
-      ASSERT((current_value & 0x1f00) == 0);
+
+      ASSERT((Current_value & 0x1f00) == 0);
       return _lst_printf("%s ", buf);
-    }
-    break;
-
-  case RELOCT_BANKSEL:
-    if (class == PROC_CLASS_PIC12) {
-      ASSERT((current_value & PIC12_BMSK_BxF) == 0);  /* 04A4-04E4 or 05A4-05E4 */
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
-      ASSERT((current_value & PIC12E_BMSK_MOVLB) == 0);
-      return _lst_printf("%03X? ", (current_value & 0x0fff0) >> 4);
-    }
-    else if (class == PROC_CLASS_PIC14) {
-      ASSERT((current_value & PIC14_BMSK_BxF) == 0);  /* 1283-1303 or 1683-1703 */
-      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
-    }
-    else if (class == PROC_CLASS_PIC14E) {
-      ASSERT((current_value & PIC14E_BMSK_MOVLB) == 0);  /* 0020-003F */
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else if (class == PROC_CLASS_PIC14EX) {
-      ASSERT((current_value & PIC14EX_BMSK_MOVLB) == 0);  /* 0140-017F */
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else if (class == PROC_CLASS_PIC16) {
-      ASSERT((current_value & PIC16_BMSK_MOVLB) == 0);  /* 0100-010F */
-      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
-    }
-    else if (class == PROC_CLASS_PIC16E) {
-      ASSERT((current_value & PIC16E_BMSK_MOVLB) == 0);  /* 0100-010F */
-      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
-    }
-    return _lst_printf("???? ");
-    break;
-
-  case RELOCT_ALL:
-    return _lst_printf("???? ");
-    break;
-
-  case RELOCT_IBANKSEL:
-    if (class == PROC_CLASS_PIC14) {
-      ASSERT((current_value & PIC12_BMSK_BxF) == 0);
-      return _lst_printf("1?83 ");  /* 1383 or 1783 */
-    }
-    else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT((current_value & PIC12_BMSK_BxF) == 0);
-      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);  /* 120A-118A or 160A-158A */
-    }
-    else if (class == PROC_CLASS_PIC16) {
-      ASSERT((current_value & 0x00ff) == 0);
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else {
-      ASSERT(0);
-      return 0;
-    }
-    break;
-
-  case RELOCT_F:
-    if (class == PROC_CLASS_SX) {
-      ASSERT((current_value & 0x0007) == 0);
-      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
-    }
-    else if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
-      ASSERT((current_value & MASK_PIC12_FILE) == 0);
-    }
-    else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT((current_value & MASK_PIC14_FILE) == 0);
-    }
-    else if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
-      ASSERT((current_value & MASK_PIC16_FILE) == 0);
-    }
-    else {
-      ASSERT(0);
-      return 0;
-    }
-    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    break;
-
-  case RELOCT_TRIS_3BIT:
-    ASSERT((current_value & PIC12_BMSK_TRIS) == 0);
-    return _lst_printf("%03X? ", (current_value & 0x00f0) >> 4);
-    break;
-
-  case RELOCT_TRIS:
-    ASSERT((current_value & 0x001f) == 0);
-    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    break;
-
-  case RELOCT_MOVLR:
-    if (class == PROC_CLASS_PIC16) {
-      ASSERT((current_value & PIC16_BMSK_MOVLR) == 0);
-      return _lst_printf("%02X?%X ", (current_value & 0xff00) >> 8, current_value & 0x000f);  /* 010.-01F. */
-    }
-    else {
-      ASSERT(0);
-      return 0;
+      break;
     }
 
-  case RELOCT_MOVLB:
-    if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
-      ASSERT((current_value & PIC12E_BMSK_MOVLB) == 0);
-      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
-    }
-    else if (class == PROC_CLASS_PIC14E) {
-      ASSERT((current_value & PIC14E_BMSK_MOVLB) == 0);
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else if (class == PROC_CLASS_PIC14EX) {
-      ASSERT((current_value & PIC14EX_BMSK_MOVLB) == 0);
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else if (class == PROC_CLASS_PIC16) {
-      ASSERT((current_value & PIC16_BMSK_MOVLB) == 0);
-      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);  /* 01.0-01.F */
-    }
-    else if (class == PROC_CLASS_PIC16E) {
-      ASSERT((current_value & PIC16E_BMSK_MOVLB) == 0);
-      return _lst_printf("%03X? ", (current_value & 0xfff0) >> 4);
-    }
-    else {
-      ASSERT(0);
-      return 0;
-    }
-    break;
+    /*..................................*/
 
-  case RELOCT_GOTO2:
-    /* This is only used for PIC16E (pic18). */
-  case RELOCT_FF1:
-  case RELOCT_FF2:
-    /* removed assertion since it fails during sdcc pic16 library
-     * compilation: do_insn, case INSN_CLASS_FF
-     * ASSERT((current_value & 0x0fff) == 0); */
-    return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
-    break;
-
-  case RELOCT_LFSR1:
-    return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    break;
-
-  case RELOCT_BRA:
-    if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT((current_value & PIC14E_BMSK_RBRA9) == 0);
-    }
-    else if (class == PROC_CLASS_PIC16E) {
-      ASSERT((current_value & PIC16E_BMSK_RBRA11) == 0);
-    }
-    else {
-      ASSERT(0);
-      return 0;
-    }
-    return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);
-    break;
-
-  case RELOCT_ACCESS:
-    if (class == PROC_CLASS_PIC16E) {
-      ASSERT((current_value & 0x00ff) == 0);
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else {
-      ASSERT(0);
-      return 0;
-    }
-    break;
-
-  case RELOCT_PAGESEL_WREG:
-    if (index == 0) {
-      /* movlw PAGE_VALUE */
-      if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
-        ASSERT((current_value & PIC12_BMSK_MOVLW) == 0);
-        return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8); /* 0C00 -- movlw ... */
+    case RELOCT_BANKSEL: {
+      if (class == PROC_CLASS_PIC12) {
+        ASSERT((Current_value & PIC12_BMSK_BxF) == 0);  /* 04A4-04E4 or 05A4-05E4 */
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+        ASSERT((Current_value & PIC12E_BMSK_MOVLB) == 0);
+        return _lst_printf("%03X? ", (Current_value & 0x0fff0) >> 4);
       }
       else if (class == PROC_CLASS_PIC14) {
-        ASSERT((current_value & PIC14_BMSK_MOVLW) == 0);
-        return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8); /* 3000 -- movlw ... */
+        ASSERT((Current_value & PIC14_BMSK_BxF) == 0);  /* 1283-1303 or 1683-1703 */
+        return _lst_printf("%X??? ", (Current_value & 0xf000) >> 12);
+      }
+      else if (class == PROC_CLASS_PIC14E) {
+        ASSERT((Current_value & PIC14E_BMSK_MOVLB) == 0);  /* 0020-003F */
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else if (class == PROC_CLASS_PIC14EX) {
+        ASSERT((Current_value & PIC14EX_BMSK_MOVLB) == 0);  /* 0140-017F */
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else if (class == PROC_CLASS_PIC16) {
+        ASSERT((Current_value & PIC16_BMSK_MOVLB) == 0);  /* 0100-010F */
+        return _lst_printf("%03X? ", (Current_value & 0xfff0) >> 4);
+      }
+      else if (class == PROC_CLASS_PIC16E) {
+        ASSERT((Current_value & PIC16E_BMSK_MOVLB) == 0);  /* 0100-010F */
+        return _lst_printf("%03X? ", (Current_value & 0xfff0) >> 4);
+      }
+      return _lst_printf("???? ");
+      break;
+    }
+
+    /*..................................*/
+
+    case RELOCT_ALL:
+      return _lst_printf("???? ");
+      break;
+
+    /*..................................*/
+
+    case RELOCT_IBANKSEL: {
+      if (class == PROC_CLASS_PIC14) {
+        ASSERT((Current_value & PIC12_BMSK_BxF) == 0);
+        return _lst_printf("1?83 ");  /* 1383 or 1783 */
+      }
+      else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+        ASSERT((Current_value & PIC12_BMSK_BxF) == 0);
+        return _lst_printf("%X??? ", (Current_value & 0xf000) >> 12);  /* 120A-118A or 160A-158A */
+      }
+      else if (class == PROC_CLASS_PIC16) {
+        ASSERT((Current_value & 0x00ff) == 0);
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
       }
       else {
         ASSERT(0);
         return 0;
       }
+
+      break;
     }
-    else {
-      /* movwf register */
-      if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
-        ASSERT((current_value & PIC12_BMSK_FILE) == 0);
-        return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8); /* 0023 -- movwf STATUS */
+
+    /*..................................*/
+
+    case RELOCT_F: {
+      if (class == PROC_CLASS_SX) {
+        ASSERT((Current_value & 0x0007) == 0);
+        return _lst_printf("%03X? ", (Current_value & 0xfff0) >> 4);
       }
-      else if (class == PROC_CLASS_PIC14) {
-        ASSERT((current_value & PIC14_BMSK_FILE) == 0);
-        return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8); /* 008A -- movwf PCLATH */
+      else if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+        ASSERT((Current_value & MASK_PIC12_FILE) == 0);
+      }
+      else if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+        ASSERT((Current_value & MASK_PIC14_FILE) == 0);
+      }
+      else if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
+        ASSERT((Current_value & MASK_PIC16_FILE) == 0);
       }
       else {
         ASSERT(0);
         return 0;
       }
+      return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      break;
     }
-    break;
 
-  case RELOCT_PAGESEL_BITS:
-    if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
-      ASSERT((current_value & PIC12_BMSK_BxF) == 0);
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);  /* 04A3-04E3 or 05A3-05E3 */
+    /*..................................*/
+
+    case RELOCT_TRIS_3BIT:
+      ASSERT((Current_value & PIC12_BMSK_TRIS) == 0);
+      return _lst_printf("%03X? ", (Current_value & 0x00f0) >> 4);
+      break;
+
+    /*..................................*/
+
+    case RELOCT_TRIS:
+      ASSERT((Current_value & 0x001f) == 0);
+      return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      break;
+
+    /*..................................*/
+
+    case RELOCT_MOVLR: {
+      if (class == PROC_CLASS_PIC16) {
+        ASSERT((Current_value & PIC16_BMSK_MOVLR) == 0);
+        return _lst_printf("%02X?%X ", (Current_value & 0xff00) >> 8, Current_value & 0x000f);  /* 010.-01F. */
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
+
+      break;
     }
-    else if (class == PROC_CLASS_PIC14) {
-      ASSERT((current_value & PIC14_BMSK_BxF) == 0);
-      return _lst_printf("%X??? ", (current_value & 0xf000) >> 12);  /* 120A-118A or 160A-158A */
+
+    /*..................................*/
+
+    case RELOCT_MOVLB: {
+      if ((class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+        ASSERT((Current_value & PIC12E_BMSK_MOVLB) == 0);
+        return _lst_printf("%03X? ", (Current_value & 0xfff0) >> 4);
+      }
+      else if (class == PROC_CLASS_PIC14E) {
+        ASSERT((Current_value & PIC14E_BMSK_MOVLB) == 0);
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else if (class == PROC_CLASS_PIC14EX) {
+        ASSERT((Current_value & PIC14EX_BMSK_MOVLB) == 0);
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else if (class == PROC_CLASS_PIC16) {
+        ASSERT((Current_value & PIC16_BMSK_MOVLB) == 0);
+        return _lst_printf("%03X? ", (Current_value & 0xfff0) >> 4);  /* 01.0-01.F */
+      }
+      else if (class == PROC_CLASS_PIC16E) {
+        ASSERT((Current_value & PIC16E_BMSK_MOVLB) == 0);
+        return _lst_printf("%03X? ", (Current_value & 0xfff0) >> 4);
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
+
+      break;
     }
-    else {
-      ASSERT(0);
+
+    /*..................................*/
+
+    case RELOCT_GOTO2:
+      /* This is only used for PIC16E (pic18). */
+    case RELOCT_FF1:
+    case RELOCT_FF2:
+      /* removed assertion since it fails during sdcc pic16 library
+       * compilation: do_insn, case INSN_CLASS_FF
+       * ASSERT((Current_value & 0x0fff) == 0); */
+      return _lst_printf("%X??? ", (Current_value & 0xf000) >> 12);
+      break;
+
+    /*..................................*/
+
+    case RELOCT_LFSR1:
+      return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      break;
+
+    /*..................................*/
+
+    case RELOCT_BRA: {
+      if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+        ASSERT((Current_value & PIC14E_BMSK_RBRA9) == 0);
+      }
+      else if (class == PROC_CLASS_PIC16E) {
+        ASSERT((Current_value & PIC16E_BMSK_RBRA11) == 0);
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
+      return _lst_printf("%X??? ", (Current_value & 0xf000) >> 12);
+      break;
+    }
+
+    /*..................................*/
+
+    case RELOCT_ACCESS: {
+      if (class == PROC_CLASS_PIC16E) {
+        ASSERT((Current_value & 0x00ff) == 0);
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
+      break;
+    }
+
+    /*..................................*/
+
+    case RELOCT_PAGESEL_WREG: {
+      if (Index == 0) {
+        /* movlw PAGE_VALUE */
+        if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+          ASSERT((Current_value & PIC12_BMSK_MOVLW) == 0);
+          return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8); /* 0C00 -- movlw ... */
+        }
+        else if (class == PROC_CLASS_PIC14) {
+          ASSERT((Current_value & PIC14_BMSK_MOVLW) == 0);
+          return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8); /* 3000 -- movlw ... */
+        }
+        else {
+          ASSERT(0);
+          return 0;
+        }
+      }
+      else {
+        /* movwf register */
+        if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+          ASSERT((Current_value & PIC12_BMSK_FILE) == 0);
+          return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8); /* 0023 -- movwf STATUS */
+        }
+        else if (class == PROC_CLASS_PIC14) {
+          ASSERT((Current_value & PIC14_BMSK_FILE) == 0);
+          return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8); /* 008A -- movwf PCLATH */
+        }
+        else {
+          ASSERT(0);
+          return 0;
+        }
+      }
+
+      break;
+    }
+
+    /*..................................*/
+
+    case RELOCT_PAGESEL_BITS: {
+      if ((class == PROC_CLASS_PIC12) || (class == PROC_CLASS_PIC12E) || (class == PROC_CLASS_PIC12I)) {
+        ASSERT((Current_value & PIC12_BMSK_BxF) == 0);
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);  /* 04A3-04E3 or 05A3-05E3 */
+      }
+      else if (class == PROC_CLASS_PIC14) {
+        ASSERT((Current_value & PIC14_BMSK_BxF) == 0);
+        return _lst_printf("%X??? ", (Current_value & 0xf000) >> 12);  /* 120A-118A or 160A-158A */
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
+
+      break;
+    }
+
+    /*..................................*/
+
+    case RELOCT_PAGESEL_MOVLP: {
+      if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
+        ASSERT((Current_value & PIC14E_BMSK_MOVLP) == 0);
+        return _lst_printf("%02X?? ", (Current_value & 0xff00) >> 8);
+      }
+      else {
+        ASSERT(0);
+        return 0;
+      }
+
+      break;
+    }
+
+    /*..................................*/
+
+    /* unimplemented relocations */
+    case RELOCT_PAGESEL:
+    case RELOCT_SCNSZ_LOW:
+    case RELOCT_SCNSZ_HIGH:
+    case RELOCT_SCNSZ_UPPER:
+    case RELOCT_SCNEND_LOW:
+    case RELOCT_SCNEND_HIGH:
+    case RELOCT_SCNEND_UPPER:
+    case RELOCT_SCNEND_LFSR1:
+    case RELOCT_SCNEND_LFSR2:
+    default:
       return 0;
-    }
-    break;
-
-  case RELOCT_PAGESEL_MOVLP:
-    if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-      ASSERT((current_value & PIC14E_BMSK_MOVLP) == 0);
-      return _lst_printf("%02X?? ", (current_value & 0xff00) >> 8);
-    }
-    else {
-      ASSERT(0);
-      return 0;
-    }
-    break;
-
-  /* unimplemented relocations */
-  case RELOCT_PAGESEL:
-  case RELOCT_SCNSZ_LOW:
-  case RELOCT_SCNSZ_HIGH:
-  case RELOCT_SCNSZ_UPPER:
-  case RELOCT_SCNEND_LOW:
-  case RELOCT_SCNEND_HIGH:
-  case RELOCT_SCNEND_UPPER:
-  case RELOCT_SCNEND_LFSR1:
-  case RELOCT_SCNEND_LFSR2:
-  default:
-    return 0;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_lst_data(unsigned int pos, MemBlock_t *m, unsigned int byte_addr, unsigned int bytes_emitted, uint16_t reloc_type)
+_lst_data(unsigned int Position, MemBlock_t *M, unsigned int Byte_addr, unsigned int Bytes_emitted,
+          uint16_t Reloc_type)
 {
   uint8_t      emit_byte;
   uint16_t     emit_word;
@@ -498,53 +560,53 @@ _lst_data(unsigned int pos, MemBlock_t *m, unsigned int byte_addr, unsigned int 
   unsigned int n;
 
   lst_bytes      = 0;
-  is_eeprom_area = (gp_processor_is_eeprom_byte_addr(state.processor, byte_addr) >= 0) ? true : false;
+  is_eeprom_area = (gp_processor_is_eeprom_byte_addr(state.processor, Byte_addr) >= 0) ? true : false;
   /* When in a idata or byte packed section or eeprom area, print byte by byte. */
   if (IS_EEPROM8 || is_eeprom_area || (state.obj.new_sect_flags & (STYP_DATA | STYP_BPACK))) {
-    while ((bytes_emitted > lst_bytes) && ((pos + 3) <= LST_LINENUM_POS)) {
-      b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
-      pos += _lst_printf("%02X ", emit_byte);
-      ++byte_addr;
+    while ((Bytes_emitted > lst_bytes) && ((Position + 3) <= LST_LINENUM_POS)) {
+      b_memory_get(M, Byte_addr, &emit_byte, NULL, NULL);
+      Position += _lst_printf("%02X ", emit_byte);
+      ++Byte_addr;
       ++lst_bytes;
     }
   }
   else {    /* non-code pack section */
     /* list first byte on odd address */
-    if ((bytes_emitted != 0) && (byte_addr & 1)) {
-      b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
-      pos += _lst_printf("%02X ", emit_byte);
-      ++byte_addr;
+    if ((Bytes_emitted != 0) && (Byte_addr & 1)) {
+      b_memory_get(M, Byte_addr, &emit_byte, NULL, NULL);
+      Position += _lst_printf("%02X ", emit_byte);
+      ++Byte_addr;
       ++lst_bytes;
     }
     /* list full words */
-    start_addr = byte_addr;
-    while (((bytes_emitted - lst_bytes) > 1) && ((pos + 5) <= LST_LINENUM_POS)) {
-      state.device.class->i_memory_get(m, byte_addr, &emit_word, NULL, NULL);
+    start_addr = Byte_addr;
+    while (((Bytes_emitted - lst_bytes) > 1) && ((Position + 5) <= LST_LINENUM_POS)) {
+      state.device.class->i_memory_get(M, Byte_addr, &emit_word, NULL, NULL);
 
       /* Display '?' for undefined bytes if it is a relocatable code. */
-      if (reloc_type != 0) {
-        n = _print_reloc(reloc_type, emit_word, (byte_addr - start_addr) / 2);
+      if (Reloc_type != 0) {
+        n = _print_reloc(Reloc_type, emit_word, (Byte_addr - start_addr) / 2);
 
-        pos += (n == 0) ? _lst_printf("%04X ", emit_word) : n;
+        Position += (n == 0) ? _lst_printf("%04X ", emit_word) : n;
       }
       else {
-        pos += _lst_printf("%04X ", emit_word);
+        Position += _lst_printf("%04X ", emit_word);
       }
 
-      byte_addr += 2;
+      Byte_addr += 2;
       lst_bytes += 2;
     }
 
-    if (((bytes_emitted - lst_bytes) == 1) && ((pos + 3) <= LST_LINENUM_POS)) {
-      b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
-      pos += _lst_printf("%02X ", emit_byte);
-      ++byte_addr;
+    if (((Bytes_emitted - lst_bytes) == 1) && ((Position + 3) <= LST_LINENUM_POS)) {
+      b_memory_get(M, Byte_addr, &emit_byte, NULL, NULL);
+      Position += _lst_printf("%02X ", emit_byte);
+      ++Byte_addr;
       ++lst_bytes;
     }
   }
 
   /* append appropriate spacing */
-  _lst_spaces(LST_LINENUM_POS - pos);
+  _lst_spaces(LST_LINENUM_POS - Position);
 
   return lst_bytes;
 }
@@ -575,16 +637,16 @@ _cod_symbol_table(void)
 void
 lst_init(void)
 {
-  state.lst.lineofpage   = 0;
-  state.lst.page         = 0;
-  state.lst.linesperpage = 59;
-  state.lst.line_number  = 1;
-  state.lst.memorymap    = true;
-  state.lst.symboltable  = true;
-  state.lst.lst_state    = LST_IN_MEM;
+  state.lst.line_of_page   = 0;
+  state.lst.page           = 0;
+  state.lst.lines_per_page = 59;
+  state.lst.line_number    = 1;
+  state.lst.memory_map     = true;
+  state.lst.symbol_table   = true;
+  state.lst.lst_state      = LST_IN_MEM;
 
-  /* Determine state.startdate. */
-  gp_date_string(state.lst.startdate, sizeof(state.lst.startdate));
+  /* Determine state.start_date. */
+  gp_date_string(state.lst.start_date, sizeof(state.lst.start_date));
 
   if (!state.cmd_line.macro_expand){
     state.lst.expand = true;
@@ -597,19 +659,19 @@ lst_init(void)
   state.lst.tabstop          = 8;   /* Default tabstop every 8. */
   state.lst.line_width       = 132; /* Default line width is 132. */
 
-  if (state.lstfile != OUT_NAMED) {
-    snprintf(state.lstfilename, sizeof(state.lstfilename), "%s.lst", state.basefilename);
+  if (state.lst_file != OUT_NAMED) {
+    snprintf(state.lst_file_name, sizeof(state.lst_file_name), "%s.lst", state.base_file_name);
   }
 
-  if (state.lstfile == OUT_SUPPRESS) {
-    state.lst.f = NULL;
+  if (state.lst_file == OUT_SUPPRESS) {
+    state.lst.f       = NULL;
     state.lst.enabled = false;
-    unlink(state.lstfilename);
+    unlink(state.lst_file_name);
   } else {
-    state.lst.f = fopen(state.lstfilename, "wt");
+    state.lst.f = fopen(state.lst_file_name, "wt");
 
     if (state.lst.f == NULL) {
-      perror(state.lstfilename);
+      perror(state.lst_file_name);
       exit(1);
     }
     state.lst.enabled = true;
@@ -652,12 +714,13 @@ lst_throw(void)
             GPASM_VERSION_STRING,
             (int)(45 - sizeof(GPASM_VERSION_STRING)),
             (int)(45 - sizeof(GPASM_VERSION_STRING)),
-            state.srcfilename,
-            state.lst.startdate,
+            state.src_file_name,
+            state.lst.start_date,
             state.lst.page,
             state.lst.title_name,
             state.lst.subtitle_name);
-    state.lst.lineofpage = 4;
+
+    state.lst.line_of_page = 4;
     cod_lst_line(COD_NORMAL_LST_LINE);
     cod_lst_line(COD_NORMAL_LST_LINE);
     cod_lst_line(COD_NORMAL_LST_LINE);
@@ -693,15 +756,15 @@ lst_page_start(void)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lst_line(const char *format, ...)
+lst_line(const char *Format, ...)
 {
-  if (state.lst.f != NULL) {
-    if (format != NULL) {
-      va_list args;
+  va_list args;
 
+  if (state.lst.f != NULL) {
+    if (Format != NULL) {
       _lst_check_page_start();
-      va_start(args, format);
-      vfprintf(state.lst.f, format, args);
+      va_start(args, Format);
+      vfprintf(state.lst.f, Format, args);
       va_end(args);
     }
     _lst_eol();
@@ -711,12 +774,12 @@ lst_line(const char *format, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lst_err_line(const char *type, unsigned int code, const char *format, va_list args)
+lst_err_line(const char *Type, unsigned int Code, const char *Format, va_list Args)
 {
   if (state.lst.f != NULL) {
     _lst_check_page_start();
-    fprintf(state.lst.f, "%s[%03d]%s: ", type, code, (strcmp(type, "Error") == 0) ? "  " : "");
-    vfprintf(state.lst.f, format, args);
+    fprintf(state.lst.f, "%s[%03d]%s: ", Type, Code, (strcmp(Type, "Error") == 0) ? "  " : "");
+    vfprintf(state.lst.f, Format, Args);
     _lst_eol();
   }
 }
@@ -724,17 +787,18 @@ lst_err_line(const char *type, unsigned int code, const char *format, va_list ar
 /*------------------------------------------------------------------------------------------------*/
 
 void
-lst_memory_map(MemBlock_t *m)
+lst_memory_map(MemBlock_t *M)
 {
 #define MEM_IS_USED(m, i)  (((m)->memory != NULL) ? (IS_BYTE ? ((m)->memory[i].data & BYTE_USED_MASK) : (((m)->memory[2 * (i)].data & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1].data & BYTE_USED_MASK))) : 0)
 
   int          i;
   int          j;
   int          base;
-  int          row_used;
+  gp_boolean   row_used;
   int          num_per_line;
   int          num_per_block;
   unsigned int max_mem;
+  int          addr_digits;
 
   lst_line(NULL);
   lst_line(NULL);
@@ -743,25 +807,26 @@ lst_memory_map(MemBlock_t *m)
 
   num_per_line  = 64;
   num_per_block = 16;
+  addr_digits   = (state.device.class != NULL) ? state.device.class->addr_digits : 4;
 
-  while (m != NULL) {
+  while (M != NULL) {
     max_mem = I_MEM_MAX >> !IS_BYTE;
-    base    = IMemAddrFromBase(m->base) >> !IS_BYTE;
+    base    = IMemAddrFromBase(M->base) >> !IS_BYTE;
 
     for (i = 0; i < max_mem; i += num_per_line) {
-      row_used = 0;
+      row_used = false;
 
       for (j = 0; j < num_per_line; j++) {
-        if (MEM_IS_USED(m, i + j)) {
-          row_used = 1;
+        if (MEM_IS_USED(M, i + j)) {
+          row_used = true;
           break;
         }
       }
 
       if (row_used) {
-        if ((state.device.class != NULL) && state.show_full_addr && IS_PIC16E_CORE) {
+        if (state.show_full_addr && IS_PIC16E_CORE) {
           /* Gpasm mode: Print all address digits. */
-          _lst_printf("%0*X :", state.device.class->addr_digits, (i + base));
+          _lst_printf("%0*X :", addr_digits, (i + base));
         }
         else {
           /* MPASM(X) compatible: Print only lower 4 address digits. */
@@ -772,7 +837,8 @@ lst_memory_map(MemBlock_t *m)
           if ((j % num_per_block) == 0) {
             _lst_printf(" ");
           }
-          _lst_printf(MEM_IS_USED(m, i + j) ? "X" : "-");
+
+          _lst_printf(MEM_IS_USED(M, i + j) ? "X" : "-");
         }
 
         _lst_eol();
@@ -780,12 +846,12 @@ lst_memory_map(MemBlock_t *m)
       }
     }
 
-    m = m->next;
+    M = M->next;
   }
 
   lst_line(NULL);
   lst_line("All other memory blocks unused.");
-  lst_line("");
+  lst_line(NULL);
 
   /* it seems that MPASM includes config bytes into program memory usage
    * count for 16 bit cores. See gpasm testsuite:
@@ -809,13 +875,16 @@ lst_memory_map(MemBlock_t *m)
                (used <= state.processor->prog_mem_size) ? (state.processor->prog_mem_size - used) : 0);
     }
   }
-  lst_line("");
+
+  lst_line(NULL);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
+#define ADDR_LEN                7
+
 void
-lst_format_line(const char *src_line, unsigned int value)
+lst_format_line(const char *Src_line, unsigned int Value)
 {
   unsigned int  emitted = 0;
   unsigned int  emitted_lines = 0;
@@ -823,7 +892,6 @@ lst_format_line(const char *src_line, unsigned int value)
   unsigned int  bytes_emitted = 0;
   unsigned int  lst_bytes;
   const char   *addr_fmt = IS_PIC16E_CORE ? "%06X " : (IS_EEPROM ? "%04X " : "%04X   ");
-#define ADDR_LEN 7
   unsigned int  pos = 0;
   uint16_t      reloc_type;
   MemBlock_t   *m = state.i_memory;
@@ -831,11 +899,12 @@ lst_format_line(const char *src_line, unsigned int value)
   uint16_t      word;
   gp_reloc_t   *p;
 
-  assert(src_line != NULL);
+  assert(Src_line != NULL);
 
   if ((state.mode == MODE_RELOCATABLE) && (state.obj.section != NULL) &&
       (state.obj.new_sect_flags & STYP_TEXT) && (state.obj.section->relocation_list.last != NULL)) {
       addr = state.obj.section->address + state.obj.section->relocation_list.last->address;
+
       if (addr > state.lst.line.was_byte_addr) {
         /* already passed it, go back to the history */
         p = _find_reloc_by_address(state.lst.line.was_byte_addr);
@@ -853,37 +922,40 @@ lst_format_line(const char *src_line, unsigned int value)
   }
 
   switch (state.lst.line.linetype) {
-  case LTY_INSN:
-    emitted_lines = emitted = state.byte_addr - state.lst.line.was_byte_addr;
-    break;
-
-  case LTY_DATA:
-    emitted = state.byte_addr - state.lst.line.was_byte_addr;
-    if ((SECTION_FLAGS & (STYP_TEXT | (state.mpasm_compatible ? STYP_BPACK : 0))) == STYP_TEXT) {
-      /* generate line numbers for data directives in program memory;
-       * in mpasm compatibility mode code_pack doesn't generate line numbers */
-      emitted_lines = emitted;
-    }
-    break;
-
-  case LTY_RES:
-    if (SECTION_FLAGS & STYP_DATA) {
-      /* generate data listing for idata */
-      emitted = state.byte_addr - state.lst.line.was_byte_addr;
-    }
-    else if (!IS_RAM_ORG) {
-      /* generate line numbers for res directives in program memory */
+    case LTY_INSN:
       emitted_lines = emitted = state.byte_addr - state.lst.line.was_byte_addr;
+      break;
+
+    case LTY_DATA: {
+      emitted = state.byte_addr - state.lst.line.was_byte_addr;
+
+      if ((SECTION_FLAGS & (STYP_TEXT | (state.mpasm_compatible ? STYP_BPACK : 0))) == STYP_TEXT) {
+        /* generate line numbers for data directives in program memory;
+         * in mpasm compatibility mode code_pack doesn't generate line numbers */
+        emitted_lines = emitted;
+      }
+      break;
     }
-    break;
 
-  case LTY_IDLOCS:
-    /* always 8 bytes (4 words) */
-    emitted = 8;
-    break;
+    case LTY_RES: {
+      if (SECTION_FLAGS & STYP_DATA) {
+        /* generate data listing for idata */
+        emitted = state.byte_addr - state.lst.line.was_byte_addr;
+      }
+      else if (!IS_RAM_ORG) {
+        /* generate line numbers for res directives in program memory */
+        emitted_lines = emitted = state.byte_addr - state.lst.line.was_byte_addr;
+      }
+      break;
+    }
 
-  default:
-    break;
+    case LTY_IDLOCS:
+      /* always 8 bytes (4 words) */
+      emitted = 8;
+      break;
+
+    default:
+      break;
   }
 
   coff_linenum(emitted_lines);
@@ -894,98 +966,102 @@ lst_format_line(const char *src_line, unsigned int value)
   }
 
   switch (state.lst.line.linetype) {
-  case LTY_EQU:
-  case LTY_SET:
-    pos += _lst_printf("  %08X", value);
-    _lst_spaces(LST_LINENUM_POS - pos);
-    break;
+    case LTY_EQU:
+    case LTY_SET:
+      pos += _lst_printf("  %08X", Value);
+      _lst_spaces(LST_LINENUM_POS - pos);
+      break;
 
-  case LTY_SET4:
-    pos += _lst_printf("  %04X", value & 0xffff);
-    _lst_spaces(LST_LINENUM_POS - pos);
-    break;
+    case LTY_SET4:
+      pos += _lst_printf("  %04X", Value & 0xffff);
+      _lst_spaces(LST_LINENUM_POS - pos);
+      break;
 
-  case LTY_ORG:
-    pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.byte_addr));
-    _lst_spaces(LST_LINENUM_POS - pos);
-    break;
+    case LTY_ORG:
+      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.byte_addr));
+      _lst_spaces(LST_LINENUM_POS - pos);
+      break;
 
-  case LTY_IDLOCS:
-    /* not used for 16 bit devices, config is used */
-    m = state.c_memory;
-    pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.device.id_location));
-    lst_bytes = _lst_data(pos, m, state.device.id_location, emitted, reloc_type);
-    byte_addr = state.device.id_location + lst_bytes;
-    bytes_emitted = emitted - lst_bytes;
-    break;
+    case LTY_IDLOCS:
+      /* not used for 16 bit devices, config is used */
+      m = state.c_memory;
+      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.device.id_location));
+      lst_bytes = _lst_data(pos, m, state.device.id_location, emitted, reloc_type);
+      byte_addr = state.device.id_location + lst_bytes;
+      bytes_emitted = emitted - lst_bytes;
+      break;
 
-  case LTY_DATA:
-  case LTY_RES:
-    pos += _lst_printf(addr_fmt, state.lst.line.was_byte_addr);
-    goto lst_data;
+    case LTY_DATA:
+    case LTY_RES:
+      pos += _lst_printf(addr_fmt, state.lst.line.was_byte_addr);
+      goto lst_data;
 
-  case LTY_INSN:
-    pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.line.was_byte_addr));
+    case LTY_INSN:
+      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.line.was_byte_addr));
 
 lst_data:
 
-    lst_bytes = _lst_data(pos, m, state.lst.line.was_byte_addr, emitted, reloc_type);
-    byte_addr = state.lst.line.was_byte_addr + lst_bytes;
-    bytes_emitted = emitted - lst_bytes;
-    break;
+      lst_bytes = _lst_data(pos, m, state.lst.line.was_byte_addr, emitted, reloc_type);
+      byte_addr = state.lst.line.was_byte_addr + lst_bytes;
+      bytes_emitted = emitted - lst_bytes;
+      break;
 
-  case LTY_CONFIG:
-    if (IS_PIC16E_CORE) {
-      /* config data is byte addressable, but we only want to print
-         words in the list file. */
-      if (state.lst.config_address == CONFIG4L) {
-        /* Special case */
+    case LTY_CONFIG: {
+      if (IS_PIC16E_CORE) {
+        /* The config data is byte addressable, but we only want to print words in the list file. */
+        if (state.lst.config_address == CONFIG4L) {
+          /* Special case */
+          state.device.class->i_memory_get(state.c_memory, state.lst.config_address, &word, NULL, NULL);
+          pos += _lst_printf(addr_fmt, state.lst.config_address);
+          pos += _lst_printf("%04X", word);
+          _lst_spaces(LST_LINENUM_POS - pos);
+        }
+        else if ((state.lst.config_address & 1) == 0) {
+          /* if it is an even address don't print anything */
+          _lst_spaces(LST_LINENUM_POS);
+        }
+        else {
+          state.device.class->i_memory_get(state.c_memory, state.lst.config_address - 1, &word, NULL, NULL);
+          pos += _lst_printf(addr_fmt, state.lst.config_address - 1);
+          pos += _lst_printf("%04X", word);
+          _lst_spaces(LST_LINENUM_POS - pos);
+        }
+      }
+      else {
         state.device.class->i_memory_get(state.c_memory, state.lst.config_address, &word, NULL, NULL);
-        pos += _lst_printf(addr_fmt, state.lst.config_address);
-        pos += _lst_printf("%04X", word);
-        _lst_spaces(LST_LINENUM_POS - pos);
-      } else if ((state.lst.config_address & 1) == 0) {
-        /* if it is an even address don't print anything */
-        _lst_spaces(LST_LINENUM_POS);
-      } else {
-        state.device.class->i_memory_get(state.c_memory, state.lst.config_address - 1, &word, NULL, NULL);
-        pos += _lst_printf(addr_fmt, state.lst.config_address - 1);
+        pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.config_address));
         pos += _lst_printf("%04X", word);
         _lst_spaces(LST_LINENUM_POS - pos);
       }
-    } else {
-      state.device.class->i_memory_get(state.c_memory, state.lst.config_address, &word, NULL, NULL);
-      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.config_address));
-      pos += _lst_printf("%04X", word);
-      _lst_spaces(LST_LINENUM_POS - pos);
+      break;
     }
-    break;
 
-  case LTY_SEC:
-  case LTY_DIR:
-  case LTY_NONE:
-  default:
-    _lst_spaces(LST_LINENUM_POS);
-    break;
+    case LTY_SEC:
+    case LTY_DIR:
+    case LTY_NONE:
+    default:
+      _lst_spaces(LST_LINENUM_POS);
+      break;
   }
 
   if (state.stGlobal == state.stTop) {
     _lst_printf("%05d ", state.src->line_number);
-  } else {
+  }
+  else {
     _lst_printf("    M ");
   }
 
-  /* Now copy source line to listing, expanding tabs as required */
+  /* Now copy source line to listing, expanding tabs as required. */
   {
     int         src_column = 0;           /* current source line column */
     int         lst_column = LST_SRC_POS; /* current listing column after the SRC_POS */
-    const char *p = src_line;
+    const char *p = Src_line;
 
     while (*p != '\0') {
       if (*p == '\t') {
         int len = state.lst.tabstop - (src_column % state.lst.tabstop);
 
-        while (len--) {
+        while (len-- > 0) {
           if (lst_column >= state.lst.line_width) {
             _lst_eol();
             _lst_spaces(LST_SRC_POS);
@@ -995,12 +1071,14 @@ lst_data:
           ++src_column;
           putc(' ', state.lst.f);
         }
-      } else {
+      }
+      else {
         if (lst_column >= state.lst.line_width) {
           _lst_eol();
           _lst_spaces(LST_SRC_POS);
           lst_column = LST_SRC_POS;
         }
+
         ++lst_column;
         ++src_column;
         putc(*p, state.lst.f);
@@ -1018,9 +1096,9 @@ lst_data:
     while (bytes_emitted > 0) {
       /* data left to print on separate lines */
 
-      pos = _lst_spaces(ADDR_LEN);
-      lst_bytes = _lst_data(pos, m, byte_addr, bytes_emitted, reloc_type);
-      byte_addr += lst_bytes;
+      pos            = _lst_spaces(ADDR_LEN);
+      lst_bytes      = _lst_data(pos, m, byte_addr, bytes_emitted, reloc_type);
+      byte_addr     += lst_bytes;
       bytes_emitted -= lst_bytes;
       _lst_eol();
     }

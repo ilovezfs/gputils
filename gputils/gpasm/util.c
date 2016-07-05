@@ -873,23 +873,23 @@ free_files(void)
 void
 hex_init(void)
 {
-  if (state.hexfile == OUT_SUPPRESS) {
+  if (state.hex_file == OUT_SUPPRESS) {
     /* Must delete hex file when suppressed. */
-    writehex(state.basefilename, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
+    gp_writehex(state.base_file_name, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
     return;
   }
 
-  if (!check_writehex(state.i_memory, state.hex_format)) {
+  if (!gp_writehex_check(state.i_memory, state.hex_format)) {
     gperror_verror(GPE_IHEX, NULL);
-    writehex(state.basefilename, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
+    gp_writehex(state.base_file_name, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
   } else if (state.device.class != NULL) {
-    if (!writehex(state.basefilename, state.i_memory, state.hex_format, state.num.errors,
-                  state.dos_newlines, state.device.class->core_mask)) {
+    if (!gp_writehex(state.base_file_name, state.i_memory, state.hex_format, state.num.errors,
+                     state.dos_newlines, state.device.class->core_mask)) {
       gperror_error(GPE_UNKNOWN, "Error generating hex file.");
       exit(1);
     }
   } else {
     /* Won't have anything to write, just remove any old files. */
-    writehex(state.basefilename, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
+    gp_writehex(state.base_file_name, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
   }
 }

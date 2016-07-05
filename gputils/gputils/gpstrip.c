@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
     
       if (gp_num_errors == 0) {
         /* no errors have occured so write the file */
-        if (!gp_write_coff(state.object, 0)) {
+        if (!gp_writeobj_write_coff(state.object, 0)) {
           gp_error("system error while writing object file");
         }
       } else if (state.output_file) {

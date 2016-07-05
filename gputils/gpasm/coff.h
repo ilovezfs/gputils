@@ -28,17 +28,17 @@ Boston, MA 02111-1307, USA.  */
 extern void coff_init(void);
 extern void coff_cleanup_before_eof(void);
 extern void coff_close_file(void);
-extern void coff_new_section(const char *name, unsigned int byte_addr, unsigned int flags);
+extern void coff_new_section(const char *Name, unsigned int Byte_addr, unsigned int Flags);
 extern void coff_close_section(void);
-extern gp_symbol_t *coff_add_sym(const char *name, gp_symvalue_t value, enum gpasmValTypes type);
-extern void coff_reloc(unsigned int symbol_number, int16_t offset, enum gpasmValTypes type);
-extern void coff_linenum(unsigned int emitted);
-extern gp_symbol_t *coff_add_filesym(const char *name, gp_boolean is_include);
-extern void coff_add_eofsym(void);
-extern void coff_add_listsym(void);
-extern void coff_add_nolistsym(void);
-extern void coff_add_directsym(uint8_t command, const char *string);
-extern void coff_add_identsym(const char *string);
-extern char *coff_local_name(const char *name);
+extern gp_symbol_t *coff_add_sym(const char *Name, gp_symvalue_t Value, enum gpasmValTypes Type);
+extern void coff_reloc(unsigned int Symbol_number, int16_t Offset, enum gpasmValTypes Type);
+extern void coff_linenum(unsigned int Emitted);
+extern gp_symbol_t *coff_add_file_sym(const char *Name, gp_boolean Is_include);
+extern void coff_add_eof_sym(void);
+extern void coff_add_list_sym(void);
+extern void coff_add_nolist_sym(void);
+extern void coff_add_direct_sym(uint8_t Command, const char *String);
+extern void coff_add_ident_sym(const char *String);
+extern char *coff_local_name(const char *Name);
 
 #endif

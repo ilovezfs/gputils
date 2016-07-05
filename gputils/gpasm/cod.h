@@ -29,7 +29,7 @@ Boston, MA 02111-1307, USA.  */
 
 extern void cod_init(void);
 extern void cod_close_file(void);
-extern void cod_lst_line(int line_type);
-extern void cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols);
+extern void cod_lst_line(unsigned int List_line);
+extern void cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols);
 
 #endif
