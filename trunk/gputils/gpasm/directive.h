@@ -27,12 +27,12 @@ Boston, MA 02111-1307, USA.  */
 #define ACCESS              0
 #define BANKED              1
 
-extern gpasmVal do_insn(const char *name, struct pnode *parms);
+extern gpasmVal do_insn(const char *Name, struct pnode *Parms);
 extern void opcode_init(int stage);
-extern void begin_cblock(const struct pnode *c);
+extern void begin_cblock(const struct pnode *Cblock);
 extern void continue_cblock(void);
-extern void cblock_expr(const struct pnode *s);
-extern void cblock_expr_incr(const struct pnode *s, const struct pnode *incr);
+extern void cblock_expr(const struct pnode *Expr);
+extern void cblock_expr_incr(const struct pnode *Expr, const struct pnode *Incr);
 extern gp_boolean asm_enabled(void);
 
 #endif

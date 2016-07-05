@@ -385,11 +385,11 @@ gp_cofflink_merge_sections(gp_object_t *Object)
       }
 
       /* Copy the section data. */
-      if (gp_has_data(second)) {
+      if (gp_writeobj_has_data(second)) {
         last   = second->size;
         offset = first->size;
 
-        if (!gp_has_data(first)) {
+        if (!gp_writeobj_has_data(first)) {
           /* TODO optimization: adopt data from second by moving second->size bytes from org to org + offset */
           first->data = i_memory_create();
         }
@@ -1152,7 +1152,7 @@ gp_cofflink_reloc_assigned(gp_object_t *Object, MemBlock_t *M, unsigned int Org_
       gp_debug("    section name   : '%s'", section_name);
       gp_debug("    successful relocation to %#x", gp_byte_to_org(Org_to_byte_shift, current_shadow_address));
 
-      if (gp_has_data(current)) {
+      if (gp_writeobj_has_data(current)) {
         _move_data(current->data, current->shadow_address, current->size, current_shadow_address);
       }
 
@@ -1250,7 +1250,7 @@ gp_cofflink_reloc_cinit(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_
   if (success) {
     gp_debug("    successful relocation to %#x", gp_byte_to_org(Org_to_byte_shift, smallest_shadow_address));
 
-    if (gp_has_data(Cinit_section)) {
+    if (gp_writeobj_has_data(Cinit_section)) {
       _move_data(Cinit_section->data, Cinit_section->shadow_address, size, smallest_shadow_address);
     }
     Cinit_section->shadow_address = smallest_shadow_address;
@@ -1400,7 +1400,7 @@ next_pass:
     if (success) {
       gp_debug("    successful relocation to %#x", gp_byte_to_org(Org_to_byte_shift, smallest_shadow_address));
 
-      if (gp_has_data(current)) {
+      if (gp_writeobj_has_data(current)) {
         _move_data(current->data, current->shadow_address, size, smallest_shadow_address);
       }
 
@@ -1776,7 +1776,7 @@ gp_cofflink_patch(gp_object_t *Object)
   class   = Object->class;
   section = Object->section_list.first;
   while (section != NULL) {
-    if (gp_has_data(section)) {
+    if (gp_writeobj_has_data(section)) {
       /* patch raw data with relocation entries */
       relocation = section->relocation_list.first;
       while (relocation != NULL) {

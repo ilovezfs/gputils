@@ -310,13 +310,13 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
     section = symbol->section;
     assert(section != NULL);
 
-    if (section->flags & STYP_TEXT) {
+    if (FlagIsSet(section->flags, STYP_TEXT)) {
       type = COD_ST_ADDRESS;
-    } else if (section->flags & STYP_DATA) {
+    }
+    else if (FlagIsSet(section->flags, STYP_RAM_AREA)) {
       type = COD_ST_C_SHORT;
-    } else if (section->flags & STYP_BSS) {
-      type = COD_ST_C_SHORT;
-    } else {
+    }
+    else {
       type = COD_ST_CONSTANT;
     }
 

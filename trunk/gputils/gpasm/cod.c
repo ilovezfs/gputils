@@ -52,7 +52,7 @@ _init_dir_block(void)
 
   /* Initialize the directory block with known data. It'll be written
    * to the .cod file after everything else. */
-  gp_cod_strncpy(&dir->dir[COD_DIR_SOURCE], state.codfilename, COD_DIR_DATE - COD_DIR_SOURCE);
+  gp_cod_strncpy(&dir->dir[COD_DIR_SOURCE], state.cod_file_name, COD_DIR_DATE - COD_DIR_SOURCE);
   gp_cod_date(&dir->dir[COD_DIR_DATE], COD_DIR_TIME - COD_DIR_DATE);
   gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_VERSION - COD_DIR_TIME);
   gp_cod_strncpy(&dir->dir[COD_DIR_VERSION], VERSION, COD_DIR_COMPILER - COD_DIR_VERSION);
@@ -121,18 +121,18 @@ _write_file_block(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static DirBlockInfo *
-_find_dir_block_by_high_addr(int high_addr)
+_find_dir_block_by_high_addr(int High_addr)
 {
   DirBlockInfo *dbi = main_dir;
 
   /* find the directory containing high_addr 64k segment */
-  while (gp_getl16(&dbi->dir[COD_DIR_HIGHADDR]) != high_addr) {
+  while (gp_getl16(&dbi->dir[COD_DIR_HIGHADDR]) != High_addr) {
     /* If the next directory block (in the linked list of directory
        blocks) is NULL, then this is the first time to encounter this
        _64k segment. So we need to create a new segment. */
     if (dbi->next == NULL) {
       dbi->next = _new_dir_block();
-      gp_putl16(&dbi->next->dir[COD_DIR_HIGHADDR], high_addr);
+      gp_putl16(&dbi->next->dir[COD_DIR_HIGHADDR], High_addr);
       dbi = dbi->next;
       break;
     }
@@ -140,6 +140,7 @@ _find_dir_block_by_high_addr(int high_addr)
       dbi = dbi->next;
     }
   }
+
   return dbi;
 }
 
@@ -148,7 +149,7 @@ _find_dir_block_by_high_addr(int high_addr)
 /* _emit_opcode - write one opcode to a cod_image_block */
 
 static void
-_emit_opcode(DirBlockInfo *dbi, int address, int opcode)
+_emit_opcode(DirBlockInfo *Dbi, int Address, int Opcode)
 {
   int block_index;
 
@@ -166,13 +167,13 @@ _emit_opcode(DirBlockInfo *dbi, int address, int opcode)
    * all of the opcodes have been emitted.
    */
 
-  block_index = (address >> COD_BLOCK_BITS) & (COD_CODE_IMAGE_BLOCKS - 1);
+  block_index = (Address >> COD_BLOCK_BITS) & (COD_CODE_IMAGE_BLOCKS - 1);
 
-  if (dbi->cod_image_blocks[block_index].block == NULL) {
-    gp_cod_create(&dbi->cod_image_blocks[block_index]);
+  if (Dbi->cod_image_blocks[block_index].block == NULL) {
+    gp_cod_create(&Dbi->cod_image_blocks[block_index]);
   }
 
-  gp_putl16(&dbi->cod_image_blocks[block_index].block[address & (COD_BLOCK_SIZE - 1)], opcode);
+  gp_putl16(&Dbi->cod_image_blocks[block_index].block[Address & (COD_BLOCK_SIZE - 1)], Opcode);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -254,18 +255,18 @@ _write_code(void)
 void
 cod_init(void)
 {
-  if (state.codfile != OUT_NAMED) {
-    snprintf(state.codfilename, sizeof(state.codfilename), "%s.cod", state.basefilename);
+  if (state.cod_file != OUT_NAMED) {
+    snprintf(state.cod_file_name, sizeof(state.cod_file_name), "%s.cod", state.base_file_name);
   }
 
-  if (state.codfile == OUT_SUPPRESS) {
-    state.cod.f = NULL;
+  if (state.cod_file == OUT_SUPPRESS) {
+    state.cod.f       = NULL;
     state.cod.enabled = false;
-    unlink(state.codfilename);
+    unlink(state.cod_file_name);
   } else {
-    state.cod.f = fopen(state.codfilename, "wb");
+    state.cod.f = fopen(state.cod_file_name, "wb");
     if (state.cod.f == NULL) {
-      perror(state.codfilename);
+      perror(state.cod_file_name);
       exit(1);
     }
     state.cod.enabled = true;
@@ -285,7 +286,7 @@ cod_init(void)
  */
 
 void
-cod_lst_line(int line_type)
+cod_lst_line(unsigned int List_line)
 {
 #define COD_LST_FIRST_LINE  7
   static DirBlockInfo *dbi = NULL;
@@ -307,7 +308,8 @@ cod_lst_line(int line_type)
   }
 
   /* Ignore the first few line numbers. */
-  if (state.lst.line_number < COD_LST_FIRST_LINE) {
+/*  if (state.lst.line_number < COD_LST_FIRST_LINE) {*/
+  if (state.lst.line_number < List_line) {
     return;
   }
 
@@ -356,7 +358,7 @@ cod_lst_line(int line_type)
  */
 
 void
-cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
+cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 {
   size_t            i;
   int               len;
@@ -365,7 +367,7 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
   const char       *name;
   BlockList        *sb;
 
-  if ((symbol_list == NULL) || (num_symbols == 0)) {
+  if ((Symbol_list == NULL) || (Num_symbols == 0)) {
     return;
   }
 
@@ -374,9 +376,9 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
   }
 
   sb = NULL;
-  for (i = 0; i < num_symbols; i++) {
-    name = sym_get_symbol_name(symbol_list[i]);
-    var  = sym_get_symbol_annotation(symbol_list[i]);
+  for (i = 0; i < Num_symbols; i++) {
+    name = sym_get_symbol_name(Symbol_list[i]);
+    var  = sym_get_symbol_annotation(Symbol_list[i]);
     len  = strlen(name);
 
     /* If this symbol extends past the end of the cod block
@@ -389,17 +391,17 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
     gp_cod_strncpy(&sb->block[main_dir->sym.offset + 1], name, MAX_SYM_LEN);
 
     switch (var->type) {
-    case VAL_CBLOCK:
-      type = COD_ST_C_SHORT;    /* byte craft's nomenclature for a memory byte. */
-      break;
+      case VAL_CBLOCK:
+        type = COD_ST_C_SHORT;  /* Byte craft's nomenclature for a memory byte. */
+        break;
 
-    case VAL_ADDRESS:
-      type = COD_ST_ADDRESS;
-      break;
+      case VAL_ADDRESS:
+        type = COD_ST_ADDRESS;
+        break;
 
-    case VAL_CONSTANT:
-    default:
-      type = COD_ST_CONSTANT;
+      case VAL_CONSTANT:
+      default:
+        type = COD_ST_CONSTANT;
     }
 
     gp_putl16(&sb->block[main_dir->sym.offset + len + COD_SYM_TYPE], type);

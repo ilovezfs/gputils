@@ -170,23 +170,22 @@ enum GPM_codes {
 };
 
 extern void gperror_init(void);
+extern void gperror_close(void);
 
-extern void gperror_error(int code, const char *message);
-extern void gperror_warning(int code, const char *message);
-extern void gperror_message(int code, const char *message);
+extern void gperror_add_code(int Code);
 
-extern void gperror_verror(int code, const char *message, ...);
-extern void gperror_vwarning(int code, const char *message, ...);
-extern void gperror_vmessage(int code, const char *message, ...);
+extern void gperror_error(int Code, const char *Message);
+extern void gperror_warning(int Code, const char *Message);
+extern void gperror_message(int Code, const char *Message);
+
+extern void gperror_verror(int Code, const char *Message, ...);
+extern void gperror_vwarning(int Code, const char *Message, ...);
+extern void gperror_vmessage(int Code, const char *Message, ...);
 
 /* Alternate message functions. Only the prototypes are provided, the user
    must link their own function into gpasm. */
-extern void gperror_user_error(int code, const char *message);
-extern void gperror_user_warning(int code, const char *message);
-extern void gperror_user_message(int code, const char *message);
-
-extern void gperror_add_code(int code);
-
-extern void gperror_close(void);
+extern void gperror_user_error(int Code, const char *Message);
+extern void gperror_user_warning(int Code, const char *Message);
+extern void gperror_user_message(int Code, const char *Message);
 
 #endif

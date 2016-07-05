@@ -1,4 +1,29 @@
 2016-07-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gpasm/cod.h, gpasm/coff.c, gpasm/coff.h,
+    gpasm/deps.c, gpasm/directive.c, gpasm/directive.h,
+    gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/gperror.c,
+    gpasm/gperror.h, gpasm/lst.c, gpasm/scan.l:
+    Some renaming and formatting the code.
+
+  * gpasm/macro.c, gplink/cod.c:
+    Minor simplification.
+
+  * gpasm/util.c, gplink/gplink.c, libgputils/gpcofflink.c,
+    libgputils/gpcoffopt.c, libgputils/gpwritehex.c,
+    libgputils/gpwritehex.h:
+    Renamed this functions:
+	writehex --> gp_writehex
+	check_writehex --> gp_writehex_check
+
+  * gplink/gplink.c, gputils/gpstrip.c, libgputils/gpcofflink.c,
+    libgputils/gpcoffopt.c, libgputils/gpwriteobj.c,
+    libgputils/gpwriteobj.h:
+    Renamed this functions:
+	gp_has_data --> gp_writeobj_has_data
+	gp_write_coff --> gp_writeobj_write_coff
+	gp_is_absolute_object --> gp_writeobj_is_absolute_object
+
+2016-07-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure, configure.ac, Makefile.in, ./*/Makefile.in,
     doc/gputils.lyx:
     Changed the gputils version from 1.4.4 to 1.4.5.

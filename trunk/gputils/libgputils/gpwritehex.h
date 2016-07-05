@@ -34,9 +34,9 @@ enum formats {
   INHX32
 };
 
-extern gp_boolean writehex(const char *Base_filename, MemBlock_t *M, enum formats Hex_format,
-                           int Num_errors, gp_boolean Dos_newlines, unsigned int Core_mask);
+extern gp_boolean gp_writehex(const char *Base_filename, MemBlock_t *M, enum formats Hex_format,
+                              int Num_errors, gp_boolean Dos_newlines, unsigned int Core_mask);
 
-extern gp_boolean check_writehex(MemBlock_t *M, enum formats Hex_format);
+extern gp_boolean gp_writehex_check(MemBlock_t *M, enum formats Hex_format);
 
 #endif

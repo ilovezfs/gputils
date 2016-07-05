@@ -202,23 +202,25 @@ init(void)
 {
   gp_init();
 
+  memset(&state, 0, sizeof(state));
+
   /* restore gpasm to its initialized state */
   state.mode                    = MODE_ABSOLUTE;
-  state.extended_pic16e         = false;
+/*  state.extended_pic16e         = false;*/
 
   state.radix                   = 16;
   state.hex_format              = INHX32;
-  state.case_insensitive        = false;
+/*  state.case_insensitive        = false;
   state.quiet                   = false;
   state.use_absolute_path       = false;
   state.show_full_addr          = false;
   state.debug_info              = false;
   state.error_level             = 0;
   state.strict_level            = 0;
-  state.path_num                = 0;
+  state.path_num                = 0;*/
   state.preproc.do_emit         = true;
 
-  state.cmd_line.radix          = false;
+/*  state.cmd_line.radix          = false;
   state.cmd_line.hex_format     = false;
   state.cmd_line.error_level    = false;
   state.cmd_line.strict_level   = false;
@@ -234,17 +236,17 @@ init(void)
   state.found_config            = false;
   state.found_devid             = false;
   state.found_idlocs            = false;
-  state.found_end               = false;
+  state.found_end               = false;*/
   state.maxram                  = MAX_RAM - 1;
 
-  state.codfile                 = OUT_NORMAL;
-  state.depfile                 = OUT_SUPPRESS;
-  state.errfile                 = OUT_SUPPRESS;
-  state.hexfile                 = OUT_NORMAL;
-  state.lstfile                 = OUT_NORMAL;
-  state.objfile                 = OUT_SUPPRESS;
+  state.cod_file                = OUT_NORMAL;
+  state.dep_file                = OUT_SUPPRESS;
+  state.err_file                = OUT_SUPPRESS;
+  state.hex_file                = OUT_NORMAL;
+  state.lst_file                = OUT_NORMAL;
+  state.obj_file                = OUT_SUPPRESS;
 
-  state.num.errors              = 0;
+/*  state.num.errors              = 0;
   state.num.warnings            = 0;
   state.num.messages            = 0;
   state.num.warnings_suppressed = 0;
@@ -257,19 +259,19 @@ init(void)
   state.dep.enabled             = false;
   state.err.enabled             = false;
   state.lst.enabled             = false;
-  state.obj.enabled             = false;
+  state.obj.enabled             = false;*/
   state.obj.newcoff             = true;   /* use new Microchip COFF format by default */
 
-  state.obj.object              = NULL;
+/*  state.obj.object              = NULL;
   state.obj.section             = NULL;
   state.obj.symbol_num          = 0;
   state.obj.section_num         = 0;
 
-  state.astack                  = NULL;
+  state.astack                  = NULL;*/
 
   state.next_state              = STATE_NOCHANGE;
 
-  state.while_depth             = 0;
+/*  state.while_depth             = 0;*/
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -602,11 +604,11 @@ process_args(int argc, char *argv[])
       break;
 
     case 'c':
-      state.mode    = MODE_RELOCATABLE;
-      state.codfile = OUT_SUPPRESS;
-      state.hexfile = OUT_SUPPRESS;
-      state.lstfile = OUT_NORMAL;
-      state.objfile = OUT_NORMAL;
+      state.mode     = MODE_RELOCATABLE;
+      state.cod_file = OUT_SUPPRESS;
+      state.hex_file = OUT_SUPPRESS;
+      state.lst_file = OUT_NORMAL;
+      state.obj_file = OUT_NORMAL;
       break;
 
     case 'C':
@@ -668,7 +670,7 @@ process_args(int argc, char *argv[])
       break;
 
     case 'k':
-      state.errfile = OUT_NORMAL;
+      state.err_file = OUT_NORMAL;
       break;
 
     case 'L':
@@ -743,7 +745,7 @@ process_args(int argc, char *argv[])
       }
 
     case 'M':
-      state.depfile = OUT_NORMAL;
+      state.dep_file = OUT_NORMAL;
       break;
 
     case 'm':
@@ -757,9 +759,9 @@ process_args(int argc, char *argv[])
       break;
 
     case 'o':
-      gp_strncpy(state.objfilename, optarg, sizeof(state.objfilename));
-      gp_strncpy(state.basefilename, optarg, sizeof(state.basefilename));
-      pc = strrchr(state.basefilename, '.');
+      gp_strncpy(state.obj_file_name, optarg, sizeof(state.obj_file_name));
+      gp_strncpy(state.base_file_name, optarg, sizeof(state.base_file_name));
+      pc = strrchr(state.base_file_name, '.');
 
       if (pc != NULL) {
         *pc = '\0';
@@ -930,7 +932,7 @@ process_args(int argc, char *argv[])
   }
 
   if ((optind + 1) == argc) {
-    state.srcfilename = argv[optind];
+    state.src_file_name = argv[optind];
   }
   else {
     usage = true;
@@ -948,7 +950,7 @@ process_args(int argc, char *argv[])
   }
 
   if (state.use_absolute_path) {
-    state.srcfilename = gp_absolute_path(state.srcfilename);
+    state.src_file_name = gp_absolute_path(state.src_file_name);
   }
 }
 
@@ -964,9 +966,9 @@ assemble(void)
   cmd_defines    = state.stDefines;
   state.c_memory = state.i_memory = i_memory_create();
 
-  if (state.basefilename[0] == '\0') {
-    gp_strncpy(state.basefilename, state.srcfilename, sizeof(state.basefilename));
-    pc = strrchr(state.basefilename, '.');
+  if (state.base_file_name[0] == '\0') {
+    gp_strncpy(state.base_file_name, state.src_file_name, sizeof(state.base_file_name));
+    pc = strrchr(state.base_file_name, '.');
 
     if (pc != NULL) {
       *pc = '\0';
@@ -992,7 +994,7 @@ assemble(void)
   _set_global_constants();
 
   state.pass = 1;
-  open_src(state.srcfilename, false);
+  open_src(state.src_file_name, false);
   yyparse();
   yylex_destroy();
 
@@ -1048,7 +1050,7 @@ assemble(void)
 
   _set_global_constants();
 
-  open_src(state.srcfilename, false);
+  open_src(state.src_file_name, false);
   yydebug = (!gp_debug_disable) ? true : false;
   yyparse();
 
@@ -1075,13 +1077,13 @@ assemble(void)
   }
 
   /* Maybe produce a symbol table. */
-  if (state.lst.symboltable) {
+  if (state.lst.symbol_table) {
     lst_throw(); /* Start symbol table on a fresh page. */
     lst_symbol_table();
   }
 
   /* Maybe produce a memory map. */
-  if ((state.mode == MODE_ABSOLUTE) && (state.lst.memorymap)) {
+  if ((state.mode == MODE_ABSOLUTE) && (state.lst.memory_map)) {
     lst_memory_map(state.i_memory);
   }
 
