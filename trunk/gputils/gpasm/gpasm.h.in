@@ -49,14 +49,14 @@ Boston, MA 02111-1307, USA.  */
 #define IN_FILE_EXPANSION         (state.src->type == SRC_FILE)
 
 enum gpasmValTypes {
-  GVT_CONSTANT,
-  GVT_CBLOCK,
-  GVT_ADDRESS,
-  GVT_EXTERN,
-  GVT_GLOBAL,
-  GVT_STATIC,
-  GVT_DEBUG,
-  GVT_ABSOLUTE
+  VAL_CONSTANT,
+  VAL_ADDRESS,
+  VAL_CBLOCK,
+  VAL_EXTERN,
+  VAL_GLOBAL,
+  VAL_STATIC,
+  VAL_ABSOLUTE,
+  VAL_DEBUG
 };
 
 enum state_types {
@@ -305,13 +305,14 @@ enum globalLife {
 };
 
 typedef struct variable {
-  int                value;
-  unsigned int       coff_symbol_num;
-  unsigned int       coff_section_num;
-  enum gpasmValTypes type;
-  enum gpasmValTypes previous_type;     /* Can change from static to global. */
-  enum globalLife    lifetime;
-  gp_boolean         isProcDependent;   /* True if this a processor constant. */
+  gpasmVal            value;
+  unsigned int        coff_symbol_num;
+  unsigned int        coff_section_num;
+  unsigned int        coff_section_flags;
+  enum gpasmValTypes  type;
+  enum gpasmValTypes  previous_type;    /* Can change from static to global. */
+  enum globalLife     lifetime;
+  gp_boolean          isProcDependent;  /* True if this a processor constant. */
 } variable_t;
 
 /************************************************************************/
@@ -435,11 +436,12 @@ extern void select_expand(const char *expand);
 extern void select_hexformat(const char *format_name);
 extern void select_radix(const char *name);
 /* START OF DEBUG CODE LINES */
-extern void pnode_print(const pnode_t *p);
-extern void pnode_print_chain(const pnode_t *Pnode, unsigned int Level);
+extern void pnode_print(const pnode_t *Pnode, FILE *Out);
+extern void pnode_print_chain(const pnode_t *Pnode, unsigned int Level, FILE *Out);
+extern void variable_print(const variable_t *Variable, FILE *Out);
 /* END OF DEBUG CODE LINES */
 extern const char *pnode_symbol_name(const pnode_t *Pnode);
-extern int pnode_symbol_value(const pnode_t *Pnode);
+extern gpasmVal pnode_symbol_value(const pnode_t *Pnode);
 extern const char *pnode_string(const pnode_t *Pnode);
 extern file_context_t *add_file(unsigned int type, const char *name);
 extern void free_files(void);

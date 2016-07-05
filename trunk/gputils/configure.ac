@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.60)
-AC_INIT([gputils],[1.4.4], [<URL:http://gputils.sourceforge.net/>])
+AC_INIT([gputils],[1.4.5], [<URL:http://gputils.sourceforge.net/>])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([dist-bzip2])
@@ -193,6 +193,7 @@ AC_DEFINE_UNQUOTED(GPUTILS_VERSION_MICRO, $VERSION_MICRO, [gputils micro version
 AC_DEFINE_UNQUOTED(GPUTILS_VERSION_STR, "$PACKAGE_VERSION", [gputils version string])
 
 AM_GPUTILS_SVN_VERSION="\$(shell \$(top_srcdir)/get_cl_revision.sh \$(top_srcdir)/ChangeLog)"
+AM_PACKAGE_SVN_VERSION=`./get_cl_revision.sh ChangeLog`
 CFLAGS="-DGPUTILS_SVN_VERSION=\$(AM_GPUTILS_SVN_VERSION)"
 
 # Host filesystem options.
@@ -220,6 +221,7 @@ LDFLAGS=
 AC_SUBST(ENABLE_HTML_DOC)
 AC_SUBST(DEFAULT_MPLABX_PATH)
 AC_SUBST(AM_GPUTILS_SVN_VERSION)
+AC_SUBST(AM_PACKAGE_SVN_VERSION)
 AC_SUBST(AM_CFLAGS)
 AC_SUBST(AM_LDFLAGS)
 AC_SUBST(CFLAGS)

@@ -25,26 +25,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPERROR_H__
 #define __GPERROR_H__
 
-extern void gperror_init(void);
-
-extern void gperror_error(unsigned int code, const char *message);
-extern void gperror_warning(unsigned int code, const char *message);
-extern void gperror_message(unsigned int code, const char *message);
-
-extern void gperror_verror(unsigned int code, const char *message, ...);
-extern void gperror_vwarning(unsigned int code, const char *message, ...);
-extern void gperror_vmessage(unsigned int code, const char *message, ...);
-
-/* Alternate message functions. Only the prototypes are provided, the user
-   must link their own function into gpasm. */
-extern void gperror_user_error(unsigned int code, const char *message);
-extern void gperror_user_warning(unsigned int code, const char *message);
-extern void gperror_user_message(unsigned int code, const char *message);
-
-extern void gperror_add_code(int code);
-
-extern void gperror_close(void);
-
 /* Error codes
  *
  * The error codes gpasm defines here are identical to MPASM's
@@ -156,6 +136,7 @@ enum GPW_codes {
   GPW_UNDEF_PROC       = 1202,
   GPW_IS_ACCRAM        = 1203, /* A register is located on the Access RAM. */
   GPW_NO_ACCRAM        = 1204, /* A register is not located on the Access RAM. */
+  GPW_NOF              = 1205, /* The destination of the storage is not selected. */
   GPW_USER             = 1299
 };
 
@@ -187,5 +168,25 @@ enum GPM_codes {
   GPM_ACC_DEF          = 1301,
   GPM_NOB              = 1302
 };
+
+extern void gperror_init(void);
+
+extern void gperror_error(int code, const char *message);
+extern void gperror_warning(int code, const char *message);
+extern void gperror_message(int code, const char *message);
+
+extern void gperror_verror(int code, const char *message, ...);
+extern void gperror_vwarning(int code, const char *message, ...);
+extern void gperror_vmessage(int code, const char *message, ...);
+
+/* Alternate message functions. Only the prototypes are provided, the user
+   must link their own function into gpasm. */
+extern void gperror_user_error(int code, const char *message);
+extern void gperror_user_warning(int code, const char *message);
+extern void gperror_user_message(int code, const char *message);
+
+extern void gperror_add_code(int code);
+
+extern void gperror_close(void);
 
 #endif

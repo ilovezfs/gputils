@@ -24,17 +24,19 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
-extern gp_boolean eval_enforce_arity(int arity, int must_be);
-extern gp_boolean eval_enforce_simple(const struct pnode *p);
-extern int eval_list_length(const struct pnode *L);
+extern gp_boolean eval_enforce_arity(int Arity, int Must_be);
+extern gp_boolean eval_enforce_simple(const struct pnode *Pnode);
+extern int eval_list_length(const struct pnode *List);
 
-extern gp_boolean eval_can_evaluate(const struct pnode *p);
-extern gp_boolean eval_can_evaluate_value(const struct pnode *p);
-extern gpasmVal eval_evaluate(const struct pnode *p);
-extern gpasmVal eval_maybe_evaluate(const struct pnode *p);
+extern gp_boolean eval_can_evaluate(const struct pnode *Pnode);
+extern gp_boolean eval_can_evaluate_value(const struct pnode *Pnode);
+extern gpasmVal eval_evaluate(const struct pnode *Pnode);
+extern gpasmVal eval_maybe_evaluate(const struct pnode *Pnode);
 
-extern int eval_count_reloc(const struct pnode *p);
-extern gpasmVal eval_reloc_evaluate(const struct pnode *p, uint16_t type);
-extern int eval_fill_number(const struct pnode *p);
+extern int eval_count_reloc(const struct pnode *Pnode);
+extern gpasmVal eval_reloc_evaluate(const struct pnode *Pnode, uint16_t Type,
+                                    gp_boolean *Is_reloc, gpasmVal *Reloc_value);
+
+extern int eval_fill_number(const struct pnode *Pnode);
 
 #endif

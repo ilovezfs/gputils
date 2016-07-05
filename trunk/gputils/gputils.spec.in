@@ -1,50 +1,53 @@
-Name: gputils
-Version: @VERSION@
-Release: 1
-Summary: Development utilities for Microchip (TM) PIC (TM) microcontrollers
-License: GPL
-Group: Development/Languages
-Source: http://prdownloads.sourceforge.net/gputils/gputils-@VERSION@.tar.gz
-Packager: Craig Franklin <craigfranklin@users.sourceforge.net>
-Vendor: Craig Franklin <craigfranklin@users.sourceforge.net>
-Distribution: Red Hat Linux
-URL: http://gputils.sourceforge.net
-Buildroot: %{_tmppath}/%{name}-%{version}-root
+Name:        @PACKAGE_NAME@
+Version:     @VERSION@
+Release:     1.svn@AM_PACKAGE_SVN_VERSION@%{?dist}
+Summary:     Development utilities for Microchip (TM) PIC (TM) microcontrollers
+Summary(fr): Outils de développement pour les microcontrôleurs PIC (TM) de Microchip (TM)
+Group:       Development/Languages
+License:     GPLv2+
+URL:         http://gputils.sourceforge.net
+Source:      https://sourceforge.net/projects/@PACKAGE_NAME@/files/@PACKAGE_NAME@/@VERSION@/@PACKAGE_NAME@-@VERSION@.tar.bz2
+Packager:    Molnar Karoly <molnarkaroly@users.sourceforge.net>
+BuildRoot:   %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %description
-This is a collection of development tools for Microchip (TM) PIC (TM) 
+This is a collection of development tools for Microchip (TM) PIC (TM)
 microcontrollers.
 
-This is ALPHA software: there may be serious bugs in it, and it's
-nowhere near complete.  gputils currently only implements a subset of
-the features available with Microchip's tools.  See the documentation for 
+This is BETA software: There may be serious bugs in it, and it's
+nowhere near complete. gputils currently only implements a subset of
+the features available with Microchip's tools. See the documentation for
 an up-to-date list of what gputils can do.
 
+%description -l fr
+Ce paquetage contient une collection d'outils de développement pour les
+microcontrôleurs PIC (TM) de Microchip (TM).
+
+Ces logiciels sont en développement BETA: Il peut y avoir de sérieux bogues
+et ils sont loin d'être complets. Pour le moment, gputils n'implémente qu'une
+partie des fonctionnalités disponibles dans les outils Microchip.
+Voir la documentation pour une liste à jour des possibilités de gputils.
+
 %prep
-%setup
+%setup -q
 
 %build
-./configure --prefix=/usr --mandir=/usr/share/man --disable-html-doc
-make
+./configure --prefix=/usr --disable-html-doc
+%{__make}
+%{__make} -C doc %{name}.ps
+%{__make} -C doc %{name}.pdf
 
 %install
-make DESTDIR="$RPM_BUILD_ROOT" install
+%{__make} DESTDIR="%{buildroot}" install
 
 %clean
-[ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
+[ "%{buildroot}" != "/" ] && %{__rm} -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
-%{_bindir}/gpasm
-%{_bindir}/gpdasm
-%{_bindir}/gplib
-%{_bindir}/gplink
-%{_bindir}/gpstrip
-%{_bindir}/gpvc
-%{_bindir}/gpvo
-%{_mandir}/man1
-%{_mandir}/fr/man1
-%{_datadir}/gputils/header
-%{_datadir}/gputils/lkr
-%doc AUTHORS COPYING ChangeLog NEWS README 
-%doc doc/gputils.pdf doc/gputils.ps
+%{_bindir}/*
+%{_datadir}/%{name}/
+%{_mandir}/man1/*
+%{_mandir}/fr/man1/*
+%doc AUTHORS ChangeLog COPYING README TODO
+%doc doc/%{name}.pdf doc/%{name}.ps doc/gpdasm_sample.ulist

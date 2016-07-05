@@ -91,9 +91,9 @@ _new_config_section(const char *name, unsigned int addr, unsigned int flags, Mem
 
   assert(state.obj.object != NULL);
 
-  state.obj.section = gp_coffgen_add_section(state.obj.object, name, data);
+  state.obj.section                 = gp_coffgen_add_section(state.obj.object, name, data);
   state.obj.section->shadow_address = state.obj.section->address = addr;
-  state.obj.section->flags = flags;
+  state.obj.section->flags          = flags;
 
   /* add a section symbol */
   new = gp_coffgen_add_symbol(state.obj.object, name);
@@ -173,7 +173,7 @@ coff_init(void)
       state.obj.enabled = false;
     }
     else {
-      state.obj.object            = gp_coffgen_new_object(state.objfilename);
+      state.obj.object = gp_coffgen_new_object(state.objfilename);
       state.obj.object->processor = state.processor;
       state.obj.object->class     = state.device.class;
       state.obj.object->isnew     = state.obj.newcoff;
@@ -266,7 +266,7 @@ coff_new_section(const char *name, unsigned int addr, unsigned int flags)
   found = gp_coffgen_find_section(state.obj.object, state.obj.object->section_list.first, name);
   if (found != NULL) {
     if ((flags & STYP_OVERLAY) && (found->flags & STYP_OVERLAY)) {
-      /* Overlayed sections can be duplicated.  This allows multiple code
+      /* Overlayed sections can be duplicated. This allows multiple code
          sections in the same source file to share the same data memory. */
       if ((flags != found->flags) || (addr != found->address)) {
         gperror_verror(GPE_CONTIG_SECTION, NULL, name);
@@ -278,7 +278,7 @@ coff_new_section(const char *name, unsigned int addr, unsigned int flags)
     }
   }
 
-  state.obj.section                 = gp_coffgen_add_section(state.obj.object, name, NULL);
+  state.obj.section = gp_coffgen_add_section(state.obj.object, name, NULL);
   state.obj.section->address        = addr;
   state.obj.section->shadow_address = addr;
   state.obj.section->flags          = flags;
@@ -392,32 +392,32 @@ coff_add_sym(const char *name, gp_symvalue_t value, enum gpasmValTypes type)
   }
 
   switch (type) {
-  case GVT_EXTERN:
+  case VAL_EXTERN:
     section_number = N_UNDEF;
     class          = C_EXT;
     break;
 
-  case GVT_GLOBAL:
+  case VAL_GLOBAL:
     section_number = state.obj.section_num;
     class          = C_EXT;
     break;
 
-  case GVT_STATIC:
+  case VAL_STATIC:
     section_number = state.obj.section_num;
     class          = C_STAT;
     break;
 
-  case GVT_ADDRESS:
+  case VAL_ADDRESS:
     section_number = state.obj.section_num;
     class          = C_LABEL;
     break;
 
-  case GVT_DEBUG:
+  case VAL_DEBUG:
     section_number = N_DEBUG;
     class          = C_NULL;
     break;
 
-  case GVT_ABSOLUTE:
+  case VAL_ABSOLUTE:
     section_number = N_ABS;
     class          = C_NULL;
     break;
@@ -429,7 +429,7 @@ coff_add_sym(const char *name, gp_symvalue_t value, enum gpasmValTypes type)
   new = gp_coffgen_find_symbol(state.obj.object, name);
 
   /* verify the duplicate extern has the same properties */
-  if ((new != NULL) && (type == GVT_EXTERN))  {
+  if ((new != NULL) && (type == VAL_EXTERN))  {
     if ((new->type != type) || (new->class != class) || (new->section_number != section_number)) {
       snprintf(message, sizeof(message),
                "Duplicate label or redefining symbol that cannot be redefined. (%s)", name);
@@ -437,7 +437,7 @@ coff_add_sym(const char *name, gp_symvalue_t value, enum gpasmValTypes type)
     }
   }
 
-  if ((new != NULL) && (type != GVT_EXTERN) && (type != GVT_DEBUG))  {
+  if ((new != NULL) && (type != VAL_EXTERN) && (type != VAL_DEBUG))  {
     snprintf(message, sizeof(message),
              "Duplicate label or redefining symbol that cannot be redefined. (%s)", name);
     gperror_error(GPE_DUPLAB, message);
@@ -459,7 +459,7 @@ coff_add_sym(const char *name, gp_symvalue_t value, enum gpasmValTypes type)
 /* add a file symbol to the coff symbol table */
 
 gp_symbol_t *
-coff_add_filesym(const char *name, gp_boolean isinclude)
+coff_add_filesym(const char *name, gp_boolean is_include)
 {
   gp_symbol_t *new;
   gp_aux_t    *new_aux;
@@ -481,7 +481,7 @@ coff_add_filesym(const char *name, gp_boolean isinclude)
   new_aux->type = AUX_FILE;
   new_aux->_aux_symbol._aux_file.filename = GP_Strdup(name);
 
-  if (isinclude) {
+  if (is_include) {
     new_aux->_aux_symbol._aux_file.line_number = state.src->line_number - 1;
   }
   else {
@@ -594,7 +594,7 @@ coff_add_directsym(uint8_t command, const char *string)
   new->class          = C_NULL;*/
 
   new_aux = gp_coffgen_add_aux(state.obj.object, new);
-  new_aux->type = AUX_DIRECT;
+  new_aux->type                            = AUX_DIRECT;
   new_aux->_aux_symbol._aux_direct.command = command;
   new_aux->_aux_symbol._aux_direct.string  = GP_Strdup(string);
 }

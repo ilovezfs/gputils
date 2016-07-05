@@ -120,7 +120,7 @@ _check_code(int code)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
+_verr(err_type_t err_type, int code, const char *message, va_list ap)
 {
   va_list                 ap0;
   const char             *type;
@@ -183,7 +183,7 @@ _verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_err(err_type_t err_type, unsigned int code, const char *message)
+_err(err_type_t err_type, int code, const char *message)
 {
   const char             *type;
   const char             *gap;
@@ -237,7 +237,7 @@ _err(err_type_t err_type, unsigned int code, const char *message)
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_geterror(unsigned int code)
+_geterror(int code)
 {
   switch(code) {
   case GPE_USER:
@@ -366,7 +366,7 @@ _geterror(unsigned int code)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_error(unsigned int code, const char *message)
+gperror_error(int code, const char *message)
 {
   if (state.pass != 2) {
     return;
@@ -388,7 +388,7 @@ gperror_error(unsigned int code, const char *message)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_verror(unsigned int code, const char *message, ...)
+gperror_verror(int code, const char *message, ...)
 {
   va_list     ap;
   const char *msg;
@@ -421,7 +421,7 @@ gperror_verror(unsigned int code, const char *message, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_getwarning(unsigned int code)
+_getwarning(int code)
 {
   switch(code) {
   case GPW_NOT_DEFINED:
@@ -474,6 +474,8 @@ _getwarning(unsigned int code)
     return "This register is located on the Access RAM:";
   case GPW_NO_ACCRAM:
     return "This register is not located on the Access RAM:";
+  case GPW_NOF:
+    return "The destination of the storage is not selected, use W or F.";
   case GPW_USER:
     return "WARNING: (%s)";
 
@@ -485,7 +487,7 @@ _getwarning(unsigned int code)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_warning(unsigned int code, const char *message)
+gperror_warning(int code, const char *message)
 {
   if (state.pass != 2) {
     return;
@@ -511,7 +513,7 @@ gperror_warning(unsigned int code, const char *message)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_vwarning(unsigned int code, const char *message, ...)
+gperror_vwarning(int code, const char *message, ...)
 {
   va_list     ap;
   const char *msg;
@@ -547,13 +549,13 @@ gperror_vwarning(unsigned int code, const char *message, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_getmessage(unsigned int code)
+_getmessage(int code)
 {
   switch(code) {
   case GPM_USER:
     return "MESSAGE: \"%s\"";
   case GPM_BANK:
-    return "Register in operand not located in RAM Bank %u. Ensure that Bank bits are correct:";
+    return "Register in operand not located in RAM Bank %i. Ensure that Bank bits are correct:";
   case GPM_RANGE:
     return "Program word too large. Truncated to core size: 0x%04X";
   case GPM_IDLOC:
@@ -593,7 +595,7 @@ _getmessage(unsigned int code)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_message(unsigned int code, const char *message)
+gperror_message(int code, const char *message)
 {
   if (state.pass != 2) {
     return;
@@ -619,7 +621,7 @@ gperror_message(unsigned int code, const char *message)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_vmessage(unsigned int code, const char *message, ...)
+gperror_vmessage(int code, const char *message, ...)
 {
   va_list     ap;
   const char *msg;

@@ -1,3 +1,19 @@
+2016-07-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure, configure.ac, Makefile.in, ./*/Makefile.in,
+    doc/gputils.lyx:
+    Changed the gputils version from 1.4.4 to 1.4.5.
+
+  * gpasm/cod.c, gpasm/coff.c, gpasm/gpasm.c, gpasm/gpasm.h.in,
+    gpasm/parse.y, gpasm/processor.c, gpasm/util.c:
+    Changed constant names from "GVT_..." to "VAL_...".
+
+  * gpasm/directive.c, gpasm/evaluate.c, gpasm/evaluate.h,
+    gpasm/gperror.c, gpasm/gperror.h, gpasm/util.c:
+    Improved the message subsystem.
+
+  * gputils.spec.in:
+    rewrited
+
 2016-07-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/coff.c, gpasm/lst.c, gplink/cod.c, gplink/gplink.c,
     gplink/lst.c, gplink/map.c, gputils/gpstrip.c, gputils/gpvo.c,
