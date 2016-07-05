@@ -120,7 +120,7 @@ int yylex(void);
 
 static pnode_t *mk_pnode(enum pnode_tag tag)
 {
-  pnode_t *new = (pnode_t *)GP_Malloc(sizeof(pnode_t));
+  pnode_t *new = (pnode_t *)GP_Calloc(1, sizeof(pnode_t));
 
   new->tag = tag;
   return new;
@@ -200,7 +200,7 @@ gpasmVal set_label(const char *label, pnode_t *parms)
 
     value = do_or_append_insn("set", parms);
     if (!IN_MACRO_WHILE_DEFINITION) {
-      set_global(label, value, LFT_TEMPORARY, GVT_CONSTANT, false);
+      set_global(label, value, LFT_TEMPORARY, VAL_CONSTANT, false);
     }
   }
 
@@ -263,7 +263,7 @@ void next_line(int value)
 
    if (state.next_state == STATE_INCLUDE) {
       /* includes have to be evaluated here and not in the following
-       * switch statetems so that the errors are reported correctly */
+       * switch statements so that the errors are reported correctly */
       state.src->line_number++;
       open_src(state.next_buffer.file, true);
       free(state.next_buffer.file);
@@ -530,12 +530,12 @@ line:
                 break;
 
               case LTY_SET:
-                set_global($1, $2, LFT_TEMPORARY, GVT_CONSTANT, false);
+                set_global($1, $2, LFT_TEMPORARY, VAL_CONSTANT, false);
                 break;
 
               case LTY_ORG:
               case LTY_EQU:
-                set_global($1, $2, LFT_PERMANENT, GVT_CONSTANT, false);
+                set_global($1, $2, LFT_PERMANENT, VAL_CONSTANT, false);
                 break;
 
               case LTY_INSN:
@@ -547,10 +547,10 @@ line:
                 }
 
                 if (IS_RAM_ORG) {
-                  set_global($1, $2, LFT_PERMANENT, GVT_STATIC, false);
+                  set_global($1, $2, LFT_PERMANENT, VAL_STATIC, false);
                 }
                 else {
-                  set_global($1, $2, LFT_PERMANENT, GVT_ADDRESS, false);
+                  set_global($1, $2, LFT_PERMANENT, VAL_ADDRESS, false);
                 }
                 break;
 

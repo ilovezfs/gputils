@@ -74,7 +74,7 @@
 \begin_body
 
 \begin_layout Title
-gputils 1.4.4
+gputils 1.4.5
 \end_layout
 
 \begin_layout Author
@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jun 29
+2016 Jul 03
 \end_layout
 
 \begin_layout Standard
@@ -12435,6 +12435,10 @@ gpasm encountered an invalid ROM location as specified by the __MAXROM and
 
 \begin_layout Description
 1204 A register is not located on the Access RAM.
+\end_layout
+
+\begin_layout Description
+1205 The destination of the storage is not selected (W or F).
 \end_layout
 
 \begin_layout Description

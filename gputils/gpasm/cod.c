@@ -389,15 +389,15 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
     gp_cod_strncpy(&sb->block[main_dir->sym.offset + 1], name, MAX_SYM_LEN);
 
     switch (var->type) {
-    case GVT_CBLOCK:
+    case VAL_CBLOCK:
       type = COD_ST_C_SHORT;    /* byte craft's nomenclature for a memory byte. */
       break;
 
-    case GVT_ADDRESS:
+    case VAL_ADDRESS:
       type = COD_ST_ADDRESS;
       break;
 
-    case GVT_CONSTANT:
+    case VAL_CONSTANT:
     default:
       type = COD_ST_CONSTANT;
     }

@@ -29,6 +29,11 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "coff.h"
 
+#define STR_INHX8M              "inhx8m"
+#define STR_INHX8S              "inhx8s"
+#define STR_INHX16              "inhx16"
+#define STR_INHX32              "inhx32"
+
 static file_context_t *last = NULL;
 
 /*------------------------------------------------------------------------------------------------*/
@@ -250,14 +255,14 @@ gpasm_magic(const char *c)
 {
   if (c[0] == '\\') {
     switch (c[1]) {
-    case 'a': return '\a';
-    case 'b': return '\b';
-    case 'f': return '\f';
-    case 'n': return '\n';
-    case 'r': return '\r';
-    case 't': return '\t';
-    case 'v': return '\v';
-    default:  return c[1];
+      case 'a': return '\a';
+      case 'b': return '\b';
+      case 'f': return '\f';
+      case 'n': return '\n';
+      case 'r': return '\r';
+      case 't': return '\t';
+      case 'v': return '\v';
+      default:  return c[1];
     }
   }
 
@@ -310,69 +315,68 @@ convert_escaped_char(char *str, char c)
 const char *
 convert_escape_chars(const char *ps, int *value)
 {
-  int count;
+  int  count;
+  char buffer[3];
 
   if (*ps != '\\') {
     *value = *ps++;
   } else {
     /* escape char, convert its value and write to the new string */
     switch (ps[1]) {
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-      /* octal number */
-      count = 0;
-      *value = 0;
-      ps++;
-
-      while (count < 3) {
-        if ((*ps < '0') || (*ps > '7')) {
-          break;
-        }
-
-        *value = (*value << 3) + *ps - '0';
-        ps++;
-        count++;
-      }
-      break;
-
-    case 'x':
-      /* hex number */
-      if ((ps[2] == '\0') || (ps[3] == '\0')) {
-        gperror_error(GPE_UNKNOWN, "Missing hex value in \\x escape character.");
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+        /* octal number */
+        count = 0;
         *value = 0;
-        /* return a NULL character */
-        ps += 2;
-
-        if (*ps != '\0') {
-          ++ps;
-        }
-      } else {
-        char buffer[3];
-
-        buffer[0] = ps[2];
-        buffer[1] = ps[3];
-        buffer[2] = '\0';
-        *value = stringtolong(buffer, 16);
-        ps += 4;
-      }
-      break;
-
-    default:
-      if (ps[1] == '\0') {
-        gperror_error(GPE_UNKNOWN, "Missing value in \\ escape character.");
-        *value = 0;
-        /* return a NIL character */
         ps++;
-      } else {
-        *value = gpasm_magic(ps);
-        ps += 2;
-      }
+
+        while (count < 3) {
+          if ((*ps < '0') || (*ps > '7')) {
+            break;
+          }
+
+          *value = (*value << 3) + *ps - '0';
+          ps++;
+          count++;
+        }
+        break;
+
+      case 'x':
+        /* hex number */
+        if ((ps[2] == '\0') || (ps[3] == '\0')) {
+          gperror_error(GPE_UNKNOWN, "Missing hex value in \\x escape character.");
+          *value = 0;
+          /* return a NULL character */
+          ps += 2;
+
+          if (*ps != '\0') {
+            ++ps;
+          }
+        } else {
+          buffer[0] = ps[2];
+          buffer[1] = ps[3];
+          buffer[2] = '\0';
+          *value = stringtolong(buffer, 16);
+          ps += 4;
+        }
+        break;
+
+      default:
+        if (ps[1] == '\0') {
+          gperror_error(GPE_UNKNOWN, "Missing value in \\ escape character.");
+          *value = 0;
+          /* return a NIL character */
+          ps++;
+        } else {
+          *value = gpasm_magic(ps);
+          ps += 2;
+        }
     }
   }
 
@@ -425,28 +429,29 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
   if (var == NULL) {
     /* new symbol */
     var = GP_Malloc(sizeof(*var));
-    var->value            = value;
-    var->coff_symbol_num  = state.obj.symbol_num;
-    var->coff_section_num = state.obj.section_num;
-    var->type             = type;
-    var->previous_type    = type;  /* coff symbols can be changed to global */
-    var->lifetime         = lifetime;
-    var->isProcDependent  = procDependent;
+    var->value              = value;
+    var->coff_symbol_num    = state.obj.symbol_num;
+    var->coff_section_num   = state.obj.section_num;
+    var->coff_section_flags = state.obj.new_sect_flags;
+    var->type               = type;
+    var->previous_type      = type;  /* coff symbols can be changed to global */
+    var->lifetime           = lifetime;
+    var->isProcDependent    = procDependent;
     sym_annotate_symbol(sym, var);
 
     /* increment the index into the coff symbol table for the relocations */
-    switch(type) {
-    case GVT_EXTERN:
-    case GVT_GLOBAL:
-    case GVT_STATIC:
-    case GVT_ADDRESS:
-    case GVT_DEBUG:
-    case GVT_ABSOLUTE:
-      state.obj.symbol_num++;
-      break;
+    switch (type) {
+      case VAL_EXTERN:
+      case VAL_GLOBAL:
+      case VAL_STATIC:
+      case VAL_ADDRESS:
+      case VAL_DEBUG:
+      case VAL_ABSOLUTE:
+        state.obj.symbol_num++;
+        break;
 
-    default:
-      break;
+      default:
+        break;
     }
   } else if (lifetime == LFT_TEMPORARY) {
     /*
@@ -488,7 +493,7 @@ get_global_constant(const char *Name)
 
   if (((sym = sym_get_symbol(state.stGlobal, Name)) != NULL) &&
       ((var = sym_get_symbol_annotation(sym)) != NULL) &&
-      (var->type == GVT_CONSTANT)) {
+      (var->type == VAL_CONSTANT)) {
     return var;
   }
 
@@ -544,7 +549,7 @@ purge_processor_const_symbols(symbol_table_t *Table)
 
     var = (variable_t *)sym_get_symbol_annotation(sym);
 
-    if ((var != NULL) && (var->lifetime == LFT_PERMANENT) && (var->type == GVT_CONSTANT) &&
+    if ((var != NULL) && (var->lifetime == LFT_PERMANENT) && (var->type == VAL_CONSTANT) &&
         var->isProcDependent) {
       sym_remove_symbol_with_index(Table, i);
     }
@@ -635,11 +640,6 @@ select_expand(const char *expand)
 }
 
 /*------------------------------------------------------------------------------------------------*/
-
-#define STR_INHX8M              "inhx8m"
-#define STR_INHX8S              "inhx8s"
-#define STR_INHX16              "inhx16"
-#define STR_INHX32              "inhx32"
 
 void
 select_hexformat(const char *format_name)
@@ -756,7 +756,7 @@ pnode_symbol_name(const pnode_t *Pnode)
 
 /*------------------------------------------------------------------------------------------------*/
 
-int
+gpasmVal
 pnode_symbol_value(const pnode_t *Pnode)
 {
   const symbol_t   *sym;
