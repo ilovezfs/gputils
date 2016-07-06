@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpasm.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "scan.h"
 #include "deps.h"
 #include "directive.h"
@@ -1033,7 +1033,7 @@ assemble(void)
   state.found_end    = false;
   coff_init();
   cod_init();
-  gperror_init();
+  gpmsg_init();
   deps_init();
   lst_init();
   preproc_init();
@@ -1089,7 +1089,7 @@ assemble(void)
 
   /* Finish off the object, dependency, listing, and symbol files. */
   coff_close_file();
-  gperror_close();
+  gpmsg_close();
   deps_close();
   lst_close();
 

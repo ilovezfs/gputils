@@ -8,36 +8,36 @@ AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 libgpasm_a_SOURCES = \
 	cod.c \
-	coff.c \
-	deps.c \
-	directive.c \
-	evaluate.c \
-	gpasm.c \
-	gperror.c \
-	lst.c \
-	macro.c \
-	preprocess.c \
-	processor.c \
-	special.c \
-	util.c \
 	cod.h \
+	coff.c \
 	coff.h \
+	deps.c \
 	deps.h \
+	directive.c \
 	directive.h \
+	evaluate.c \
 	evaluate.h \
-	gperror.h \
+	gpasm.c \
+	gpasm.h.in \
+	gpmsg.c \
+	gpmsg.h \
 	libgpasm.h \
+	lst.c \
 	lst.h \
+	macro.c \
 	macro.h \
+	parse.y \
+	ppparse.y \
+	ppscan.l \
+	preprocess.c \
 	preprocess.h \
+	processor.c \
 	processor.h \
 	scan.h \
-	special.h \
-	gpasm.h.in \
-	ppscan.l \
 	scan.l \
-	parse.y \
-	ppparse.y
+	special.c \
+	special.h \
+	util.c
 
 gpasm_SOURCES = main.c
 

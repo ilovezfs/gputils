@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gpasm.h"
 #include "evaluate.h"
 #include "directive.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "parse.h"
 #include "coff.h"
 
@@ -39,10 +39,10 @@ eval_enforce_arity(int Arity, int Must_be)
   }
 
   if (Arity < Must_be) {
-    gperror_verror(GPE_MISSING_ARGU, NULL);
+    gpmsg_verror(GPE_MISSING_ARGU, NULL);
   }
   else {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   return false;
@@ -59,11 +59,11 @@ eval_enforce_simple(const pnode_t *Pnode)
      break;
 
    case PTAG_STRING:
-     gperror_verror(GPE_ILLEGAL_ARGU, NULL, PnString(Pnode));
+     gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, PnString(Pnode));
      break;
 
    default:
-     gperror_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
+     gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
   }
 
   return false;
@@ -101,7 +101,7 @@ eval_can_evaluate(const pnode_t *Pnode)
 
     case PTAG_OFFSET: {
       if (state.extended_pic16e == false) {
-        gperror_verror(GPE_BADCHAR, NULL, '[');
+        gpmsg_verror(GPE_BADCHAR, NULL, '[');
       }
 
       return eval_can_evaluate(PnOffset(Pnode));
@@ -121,10 +121,10 @@ eval_can_evaluate(const pnode_t *Pnode)
         var = NULL;
 
         if (PnSymbol(Pnode)[0] == '\0') {
-          gperror_verror(GPE_MISSING_ARGU, NULL);
+          gpmsg_verror(GPE_MISSING_ARGU, NULL);
         }
         else {
-          gperror_verror(GPE_NOSYM, NULL, PnSymbol(Pnode));
+          gpmsg_verror(GPE_NOSYM, NULL, PnSymbol(Pnode));
         }
       }
       else {
@@ -132,7 +132,7 @@ eval_can_evaluate(const pnode_t *Pnode)
 
         if (var == NULL) {
           snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", PnSymbol(Pnode));
-          gperror_warning(GPW_UNKNOWN, buf);
+          gpmsg_warning(GPW_UNKNOWN, buf);
         }
       }
 
@@ -149,7 +149,7 @@ eval_can_evaluate(const pnode_t *Pnode)
       break;
 
     case PTAG_STRING:
-      gperror_verror(GPE_ILLEGAL_ARGU, NULL, PnString(Pnode));
+      gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, PnString(Pnode));
       return false;
       break;
 
@@ -175,7 +175,7 @@ eval_can_evaluate_value(const pnode_t *Pnode)
 
     case PTAG_OFFSET: {
       if (state.extended_pic16e == false) {
-        gperror_verror(GPE_BADCHAR, NULL, '[');
+        gpmsg_verror(GPE_BADCHAR, NULL, '[');
       }
 
       return eval_can_evaluate_value(PnOffset(Pnode));
@@ -225,7 +225,7 @@ eval_can_evaluate_value(const pnode_t *Pnode)
       break;
 
     case PTAG_STRING:
-      gperror_verror(GPE_ILLEGAL_ARGU, NULL, PnString(Pnode));
+      gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, PnString(Pnode));
       return false;
       break;
 
@@ -363,7 +363,7 @@ eval_evaluate(const pnode_t *Pnode)
 
         case '/': {
           if (p1 == 0){
-            gperror_verror(GPE_DIVBY0, NULL);
+            gpmsg_verror(GPE_DIVBY0, NULL);
             return 0;
           }
           else {
@@ -375,7 +375,7 @@ eval_evaluate(const pnode_t *Pnode)
 
         case '%': {
           if (p1 == 0){
-            gperror_verror(GPE_DIVBY0, NULL);
+            gpmsg_verror(GPE_DIVBY0, NULL);
             return 0;
           }
           else {
@@ -459,7 +459,7 @@ eval_evaluate(const pnode_t *Pnode)
           break;
 
         case '=':
-          gperror_verror(GPE_BADCHAR, NULL, '=');
+          gpmsg_verror(GPE_BADCHAR, NULL, '=');
           return 0;
           break;
 
@@ -644,7 +644,7 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
         case '~':
         case INCREMENT:
         case DECREMENT:
-          gperror_verror(GPE_UNRESOLVABLE, NULL);
+          gpmsg_verror(GPE_UNRESOLVABLE, NULL);
           return -1;
 
         default:
@@ -674,7 +674,7 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
             return _add_reloc(PnBinOpP0(Pnode), Offset - eval_maybe_evaluate(PnBinOpP1(Pnode)), Type);
           }
           else {
-            gperror_verror(GPE_UNRESOLVABLE, NULL);
+            gpmsg_verror(GPE_UNRESOLVABLE, NULL);
             return -1;
           }
 
@@ -698,7 +698,7 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
         case LOGICAL_AND:
         case LOGICAL_OR:
         case '=':
-          gperror_verror(GPE_UNRESOLVABLE, NULL);
+          gpmsg_verror(GPE_UNRESOLVABLE, NULL);
           return -1;
           break;
 
@@ -806,7 +806,7 @@ eval_reloc_evaluate(const pnode_t *Pnode, uint16_t Type, gp_boolean *Is_reloc, g
     }
 
     /* too many relocatable addresses */
-    gperror_verror(GPE_UNRESOLVABLE, NULL);
+    gpmsg_verror(GPE_UNRESOLVABLE, NULL);
     return 0;
   }
 
@@ -836,7 +836,7 @@ eval_fill_number(const pnode_t *Pnode)
   number = eval_maybe_evaluate(Pnode);
 
   if ((state.device.class->rom_width == 8) && ((number & 0x1) == 1)) {
-    gperror_verror(GPE_FILL_ODD, NULL);
+    gpmsg_verror(GPE_FILL_ODD, NULL);
   }
 
   return (gp_processor_org_to_byte(state.device.class, number) >> 1);

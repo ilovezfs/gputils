@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 #include "gpasm.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "preprocess.h"
 
 int ppresult = 0;
@@ -82,10 +82,10 @@ exp:
         snprintf(buf, sizeof(buf), "Symbol %s not assigned a value.", $1);
 
         if (state.strict_level == 2) {
-          gperror_verror(GPE_USER, NULL, buf);
+          gpmsg_verror(GPE_USER, NULL, buf);
         }
         else {
-          gperror_vwarning(GPW_USER, NULL, buf);
+          gpmsg_vwarning(GPW_USER, NULL, buf);
         }
       }
       $$ = 0;

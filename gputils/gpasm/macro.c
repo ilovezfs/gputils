@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gpasm.h"
 #include "directive.h"
 #include "evaluate.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "macro.h"
 #include "parse.h"
 #include "preprocess.h"
@@ -119,7 +119,7 @@ macro_push_symbol_table(symbol_table_t *Table)
   }
   else {
     if (macro_table_ptr == NULL) {
-      gperror_verror(GPE_UNKNOWN, "An error occurred during a macro execution on pass %i.", state.pass);
+      gpmsg_verror(GPE_UNKNOWN, "An error occurred during a macro execution on pass %i.", state.pass);
       exit(1);
     }
 
@@ -130,7 +130,7 @@ macro_push_symbol_table(symbol_table_t *Table)
        Probably errors will be generated. Forward references to local
        symbols probably won't be correct. */
       new = sym_push_table(Table, state.case_insensitive);
-      gperror_warning(GPW_UNKNOWN, "Macro not executed on pass 1.");
+      gpmsg_warning(GPW_UNKNOWN, "Macro not executed on pass 1.");
     }
     else {
       assert(macro_table_ptr != NULL);

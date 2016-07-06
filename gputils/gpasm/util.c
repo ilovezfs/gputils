@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpasm.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "directive.h"
 #include "coff.h"
 
@@ -105,7 +105,7 @@ stringtolong(const char *string, int radix)
              isprint(ch) ? "Illegal character '%c' in numeric constant." :
                            "Illegal character %#x in numeric constant.",
              ch);
-    gperror_error(GPE_UNKNOWN, buf);
+    gpmsg_error(GPE_UNKNOWN, buf);
   }
 
   return value;
@@ -350,7 +350,7 @@ convert_escape_chars(const char *ps, int *value)
       case 'x':
         /* hex number */
         if ((ps[2] == '\0') || (ps[3] == '\0')) {
-          gperror_error(GPE_UNKNOWN, "Missing hex value in \\x escape character.");
+          gpmsg_error(GPE_UNKNOWN, "Missing hex value in \\x escape character.");
           *value = 0;
           /* return a NULL character */
           ps += 2;
@@ -369,7 +369,7 @@ convert_escape_chars(const char *ps, int *value)
 
       default:
         if (ps[1] == '\0') {
-          gperror_error(GPE_UNKNOWN, "Missing value in \\ escape character.");
+          gpmsg_error(GPE_UNKNOWN, "Missing value in \\ escape character.");
           *value = 0;
           /* return a NIL character */
           ps++;
@@ -471,7 +471,7 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
     char *coff_name;
 
     if (var->value != value) {
-      gperror_verror(GPE_DIFFLAB, NULL, name);
+      gpmsg_verror(GPE_DIFFLAB, NULL, name);
     }
 
     coff_name = coff_local_name(name);
@@ -567,7 +567,7 @@ void
 select_errorlevel(int level)
 {
   if (state.cmd_line.error_level) {
-    gperror_vmessage(GPM_SUPVAL, NULL);
+    gpmsg_vmessage(GPM_SUPVAL, NULL);
   } else {
     if ((level >= 0) && (level <= 2)) {
       if (state.cmd_line.strict_level && (state.strict_level > 0)) {
@@ -584,7 +584,7 @@ select_errorlevel(int level)
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid warning level \"%i\".\n", level);
       } else {
-        gperror_error(GPE_ILLEGAL_ARGU, "Expected w= 0, 1, 2");
+        gpmsg_error(GPE_ILLEGAL_ARGU, "Expected w= 0, 1, 2");
       }
     }
   }
@@ -596,7 +596,7 @@ void
 select_strictlevel(int level)
 {
   if (state.cmd_line.strict_level) {
-    gperror_vmessage(GPM_SUPVAL, NULL);
+    gpmsg_vmessage(GPM_SUPVAL, NULL);
   } else {
     if ((level >= 0) && (level <= 2)) {
       state.strict_level = level;
@@ -609,7 +609,7 @@ select_strictlevel(int level)
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid strict level \"%i\".\n", level);
       } else {
-        gperror_error(GPE_ILLEGAL_ARGU, "Expected S= 0, 1, 2");
+        gpmsg_error(GPE_ILLEGAL_ARGU, "Expected S= 0, 1, 2");
       }
     }
   }
@@ -621,7 +621,7 @@ void
 select_expand(const char *expand)
 {
   if (state.cmd_line.macro_expand) {
-    gperror_vmessage(GPM_SUPLIN, NULL);
+    gpmsg_vmessage(GPM_SUPLIN, NULL);
   } else {
     if (strcasecmp(expand, "on") == 0) {
       state.lst.expand = true;
@@ -633,7 +633,7 @@ select_expand(const char *expand)
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid option \"%s\".\n", expand);
       } else {
-        gperror_error(GPE_ILLEGAL_ARGU, "Expected ON or OFF.");
+        gpmsg_error(GPE_ILLEGAL_ARGU, "Expected ON or OFF.");
       }
     }
   }
@@ -645,7 +645,7 @@ void
 select_hexformat(const char *format_name)
 {
   if (state.cmd_line.hex_format) {
-    gperror_vwarning(GPW_CMDLINE_HEXFMT, NULL);
+    gpmsg_vwarning(GPW_CMDLINE_HEXFMT, NULL);
   } else {
     if (strcasecmp(format_name, STR_INHX8M) == 0) {
       state.hex_format = INHX8M;
@@ -661,7 +661,7 @@ select_hexformat(const char *format_name)
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid format \"%s\".\n", format_name);
       } else {
-        gperror_error(GPE_ILLEGAL_ARGU, "Expected " STR_INHX8M ", " STR_INHX8S ", " STR_INHX16 ", or " STR_INHX32 ".");
+        gpmsg_error(GPE_ILLEGAL_ARGU, "Expected " STR_INHX8M ", " STR_INHX8S ", " STR_INHX16 ", or " STR_INHX32 ".");
       }
     }
   }
@@ -673,7 +673,7 @@ void
 select_radix(const char *radix_name)
 {
   if (state.cmd_line.radix) {
-    gperror_vwarning(GPW_CMDLINE_RADIX, NULL);
+    gpmsg_vwarning(GPW_CMDLINE_RADIX, NULL);
   } else {
     if ((strcasecmp(radix_name, "h") == 0) ||
         (strcasecmp(radix_name, "hex") == 0) ||
@@ -693,7 +693,7 @@ select_radix(const char *radix_name)
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid radix \"%s\", will use hex.\n", radix_name);
       } else {
-        gperror_vwarning(GPW_RADIX, NULL);
+        gpmsg_vwarning(GPW_RADIX, NULL);
       }
     }
   }
@@ -880,12 +880,12 @@ hex_init(void)
   }
 
   if (!gp_writehex_check(state.i_memory, state.hex_format)) {
-    gperror_verror(GPE_IHEX, NULL);
+    gpmsg_verror(GPE_IHEX, NULL);
     gp_writehex(state.base_file_name, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
   } else if (state.device.class != NULL) {
     if (!gp_writehex(state.base_file_name, state.i_memory, state.hex_format, state.num.errors,
                      state.dos_newlines, state.device.class->core_mask)) {
-      gperror_error(GPE_UNKNOWN, "Error generating hex file.");
+      gpmsg_error(GPE_UNKNOWN, "Error generating hex file.");
       exit(1);
     }
   } else {

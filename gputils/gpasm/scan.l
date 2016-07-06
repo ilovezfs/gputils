@@ -46,7 +46,7 @@ Boston, MA 02111-1307, USA.  */
 #include "parse.h"
 #include "scan.h"
 #include "deps.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "directive.h"
 #include "evaluate.h"
 #include "macro.h"
@@ -96,13 +96,13 @@ gp_input(char *buf, size_t max_size)
           }
 
           if ((c == EOF) && ferror(yyin)) {
-            gperror_verror(GPE_SCANNER, NULL, "Input in flex scanner failed.");
+            gpmsg_verror(GPE_SCANNER, NULL, "Input in flex scanner failed.");
           }
           return n;
         }
       else
         {
-          gperror_verror(GPE_SCANNER, NULL, "Interactive scanner should be used.");
+          gpmsg_verror(GPE_SCANNER, NULL, "Interactive scanner should be used.");
           return 0;
         }
     }
@@ -327,9 +327,9 @@ processor                {
                            yylval.s = GP_Strdup(yytext);
                            switch (_identify(yytext)) {
                              case ID_DIRECTIVES:
-                               gperror_vwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
+                               gpmsg_vwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
                                if (has_collon) {
-                                 gperror_verror(GPE_BADCHAR, NULL, ':');
+                                 gpmsg_verror(GPE_BADCHAR, NULL, ':');
                                }
                                return IDENTIFIER;
                                break;
@@ -346,18 +346,18 @@ processor                {
                                  return LABEL;
                                }
                                else {
-                                 gperror_vwarning(GPW_MACRO_COLUMN_ONE, NULL, yytext);
+                                 gpmsg_vwarning(GPW_MACRO_COLUMN_ONE, NULL, yytext);
                                  if (has_collon) {
-                                   gperror_verror(GPE_BADCHAR, NULL, ':');
+                                   gpmsg_verror(GPE_BADCHAR, NULL, ':');
                                  }
                                  return IDENTIFIER;
                                }
                                break;
 
                              case ID_OPCODES:
-                               gperror_vwarning(GPW_OP_COLUMN_ONE, NULL, yytext);
+                               gpmsg_vwarning(GPW_OP_COLUMN_ONE, NULL, yytext);
                                if (has_collon)
-                                 gperror_verror(GPE_BADCHAR, NULL, ':');
+                                 gpmsg_verror(GPE_BADCHAR, NULL, ':');
                                return IDENTIFIER;
                                break;
 
@@ -475,7 +475,7 @@ h'-?{NUMCHAR}+'          {
                              --yyleng;
                            }
                            else {
-                             gperror_warning(GPW_MISSING_QUOTE, NULL);
+                             gpmsg_warning(GPW_MISSING_QUOTE, NULL);
                            }
                            yylval.s = GP_Strndup(yytext + 1, yyleng - 1);
                            BEGIN(INITIAL);
@@ -484,7 +484,7 @@ h'-?{NUMCHAR}+'          {
 '{STR_QCHAR}'            {
                            const char *pc = convert_escape_chars(yytext + 1, &yylval.i);
                            if (pc != &yytext[yyleng - 1]) {
-                             gperror_verror(GPE_ILLEGAL_ARGU, NULL, "Expected single character.");
+                             gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, "Expected single character.");
                            }
                            return NUMBER;
                          }
@@ -686,14 +686,14 @@ open_src(const char *name, gp_boolean isinclude)
       free(lower_case_name);
 
       if (new->f != NULL) {
-        gperror_warning(GPW_UNKNOWN, "Found lower case match for include filename.");
+        gpmsg_warning(GPW_UNKNOWN, "Found lower case match for include filename.");
       }
     }
   }
 
   if (new->f == NULL) {
     if (state.src != NULL) {
-      gperror_verror(GPE_NOENT, NULL, name);
+      gpmsg_verror(GPE_NOENT, NULL, name);
     }
     else {
       perror(name);
@@ -802,7 +802,7 @@ close_file(void)
     state.stMacroParams = sym_pop_table(state.stMacroParams);
 
     if (state.src->astack != state.astack) {
-      gperror_verror(GPE_ILLEGAL_NESTING, NULL);
+      gpmsg_verror(GPE_ILLEGAL_NESTING, NULL);
     }
 
     assert(state.stTop != NULL);
@@ -864,7 +864,7 @@ _found_eof(void)
   if (IN_WHILE_EXPANSION) {
     if (eval_maybe_evaluate(state.src->mac_head->parms)) {
       if (state.src->loop_number > WHILE_LOOP_COUNT_MAX) {
-        gperror_verror(GPE_BAD_WHILE_LOOP, NULL);
+        gpmsg_verror(GPE_BAD_WHILE_LOOP, NULL);
       }
       else {
         /* repeat the while loop */
@@ -894,7 +894,7 @@ _found_eof(void)
   }
   else {
     if (!state.found_end) {
-      gperror_error(GPE_ILLEGAL_COND, "Illegal condition: EOF encountered before END.");
+      gpmsg_error(GPE_ILLEGAL_COND, "Illegal condition: EOF encountered before END.");
     }
 
     terminate = found_end();

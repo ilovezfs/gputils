@@ -110,7 +110,7 @@ libgpasm_a_AR = $(AR) $(ARFLAGS)
 libgpasm_a_LIBADD =
 am_libgpasm_a_OBJECTS = cod.$(OBJEXT) coff.$(OBJEXT) deps.$(OBJEXT) \
 	directive.$(OBJEXT) evaluate.$(OBJEXT) gpasm.$(OBJEXT) \
-	gperror.$(OBJEXT) lst.$(OBJEXT) macro.$(OBJEXT) \
+	gpmsg.$(OBJEXT) lst.$(OBJEXT) macro.$(OBJEXT) \
 	preprocess.$(OBJEXT) processor.$(OBJEXT) special.$(OBJEXT) \
 	util.$(OBJEXT) ppscan.$(OBJEXT) scan.$(OBJEXT) parse.$(OBJEXT) \
 	ppparse.$(OBJEXT)
@@ -316,36 +316,36 @@ noinst_LIBRARIES = libgpasm.a
 AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 libgpasm_a_SOURCES = \
 	cod.c \
-	coff.c \
-	deps.c \
-	directive.c \
-	evaluate.c \
-	gpasm.c \
-	gperror.c \
-	lst.c \
-	macro.c \
-	preprocess.c \
-	processor.c \
-	special.c \
-	util.c \
 	cod.h \
+	coff.c \
 	coff.h \
+	deps.c \
 	deps.h \
+	directive.c \
 	directive.h \
+	evaluate.c \
 	evaluate.h \
-	gperror.h \
+	gpasm.c \
+	gpasm.h.in \
+	gpmsg.c \
+	gpmsg.h \
 	libgpasm.h \
+	lst.c \
 	lst.h \
+	macro.c \
 	macro.h \
+	parse.y \
+	ppparse.y \
+	ppscan.l \
+	preprocess.c \
 	preprocess.h \
+	processor.c \
 	processor.h \
 	scan.h \
-	special.h \
-	gpasm.h.in \
-	ppscan.l \
 	scan.l \
-	parse.y \
-	ppparse.y
+	special.c \
+	special.h \
+	util.c
 
 gpasm_SOURCES = main.c
 gpasm_LDADD = libgpasm.a ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
@@ -464,7 +464,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/directive.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/evaluate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpasm.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gperror.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpmsg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lst.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/macro.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@

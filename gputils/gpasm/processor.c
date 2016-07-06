@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.  */
 #include "libgputils.h"
 #include "gpasm.h"
 #include "directive.h"
-#include "gperror.h"
+#include "gpmsg.h"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -128,7 +128,7 @@ select_processor(const char *name)
   range_pair_t    *new_pair;
 
   if (state.cmd_line.processor) {
-    gperror_vwarning(GPW_CMDLINE_PROC, NULL);
+    gpmsg_vwarning(GPW_CMDLINE_PROC, NULL);
   } else {
     found = gp_find_processor(name);
 
@@ -136,7 +136,7 @@ select_processor(const char *name)
       if (state.processor == NULL) {
         /* If in extended mode: Check if processor supports extended instruction set. */
         if (state.extended_pic16e && !(found->pic16e_flags & PIC16E_FLAG_HAVE_EXTINST)) {
-          gperror_verror(GPE_NO_EXTENDED_MODE, NULL);
+          gpmsg_verror(GPE_NO_EXTENDED_MODE, NULL);
         }
 
         state.processor = found;
@@ -301,12 +301,12 @@ select_processor(const char *name)
         } /* if (!state.mpasm_compatible) */
       } /* if (state.processor == NULL) */
       else if (state.processor != found) {
-        gperror_vwarning(GPW_REDEFINING_PROC, NULL);
-        gperror_verror(GPE_EXTRA_PROC, NULL);
+        gpmsg_vwarning(GPW_REDEFINING_PROC, NULL);
+        gpmsg_verror(GPE_EXTRA_PROC, NULL);
       }
     } else {
       if (state.pass > 0) {
-        gperror_verror(GPE_UNKNOWN_PROC, NULL, name);
+        gpmsg_verror(GPE_UNKNOWN_PROC, NULL, name);
       } else {
         printf("Didn't find any processor named: %s\nHere are the supported processors:\n", name);
         gp_dump_processor_list(true, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN);

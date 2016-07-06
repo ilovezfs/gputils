@@ -38,7 +38,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpasm.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "preprocess.h"
 #include "ppparse.h"
 
@@ -163,12 +163,12 @@ NUMCHAR [0-9a-z]
                            if ((yyleng > 1) && (yytext[yyleng - 1] == '"')) {
                              --yyleng;
                            } else {
-                             gperror_vwarning(GPW_MISSING_QUOTE, NULL);
+                             gpmsg_vwarning(GPW_MISSING_QUOTE, NULL);
                            }
 
                            pc = convert_escape_chars(yytext + 1, &pplval.i);
                            if (pc != &yytext[yyleng]) {
-                             gperror_verror(GPE_ILLEGAL_ARGU, NULL, yytext);
+                             gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, yytext);
                            }
 
                            return NUMBER;
