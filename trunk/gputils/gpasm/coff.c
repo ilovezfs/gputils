@@ -23,7 +23,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpasm.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "coff.h"
 
 /*------------------------------------------------------------------------------------------------*/
@@ -140,7 +140,7 @@ _create_config_sections(void)
     }
 
     if (state.debug_info && (state.obj.debug_file == NULL)) {
-      gperror_error(GPE_UNKNOWN, ".file directive required to generate debug info");
+      gpmsg_error(GPE_UNKNOWN, ".file directive required to generate debug info");
       return;
     }
 
@@ -228,7 +228,7 @@ coff_close_file(void)
   }
 
   if (!gp_writeobj_write_coff(state.obj.object, (state.num.errors + gp_num_errors))) {
-    gperror_error(GPE_UNKNOWN, "system error while writing object file");
+    gpmsg_error(GPE_UNKNOWN, "system error while writing object file");
     exit(1);
   }
 
@@ -268,11 +268,11 @@ coff_new_section(const char *Name, unsigned int Address, unsigned int Flags)
       /* Overlayed sections can be duplicated. This allows multiple code
          sections in the same source file to share the same data memory. */
       if ((Flags != found->flags) || (Address != found->address)) {
-        gperror_verror(GPE_CONTIG_SECTION, NULL, Name);
+        gpmsg_verror(GPE_CONTIG_SECTION, NULL, Name);
         return;
       }
     } else {
-      gperror_verror(GPE_CONTIG_SECTION, NULL, Name);
+      gpmsg_verror(GPE_CONTIG_SECTION, NULL, Name);
       return;
     }
   }
@@ -349,7 +349,7 @@ coff_linenum(unsigned int Emitted)
 
   if (state.debug_info && (state.obj.debug_file == NULL)) {
     if (show_bad_debug) {
-      gperror_error(GPE_UNKNOWN, ".file directive required to generate debug info");
+      gpmsg_error(GPE_UNKNOWN, ".file directive required to generate debug info");
       show_bad_debug = false;
     }
     return;
@@ -432,14 +432,14 @@ coff_add_sym(const char *Name, gp_symvalue_t Value, enum gpasmValTypes Type)
     if ((new->type != Type) || (new->class != class) || (new->section_number != section_number)) {
       snprintf(message, sizeof(message),
                "Duplicate label or redefining symbol that cannot be redefined. (%s)", Name);
-      gperror_error(GPE_UNKNOWN, message);
+      gpmsg_error(GPE_UNKNOWN, message);
     }
   }
 
   if ((new != NULL) && (Type != VAL_EXTERN) && (Type != VAL_DEBUG))  {
     snprintf(message, sizeof(message),
              "Duplicate label or redefining symbol that cannot be redefined. (%s)", Name);
-    gperror_error(GPE_DUPLAB, message);
+    gpmsg_error(GPE_DUPLAB, message);
   }
   else {
     new = gp_coffgen_add_symbol(state.obj.object, Name);

@@ -22,8 +22,8 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __GPERROR_H__
-#define __GPERROR_H__
+#ifndef __GPMSG_H__
+#define __GPMSG_H__
 
 /* Error codes
  *
@@ -101,6 +101,12 @@ enum GPE_codes {
   GPE_NO_ACCRAM        = 1506   /* A register is not located on the Access RAM. */
 };
 
+#define GMSG_ERR_LEVEL0_MIN     GPE_USER
+#define GMSG_ERR_LEVEL0_MAX     GPE_UNKNOWN
+
+#define GMSG_ERR_LEVEL1_MIN     GPE_IDLOCS_P16E
+#define GMSG_ERR_LEVEL1_MAX     GPE_NO_ACCRAM
+
 /* Warning codes
  *
  * The warning codes gpasm defines here are identical to MPASM's
@@ -140,6 +146,12 @@ enum GPW_codes {
   GPW_USER             = 1299
 };
 
+#define GMSG_WARN_LEVEL0_MIN    GPW_NOT_DEFINED
+#define GMSG_WARN_LEVEL0_MAX    GPW_UNKNOWN
+
+#define GMSG_WARN_LEVEL1_MIN    GPW_BANK_PAGE_SEL_AFTER_SKIP
+#define GMSG_WARN_LEVEL1_MAX    GPW_USER
+
 /* Message codes
  *
  * The message codes gpasm defines here are identical to MPASM's
@@ -169,23 +181,30 @@ enum GPM_codes {
   GPM_NOB              = 1302
 };
 
-extern void gperror_init(void);
-extern void gperror_close(void);
+#define GMSG_MSG_LEVEL0_MIN     GPM_USER
+#define GMSG_MSG_LEVEL0_MAX     GPM_UNKNOWN
 
-extern void gperror_add_code(int Code);
+#define GMSG_MSG_LEVEL1_MIN     GPM_ACC_DEF
+#define GMSG_MSG_LEVEL1_MAX     GPM_NOB
 
-extern void gperror_error(int Code, const char *Message);
-extern void gperror_warning(int Code, const char *Message);
-extern void gperror_message(int Code, const char *Message);
+extern void gpmsg_init(void);
+extern void gpmsg_close(void);
 
-extern void gperror_verror(int Code, const char *Message, ...);
-extern void gperror_vwarning(int Code, const char *Message, ...);
-extern void gperror_vmessage(int Code, const char *Message, ...);
+extern void gpmsg_add_code(int Code);
+extern void gpmsg_add_code_range(int Code0, int Code1);
+
+extern void gpmsg_error(int Code, const char *Message);
+extern void gpmsg_warning(int Code, const char *Message);
+extern void gpmsg_message(int Code, const char *Message);
+
+extern void gpmsg_verror(int Code, const char *Message, ...);
+extern void gpmsg_vwarning(int Code, const char *Message, ...);
+extern void gpmsg_vmessage(int Code, const char *Message, ...);
 
 /* Alternate message functions. Only the prototypes are provided, the user
    must link their own function into gpasm. */
-extern void gperror_user_error(int Code, const char *Message);
-extern void gperror_user_warning(int Code, const char *Message);
-extern void gperror_user_message(int Code, const char *Message);
+extern void gpmsg_user_error(int Code, const char *Message);
+extern void gpmsg_user_warning(int Code, const char *Message);
+extern void gpmsg_user_message(int Code, const char *Message);
 
-#endif
+#endif /* __GPMSG_H__ */

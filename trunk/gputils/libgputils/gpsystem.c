@@ -201,6 +201,57 @@ gp_putb32(uint8_t *addr, uint32_t data)
 
 /*------------------------------------------------------------------------------------------------*/
 
+gp_boolean
+gp_num_range_is_overlapped(int Area_start, int Area_end, int Ref_start, int Ref_end)
+  {
+  int min;
+  int max;
+  int w0;
+  int w1;
+  int width0;
+  int width1;
+
+  if (Area_start > Area_end) {
+    /* Swap these values. */
+    w0         = Area_start;
+    Area_start = Area_end;
+    Area_end   = w0;
+  }
+
+  if (Ref_start > Ref_end) {
+    /* Swap these values. */
+    w0        = Ref_start;
+    Ref_start = Ref_end;
+    Ref_end   = w0;
+  }
+
+  min = (Area_start < Ref_start) ? Area_start : Ref_start;
+  max = (Area_end > Ref_end) ? Area_end : Ref_end;
+
+  /*
+     min  Area                         max
+      |    |                            |
+      V    V                  Ref       |
+      +----------+             |        |
+           w0                  V        V
+                      +-----------------+
+                              w1
+
+      +---------------------------------+
+                    width0
+  */
+
+  w0 = Area_end - Area_start + 1;
+  w1 = Ref_end - Ref_start + 1;
+
+  width0 = max - min + 1;
+  width1 = w0 + w1;
+
+  return ((width0 < width1) ? true : false);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_date_string(char *buffer, size_t sizeof_buffer)
 {

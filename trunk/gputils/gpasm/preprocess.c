@@ -23,7 +23,7 @@ Boston, MA 02111-1307, USA.  */
 #include "libgputils.h"
 #include "gpasm.h"
 #include "evaluate.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "directive.h"
 #include "gptypes.h"
 #include "gpsymbol.h"
@@ -180,7 +180,7 @@ _substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, i
       DBG_printf("@@@substituting parameter %*.*s with %s\n", mlen, mlen, &buf[begin], argp->str);
 
       if ((*n + len - mlen) >= max_size) {
-        gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+        gpmsg_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return false;
       }
       else {
@@ -307,7 +307,7 @@ _substitute_define(char *buf, int begin, int *end, int *n, int max_size, int lev
 
               /* substitute define parameters */
               if ((*n + len - mlen) >= max_size) {
-                gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+                gpmsg_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
                 return false;
               }
               else {
@@ -355,7 +355,7 @@ _substitute_define(char *buf, int begin, int *end, int *n, int max_size, int lev
 
       /* substitute define */
       if ((*n + len - mlen) >= max_size) {
-        gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+        gpmsg_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return false;
       }
       else {
@@ -421,7 +421,7 @@ _preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_fun
   int        prev_n;
 
   if (level >= PREPROC_MAX_DEPTH) {
-    gperror_verror(GPE_STRCPLX, NULL);
+    gpmsg_verror(GPE_STRCPLX, NULL);
     return false;
   }
 
@@ -557,7 +557,7 @@ _preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
       res_len = snprintf(res_buf, sizeof(res_buf), "%d", ppresult);
 
       if ((*n + res_len - (ppcol_end - ppcol_begin)) >= max_size) {
-        gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+        gpmsg_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return false;
       }
       else {
@@ -724,7 +724,7 @@ _substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, in
     int len = strlen(sub);
 
     if ((*n + len - mlen) >= max_size) {
-      gperror_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
+      gpmsg_verror(GPE_INTERNAL, NULL, "Flex buffer too small.");
       return false;
     }
     else {

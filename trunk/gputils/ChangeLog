@@ -1,3 +1,19 @@
+2016-07-06  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/Makefile.am, gpasm/Makefile.in, gpasm/coff.c,
+    gpasm/directive.c, gpasm/evaluate.c, gpasm/gpasm.c,
+    gpasm/gpasm.h.in, gpasm/gperror.c, gpasm/gperror.h,
+    gpasm/gpmsg.c, gpasm/gpmsg.h, gpasm/macro.c,
+    gpasm/parse.y, gpasm/ppparse.y, gpasm/ppscan.l,
+    gpasm/preprocess.c, gpasm/processor.c, gpasm/scan.l,
+    gpasm/special.c, gpasm/util.c:
+    Renamed the gperror module to gpmsg.
+
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpmsg.c,
+    gpasm/gpmsg.h, libgputils/gpsystem.c, libgputils/gpsystem.h:
+    The errorlevel directive accept number ranges.
+    E.g. +303-310 or -303-310
+    (This can not be used in "mpasm compatible" mode.)
+
 2016-07-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gpasm/cod.h, gpasm/coff.c, gpasm/coff.h,
     gpasm/deps.c, gpasm/directive.c, gpasm/directive.h,

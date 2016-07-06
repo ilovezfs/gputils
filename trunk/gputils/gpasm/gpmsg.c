@@ -26,39 +26,64 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpasm.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "lst.h"
 
-typedef struct error_list {
-  int                value;
-  struct error_list *next;
-} error_list_t;
+typedef struct message_code {
+  enum {
+    ERR_CODE_NUM,
+    ERR_CODE_RANGE
+  }                    type;
+  int                  value0;
+  int                  value1;
+  struct message_code *next;
+} message_code_t;
 
 typedef enum {
-  ET_ERROR,
-  ET_WARNING,
-  ET_MESSAGE
+  MSG_TYPE_ERROR,
+  MSG_TYPE_WARNING,
+  MSG_TYPE_MESSAGE
 } err_type_t;
 
-static error_list_t *errorcodes_list      = NULL;
-static error_list_t *errorcodes_list_last = NULL;
+static message_code_t *message_codes_list      = NULL;
+static message_code_t *message_codes_list_last = NULL;
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
 _check_code(int Code)
 {
-  const error_list_t *ec;
-  gp_boolean          print;
+  const message_code_t *ec;
+  int                   v0;
+  int                   v1;
+  gp_boolean            print;
 
   print = true;
-  ec    = errorcodes_list;
+  ec    = message_codes_list;
   while (ec != NULL) {
-    if (ec->value == Code) {
-      print = true;
+    v0 = ec->value0;
+
+    if (ec->type == ERR_CODE_NUM) {
+      if (v0 == Code) {
+        print = true;
+      }
+      else if (v0 == (-Code)) {
+        print = false;
+      }
     }
-    else if (ec->value == -(Code)) {
-      print = false;
+    else {
+      v1 = ec->value1;
+
+      if (v0 >= 0) {
+        if ((v0 <= Code) && (v1 >= Code)) {
+          print = true;
+        }
+      }
+      else {
+        if ((v0 <= (-Code)) && (v1 >= (-Code))) {
+          print = false;
+        }
+      }
     }
 
     ec = ec->next;
@@ -70,12 +95,12 @@ _check_code(int Code)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_free_errorcodes(void)
+_free_message_codes(void)
 {
-  error_list_t *ec;
-  error_list_t *next;
+  message_code_t *ec;
+  message_code_t *next;
 
-  ec = errorcodes_list;
+  ec = message_codes_list;
   while (ec != NULL) {
     next = ec->next;
     free(ec);
@@ -86,7 +111,7 @@ _free_errorcodes(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_geterror(int Code)
+_get_error(int Code)
 {
   switch(Code) {
     case GPE_USER:
@@ -215,7 +240,7 @@ _geterror(int Code)
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_getwarning(int Code)
+_get_warning(int Code)
 {
   switch(Code) {
     case GPW_NOT_DEFINED:
@@ -281,7 +306,7 @@ _getwarning(int Code)
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_getmessage(int Code)
+_get_message(int Code)
 {
   switch(Code) {
     case GPM_USER:
@@ -341,17 +366,17 @@ _verr(err_type_t Err_type, int Code, const char *Message, va_list Ap)
   }
 
   switch (Err_type) {
-    case ET_ERROR:
+    case MSG_TYPE_ERROR:
       type = "Error";
       gap  = "  ";
       break;
 
-    case ET_WARNING:
+    case MSG_TYPE_WARNING:
       type = "Warning";
       gap  = "";
       break;
 
-    case ET_MESSAGE:
+    case MSG_TYPE_MESSAGE:
     default:
       type = "Message";
       gap  = "";
@@ -403,17 +428,17 @@ _err(err_type_t Err_type, int Code, const char *Message)
   }
 
   switch (Err_type) {
-    case ET_ERROR:
+    case MSG_TYPE_ERROR:
       type = "Error";
       gap  = "  ";
       break;
 
-    case ET_WARNING:
+    case MSG_TYPE_WARNING:
       type = "Warning";
       gap  = "";
       break;
 
-    case ET_MESSAGE:
+    case MSG_TYPE_MESSAGE:
     default:
       type = "Message";
       gap  = "";
@@ -444,7 +469,7 @@ _err(err_type_t Err_type, int Code, const char *Message)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_init(void)
+gpmsg_init(void)
 {
   if (state.err_file != OUT_NAMED) {
     snprintf(state.err_file_name, sizeof(state.err_file_name), "%s.err", state.base_file_name);
@@ -464,66 +489,113 @@ gperror_init(void)
     state.err.enabled = true;
   }
 
-  errorcodes_list      = NULL;
-  errorcodes_list_last = NULL;
+  message_codes_list      = NULL;
+  message_codes_list_last = NULL;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_close(void)
+gpmsg_close(void)
 {
   if (state.err.enabled) {
     fclose(state.err.f);
   }
 
-  _free_errorcodes();
-  errorcodes_list      = NULL;
-  errorcodes_list_last = NULL;
+  _free_message_codes();
+  message_codes_list      = NULL;
+  message_codes_list_last = NULL;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_add_code(int Code)
+gpmsg_add_code(int Code)
 {
-  error_list_t *new;
+  message_code_t *new;
 
-  if ((Code <= -100) && (Code >= -199)) {
-    gperror_vwarning(GPW_DISABLE_ERROR, NULL);
+  if ((Code <= -(GMSG_ERR_LEVEL0_MIN)) && (Code >= -(GMSG_ERR_LEVEL0_MAX))) {
+    gpmsg_vwarning(GPW_DISABLE_ERROR, NULL);
+    return;
+  }
+  else if ((Code <= -(GMSG_ERR_LEVEL1_MIN)) && (Code >= -(GMSG_ERR_LEVEL1_MAX))) {
+    gpmsg_vwarning(GPW_DISABLE_ERROR, NULL);
     return;
   }
 
-  new = (error_list_t *)GP_Calloc(1, sizeof(*new));
-  new->value = Code;
+  new = (message_code_t *)GP_Calloc(1, sizeof(message_code_t));
+  new->type   = ERR_CODE_NUM;
+  new->value0 = Code;
 
-  if (errorcodes_list == NULL) {
+  if (message_codes_list == NULL) {
     /* The list is empty. */
-    errorcodes_list = new;
+    message_codes_list = new;
   }
   else {
     /* Append the new node to the end of the list. */
-    errorcodes_list_last->next = new;
+    message_codes_list_last->next = new;
   }
 
-  errorcodes_list_last = new;
+  message_codes_list_last = new;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* This can not be used in "mpasm compatible" mode! */
+
+void
+gpmsg_add_code_range(int Code0, int Code1)
+{
+  message_code_t *new;
+  int             t;
+
+  if (Code0 > Code1) {
+    t     = Code0;
+    Code0 = Code1;
+    Code1 = t;
+  }
+
+  if (gp_num_range_is_overlapped(Code0, Code1, -(GMSG_ERR_LEVEL0_MIN), -(GMSG_ERR_LEVEL0_MAX))) {
+    gpmsg_vwarning(GPW_DISABLE_ERROR, NULL);
+    return;
+  }
+  else if (gp_num_range_is_overlapped(Code0, Code1, -(GMSG_ERR_LEVEL1_MIN), -(GMSG_ERR_LEVEL1_MAX))) {
+    gpmsg_vwarning(GPW_DISABLE_ERROR, NULL);
+    return;
+  }
+
+  new = (message_code_t *)GP_Calloc(1, sizeof(message_code_t));
+  new->type   = ERR_CODE_RANGE;
+  new->value0 = Code0;
+  new->value1 = Code1;
+
+  if (message_codes_list == NULL) {
+    /* The list is empty. */
+    message_codes_list = new;
+  }
+  else {
+    /* Append the new node to the end of the list. */
+    message_codes_list_last->next = new;
+  }
+
+  message_codes_list_last = new;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_error(int Code, const char *Message)
+gpmsg_error(int Code, const char *Message)
 {
   if (state.pass != 2) {
     return;
   }
 
   if (Message == NULL) {
-    Message = _geterror(Code);
+    Message = _get_error(Code);
   }
 
   /* standard output */
-  _err(ET_ERROR, Code, Message);
+  _err(MSG_TYPE_ERROR, Code, Message);
 
   /* list file output */
   lst_line("Error[%03d]  : %s", Code, Message);
@@ -534,7 +606,7 @@ gperror_error(int Code, const char *Message)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_verror(int Code, const char *Message, ...)
+gpmsg_verror(int Code, const char *Message, ...)
 {
   va_list     ap;
   const char *msg;
@@ -544,16 +616,16 @@ gperror_verror(int Code, const char *Message, ...)
     return;
   }
 
-  msg = _geterror(Code);
+  msg = _get_error(Code);
 
-  if ((Message != NULL) && (*Message != '\0')) {
+  if ((Message != NULL) && (Message[0] != '\0')) {
     snprintf(buf, sizeof(buf), "%s %s", msg, Message);
     msg = buf;
   }
 
   /* standard output */
   va_start(ap, Message);
-  _verr(ET_ERROR, Code, msg, ap);
+  _verr(MSG_TYPE_ERROR, Code, msg, ap);
   va_end(ap);
 
   /* list file output */
@@ -567,7 +639,7 @@ gperror_verror(int Code, const char *Message, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_warning(int Code, const char *Message)
+gpmsg_warning(int Code, const char *Message)
 {
   if (state.pass != 2) {
     return;
@@ -575,11 +647,11 @@ gperror_warning(int Code, const char *Message)
 
   if ((state.error_level <= 1) && _check_code(Code)) {
     if (Message == NULL) {
-      Message = _getwarning(Code);
+      Message = _get_warning(Code);
     }
 
     /* standard output */
-    _err(ET_WARNING, Code, Message);
+    _err(MSG_TYPE_WARNING, Code, Message);
 
     /* list file output */
     lst_line("Warning[%03d]: %s", Code, Message);
@@ -593,7 +665,7 @@ gperror_warning(int Code, const char *Message)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_vwarning(int Code, const char *Message, ...)
+gpmsg_vwarning(int Code, const char *Message, ...)
 {
   va_list     ap;
   const char *msg;
@@ -604,16 +676,16 @@ gperror_vwarning(int Code, const char *Message, ...)
   }
 
   if ((state.error_level <= 1) && _check_code(Code)) {
-    msg = _getwarning(Code);
+    msg = _get_warning(Code);
 
-    if ((Message != NULL) && (*Message != '\0')) {
+    if ((Message != NULL) && (Message[0] != '\0')) {
       snprintf(buf, sizeof(buf), "%s %s", msg, Message);
       msg = buf;
     }
 
     /* standard output */
     va_start(ap, Message);
-    _verr(ET_WARNING, Code, msg, ap);
+    _verr(MSG_TYPE_WARNING, Code, msg, ap);
     va_end(ap);
 
     va_start(ap, Message);
@@ -629,7 +701,7 @@ gperror_vwarning(int Code, const char *Message, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_message(int Code, const char *Message)
+gpmsg_message(int Code, const char *Message)
 {
   if (state.pass != 2) {
     return;
@@ -637,11 +709,11 @@ gperror_message(int Code, const char *Message)
 
   if ((state.error_level == 0) && _check_code(Code)) {
     if (Message == NULL) {
-      Message = _getmessage(Code);
+      Message = _get_message(Code);
     }
 
     /* standard output */
-    _err(ET_MESSAGE, Code, Message);
+    _err(MSG_TYPE_MESSAGE, Code, Message);
 
     /* list file output */
     lst_line("Message[%03d]: %s", Code, Message);
@@ -655,7 +727,7 @@ gperror_message(int Code, const char *Message)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gperror_vmessage(int Code, const char *Message, ...)
+gpmsg_vmessage(int Code, const char *Message, ...)
 {
   va_list     ap;
   const char *msg;
@@ -666,16 +738,16 @@ gperror_vmessage(int Code, const char *Message, ...)
   }
 
   if ((state.error_level == 0) && _check_code(Code)) {
-    msg = _getmessage(Code);
+    msg = _get_message(Code);
 
-    if ((Message != NULL) && (*Message != '\0')) {
+    if ((Message != NULL) && (Message[0] != '\0')) {
       snprintf(buf, sizeof(buf), "%s %s", msg, Message);
       msg = buf;
     }
 
     /* standard output */
     va_start(ap, Message);
-    _verr(ET_MESSAGE, Code, msg, ap);
+    _verr(MSG_TYPE_MESSAGE, Code, msg, ap);
     va_end(ap);
 
     /* list file output */

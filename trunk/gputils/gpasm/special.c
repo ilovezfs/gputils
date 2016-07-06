@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpasm.h"
-#include "gperror.h"
+#include "gpmsg.h"
 #include "special.h"
 #include "directive.h"
 #include "evaluate.h"
@@ -54,7 +54,7 @@ _do_addcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
   (void)arity;
 
-  gperror_vmessage(GPM_SPECIAL_MNEMONIC, NULL);
+  gpmsg_vmessage(GPM_SPECIAL_MNEMONIC, NULL);
 
   do_insn("btfsc", _make_constant_list(3, 0));
   do_insn("incf", parms);
@@ -181,7 +181,7 @@ _do_clrc(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bcf", _make_constant_list(3, 0));
@@ -197,7 +197,7 @@ _do_clrdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bcf", _make_constant_list(3, 1));
@@ -213,7 +213,7 @@ _do_clrz(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bcf", _make_constant_list(3, 2));
@@ -288,7 +288,7 @@ _do_setc(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bsf", _make_constant_list(3, 0));
@@ -304,7 +304,7 @@ _do_setdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bsf", _make_constant_list(3, 1));
@@ -320,7 +320,7 @@ _do_setz(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bsf", _make_constant_list(3, 2));
@@ -336,7 +336,7 @@ _do_skpc(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfss", _make_constant_list(3, 0));
@@ -352,7 +352,7 @@ _do_skpdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfss", _make_constant_list(3, 1));
@@ -368,7 +368,7 @@ _do_skpz(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfss", _make_constant_list(3, 2));
@@ -384,7 +384,7 @@ _do_skpnc(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfsc", _make_constant_list(3, 0));
@@ -400,7 +400,7 @@ _do_skpndc(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfsc", _make_constant_list(3, 1));
@@ -416,7 +416,7 @@ _do_skpnz(gpasmVal r, const char *name, int arity, pnode_t *parms)
   (void)name;
 
   if (arity != 0) {
-    gperror_verror(GPE_TOO_MANY_ARGU, NULL);
+    gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfsc", _make_constant_list(3, 2));
@@ -479,7 +479,7 @@ _do_mode(gpasmVal r, const char *name, int arity, pnode_t *parms)
     val = PnListHead(parms);
 
     if (PnIsConstant(val) && (PnConstant(val) > 0x1f)) {
-      gperror_vwarning(GPW_RANGE, NULL);
+      gpmsg_vwarning(GPW_RANGE, NULL);
       PnConstant(val) &= 0x1f;
     }
 
