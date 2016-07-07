@@ -633,10 +633,10 @@ coff_add_ident_sym(const char *String)
 char *
 coff_local_name(const char *Name)
 {
-  symbol_t    *local;
-  gp_symbol_t *symbol;
-  int          count;
-  char         buffer[BUFSIZ];
+  symbol_t     *local;
+  gp_symbol_t  *symbol;
+  unsigned int  count;
+  char          buffer[BUFSIZ];
 
   if (!state.obj.enabled) {
     return NULL;
@@ -647,7 +647,7 @@ coff_local_name(const char *Name)
   if (local == NULL) {
     /* It isn't in the stGlobal so it must be in stTop. It's local. */
     while (true) {
-      snprintf(buffer, sizeof(buffer), "_%d%s", count, Name);
+      snprintf(buffer, sizeof(buffer), "_%u%s", count, Name);
       symbol = gp_coffgen_find_symbol(state.obj.object, buffer);
 
       if (symbol == NULL) {

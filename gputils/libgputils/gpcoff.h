@@ -284,6 +284,12 @@ struct __attribute__ ((packed)) syment {
 #define DT_ROMPTR               4
 #define DT_FARROMPTR            5
 
+#define T_SHIFT_v1              4
+#define T_MASK_v1               ((UINT32_MAX << T_SHIFT_v1) ^ UINT32_MAX)
+
+#define T_SHIFT_v2              5
+#define T_MASK_v2               ((UINT32_MAX << T_SHIFT_v2) ^ UINT32_MAX)
+
 /* Storage classes */
 #define C_NULL                  0   /* null */
 #define C_AUTO                  1   /* automatic variable */

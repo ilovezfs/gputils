@@ -30,9 +30,13 @@ typedef struct gp_coffsymbol {
   gp_object_t *file;     /* the object file the symbol is defined in */
 } gp_coffsymbol_t;
 
+    /*................................*/
+
 extern gp_object_t *gp_coffgen_new_object(const char *File_name);
 extern void gp_coffgen_transfer_object_data(gp_object_t *Receiver, gp_object_t *Sender);
 extern gp_boolean gp_coffgen_update_all_object_id(gp_object_t *Object);
+
+    /*................................*/
 
 extern gp_section_t *gp_coffgen_find_section(gp_object_t *Object, gp_section_t *Start,
                                              const char *Name);
@@ -56,6 +60,8 @@ extern gp_boolean gp_coffgen_del_section(gp_object_t *Object, gp_section_t *Sect
 extern gp_section_t **gp_coffgen_make_section_array(gp_object_t *Object, unsigned int *Num_sections,
                                                     unsigned int Page_addr, uint32_t Flags);
 
+    /*................................*/
+
 extern gp_symbol_t *gp_coffgen_find_symbol(gp_object_t *Object, const char *Name);
 extern gp_symbol_t *gp_coffgen_find_section_symbol(gp_object_t *Object, const char *Name);
 
@@ -68,12 +74,19 @@ extern gp_aux_t *gp_coffgen_add_aux(gp_object_t *Object, gp_symbol_t *Symbol);
 extern gp_aux_t *gp_coffgen_make_block_aux(gp_symbol_t *Symbol, unsigned int Num_auxsyms);
 extern gp_symbol_t *gp_coffgen_move_reserve_symbol(gp_object_t *Object, gp_symbol_t *Symbol);
 extern gp_boolean gp_coffgen_del_symbol(gp_object_t *Object, gp_symbol_t *Symbol);
+extern const char *gp_coffgen_symbol_type_to_str(uint8_t Type);
+extern const char *gp_coffgen_symbol_derived_type_to_str(uint32_t Type);
+extern const char *gp_coffgen_symbol_class_to_str(uint8_t Class);
+
+    /*................................*/
 
 extern gp_reloc_t *gp_coffgen_make_block_reloc(gp_section_t *Section, unsigned int Num_relocations);
 extern gp_reloc_t *gp_coffgen_add_reloc(gp_section_t *Section);
 extern void gp_coffgen_check_relocations(const gp_object_t *Object, gp_boolean Enable_cinit_warns);
 extern gp_boolean gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation);
 extern const char *gp_coffgen_reloc_type_to_str(uint16_t Type);
+
+    /*................................*/
 
 extern gp_linenum_t *gp_coffgen_make_block_linenum(gp_section_t *Section, unsigned int Num_linenums);
 extern gp_linenum_t *gp_coffgen_add_linenum(gp_section_t *Section);
@@ -88,6 +101,8 @@ extern void gp_coffgen_make_linenum_array(gp_object_t *Object);
 extern gp_linenum_t *gp_coffgen_find_linenum(const gp_section_t *Section, const gp_symbol_t *Symbol,
                                              unsigned int Line_number);
 
+
+    /*................................*/
 
 /* gp_coffgen_symbol_has_reloc() "Type" parameter */
 #define COFF_SYM_RELOC_ALL          0

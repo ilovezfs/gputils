@@ -2166,30 +2166,34 @@ static gpasmVal
 _do_direct(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   pnode_t    *p;
-  int         value;
-  uint8_t     direct_command = 0;
-  const char *direct_string  = NULL;
+  int         val;
+  uint8_t     direct_command;
+  const char *direct_string;
 
   state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
+    return Value;
   }
-  else if (eval_enforce_arity(Arity, 2)) {
+
+  if (eval_enforce_arity(Arity, 2)) {
+    direct_command = 0;
     p = PnListHead(Parms);
     coerce_str1(p);
-    value = eval_maybe_evaluate(p);
+    val = eval_maybe_evaluate(p);
 
-    if (value < 0) {
-      gpmsg_verror(GPE_RANGE, "%i (%#x) < 0", value, value);
+    if (val < 0) {
+      gpmsg_verror(GPE_RANGE, "%i (%#x) < 0", val, val);
     }
-    else if (value > WHILE_LOOP_COUNT_MAX) {
-      gpmsg_verror(GPE_RANGE, "%i (%#x) > %u", value, value, WHILE_LOOP_COUNT_MAX);
+    else if (val > WHILE_LOOP_COUNT_MAX) {
+      gpmsg_verror(GPE_RANGE, "%i (%#x) > %u", val, val, WHILE_LOOP_COUNT_MAX);
     }
     else {
-      direct_command = value;
+      direct_command = val;
     }
 
+    direct_string = NULL;
     p = PnListHead(PnListTail(Parms));
     if (PnIsString(p)) {
       if (strlen(PnString(p)) < 255) {

@@ -65,7 +65,7 @@ _show_usage(void)
   printf("  -n, --no-names          Suppress filenames.\n");
   printf("  -s, --section           Section data.\n");
   printf("      --strict-options    If this is set, then an option may not be parameter\n"
-         "                          of an another option. For example: -x --symbol\n");
+         "                            of an another option. For example: -x --symbol\n");
   printf("  -t  --symbol            Symbol table.\n");
   printf("  -v, --version           Show version.\n");
   printf("  -x FILE, --export FILE  Export symbols to include file.\n");
@@ -164,8 +164,8 @@ _print_relocation_list(proc_class_t class, const gp_reloc_t *relocation)
 {
   char buffer[32];
 
-  printf("Relocations Table\n");
-  printf("Address    Offset     Type                      Symbol\n");
+  printf("Relocations Table\n"
+         "Address    Offset     Type                      Symbol\n");
 
   while (relocation != NULL) {
     printf("%#-10x %#-10x %-25s %-s\n",
@@ -187,8 +187,8 @@ _print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber)
 {
   const char *filename;
 
-  printf("Line Number Table\n");
-  printf("Line     Address  Symbol\n");
+  printf("Line Number Table\n"
+         "Line     Address  Symbol\n");
 
   while (linenumber != NULL) {
     if (state.suppress_names) {
@@ -214,13 +214,15 @@ _print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber)
 static void
 _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *section)
 {
-  char     buffer[BUFSIZ];
-  int      address;
-  int      num_words = 1;
-  uint16_t word;
-  uint8_t  byte;
+  char         buffer[BUFSIZ];
+  int          address;
+  int          num_words;
+  unsigned int bsr_boundary;
+  uint16_t     word;
+  uint8_t      byte;
 
-  address = section->address;
+  address      = section->address;
+  bsr_boundary = gp_processor_bsr_boundary(processor);
 
   buffer[0] = '\0';
 
@@ -231,22 +233,21 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
         break;
       }
 
-      num_words = gp_disassemble(section->data, address, class,
-                                 gp_processor_bsr_boundary(processor), 0,
+      num_words = gp_disassemble(section->data, address, class, bsr_boundary, 0,
                                  GPDIS_SHOW_ALL_BRANCH, buffer, sizeof(buffer), 0);
       printf("%06x:  %04x  %s\n", gp_processor_byte_to_org(class, address), word, buffer);
 
       if (num_words != 1) {
-        class->i_memory_get(section->data, address + 2, &word, NULL, NULL);
-        printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address + 2), word);
+        class->i_memory_get(section->data, address + WORD_SIZE, &word, NULL, NULL);
+        printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address + WORD_SIZE), word);
       }
 
-      address += 2 * num_words;
+      address += num_words * WORD_SIZE;
     }
     else if ((section->flags & STYP_DATA_ROM) || (class == PROC_CLASS_EEPROM16)) {
       if (class->i_memory_get(section->data, address, &word, NULL, NULL)) {
         printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address), word);
-        address += 2;
+        address += WORD_SIZE;
       }
       else {
         if (b_memory_get(section->data, address, &byte, NULL, NULL)) {
@@ -357,105 +358,36 @@ _print_sec_list(const gp_object_t *object)
 static void
 _coff_type(unsigned int type, char *buffer, size_t sizeof_buffer)
 {
+  const char *str;
+
   switch (type) {
-  case T_NULL:
-    /* null */
-    snprintf(buffer, sizeof_buffer, "NULL");
-    break;
+    case T_NULL:   str = "NULL";                break; /* null */
+    case T_VOID:   str = "void";                break; /* void */
+    case T_CHAR:   str = "char";                break; /* character */
+    case T_SHORT:  str = "short";               break; /* short integer */
+    case T_INT:    str = "int";                 break; /* integer */
+    case T_LONG:   str = "long int";            break; /* long integer */
+    case T_FLOAT:  str = "float";               break; /* floating point */
+    case T_DOUBLE: str = "double";              break; /* double length floating point */
+    case T_STRUCT: str = "struct";              break; /* structure */
+    case T_UNION:  str = "union";               break; /* union */
+    case T_ENUM:   str = "enum";                break; /* enumeration */
+    case T_MOE:    str = "enum";                break; /* member of enumeration */
+    case T_UCHAR:  str = "unsigned char";       break; /* unsigned character */
+    case T_USHORT: str = "unsigned short";      break; /* unsigned short */
+    case T_UINT:   str = "unsigned int";        break; /* unsigned integer */
+    case T_ULONG:  str = "unsigned long";       break; /* unsigned long */
+    case T_LNGDBL: str = "long double";         break; /* long double floating point */
+    case T_SLONG:  str = "short long";          break; /* short long */
+    case T_USLONG: str = "unsigned short long"; break; /* unsigned short long */
+    default:       str = NULL;                  break;
+  }
 
-  case T_VOID:
-    /* void */
-    snprintf(buffer, sizeof_buffer, "void");
-    break;
-
-  case T_CHAR:
-    /* character */
-    snprintf(buffer, sizeof_buffer, "char");
-    break;
-
-  case T_SHORT:
-    /* short integer */
-    snprintf(buffer, sizeof_buffer, "short");
-    break;
-
-  case T_INT:
-    /* integer */
-    snprintf(buffer, sizeof_buffer, "int");
-    break;
-
-  case T_LONG:
-    /* long integer */
-    snprintf(buffer, sizeof_buffer, "long int");
-    break;
-
-  case T_FLOAT:
-    /* floating point */
-    snprintf(buffer, sizeof_buffer, "float");
-    break;
-
-  case T_DOUBLE:
-    /* double length floating point */
-    snprintf(buffer, sizeof_buffer, "double");
-    break;
-
-  case T_STRUCT:
-    /* structure */
-    snprintf(buffer, sizeof_buffer, "struct");
-    break;
-
-  case T_UNION:
-    /* union */
-    snprintf(buffer, sizeof_buffer, "union");
-    break;
-
-  case T_ENUM:
-    /* enumeration */
-    snprintf(buffer, sizeof_buffer, "enum");
-    break;
-
-  case T_MOE:
-    /* member of enumeration */
-    snprintf(buffer, sizeof_buffer, "enum");
-    break;
-
-  case T_UCHAR:
-    /* unsigned character */
-    snprintf(buffer, sizeof_buffer, "unsigned char");
-    break;
-
-  case T_USHORT:
-    /* unsigned short */
-    snprintf(buffer, sizeof_buffer, "unsigned short");
-    break;
-
-  case T_UINT:
-    /* unsigned integer */
-    snprintf(buffer, sizeof_buffer, "unsigned int");
-    break;
-
-  case T_ULONG:
-    /* unsigned long */
-    snprintf(buffer, sizeof_buffer, "unsigned long");
-    break;
-
-  case T_LNGDBL:
-    /* long double floating point */
-    snprintf(buffer, sizeof_buffer, "long double");
-    break;
-
-  case T_SLONG:
-    /* short long */
-    snprintf(buffer, sizeof_buffer, "short long");
-    break;
-
-  case T_USLONG:
-    /* unsigned short long */
-    snprintf(buffer, sizeof_buffer, "unsigned short long");
-    break;
-
-  default:
-    snprintf(buffer, sizeof_buffer, "unknown(%d)", type);
-    break;
+  if (str != NULL) {
+    snprintf(buffer, sizeof_buffer, str);
+  }
+  else {
+    snprintf(buffer, sizeof_buffer, "unknown(%u)", type);
   }
 }
 
@@ -464,30 +396,11 @@ _coff_type(unsigned int type, char *buffer, size_t sizeof_buffer)
 static const char *
 _format_sym_type(unsigned int type, char *buffer, size_t sizeof_buffer)
 {
-  static const char * const type_str[] = {
-    "T_NULL",
-    "T_VOID",
-    "T_CHAR",
-    "T_SHORT",
-    "T_INT",
-    "T_LONG",
-    "T_FLOAT",
-    "T_DOUBLE",
-    "T_STRUCT",
-    "T_UNION",
-    "T_ENUM",
-    "T_MOE",
-    "T_UCHAR",
-    "T_USHORT",
-    "T_UINT",
-    "T_ULONG",
-    "T_LNGDBL",
-    "T_SLONG",
-    "T_USLONG"
-  };
+  const char *str;
 
-  if (type < NELEM(type_str)) {
-    return type_str[type];
+  str = gp_coffgen_symbol_type_to_str(type);
+  if (str != NULL) {
+    return str;
   }
 
   snprintf(buffer, sizeof_buffer, "%u", type);
@@ -499,20 +412,14 @@ _format_sym_type(unsigned int type, char *buffer, size_t sizeof_buffer)
 static const char *
 _format_sym_derived_type(unsigned int type, char *buffer, size_t sizeof_buffer)
 {
-  static const char * const type_str[] = {
-    "DT_NON",
-    "DT_PTR",
-    "DT_FCN",
-    "DT_ARY",
-    "DT_ROMPTR",
-    "DT_FARROMPTR",
-  };
+  const char *str;
 
-  if (type < NELEM(type_str)) {
-    return type_str[type];
+  str = gp_coffgen_symbol_derived_type_to_str(type);
+  if (str != NULL) {
+    return str;
   }
 
-  snprintf(buffer, sizeof_buffer, "%d", type);
+  snprintf(buffer, sizeof_buffer, "%u", type);
   return buffer;
 }
 
@@ -521,46 +428,20 @@ _format_sym_derived_type(unsigned int type, char *buffer, size_t sizeof_buffer)
 static const char *
 _format_sym_class(unsigned int cls, char *buffer, size_t sizeof_buffer)
 {
-  switch(cls) {
-  case C_NULL:    return "C_NULL";
-  case C_AUTO:    return "C_AUTO";      /* automatic variable */
-  case C_EXT:     return "C_EXT";       /* external symbol */
-  case C_STAT:    return "C_STAT";      /* static */
-  case C_REG:     return "C_REG";       /* register variable */
-  case C_EXTDEF:  return "C_EXTDEF";    /* external definition */
-  case C_LABEL:   return "C_LABEL";     /* label */
-  case C_ULABEL:  return "C_ULABEL";    /* undefined label */
-  case C_MOS:     return "C_MOS";       /* member of structure */
-  case C_ARG:     return "C_ARG";       /* function argument */
-  case C_STRTAG:  return "C_STRTAG";    /* structure tag */
-  case C_MOU:     return "C_MOU";       /* member of union */
-  case C_UNTAG:   return "C_UNTAG";     /* union tag */
-  case C_TPDEF:   return "C_TPDEF";     /* type definition */
-  case C_USTATIC: return "C_USTATIC";   /* undefined static */
-  case C_ENTAG:   return "C_ENTAG";     /* enumeration tag */
-  case C_MOE:     return "C_MOE";       /* member of enumeration */
-  case C_REGPARM: return "C_REGPARM";   /* register parameter */
-  case C_FIELD:   return "C_FIELD";     /* bit field */
-  case C_AUTOARG: return "C_AUTOARG";   /* auto argument */
-  case C_LASTENT: return "C_LASTENT";   /* dummy entry (end of block) */
-  case C_BLOCK:   return "C_BLOCK";     /* ".bb" or ".eb" */
-  case C_FCN:     return "C_FCN";       /* ".bf" or ".ef" */
-  case C_EOS:     return "C_EOS";       /* end of structure */
-  case C_FILE:    return "C_FILE";      /* file name */
-  case C_LINE:    return "C_LINE";      /* line number reformatted as symbol table entry */
-  case C_ALIAS:   return "C_ALIAS";     /* duplicate tag */
-  case C_HIDDEN:  return "C_HIDDEN";    /* ext symbol in dmert public lib */
-  case C_EOF:     return "C_EOF";       /* end of file */
-  case C_LIST:    return "C_LIST";      /* absoulte listing on or off */
-  case C_SECTION: return "C_SECTION";   /* section */
-  case C_EFCN:    return "C_EFCN";      /* physical end of function */
-  default:
-    snprintf(buffer, sizeof_buffer, "%u", cls);
-    return buffer;
+  const char *str;
+
+  str = gp_coffgen_symbol_class_to_str(cls);
+  if (str != NULL) {
+    return str;
   }
+
+  snprintf(buffer, sizeof_buffer, "%u", cls);
+  return buffer;
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+#define AUX_INDENT              "      "
 
 static void
 _print_sym_table(const gp_object_t *object)
@@ -614,55 +495,53 @@ _print_sym_table(const gp_object_t *object)
 
     aux = symbol->aux_list.first;
     while (aux != NULL) {
-
-#define AUX_INDENT "      "
-
       switch (aux->type) {
-      case AUX_DIRECT:
-        printf(AUX_INDENT "command = \"%c\"\n", aux->_aux_symbol._aux_direct.command);
-        printf(AUX_INDENT "string  = \"%s\"\n", aux->_aux_symbol._aux_direct.string);
-        break;
+        case AUX_DIRECT:
+          printf(AUX_INDENT "command = \"%c\"\n", aux->_aux_symbol._aux_direct.command);
+          printf(AUX_INDENT "string  = \"%s\"\n", aux->_aux_symbol._aux_direct.string);
+          break;
 
-      case AUX_FILE:
-        if (!state.suppress_names) {
-          printf(AUX_INDENT "file = %s\n", aux->_aux_symbol._aux_file.filename);
-        }
-        printf(AUX_INDENT "line included = %u\n", aux->_aux_symbol._aux_file.line_number);
-        printf(AUX_INDENT "flags         = %x\n", aux->_aux_symbol._aux_file.flags);
-        break;
-
-      case AUX_IDENT:
-        printf(AUX_INDENT "string = \"%s\"\n", aux->_aux_symbol._aux_ident.string);
-        break;
-
-      case AUX_SCN:
-        printf(AUX_INDENT "length                 = %u\n", aux->_aux_symbol._aux_scn.length);
-        printf(AUX_INDENT "number of relocations  = %u\n", aux->_aux_symbol._aux_scn.nreloc);
-        printf(AUX_INDENT "number of line numbers = %u\n", aux->_aux_symbol._aux_scn.nlineno);
-        break;
-
-      case AUX_FCN_CALLS: {
-        callee = aux->_aux_symbol._aux_fcn_calls.callee;
-        printf(AUX_INDENT "callee       = %s\n", (callee != NULL) ? callee->name : "higher order");
-        printf(AUX_INDENT "is_interrupt = %u\n",
-               aux->_aux_symbol._aux_fcn_calls.is_interrupt);
-        break;
-      }
-
-      default:
-        printf("%u  ", aux->type);
-        for (i = 0; i < object->symbol_size; i++) {
-          printf("%02x", aux->_aux_symbol.data[i] & 0xFF);
-
-          if (i & 1) {
-            putchar(' ');
+        case AUX_FILE: {
+          if (!state.suppress_names) {
+            printf(AUX_INDENT "file = %s\n", aux->_aux_symbol._aux_file.filename);
           }
+          printf(AUX_INDENT "line included = %u\n", aux->_aux_symbol._aux_file.line_number);
+          printf(AUX_INDENT "flags         = %x\n", aux->_aux_symbol._aux_file.flags);
+          break;
         }
-        for (i = 0; i < object->symbol_size; i++) {
-          c = aux->_aux_symbol.data[i] & 0xFF;
-          putchar((isprint(c)) ? c : '.');
+
+        case AUX_IDENT:
+          printf(AUX_INDENT "string = \"%s\"\n", aux->_aux_symbol._aux_ident.string);
+          break;
+
+        case AUX_SCN:
+          printf(AUX_INDENT "length                 = %u\n", aux->_aux_symbol._aux_scn.length);
+          printf(AUX_INDENT "number of relocations  = %u\n", aux->_aux_symbol._aux_scn.nreloc);
+          printf(AUX_INDENT "number of line numbers = %u\n", aux->_aux_symbol._aux_scn.nlineno);
+          break;
+
+        case AUX_FCN_CALLS: {
+          callee = aux->_aux_symbol._aux_fcn_calls.callee;
+          printf(AUX_INDENT "callee       = %s\n", (callee != NULL) ? callee->name : "higher order");
+          printf(AUX_INDENT "is_interrupt = %u\n", aux->_aux_symbol._aux_fcn_calls.is_interrupt);
+          break;
         }
-        putchar('\n');
+
+        default: {
+          printf("%u  ", aux->type);
+          for (i = 0; i < object->symbol_size; i++) {
+            printf("%02x", aux->_aux_symbol.data[i] & 0xFF);
+
+            if (i & 1) {
+              putchar(' ');
+            }
+          }
+          for (i = 0; i < object->symbol_size; i++) {
+            c = aux->_aux_symbol.data[i] & 0xFF;
+            putchar((isprint(c)) ? c : '.');
+          }
+          putchar('\n');
+        }
       } /* switch (aux->type) { */
 
       aux = aux->next;

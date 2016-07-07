@@ -744,6 +744,109 @@ gp_coffgen_del_symbol(gp_object_t *Object, gp_symbol_t *Symbol)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Convert to string the symbol type. */
+
+const char *
+gp_coffgen_symbol_type_to_str(uint8_t Type)
+{
+  static const char * const type_str[] = {
+    "T_NULL",
+    "T_VOID",
+    "T_CHAR",
+    "T_SHORT",
+    "T_INT",
+    "T_LONG",
+    "T_FLOAT",
+    "T_DOUBLE",
+    "T_STRUCT",
+    "T_UNION",
+    "T_ENUM",
+    "T_MOE",
+    "T_UCHAR",
+    "T_USHORT",
+    "T_UINT",
+    "T_ULONG",
+    "T_LNGDBL",
+    "T_SLONG",
+    "T_USLONG"
+  };
+
+  if (Type >= ARRAY_SIZE(type_str)) {
+    return NULL;
+  }
+
+  return type_str[Type];
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Convert to string the symbol derived type. */
+
+const char *
+gp_coffgen_symbol_derived_type_to_str(uint32_t Type)
+{
+  static const char * const type_str[] = {
+    "DT_NON",
+    "DT_PTR",
+    "DT_FCN",
+    "DT_ARY",
+    "DT_ROMPTR",
+    "DT_FARROMPTR"
+  };
+
+  if (Type >= ARRAY_SIZE(type_str)) {
+    return NULL;
+  }
+
+  return type_str[Type];
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Convert to string the symbol class. */
+
+const char *
+gp_coffgen_symbol_class_to_str(uint8_t Class)
+{
+  switch (Class) {
+    case C_NULL:    return "C_NULL";
+    case C_AUTO:    return "C_AUTO";      /* automatic variable */
+    case C_EXT:     return "C_EXT";       /* external symbol */
+    case C_STAT:    return "C_STAT";      /* static */
+    case C_REG:     return "C_REG";       /* register variable */
+    case C_EXTDEF:  return "C_EXTDEF";    /* external definition */
+    case C_LABEL:   return "C_LABEL";     /* label */
+    case C_ULABEL:  return "C_ULABEL";    /* undefined label */
+    case C_MOS:     return "C_MOS";       /* member of structure */
+    case C_ARG:     return "C_ARG";       /* function argument */
+    case C_STRTAG:  return "C_STRTAG";    /* structure tag */
+    case C_MOU:     return "C_MOU";       /* member of union */
+    case C_UNTAG:   return "C_UNTAG";     /* union tag */
+    case C_TPDEF:   return "C_TPDEF";     /* type definition */
+    case C_USTATIC: return "C_USTATIC";   /* undefined static */
+    case C_ENTAG:   return "C_ENTAG";     /* enumeration tag */
+    case C_MOE:     return "C_MOE";       /* member of enumeration */
+    case C_REGPARM: return "C_REGPARM";   /* register parameter */
+    case C_FIELD:   return "C_FIELD";     /* bit field */
+    case C_AUTOARG: return "C_AUTOARG";   /* auto argument */
+    case C_LASTENT: return "C_LASTENT";   /* dummy entry (end of block) */
+    case C_BLOCK:   return "C_BLOCK";     /* ".bb" or ".eb" */
+    case C_FCN:     return "C_FCN";       /* ".bf" or ".ef" */
+    case C_EOS:     return "C_EOS";       /* end of structure */
+    case C_FILE:    return "C_FILE";      /* file name */
+    case C_LINE:    return "C_LINE";      /* line number reformatted as symbol table entry */
+    case C_ALIAS:   return "C_ALIAS";     /* duplicate tag */
+    case C_HIDDEN:  return "C_HIDDEN";    /* ext symbol in dmert public lib */
+    case C_EOF:     return "C_EOF";       /* end of file */
+    case C_LIST:    return "C_LIST";      /* absoulte listing on or off */
+    case C_SECTION: return "C_SECTION";   /* section */
+    case C_EFCN:    return "C_EFCN";      /* physical end of function */
+    default:        return NULL;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* Allocate a block of relocations. -- gpreadobj.c */
 
 gp_reloc_t *

@@ -96,7 +96,7 @@ _object_name(char *file_name)
 
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
   for (name = file_name + strlen(file_name) - 1; name >= file_name; --name) {
-    if ((*name == UNIX_PATH_CHAR) || (*name == PATH_SEPARATOR_CHAR)) {
+    if ((name[0] == UNIX_PATH_CHAR) || (name[0] == PATH_SEPARATOR_CHAR)) {
       return ++name;
     }
   }
@@ -106,7 +106,8 @@ _object_name(char *file_name)
   name = strrchr(file_name, PATH_SEPARATOR_CHAR);
   if (name != NULL) {
     return ++name;
-  } else {
+  }
+  else {
     return file_name;
   }
 #endif
@@ -232,7 +233,8 @@ int main(int argc, char *argv[])
     if (gp_identify_coff_file(state.filename) != GP_COFF_ARCHIVE) {
       gp_error("\"%s\" is not a valid archive file", state.filename);
       exit(1);
-    } else {
+    }
+    else {
       state.archive = gp_archive_read(state.filename);
     }
   }
@@ -241,14 +243,15 @@ int main(int argc, char *argv[])
   i = 0;
   switch (state.mode) {
   case AR_CREATE:
-  case AR_REPLACE:
+  case AR_REPLACE: {
     while (i < state.numobjects) {
       type = gp_identify_coff_file(state.objectname[i]);
 
       if ((type != GP_COFF_OBJECT_V2) && (type != GP_COFF_OBJECT)) {
         gp_error("\"%s\" is not a valid object file", state.objectname[i]);
         break;
-      } else {
+      }
+      else {
         state.archive = gp_archive_add_member(state.archive, state.objectname[i],
                                               _object_name(state.objectname[i]));
       }
@@ -256,36 +259,42 @@ int main(int argc, char *argv[])
     }
     update_archive = true;
     break;
+  }
 
-  case AR_DELETE:
+  case AR_DELETE: {
     while (i < state.numobjects) {
       if (_has_path(state.objectname[i])) {
         gp_error("invalid object name \"%s\"", state.objectname[i]);
         break;
       }
+
       object = gp_archive_find_member(state.archive, state.objectname[i]);
       if (object == NULL) {
         gp_error("object \"%s\" not found", state.objectname[i]);
         break;
-      } else {
+      }
+      else {
         state.archive = gp_archive_delete_member(state.archive, state.objectname[i]);
       }
       i++;
     }
     update_archive = true;
     break;
+  }
 
-  case AR_EXTRACT:
+  case AR_EXTRACT: {
     while (i < state.numobjects) {
       if (_has_path(state.objectname[i])) {
         gp_error("invalid object name \"%s\"", state.objectname[i]);
         break;
       }
+
       object = gp_archive_find_member(state.archive, state.objectname[i]);
       if (object == NULL) {
         gp_error("object \"%s\" not found", state.objectname[i]);
         break;
-      } else {
+      }
+      else {
         if (!gp_archive_extract_member(state.archive, state.objectname[i])) {
           gp_error("can't write file \"%s\"", state.objectname[i]);
           exit(1);
@@ -295,19 +304,22 @@ int main(int argc, char *argv[])
       i++;
     }
     break;
+  }
 
   case AR_LIST:
     gp_archive_list_members(state.archive);
     break;
 
-  case AR_SYMBOLS:
+  case AR_SYMBOLS: {
     if (gp_archive_have_index(state.archive) == 0) {
       gp_error("this archive has no symbol index");
-    } else {
+    }
+    else {
       gp_archive_read_index(symbol_index, state.archive);
       gp_archive_print_table(symbol_index);
     }
     break;
+  }
 
   case AR_NULL:
   default:

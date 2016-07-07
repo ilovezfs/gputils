@@ -68,7 +68,7 @@ _show_usage(void)
   printf("  -p, --preserve-dates                  Preserve dates.\n");
   printf("  -r SECTION, --remove-section SECTION  Remove section.\n");
   printf("      --strict-options                  If this is set, then an option may not be parameter\n"
-         "                                        of an another option. For example: -o --version\n");
+         "                                          of an another option. For example: -o --version\n");
   printf("  -s, --strip-all                       Remove all symbols.\n");
   printf("  -u, --strip-unneeded                  Strip symbols not need for relocations.\n");
   printf("  -v, --version                         Show version.\n");

@@ -107,7 +107,7 @@ _write_file_block(void)
     /* The file id is used to define the index at which the file
      * name is written within the file code block. (The id's are
      * sequentially assigned when the files are opened.) If there
-     * are too many files, then gpasm will abort. note: .cod files
+     * are too many files, then gpasm will abort. Note: .cod files
      * can handle larger file lists...
      */
 

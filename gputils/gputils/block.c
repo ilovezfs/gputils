@@ -32,12 +32,12 @@ Boston, MA 02111-1307, USA.  */
 void
 read_block(uint8_t *block, unsigned int block_number)
 {
-  int n;
+  size_t n;
 
   fseek(codefile, block_number * COD_BLOCK_SIZE, SEEK_SET);
   n = fread(block, 1, COD_BLOCK_SIZE, codefile);
 
-  if (COD_BLOCK_SIZE != n) {
+  if (n != COD_BLOCK_SIZE) {
     gp_error("bad block number %u", block_number);
   }
 }
