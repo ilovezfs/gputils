@@ -36,24 +36,28 @@ Boston, MA 02111-1307, USA.  */
  * tells the starting and ending blocks that contain the symbols.
  *
  * Types of data blocks:
- * short symbol table - a list of symbols in the "short format", which
- *     means that the symbol name is restricted to 12 characters. This
- *     is an old format and is not provided by gpasm.
- * long symbol table - a list of symbols in the "long format". Like the
- *     short symbol table except the symbol names can be up to 255 chars.
- * list table - a cross reference between the source line numbers, list
- *     line numbers, and the program memory.
- * Memory map table - describes the ranges of memory used in the processor.
+ * short symbol table    - A list of symbols in the "short format", which means that
+ *                         the symbol name is restricted to 12 characters. This is an
+ *                         old format and is not provided by gpasm.
+ * long symbol table     - A list of symbols in the "long format". Like the short
+ *                         symbol table except the symbol names can be up to 255 chars.
+ * list table            - A cross reference between the source line numbers, list
+ *                         line numbers, and the program memory.
+ * Memory map table      - Describes the ranges of memory used in the processor.
  * Local variables table - [c files - not supported by gpasm] this describes
- *     the memory locations used by functions.
- * Source file names - a list of the files used to assemble the source file.
- * Debug messages - [not supported by gpasm] this provides a list of messages
+ *                         the memory locations used by functions.
+ * Source file names     - A list of the files used to assemble the source file.
+ * Debug messages        - [not supported by gpasm] this provides a list of messages
  *     that can control the simulator or emulator.
  */
 
-#define COD_BLOCK_BITS     9       /* COD_BLOCK_SIZE = 2^COD_BLOCK_BITS */
-                                   /* number of bytes in one cod block */
-#define COD_BLOCK_SIZE     (1 << COD_BLOCK_BITS)
+#define COD_BLOCK_BITS          9           /* COD_BLOCK_SIZE = 2^COD_BLOCK_BITS */
+
+/* Number of bytes in one cod block. */
+#define COD_BLOCK_SIZE          (1 << COD_BLOCK_BITS)
+
+/* Number of words in one cod block. */
+#define COD_BLOCK_N_WORDS       (COD_BLOCK_SIZE / WORD_SIZE)
 
 /*
  * Here's a list of the offsets for the directory block. In each case the
@@ -64,105 +68,105 @@ Boston, MA 02111-1307, USA.  */
  * has its costs.
  */
 
-#define COD_DIR_CODE       0        /* Code block indices are at the start. */
-#define COD_DIR_SOURCE     257      /* Source file name. */
-#define COD_DIR_DATE       321      /* Date .cod file was created. */
-#define COD_DIR_TIME       328      /* Time .cod file was created. */
-#define COD_DIR_VERSION    331      /* Compiler version. */
-#define COD_DIR_COMPILER   351      /* Compiler name. */
-#define COD_DIR_NOTICE     363      /* Compiler copyright. */
-#define COD_DIR_SYMTAB     426      /* Start block of short symbol table. */
-#define COD_DIR_NAMTAB     430      /* Start block of file name table. */
-#define COD_DIR_LSTTAB     434      /* Start block of list file cross reference. */
-#define COD_DIR_ADDRSIZE   438      /* # of bytes for an address. */
-#define COD_DIR_HIGHADDR   439      /* High word of address for 64K Code block. */
-#define COD_DIR_NEXTDIR    441      /* Next directory block. */
-#define COD_DIR_MEMMAP     443      /* Start block of memory map. */
-#define COD_DIR_LOCALVAR   447      /* Start block of local variables. */
-#define COD_DIR_CODTYPE    451      /* Type of .cod file. */
-#define COD_DIR_PROCESSOR  454      /* Target processor. */
-#define COD_DIR_LSYMTAB    462      /* Start block of long symbol table. */
-#define COD_DIR_MESSTAB    466      /* Start block of debug message area. */
+#define COD_DIR_CODE            0           /* Code block indices are at the start. */
+#define COD_DIR_SOURCE          257         /* Source file name. */
+#define COD_DIR_DATE            321         /* Date .cod file was created. */
+#define COD_DIR_TIME            328         /* Time .cod file was created. */
+#define COD_DIR_VERSION         331         /* Compiler version. */
+#define COD_DIR_COMPILER        351         /* Compiler name. */
+#define COD_DIR_NOTICE          363         /* Compiler copyright. */
+#define COD_DIR_SYMTAB          426         /* Start block of short symbol table. */
+#define COD_DIR_NAMTAB          430         /* Start block of file name table. */
+#define COD_DIR_LSTTAB          434         /* Start block of list file cross reference. */
+#define COD_DIR_ADDRSIZE        438         /* # of bytes for an address. */
+#define COD_DIR_HIGHADDR        439         /* High word of address for 64kB Code block. */
+#define COD_DIR_NEXTDIR         441         /* Next directory block. */
+#define COD_DIR_MEMMAP          443         /* Start block of memory map. */
+#define COD_DIR_LOCALVAR        447         /* Start block of local variables. */
+#define COD_DIR_CODTYPE         451         /* Type of .cod file. */
+#define COD_DIR_PROCESSOR       454         /* Target processor. */
+#define COD_DIR_LSYMTAB         462         /* Start block of long symbol table. */
+#define COD_DIR_MESSTAB         466         /* Start block of debug message area. */
 
 /*
  * Here's a list of sizes of various objects in a .cod file.
  */
-#define COD_FILE_SIZE      64       /* Length of filename strings. */
+#define COD_FILE_SIZE           64          /* Length of filename strings. */
 
 /*
  * MemMapOFS / MemMapend
  */
-#define COD_MAPENTRY_SIZE  4
+#define COD_MAPENTRY_SIZE       4
 
 /* MemMapOFS / MemMapend offsets */
-#define COD_MAPTAB_START   0
-#define COD_MAPTAB_LAST    2
+#define COD_MAPTAB_START        0
+#define COD_MAPTAB_LAST         2
 
 /*
  * Symbol Table
  */
-#define SSYMBOL_SIZE       16
-#define SYMBOLS_PER_BLOCK  (COD_BLOCK_SIZE / SSYMBOL_SIZE)
+#define SSYMBOL_SIZE            16
+#define SYMBOLS_PER_BLOCK       (COD_BLOCK_SIZE / SSYMBOL_SIZE)
 
 /* Symbol Table offsets */
-#define COD_SSYMBOL_LEN    0
-#define COD_SSYMBOL_NAME   1
-#define COD_SSYMBOL_STYPE  13
-#define COD_SSYMBOL_SVALUE 14
+#define COD_SSYMBOL_LEN         0
+#define COD_SSYMBOL_NAME        1
+#define COD_SSYMBOL_STYPE       13
+#define COD_SSYMBOL_SVALUE      14
 
 /* Symbol types */
-#define COD_ST_C_SHORT     2
-#define COD_ST_ADDRESS     46
-#define COD_ST_CONSTANT    47
+#define COD_ST_C_SHORT          2
+#define COD_ST_ADDRESS          46
+#define COD_ST_CONSTANT         47
 
 /* LocalVARS offsets */
-#define COD_SSYMBOL_START  8
-#define COD_SSYMBOL_STOP   12
+#define COD_SSYMBOL_START       8
+#define COD_SSYMBOL_STOP        12
 
 /*
  * Source File Name
  */
-#define FILE_SIZE          64
-#define FILES_PER_BLOCK    (COD_BLOCK_SIZE / FILE_SIZE)
+#define FILE_SIZE               64
+#define FILES_PER_BLOCK         (COD_BLOCK_SIZE / FILE_SIZE)
 
 /*
  * Line number info
  */
-#define COD_MAX_LINE_SYM   84       /* Number of source lines per cod block. */
-#define COD_LINE_SYM_SIZE  6        /* Line symbol structure size. */
+#define COD_MAX_LINE_SYM        84          /* Number of source lines per cod block. */
+#define COD_LINE_SYM_SIZE       6           /* Line symbol structure size. */
 
 /* Line number info offsets */
-#define COD_LS_SFILE       0        /* Source file number offset. */
-#define COD_LS_SMOD        1        /* Byte of flag info offset. */
-#define COD_LS_SLINE       2        /* Line number in source file offset. */
-#define COD_LS_SLOC        4        /* Relevant value offset. */
+#define COD_LS_SFILE            0           /* Source file number offset. */
+#define COD_LS_SMOD             (1 << 0)    /* Byte of flag info offset. */
+#define COD_LS_SLINE            (1 << 1)    /* Line number in source file offset. */
+#define COD_LS_SLOC             (1 << 2)    /* Relevant value offset. */
 
-#define COD_LS_SMOD_FLAG_A      0x01
-#define COD_LS_SMOD_FLAG_N      0x02
-#define COD_LS_SMOD_FLAG_L      0x04
-#define COD_LS_SMOD_FLAG_C0     0x08
-#define COD_LS_SMOD_FLAG_D      0x10
-#define COD_LS_SMOD_FLAG_I      0x20
-#define COD_LS_SMOD_FLAG_F      0x40
-#define COD_LS_SMOD_FLAG_C1     0x80
+#define COD_LS_SMOD_FLAG_A      (1 << 0)
+#define COD_LS_SMOD_FLAG_N      (1 << 1)
+#define COD_LS_SMOD_FLAG_L      (1 << 2)
+#define COD_LS_SMOD_FLAG_C0     (1 << 3)
+#define COD_LS_SMOD_FLAG_D      (1 << 4)
+#define COD_LS_SMOD_FLAG_I      (1 << 5)
+#define COD_LS_SMOD_FLAG_F      (1 << 6)
+#define COD_LS_SMOD_FLAG_C1     (1 << 7)
 #define COD_LS_SMOD_FLAG_ALL    0xff
 
 /*
  * Long Symbol Table
  */
-#define COD_SYM_TYPE       1        /* Type info is 1 byte after the length. */
-#define COD_SYM_VALUE      3        /* Value info is 3 bytes after the length. */
-#define COD_SYM_EXTRA      7        /* Symbol name length + 7 is total structure size. */
-#define MAX_SYM_LEN        255      /* Maximum length of a symbol name. */
+#define COD_SYM_TYPE            1           /* Type info is 1 byte after the length. */
+#define COD_SYM_VALUE           3           /* Value info is 3 bytes after the length. */
+#define COD_SYM_EXTRA           7           /* Symbol name length + 7 is total structure size. */
+#define MAX_SYM_LEN             255         /* Maximum length of a symbol name. */
 
 /*
  * Messages to Source Level Debuggers
  */
-#define COD_DEBUG_ADDR     0        /* Type info is first. */
-#define COD_DEBUG_CMD      4        /* Value info is 4 bytes after the address. */
-#define COD_DEBUG_MSG      6        /* Message is 6 bytes after the address. */
-#define COD_DEBUG_EXTRA    6        /* Symbol name length + 6 is total structure size. */
-#define MAX_STRING_LEN     255      /* Maximum length of a debug message. */
+#define COD_DEBUG_ADDR          0           /* Type info is first. */
+#define COD_DEBUG_CMD           4           /* Value info is 4 bytes after the address. */
+#define COD_DEBUG_MSG           6           /* Message is 6 bytes after the address. */
+#define COD_DEBUG_EXTRA         6           /* Symbol name length + 6 is total structure size. */
+#define MAX_STRING_LEN          255         /* Maximum length of a debug message. */
 
 typedef struct {
   uint8_t *block;
@@ -173,7 +177,7 @@ typedef struct block_list_struct {
   struct block_list_struct *next;
 } BlockList;
 
-#define COD_CODE_IMAGE_BLOCKS 128  /* Max # of blocks for the opcodes. */
+#define COD_CODE_IMAGE_BLOCKS   128      /* Max # of blocks for the opcodes. */
 
 typedef struct {
   BlockList    *first;          /* pointer to the first element of list of blocks */

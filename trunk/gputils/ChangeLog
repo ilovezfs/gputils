@@ -1,3 +1,26 @@
+2016-07-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * TODO, gputils/dump.c, gputils/dump.h, gputils/gpvo.c,
+    libgputils/gpcod.h, libgputils/gpcoffgen.c,
+    libgputils/gpcoffgen.h, libgputils/gptypes.h:
+    The gpvo use the disassembler to decode the program memory
+    sections.
+
+  * libgputils/gpcoff.h, libgputils/gpreadobj.c,
+    libgputils/gpwriteobj.c:
+    Use some constants:
+	T_SHIFT_v1, T_SHIFT_v2, T_MASK_v1, T_MASK_v2
+
+  * gpasm/directive.c, gputils/block.c, gputils/gpvc.c:
+    Minor modification.
+
+  * gpasm/coff.c:
+    In the coff_local_name function use "unsigned" modifier
+    case of a local variable.
+
+  * gpasm/cod.c, gputils/gpdasm.h, gputils/gplib.c,
+    gputils/gpstrip.c:
+    Code formatting.
+
 2016-07-06  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/Makefile.am, gpasm/Makefile.in, gpasm/coff.c,
     gpasm/directive.c, gpasm/evaluate.c, gpasm/gpasm.c,

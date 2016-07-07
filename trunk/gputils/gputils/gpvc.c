@@ -28,6 +28,14 @@ Boston, MA 02111-1307, USA.  */
 #include "dump.h"
 #include "block.h"
 
+#define DISPLAY_NOTHING         0
+#define DISPLAY_DIR             (1 << 0)
+#define DISPLAY_SYM             (1 << 1)
+#define DISPLAY_ROM             (1 << 2)
+#define DISPLAY_SRC             (1 << 3)
+#define DISPLAY_MESS            (1 << 4)
+#define DISPLAY_ALL             (DISPLAY_DIR | DISPLAY_SYM | DISPLAY_ROM | DISPLAY_SRC | DISPLAY_MESS)
+
 FILE         *codefile;
 char         *source_file_names[MAX_SOURCE_FILES];
 DirBlockInfo *main_dir = NULL;
@@ -80,19 +88,11 @@ main(int argc, char *argv[])
   int              display_flags;
 
   char             temp_buf[12];
-  char            *processor_name;
+  const char      *processor_name;
   pic_processor_t  processor_info;
   proc_class_t     processor_class;
 
   gp_init();
-
-#define DISPLAY_NOTHING 0
-#define DISPLAY_DIR     1
-#define DISPLAY_SYM     2
-#define DISPLAY_ROM     4
-#define DISPLAY_SRC     8
-#define DISPLAY_MESS    16
-#define DISPLAY_ALL     0xff
 
   display_flags = DISPLAY_NOTHING;
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
@@ -140,7 +140,7 @@ main(int argc, char *argv[])
     strncpy(filename, argv[optind], sizeof(filename));
   }
   else {
-    usage = 1;
+    usage = true;
   }
 
   if (display_flags == DISPLAY_NOTHING) {
@@ -151,30 +151,26 @@ main(int argc, char *argv[])
     _show_usage();
   }
 
-  codefile = fopen(filename,"rb");
+  codefile = fopen(filename, "rb");
   if (codefile == NULL) {
     perror(filename);
     exit(1);
   }
 
-  /* Start off by reading the directory block */
+  /* Start off by reading the directory block. */
   main_dir = read_directory();
 
-  /* Determine if byte address and org are different */
-  processor_name = substr(temp_buf,
-                          sizeof(temp_buf),
-                          &main_dir->dir[COD_DIR_PROCESSOR],
-                          8);
-
-  processor_info = gp_find_processor(processor_name);
+  /* Determine if byte address and org are different. */
+  processor_name  = substr(temp_buf, sizeof(temp_buf), &main_dir->dir[COD_DIR_PROCESSOR], 8);
+  processor_info  = gp_find_processor(processor_name);
   processor_class = gp_processor_class(processor_info);
 
   if (display_flags & DISPLAY_DIR) {
-    dump_directory_blocks();
+    dump_directory_blocks(processor_class);
   }
 
   if (display_flags & DISPLAY_ROM) {
-    dump_code(processor_class);
+    dump_code(processor_class, processor_info);
   }
 
   if (display_flags & DISPLAY_SYM) {
@@ -193,5 +189,6 @@ main(int argc, char *argv[])
     dump_message_area();
   }
 
+  fclose(codefile);
   return EXIT_SUCCESS;
 }

@@ -22,15 +22,15 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __DUMP_H__
 #define __DUMP_H__
 
-extern void dump_directory_blocks(void);
-extern void dump_memmap(proc_class_t proc_class);
-extern void dump_code(proc_class_t proc_class);
+extern void dump_directory_blocks(proc_class_t class);
+extern void dump_memmap(proc_class_t class, gp_boolean make_list);
+extern void dump_code(proc_class_t class, pic_processor_t processor);
 extern void dump_symbols(void);
 extern void dump_lsymbols(void);
 extern void dump_source_files(void);
-extern void dump_line_symbols(void);
+extern void dump_line_symbols();
 extern void dump_message_area(void);
-extern void dump_local_vars(proc_class_t proc_class);
+extern void dump_local_vars(proc_class_t class);
 
 extern char *substr(char *a, size_t sizeof_a, const uint8_t *b, size_t n);
 

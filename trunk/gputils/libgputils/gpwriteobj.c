@@ -368,10 +368,10 @@ _write_symbols(const gp_object_t *Object, uint8_t *Table, FILE *Fp)
     }
 
     if (isnew) {
-      gp_fputl32(current->type | (current->derived_type << 5), Fp);
+      gp_fputl32((uint32_t)current->type | (current->derived_type << T_SHIFT_v2), Fp);
     }
     else {
-      gp_fputl16(current->type | (current->derived_type << 4), Fp);
+      gp_fputl16((uint16_t)current->type | (uint16_t)(current->derived_type << T_SHIFT_v1), Fp);
     }
 
     fputc(current->class, Fp);
@@ -464,19 +464,7 @@ gp_writeobj_has_data(const gp_section_t *Section)
     return false;
   }
 
-  if (Section->flags & STYP_TEXT) {
-    return true;
-  }
-
-  if (Section->flags & STYP_DATA) {
-    return true;
-  }
-
-  if (Section->flags & STYP_DATA_ROM) {
-    return true;
-  }
-
-  return false;
+  return ((Section->flags & (STYP_TEXT | STYP_DATA | STYP_DATA_ROM)) ? true : false);
 }
 
 /*------------------------------------------------------------------------------------------------*/

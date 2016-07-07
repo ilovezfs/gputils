@@ -48,4 +48,9 @@ typedef struct __attribute__ ((packed))
   } high;
 } hash128_t;
 
+#define BYTE_SIZE               (sizeof(uint8_t))
+#define WORD_SIZE               (sizeof(uint16_t))
+#define DWORD_SIZE              (sizeof(uint32_t))
+#define QWORD_SIZE              (sizeof(uint64_t))
+
 #endif

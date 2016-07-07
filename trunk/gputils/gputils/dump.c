@@ -29,9 +29,16 @@ Boston, MA 02111-1307, USA.  */
 #include "dump.h"
 #include "block.h"
 
+typedef struct memmap_info {
+  unsigned int        start_addr;
+  unsigned int        end_addr;
+  struct memmap_info *next;
+} memmap_info_t;
+
 int number_of_source_files = 0;
 
 static uint8_t  temp[COD_BLOCK_SIZE];
+static uint8_t  used_map[COD_BLOCK_SIZE];
 static FILE    *source_files[MAX_SOURCE_FILES];
 
 static const char *SymbolType4[154] = {
@@ -76,6 +83,95 @@ static const char *SymbolType4[154] = {
   "bit_3          ", "bit_4          ", "bit_5          ", "bit_6          ",
   "bit_7          ", "debug          "
 };
+
+static memmap_info_t *memmap_info_list      = NULL;
+static memmap_info_t *memmap_info_list_last = NULL;
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+_memmap_add(unsigned int Start_addr, unsigned int End_addr)
+{
+  memmap_info_t *new;
+
+  new = (memmap_info_t *)GP_Calloc(1, sizeof(memmap_info_t));
+  new->start_addr = Start_addr;
+  new->end_addr   = End_addr;
+
+  if (memmap_info_list == NULL) {
+    /* The list is empty. */
+    memmap_info_list = new;
+  }
+  else {
+    /* Append the new node to the end of the list. */
+    memmap_info_list_last->next = new;
+  }
+
+  memmap_info_list_last = new;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_memmap_free(void)
+{
+  memmap_info_t *info;
+  memmap_info_t *next;
+
+  info = memmap_info_list;
+  while (info != NULL) {
+    next = info->next;
+    free(info);
+    info = next;
+  }
+
+  memmap_info_list      = NULL;
+  memmap_info_list_last = NULL;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_memmap_create_used_map(unsigned int Start_address)
+{
+  memmap_info_t *info;
+  unsigned int   block_start;
+  unsigned int   block_end;
+  unsigned int   offset;
+  unsigned int   size;
+
+  info = memmap_info_list;
+  if (info == NULL) {
+    memset(used_map, true, sizeof(used_map));
+    return;
+  }
+
+  memset(used_map, false, sizeof(used_map));
+
+  block_start = (Start_address / COD_BLOCK_SIZE) * COD_BLOCK_SIZE;
+  block_end   = block_start + COD_BLOCK_SIZE;
+  while (info != NULL) {
+    if ((info->start_addr >= block_start) && (info->start_addr < block_end)) {
+      offset = info->start_addr - block_start;
+      size   = info->end_addr   - info->start_addr;
+
+      if ((offset + size) > COD_BLOCK_SIZE) {
+        size = COD_BLOCK_SIZE - offset;
+      }
+
+      if (size > 0) {
+        /* This is a used ROM range. */
+        memset(&used_map[offset], true, size);
+      }
+    }
+    else if (info->start_addr >= block_end) {
+      /* The further values will be too high. */
+      break;
+    }
+
+    info = info->next;
+  }
+}
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -147,20 +243,20 @@ substr(char *a, size_t sizeof_a, const uint8_t *b, size_t n)
 static void
 _dump_directory_block(const uint8_t *block, unsigned block_num)
 {
-  char temp_buf[256];
-  int  time;
-  int  bytes_for_address;
+  char         temp_buf[256];
+  unsigned int time;
+  unsigned int bytes_for_address;
 
   printf("Directory block:                %04x\n"
          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n", block_num);
 
   printf("%03x - Source file:              %s\n",
-         COD_DIR_SOURCE, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_SOURCE], 63));
+         COD_DIR_SOURCE, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_SOURCE], COD_FILE_SIZE - 1));
   printf("%03x - Date:                     %s\n",
          COD_DIR_DATE, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_DATE], 7));
 
   time = gp_getl16(&block[COD_DIR_TIME]);
-  printf("%03x - Time:                     %02d:%02d\n",
+  printf("%03x - Time:                     %02u:%02u\n",
          COD_DIR_TIME, time / 100, time % 100);
 
   printf("%03x - Compiler version:         %s\n",
@@ -168,13 +264,13 @@ _dump_directory_block(const uint8_t *block, unsigned block_num)
   printf("%03x - Compiler:                 %s\n",
          COD_DIR_COMPILER, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_COMPILER], 11));
   printf("%03x - Notice:                   %s\n",
-         COD_DIR_NOTICE, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_NOTICE], 63));
+         COD_DIR_NOTICE, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_NOTICE], COD_FILE_SIZE - 1));
 
   bytes_for_address = block[COD_DIR_ADDRSIZE];
-  printf("%03x - Bytes for address:        %d\n", COD_DIR_ADDRSIZE, bytes_for_address);
+  printf("%03x - Bytes for address:        %u\n", COD_DIR_ADDRSIZE, bytes_for_address);
 
   if (bytes_for_address != 0) {
-    printf("WARNING: address size looks suspicious\n");
+    printf("WARNING: Address size looks suspicious.\n");
   }
 
   printf("%03x - High word of 64k address: %04x\n",
@@ -224,22 +320,29 @@ _dump_directory_block(const uint8_t *block, unsigned block_num)
  */
 
 static void
-_dump_index(uint8_t *block)
+_dump_index(proc_class_t class, uint8_t *block)
 {
-  unsigned int _64k_base = IMemAddrFromBase((unsigned int)gp_getu16(&block[COD_DIR_HIGHADDR]));
-  int          i;
-  int          curr_block;
+  unsigned int _64k_base;
+  unsigned int i;
+  unsigned int curr_block;
+  int          addr_digits;
 
   printf("Code blocks index:\n"
          "Block range    Block number\n"
          "---------------------------\n");
 
+  _64k_base   = IMemAddrFromBase((unsigned int)gp_getu16(&block[COD_DIR_HIGHADDR]));
+  addr_digits = class->addr_digits;
+
   for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
     if ((curr_block = gp_getu16(&block[i * 2])) != 0) {
-      printf("%06x-%06x: %d\n", _64k_base | (i << COD_BLOCK_BITS),
-             (_64k_base | ((i + 1) << COD_BLOCK_BITS)) - 1, curr_block);
+      printf("%0*x-%0*x:    %u\n",
+             addr_digits, _64k_base | (i << COD_BLOCK_BITS),
+             addr_digits, (_64k_base | ((i + 1) << COD_BLOCK_BITS)) - 1,
+             curr_block);
     }
   }
+
   putchar('\n');
 }
 
@@ -250,14 +353,17 @@ _dump_index(uint8_t *block)
  */
 
 void
-dump_directory_blocks(void)
+dump_directory_blocks(proc_class_t class)
 {
-  DirBlockInfo *dbi = main_dir;
-  unsigned int  block_num = 0;
+  DirBlockInfo *dbi;
+  unsigned int  block_num;
+
+  block_num = 0;
+  dbi       = main_dir;
 
   do {
     _dump_directory_block(dbi->dir, block_num);
-    _dump_index(dbi->dir);
+    _dump_index(class, dbi->dir);
     block_num = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR]);
     dbi = dbi->next;
   } while (dbi != NULL);
@@ -270,43 +376,55 @@ dump_directory_blocks(void)
  */
 
 void
-dump_memmap(proc_class_t class)
+dump_memmap(proc_class_t class, gp_boolean make_list)
 {
-  unsigned int  _64k_base;
   DirBlockInfo *dbi;
+  unsigned int  _64k_base;
+  int           addr_digits;
   uint16_t      i;
   uint16_t      j;
-  uint16_t      start_block;
-  uint16_t      end_block;
-  uint16_t      start;
-  uint16_t      last;
-  gp_boolean    first = true;
+  uint16_t      start_map_block;
+  uint16_t      end_map_block;
+  uint16_t      first_offset;
+  uint16_t      last_offset;
+  unsigned int  start_addr;
+  unsigned int  end_addr;
+  gp_boolean    first;
 
-  dbi = main_dir;
+  first       = true;
+  addr_digits = class->addr_digits;
+  dbi         = main_dir;
 
   do {
-    _64k_base   = IMemAddrFromBase((unsigned int)gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]));
-    start_block = gp_getu16(&dbi->dir[COD_DIR_MEMMAP]);
+    _64k_base       = IMemAddrFromBase((unsigned int)gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]));
+    start_map_block = gp_getu16(&dbi->dir[COD_DIR_MEMMAP]);
 
-    if (start_block) {
-      end_block = gp_getu16(&dbi->dir[COD_DIR_MEMMAP + 2]);
+    if (start_map_block != 0) {
+      end_map_block = gp_getu16(&dbi->dir[COD_DIR_MEMMAP + 2]);
 
       if (first) {
         printf("ROM Usage:\n"
-               "--------------------------------\n");
+               "----------------------------\n");
         first = false;
       }
-      for (j = start_block; j <= end_block; j++) {
+
+      for (j = start_map_block; j <= end_map_block; j++) {
         read_block(temp, j);
 
         for (i = 0; i < COD_CODE_IMAGE_BLOCKS; i++) {
-          start = gp_getl16(&temp[i * COD_MAPENTRY_SIZE + COD_MAPTAB_START]);
-          last  = gp_getl16(&temp[i * COD_MAPENTRY_SIZE + COD_MAPTAB_LAST]);
+          first_offset = gp_getl16(&temp[i * COD_MAPENTRY_SIZE + COD_MAPTAB_START]);
+          last_offset  = gp_getl16(&temp[i * COD_MAPENTRY_SIZE + COD_MAPTAB_LAST]);
 
-          if (!((start == 0) && (last == 0))) {
-            printf("using ROM %06x to %06x\n",
-                   gp_processor_byte_to_org(class, _64k_base + start),
-                   gp_processor_byte_to_org(class, _64k_base + last + 1) - 1);
+          if ((first_offset != 0) || (last_offset != 0)) {
+            start_addr = _64k_base + first_offset;
+            end_addr   = _64k_base + last_offset + 1;
+            printf("using ROM %0*x to %0*x\n",
+                   addr_digits, gp_processor_byte_to_org(class, start_addr),
+                   addr_digits, gp_processor_byte_to_org(class, end_addr) - 1);
+
+            if (make_list) {
+              _memmap_add(start_addr, end_addr);
+            }
           }
         }
       }
@@ -323,66 +441,207 @@ dump_memmap(proc_class_t class)
 
 /*------------------------------------------------------------------------------------------------*/
 
+static gp_boolean
+_is_empty_to_last(unsigned int Index, unsigned int End)
+{
+  while (Index < End) {
+    if (used_map[Index * WORD_SIZE]) {
+      return false;
+    }
+
+    ++Index;
+  }
+
+  return true;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /*
  * Dump all of the machine code in the .cod file.
  */
 
+#define CODE_COLUMN_NUM         8
+
 void
-dump_code(proc_class_t class)
+dump_code(proc_class_t class, pic_processor_t processor)
 {
+  char          buffer[BUFSIZ];
+  DirBlockInfo *dbi;
+  MemBlock_t   *data;
+  int           addr_digits;
   unsigned int  _64k_base;
+  unsigned int  block_index;
+  unsigned int  byte_address;
+  int           num_words;
+  unsigned int  bsr_boundary;
   uint16_t      i;
   uint16_t      j;
   uint16_t      k;
-  uint16_t      index;
-  gp_boolean    all_zero_line;
-  DirBlockInfo *dbi;
+  uint16_t      word;
+  gp_boolean    used_prev;
+  gp_boolean    used_act;
+  gp_boolean    empty_signal;
+  gp_boolean    empty_line;
 
-  dump_memmap(class);
+  dump_memmap(class, true);
 
   printf("Formatted Code Dump:\n"
-         "--------------------\n");
+         "--+-------------------------\n");
 
-  dbi = main_dir;
+  bsr_boundary = gp_processor_bsr_boundary(processor);
+  addr_digits  = class->addr_digits;
+  dbi          = main_dir;
 
   do {
     _64k_base = IMemAddrFromBase((unsigned int)gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]));
     for (k = 0; k < COD_CODE_IMAGE_BLOCKS; k++) {
-      index = gp_getu16(&dbi->dir[2 * (COD_DIR_CODE + k)]);
+      block_index = gp_getu16(&dbi->dir[(k + COD_DIR_CODE) * WORD_SIZE]);
 
-      if (index != 0) {
-        read_block(temp, index);
+      if (block_index != 0) {
+        read_block(temp, block_index);
 
-        i = 0;
-        do {
-          for (j = 0, all_zero_line = true; j < 8; j++) {
-            if (gp_getu16(&temp[(i + j) * 2])) {
-              all_zero_line = false;
+        if (block_index > 1) {
+          printf("  +-------------------------\n");
+        }
+
+        byte_address = _64k_base + (k * COD_BLOCK_N_WORDS) * WORD_SIZE;
+        printf("  | Block %u -- %0*x-%0*x\n"
+               "  +-------------------------\n", block_index,
+               addr_digits, byte_address,
+               addr_digits, byte_address + COD_BLOCK_SIZE - 1);
+
+        _memmap_create_used_map(byte_address);
+
+	/* Shows the COD block. */
+
+	if (memmap_info_list != NULL) {
+	  /* Use the informations of memory map. */
+          i = 0;
+          do {
+            empty_line = true;
+            for (j = 0; j < CODE_COLUMN_NUM; j++) {
+              if (used_map[(i + j) * WORD_SIZE]) {
+                empty_line = false;
+                break;
+              }
             }
-          }
 
-          if (all_zero_line) {
-            i += 8;
-          }
-          else {
-            printf("%06x:  ", gp_processor_byte_to_org(class, _64k_base + 2 * (i + k * 256)));
+            if (! empty_line) {
+              byte_address = _64k_base + (k * COD_BLOCK_N_WORDS + i) * WORD_SIZE;
+              printf("%0*x: ", addr_digits, gp_processor_byte_to_org(class, byte_address));
 
-            for (j = 0; j < 8; j++) {
-              printf("%04x ", gp_getu16(&temp[2 * i++]));
+              for (j = 0; j < CODE_COLUMN_NUM; j++) {
+                if (used_map[(i + j) * WORD_SIZE]) {
+                  /* This is a used ROM word. */
+                  printf(" %04x", gp_getu16(&temp[(i + j) * WORD_SIZE]));
+                }
+                else if (!_is_empty_to_last(i + j, i + CODE_COLUMN_NUM)) {
+                  /* In this line there is also at least one used ROM word. */
+                  printf("     ");
+                }
+                else {
+                  /* Sooner ends the line. */
+                  break;
+                }
+              }
+              putchar('\n');
             }
 
-            putchar('\n');
-          }
-        } while (i < (COD_BLOCK_SIZE / 2));
+            i += CODE_COLUMN_NUM;
+          } while (i < COD_BLOCK_N_WORDS);
+	}
+	else {
+	  /* No memory map. */
+          i = 0;
+          do {
+            empty_line = true;
+            for (j = 0; j < CODE_COLUMN_NUM; j++) {
+              if (gp_getu16(&temp[(i + j) * WORD_SIZE]) != 0) {
+                empty_line = false;
+                break;
+              }
+            }
+
+            if (! empty_line) {
+              byte_address = _64k_base + (k * COD_BLOCK_N_WORDS + i) * WORD_SIZE;
+              printf("%0*x: ", addr_digits, gp_processor_byte_to_org(class, byte_address));
+
+              for (j = 0; j < CODE_COLUMN_NUM; j++) {
+                printf(" %04x", gp_getu16(&temp[(i + j) * WORD_SIZE]));
+              }
+
+              putchar('\n');
+            }
+
+            i += CODE_COLUMN_NUM;
+          } while (i < COD_BLOCK_N_WORDS);
+        }
 
         putchar('\n');
-      }
-    }
 
-    putchar('\n');
+        /* Create the instruction memory and populates from COD block. */
+
+        byte_address = _64k_base + k * COD_BLOCK_N_WORDS * WORD_SIZE;
+        data         = i_memory_create();
+        for (j = 0; j < COD_BLOCK_SIZE; j++) {
+          b_memory_put(data, byte_address + j, temp[j], NULL, NULL);
+        }
+
+        /* Disassembles this code array. */
+
+        i            = 0;
+        used_prev    = false;
+        empty_signal = false;
+        do {
+          used_act = used_map[i * WORD_SIZE];
+
+          if (used_act) {
+            if (empty_signal) {
+              /* This is a previous empty block. */
+              printf("  . . . . . . . . . . .\n");
+              empty_signal = false;
+            }
+
+            if (!class->i_memory_get(data, byte_address, &word, NULL, NULL)) {
+              /* Internal memory handling error. */
+              assert(0);
+            }
+
+            num_words = gp_disassemble(data, byte_address, class, bsr_boundary, 0,
+                                       GPDIS_SHOW_ALL_BRANCH, buffer, sizeof(buffer), 0);
+            printf("%0*x:  %04x  %s\n", addr_digits, gp_processor_byte_to_org(class, byte_address), word, buffer);
+
+            if (num_words != 1) {
+              if (!class->i_memory_get(data, byte_address + WORD_SIZE, &word, NULL, NULL)) {
+                /* Internal memory handling error. */
+                assert(0);
+              }
+
+              printf("%0*x:  %04x\n", addr_digits, gp_processor_byte_to_org(class, byte_address + WORD_SIZE), word);
+            }
+
+            empty_signal = false;
+          }
+          else if (used_prev && (!used_act)) {
+            empty_signal = true;
+          }
+
+          used_prev = used_act;
+
+          byte_address += num_words * WORD_SIZE;
+          i            += num_words;
+        } while (i < COD_BLOCK_N_WORDS);
+
+        i_memory_free(data);
+      } /* if (block_index != 0) */
+    } /* for (k = 0; k < COD_CODE_IMAGE_BLOCKS; k++) */
 
     dbi = dbi->next;
   } while (dbi != NULL);
+
+  putchar('\n');
+  _memmap_free();
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -413,7 +672,7 @@ dump_symbols(void)
 
       for (i = 0; i < SYMBOLS_PER_BLOCK; i++) {
         if (temp[i * SSYMBOL_SIZE + COD_SSYMBOL_NAME]) {
-          printf("%s = %x, type = %s\n",
+          printf("%s = %04x, type = %s\n",
                  substr(b, sizeof(b), &temp[i * SSYMBOL_SIZE + COD_SSYMBOL_NAME], 12),
                  gp_getu16(&temp[i * SSYMBOL_SIZE + COD_SSYMBOL_SVALUE]),
                  SymbolType4[(unsigned int)temp[i * SSYMBOL_SIZE + COD_SSYMBOL_STYPE]]);
@@ -475,7 +734,7 @@ dump_lsymbols(void)
         /* read big endian */
         value = gp_getb32(&s[length + 3]);
 
-        printf("%s = %x, type = %s\n", substr(b, sizeof(b), &s[1], length), value, SymbolType4[type]);
+        printf("%s = %08x, type = %s\n", substr(b, sizeof(b), &s[1], length), value, SymbolType4[type]);
         i += length + 7;
       }
     }
@@ -574,16 +833,23 @@ dump_line_symbols(void)
   static int    last_src_line = 0;
 
   char          tline[2048];
-  uint16_t      i;
-  uint16_t      j;
+  char          nbuf[128];
+  const char   *source_file_name;
+  DirBlockInfo *dbi;
+  gp_boolean    has_line_num_info;
+  unsigned int  _64k_base;
+  unsigned int  offset;
   uint16_t      start_block;
   uint16_t      end_block;
-  DirBlockInfo *dbi = main_dir;
-  gp_boolean    has_line_num_info = false;
-  int           _64k_base;
-  char          nbuf[128];
-  char         *source_file_name;
+  uint16_t      i;
+  uint16_t      j;
+  uint8_t       sfile;
+  uint8_t       smod;
+  uint16_t      sline;
+  uint16_t      sloc;
 
+  has_line_num_info = false;
+  dbi = main_dir;
   do {
     _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]);
 
@@ -604,12 +870,11 @@ dump_line_symbols(void)
         read_block(temp, j);
 
         for (i = 0; i < COD_MAX_LINE_SYM; i++) {
-          unsigned int offset = i * COD_LINE_SYM_SIZE;
-
-          uint8_t  sfile = temp[offset + COD_LS_SFILE];
-          uint8_t  smod  = temp[offset + COD_LS_SMOD];
-          uint16_t sline = gp_getl16(&temp[offset + COD_LS_SLINE]);
-          uint16_t sloc  = gp_getl16(&temp[offset + COD_LS_SLOC]);
+          offset = i * COD_LINE_SYM_SIZE;
+          sfile  = temp[offset + COD_LS_SFILE];
+          smod   = temp[offset + COD_LS_SMOD];
+          sline  = gp_getl16(&temp[offset + COD_LS_SLINE]);
+          sloc   = gp_getl16(&temp[offset + COD_LS_SLOC]);
 
           if (((sfile != 0) || (smod != 0) || (sline != 0) || (sloc != 0)) &&
               ((smod & COD_LS_SMOD_FLAG_L) == 0)) {
@@ -621,8 +886,9 @@ dump_line_symbols(void)
               source_file_name = nbuf;
             }
 
-            printf(" %5d  %5d  %06X  %2x %s  %-50s\n",
-                   lst_line_number++, sline, IMemAddrFromBase(_64k_base) | sloc,
+            printf(" %5d  %5d  %06x  %2x %s  %-50s\n",
+                   lst_line_number++, sline,
+                   IMemAddrFromBase(_64k_base) | sloc,
                    smod, _smod_flags(smod), source_file_name);
 
             if ((sfile < number_of_source_files) && (sline != last_src_line)) {

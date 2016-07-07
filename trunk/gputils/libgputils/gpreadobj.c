@@ -299,8 +299,8 @@ _read_symbol(gp_object_t *Object, int i, gp_symbol_t *Symbol, const uint8_t *Fil
     type = _check_getl32(&File[data_idx], Data);
     data_idx += 4;
 
-    Symbol->type         = type & 0x1F;
-    Symbol->derived_type = type >> 5;
+    Symbol->type         = type & T_MASK_v2;
+    Symbol->derived_type = type >> T_SHIFT_v2;
   }
   else {
     /* TODO: Make sure the old format had this alignment. */
@@ -308,8 +308,8 @@ _read_symbol(gp_object_t *Object, int i, gp_symbol_t *Symbol, const uint8_t *Fil
     type = _check_getl16(&File[data_idx], Data);
     data_idx += 2;
 
-    Symbol->type         = type & 0x0F;
-    Symbol->derived_type = type >> 4;
+    Symbol->type         = type & T_MASK_v1;
+    Symbol->derived_type = type >> T_SHIFT_v1;
   }
 
   /* 'st_class'   -- storage class */
