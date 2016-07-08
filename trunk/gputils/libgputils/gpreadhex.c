@@ -40,7 +40,8 @@ _a2n(uint8_t Character)
 
   if (Character <= '9') {
     number = Character - '0';
-  } else {
+  }
+  else {
     /* Convert lower case to upper. */
     Character &= ~('a' - 'A');
     number = Character - ('A' - 10);
@@ -154,7 +155,8 @@ gp_readhex(const char *File_name, MemBlock_t *M)
       /* INHX32 segment line. */
       page = ((_readbyte() << 8) + _readbyte()) << 16;
       info->hex_format = INHX32;
-    } else {
+    }
+    else {
       /* Read the data (skipping last byte if at odd address). */
       for (i = 0; i < length; ++i) {
 	byte = _readbyte();
@@ -182,7 +184,8 @@ gp_readhex(const char *File_name, MemBlock_t *M)
         /* Data in i_memory is trash. */
         i_memory_free(M);
         M = i_memory_create();
-      } else {
+      }
+      else {
         printf("\nChecksum Error\n");
         fclose(infile);
         info->error = true;

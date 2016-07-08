@@ -177,7 +177,8 @@ gp_archive_delete_member(gp_archive_t *Archive, const char *Object_name)
   if (object == Archive) {
     /* the first object in the list is being deleted */
     Archive = Archive->next;
-  } else {
+  }
+  else {
     /* locate and remove the member */
     list = Archive;
     while (list != NULL) {

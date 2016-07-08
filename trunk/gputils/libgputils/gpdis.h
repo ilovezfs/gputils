@@ -38,7 +38,7 @@ typedef struct {
   gp_boolean                 need_sfr_equ;
 } gpdasm_fstate_t;
 
-/* Values of the "behavior". */
+/* Values of the "Behavior". */
 #define GPDIS_SHOW_NOTHING      0
 #define GPDIS_SHOW_NAMES        (1 << 0)
 #define GPDIS_SHOW_FSRN         (1 << 1)

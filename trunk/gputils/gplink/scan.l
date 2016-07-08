@@ -218,7 +218,8 @@ void open_src(const char *name, gp_boolean isinclude)
   if (new->f == NULL) {
     if (state.src != NULL) {
       gp_error("Unable to open file \"%s\" - %s", name, strerror(errno));
-    } else {
+    }
+    else {
       perror(name);
     }
     exit(1);
@@ -252,7 +253,8 @@ gp_boolean close_file(void)
     /* Just an include file */
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
-  } else {
+  }
+  else {
     terminate = true;
   }
 

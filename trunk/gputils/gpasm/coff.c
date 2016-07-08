@@ -271,7 +271,8 @@ coff_new_section(const char *Name, unsigned int Address, unsigned int Flags)
         gpmsg_verror(GPE_CONTIG_SECTION, NULL, Name);
         return;
       }
-    } else {
+    }
+     else {
       gpmsg_verror(GPE_CONTIG_SECTION, NULL, Name);
       return;
     }
@@ -362,7 +363,8 @@ coff_linenum(unsigned int Emitted)
     if (state.debug_info) {
       new->symbol      = state.obj.debug_file;
       new->line_number = state.obj.debug_line;
-    } else {
+    }
+     else {
       new->symbol      = state.src->file_symbol;
       new->line_number = state.src->line_number;
     }
@@ -656,7 +658,8 @@ coff_local_name(const char *Name)
 
       count++;
     }
-  } else {
+  }
+  else {
     gp_strncpy(buffer, Name, sizeof(buffer));
   }
 

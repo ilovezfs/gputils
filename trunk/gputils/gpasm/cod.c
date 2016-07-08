@@ -218,7 +218,8 @@ _write_code(void)
           start_address = i;
           used_flag = true;
         }
-      } else {
+      }
+      else {
         /* No code at address i, but we need to check if this is the
            first empty address after a range of address. */
         if (used_flag) {
@@ -263,7 +264,8 @@ cod_init(void)
     state.cod.f       = NULL;
     state.cod.enabled = false;
     unlink(state.cod_file_name);
-  } else {
+  }
+  else {
     state.cod.f = fopen(state.cod_file_name, "wb");
     if (state.cod.f == NULL) {
       perror(state.cod_file_name);

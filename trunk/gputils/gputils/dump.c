@@ -643,7 +643,7 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
               empty_signal = false;
             }
 
-            if (!class->i_memory_get(data, byte_address, &word, NULL, NULL)) {
+            if (class->i_memory_get(data, byte_address, &word, NULL, NULL) != W_USED_ALL) {
               /* Internal memory handling error. */
               assert(0);
             }
@@ -653,7 +653,7 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
             printf("%0*x:  %04x  %s\n", addr_digits, gp_processor_byte_to_org(class, byte_address), word, buffer);
 
             if (num_words != 1) {
-              if (!class->i_memory_get(data, byte_address + WORD_SIZE, &word, NULL, NULL)) {
+              if (class->i_memory_get(data, byte_address + WORD_SIZE, &word, NULL, NULL) != W_USED_ALL) {
                 /* Internal memory handling error. */
                 assert(0);
               }
@@ -1092,7 +1092,8 @@ dump_local_vars(proc_class_t proc_class)
             printf("Local symbols between %06x and %06x:  ",
                    gp_processor_byte_to_org(proc_class, start),
                    gp_processor_byte_to_org(proc_class, stop + 1) - 1);
-          } else {
+          }
+          else {
             printf("%.12s = %04x, type = %s\n", &sh[COD_SSYMBOL_NAME],
                    gp_getl16(&sh[COD_SSYMBOL_SVALUE]),
                    SymbolType4[(unsigned int)sh[COD_SSYMBOL_STYPE]]);

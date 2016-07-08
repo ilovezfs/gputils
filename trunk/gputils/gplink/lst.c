@@ -80,7 +80,8 @@ _open_source(const char *name, gp_symbol_t *symbol)
   if (new->f != NULL) {
     new->name           = GP_Strdup(name);
     new->missing_source = false;
-  } else {
+  }
+  else {
     new->missing_source = true;
 
     if (getenv("GPUTILS_WARN_MISSING_SRC")) {
@@ -332,7 +333,8 @@ _lst_init(void)
     state.lst.f       = NULL;
     state.lst.enabled = false;
     unlink(state.lstfilename);
-  } else {
+  }
+  else {
     state.lst.f = fopen(state.lstfilename, "wt");
 
     if (state.lst.f == NULL) {
@@ -390,7 +392,8 @@ lst_write(void)
            until the line number is reached */
         assert(state.lst.src != NULL);
         _write_source(aux->_aux_symbol._aux_file.line_number);
-      } else {
+      }
+      else {
         /* it is not an include, so enable listing */
         list_enabled = true;
       }
@@ -408,17 +411,21 @@ lst_write(void)
         cod_lst_line(COD_NORMAL_LST_LINE);
         first_time = false;
       }
-    } else if (symbol->class == C_LIST) {
+    }
+    else if (symbol->class == C_LIST) {
       if (strcasecmp(symbol->name, ".list") == 0) {
         _write_source(symbol->value);
         list_enabled = true;
-      } else if (strcasecmp(symbol->name, ".nolist") == 0) {
+      }
+      else if (strcasecmp(symbol->name, ".nolist") == 0) {
         _write_source(symbol->value);
         list_enabled = false;
-      } else {
+      }
+      else {
         assert(0);
       }
-    } else if (symbol->class == C_EOF) {
+    }
+    else if (symbol->class == C_EOF) {
       /* print the rest of the current file then, close it */
       _write_source(0);
       _close_source();

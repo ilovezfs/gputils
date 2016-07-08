@@ -1852,7 +1852,8 @@ gp_cofflink_make_memory(gp_object_t *Object)
             if (addr & 1) {
               /* This is higher byte. */
               byte |= ((Object->processor->idlocs_mask) >> 8) & 0xFF;
-            } else {
+            }
+            else {
               /* This is lower byte. */
               byte |= Object->processor->idlocs_mask & 0xFF;
             }

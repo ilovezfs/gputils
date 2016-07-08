@@ -269,7 +269,8 @@ gp_date_string(char *buffer, size_t sizeof_buffer)
              now_tm->tm_hour,
              now_tm->tm_min,
              now_tm->tm_sec);
-  } else if (sizeof_buffer > 0) {
+  }
+  else if (sizeof_buffer > 0) {
     buffer[0] = '\0';
   }
 }
@@ -549,7 +550,8 @@ gp_absolute_path(char *file_name)
   if (num_chars == 0) {
     gp_error("Can't fetch full path of %s.", file_name);
     return file_name;
-  } else {
+  }
+  else {
     return GP_Strdup(file_buffer);
   }
 #else
@@ -560,7 +562,8 @@ gp_absolute_path(char *file_name)
   if (resolved_name == NULL) {
     gp_error("Can't fetch full path of %s.", file_name);
     return file_name;
-  } else {
+  }
+  else {
     return resolved_name;
   }
 

@@ -164,7 +164,8 @@ _strip_all(void)
     /* remove all symbols */
     state.object->num_symbols = 0;
     gp_list_delete(&state.object->symbol_list);
-  } else {
+  }
+  else {
     gp_error("can not strip all symbols because the object file is not executable");
   }
 }
@@ -380,7 +381,8 @@ int main(int argc, char *argv[])
       if (state.strip_debug) {
         if (state.strip_all) {
           gp_message("strip debug ignored");
-        } else {
+        }
+        else {
           _strip_debug();
         }
       }
@@ -388,7 +390,8 @@ int main(int argc, char *argv[])
       if (state.strip_unneeded) {
         if (state.strip_all) {
           gp_message("strip unneeded ignored");
-        } else {
+        }
+        else {
           _strip_unneeded();
         }
       }
@@ -396,7 +399,8 @@ int main(int argc, char *argv[])
       if (state.discard_all) {
         if (state.strip_all) {
           gp_message("discard all ignored");
-        } else {
+        }
+        else {
           _discard_all();
         }
       }
@@ -415,7 +419,8 @@ int main(int argc, char *argv[])
         if (!gp_writeobj_write_coff(state.object, 0)) {
           gp_error("system error while writing object file");
         }
-      } else if (state.output_file) {
+      }
+      else if (state.output_file) {
         /* a new file is being written, but errors have occurred, delete
            the file if it exists */
         unlink(state.output_file);

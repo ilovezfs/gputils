@@ -89,7 +89,8 @@ _assign_file_id(void)
       if (sym != NULL) {
         /* fetch the file number */
         value = (int *)sym_get_symbol_annotation(sym);
-      } else {
+      }
+      else {
         /* the file hasn't been assigned a value */
         value  = (int *)GP_Malloc(sizeof(int));
         *value = file_id++;
@@ -120,7 +121,8 @@ cod_init(void)
     state.cod.f       = NULL;
     state.cod.enabled = false;
     unlink(state.codfilename);
-  } else {
+  }
+  else {
     state.cod.f = fopen(state.codfilename, "wb");
 
     if (state.cod.f == NULL) {
@@ -404,7 +406,8 @@ _write_code(void)
           start_address = i;
           used_flag     = true;
         }
-      } else {
+      }
+      else {
         /* No code at address i, but we need to check if this is the
            first empty address after a range of address. */
         if (used_flag) {

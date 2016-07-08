@@ -320,7 +320,8 @@ convert_escape_chars(const char *ps, int *value)
 
   if (*ps != '\\') {
     *value = *ps++;
-  } else {
+  }
+  else {
     /* escape char, convert its value and write to the new string */
     switch (ps[1]) {
       case '0':
@@ -358,7 +359,8 @@ convert_escape_chars(const char *ps, int *value)
           if (*ps != '\0') {
             ++ps;
           }
-        } else {
+        }
+        else {
           buffer[0] = ps[2];
           buffer[1] = ps[3];
           buffer[2] = '\0';
@@ -373,7 +375,8 @@ convert_escape_chars(const char *ps, int *value)
           *value = 0;
           /* return a NIL character */
           ps++;
-        } else {
+        }
+        else {
           *value = gpasm_magic(ps);
           ps += 2;
         }
@@ -453,7 +456,8 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
       default:
         break;
     }
-  } else if (lifetime == LFT_TEMPORARY) {
+  }
+  else if (lifetime == LFT_TEMPORARY) {
     /*
      * TSD - the following embarrassing piece of code is a hack
      *       to fix a problem when global variables are changed
@@ -467,7 +471,8 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
      */
      var->value = value;
 
-  } else if (state.pass == 2) {
+  }
+  else if (state.pass == 2) {
     char *coff_name;
 
     if (var->value != value) {
@@ -568,7 +573,8 @@ select_errorlevel(int level)
 {
   if (state.cmd_line.error_level) {
     gpmsg_vmessage(GPM_SUPVAL, NULL);
-  } else {
+  }
+  else {
     if ((level >= 0) && (level <= 2)) {
       if (state.cmd_line.strict_level && (state.strict_level > 0)) {
         /*
@@ -580,10 +586,12 @@ select_errorlevel(int level)
       else {
         state.error_level = level;
       }
-    } else {
+    }
+    else {
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid warning level \"%i\".\n", level);
-      } else {
+      }
+      else {
         gpmsg_error(GPE_ILLEGAL_ARGU, "Expected w= 0, 1, 2");
       }
     }
@@ -597,7 +605,8 @@ select_strictlevel(int level)
 {
   if (state.cmd_line.strict_level) {
     gpmsg_vmessage(GPM_SUPVAL, NULL);
-  } else {
+  }
+  else {
     if ((level >= 0) && (level <= 2)) {
       state.strict_level = level;
 
@@ -605,10 +614,12 @@ select_strictlevel(int level)
         /* Enable each messages. */
         state.error_level = 0;
       }
-    } else {
+    }
+    else {
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid strict level \"%i\".\n", level);
-      } else {
+      }
+      else {
         gpmsg_error(GPE_ILLEGAL_ARGU, "Expected S= 0, 1, 2");
       }
     }
@@ -622,17 +633,21 @@ select_expand(const char *expand)
 {
   if (state.cmd_line.macro_expand) {
     gpmsg_vmessage(GPM_SUPLIN, NULL);
-  } else {
+  }
+  else {
     if (strcasecmp(expand, "on") == 0) {
       state.lst.expand = true;
-    } else if (strcasecmp(expand, "off") == 0) {
+    }
+    else if (strcasecmp(expand, "off") == 0) {
       state.lst.expand = false;
-    } else {
+    }
+    else {
       state.lst.expand = true;
 
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid option \"%s\".\n", expand);
-      } else {
+      }
+      else {
         gpmsg_error(GPE_ILLEGAL_ARGU, "Expected ON or OFF.");
       }
     }
@@ -646,21 +661,27 @@ select_hexformat(const char *format_name)
 {
   if (state.cmd_line.hex_format) {
     gpmsg_vwarning(GPW_CMDLINE_HEXFMT, NULL);
-  } else {
+  }
+  else {
     if (strcasecmp(format_name, STR_INHX8M) == 0) {
       state.hex_format = INHX8M;
-    } else if (strcasecmp(format_name, STR_INHX8S) == 0) {
+    }
+    else if (strcasecmp(format_name, STR_INHX8S) == 0) {
       state.hex_format = INHX8S;
-    } else if (strcasecmp(format_name, STR_INHX16) == 0) {
+    }
+    else if (strcasecmp(format_name, STR_INHX16) == 0) {
       state.hex_format = INHX16;
-    } else if (strcasecmp(format_name, STR_INHX32) == 0) {
+    }
+    else if (strcasecmp(format_name, STR_INHX32) == 0) {
       state.hex_format = INHX32;
-    } else {
+    }
+    else {
       state.hex_format = INHX8M;
 
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid format \"%s\".\n", format_name);
-      } else {
+      }
+      else {
         gpmsg_error(GPE_ILLEGAL_ARGU, "Expected " STR_INHX8M ", " STR_INHX8S ", " STR_INHX16 ", or " STR_INHX32 ".");
       }
     }
@@ -674,25 +695,30 @@ select_radix(const char *radix_name)
 {
   if (state.cmd_line.radix) {
     gpmsg_vwarning(GPW_CMDLINE_RADIX, NULL);
-  } else {
+  }
+  else {
     if ((strcasecmp(radix_name, "h") == 0) ||
         (strcasecmp(radix_name, "hex") == 0) ||
         (strcasecmp(radix_name, "hexadecimal") == 0)) {
       state.radix = 16;
-    } else if ((strcasecmp(radix_name, "d") == 0) ||
-               (strcasecmp(radix_name, "dec") == 0) ||
-               (strcasecmp(radix_name, "decimal") == 0)) {
+    }
+    else if ((strcasecmp(radix_name, "d") == 0) ||
+             (strcasecmp(radix_name, "dec") == 0) ||
+             (strcasecmp(radix_name, "decimal") == 0)) {
       state.radix = 10;
-    } else if ((strcasecmp(radix_name, "o") == 0) ||
-               (strcasecmp(radix_name, "oct") == 0) ||
-               (strcasecmp(radix_name, "octal") == 0)) {
+    }
+    else if ((strcasecmp(radix_name, "o") == 0) ||
+             (strcasecmp(radix_name, "oct") == 0) ||
+             (strcasecmp(radix_name, "octal") == 0)) {
       state.radix = 8;
-    } else {
+    }
+    else {
       state.radix = 16;
 
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid radix \"%s\", will use hex.\n", radix_name);
-      } else {
+      }
+      else {
         gpmsg_vwarning(GPW_RADIX, NULL);
       }
     }
@@ -882,13 +908,15 @@ hex_init(void)
   if (!gp_writehex_check(state.i_memory, state.hex_format)) {
     gpmsg_verror(GPE_IHEX, NULL);
     gp_writehex(state.base_file_name, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
-  } else if (state.device.class != NULL) {
+  }
+  else if (state.device.class != NULL) {
     if (!gp_writehex(state.base_file_name, state.i_memory, state.hex_format, state.num.errors,
                      state.dos_newlines, state.device.class->core_mask)) {
       gpmsg_error(GPE_UNKNOWN, "Error generating hex file.");
       exit(1);
     }
-  } else {
+  }
+  else {
     /* Won't have anything to write, just remove any old files. */
     gp_writehex(state.base_file_name, state.i_memory, state.hex_format, 1, state.dos_newlines, 1);
   }

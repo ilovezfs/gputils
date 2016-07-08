@@ -129,7 +129,8 @@ select_processor(const char *name)
 
   if (state.cmd_line.processor) {
     gpmsg_vwarning(GPW_CMDLINE_PROC, NULL);
-  } else {
+  }
+  else {
     found = gp_find_processor(name);
 
     if (found != NULL) {
@@ -304,10 +305,12 @@ select_processor(const char *name)
         gpmsg_vwarning(GPW_REDEFINING_PROC, NULL);
         gpmsg_verror(GPE_EXTRA_PROC, NULL);
       }
-    } else {
+    }
+    else {
       if (state.pass > 0) {
         gpmsg_verror(GPE_UNKNOWN_PROC, NULL, name);
-      } else {
+      }
+      else {
         printf("Didn't find any processor named: %s\nHere are the supported processors:\n", name);
         gp_dump_processor_list(true, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN);
         exit(1);

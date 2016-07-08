@@ -1,4 +1,15 @@
 2016-07-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gpasm/coff.c, gpasm/deps.c, gpasm/gpmsg.c,
+    gpasm/lst.c, gpasm/parse.y, gpasm/ppscan.l, gpasm/preprocess.c,
+    gpasm/processor.c, gpasm/special.c, gpasm/util.c, gplink/cod.c,
+    gplink/lst.c, gplink/scan.l, gputils/dump.c, gputils/gplib.c,
+    gputils/gpstrip.c, gputils/gpvo.c, libgputils/gparchive.c,
+    libgputils/gpcod.c, libgputils/gpcofflink.c, libgputils/gpdis.c,
+    libgputils/gpdis.h, libgputils/gpreadhex.c, libgputils/gpsystem.c,
+    libgputils/gpwriteobj.c:
+    Code formatting.
+
+2016-07-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gputils/dump.c, gputils/dump.h, gputils/gpvc.c:
     New command option: "-w" or "--wide"
 

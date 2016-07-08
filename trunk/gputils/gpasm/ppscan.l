@@ -103,7 +103,8 @@ NUMCHAR [0-9a-z]
                            if (state.radix == 16) {
                              pplval.i = stringtolong(yytext, 16);
                              return NUMBER;
-                           } else {
+                           }
+                           else {
                              yytext[yyleng - 1] = '\0';
                              pplval.i = stringtolong(yytext, 2);
                              return NUMBER;
@@ -128,7 +129,8 @@ NUMCHAR [0-9a-z]
                            if (state.radix == 16) {
                              pplval.i = stringtolong(yytext, 16);
                              return NUMBER;
-                           } else {
+                           }
+                           else {
                              yytext[yyleng - 1] = '\0';
                              pplval.i = stringtolong(yytext, 10);
                              return NUMBER;
@@ -162,7 +164,8 @@ NUMCHAR [0-9a-z]
 
                            if ((yyleng > 1) && (yytext[yyleng - 1] == '"')) {
                              --yyleng;
-                           } else {
+                           }
+                           else {
                              gpmsg_vwarning(GPW_MISSING_QUOTE, NULL);
                            }
 

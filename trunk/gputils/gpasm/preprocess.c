@@ -82,7 +82,8 @@ _check_defines(char *symbol, int symlen, pnode_t **param_list_p)
         /* check for a bad subsitution */
         subst = NULL;
       }
-    } else {
+    }
+    else {
       subst = "";
     }
   }
@@ -699,7 +700,8 @@ _check_macro_params(char *symbol, int symlen)
         /* check for a bad subsitution */
         subst = NULL;
       }
-    } else {
+    }
+    else {
       subst = "";
     }
   }

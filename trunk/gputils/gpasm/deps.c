@@ -37,7 +37,8 @@ deps_init(void)
 
   if (state.dep_file == OUT_SUPPRESS) {
     state.dep.enabled = false;
-  } else {
+  }
+   else {
     state.dep.f = fopen(state.dep_file_name, "w");
     if (state.dep.f == NULL) {
       perror(state.dep_file_name);
@@ -48,7 +49,8 @@ deps_init(void)
     /* output file names may not be setup, so make one */
     if (state.mode == MODE_RELOCATABLE) {
       snprintf(output_file, sizeof(output_file), "%s.o", state.base_file_name);
-    } else {
+    }
+    else {
       snprintf(output_file, sizeof(output_file), "%s.hex", state.base_file_name);
     }
 

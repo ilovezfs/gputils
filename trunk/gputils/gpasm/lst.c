@@ -673,7 +673,8 @@ lst_init(void)
     state.lst.f       = NULL;
     state.lst.enabled = false;
     unlink(state.lst_file_name);
-  } else {
+  }
+  else {
     state.lst.f = fopen(state.lst_file_name, "wt");
 
     if (state.lst.f == NULL) {

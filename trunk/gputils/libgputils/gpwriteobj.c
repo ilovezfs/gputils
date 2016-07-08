@@ -82,7 +82,8 @@ _add_name(const char *Name, uint8_t *Table, FILE *Fp)
     if (length < sizeof(zero)) {
       gp_fputvar(zero, sizeof(zero) - length, Fp);
     }
-  } else {
+  }
+  else {
     offset = _add_string(Name, Table);
 
     /* write zeros and offset */
@@ -363,7 +364,8 @@ _write_symbols(const gp_object_t *Object, uint8_t *Table, FILE *Fp)
 
     if (current->section_number < N_SCNUM) {
       gp_fputl16(current->section_number, Fp);
-    } else {
+    }
+    else {
       gp_fputl16(current->section->number, Fp);
     }
 

@@ -558,7 +558,7 @@ _print_sym_table(const gp_object_t *object)
           }
           putchar('\n');
         }
-      } /* switch (aux->type) { */
+      } /* switch (aux->type) */
 
       aux = aux->next;
       ++idx;
@@ -613,7 +613,8 @@ _print_binary(const uint8_t *data, long file_size)
 
       if ((i + j) >= file_size) {
         printf("     ");
-      } else {
+      }
+      else {
         printf(" %04x", memory);
       }
     }
