@@ -109,13 +109,15 @@ _show_usage(void)
 #ifdef USE_DEFAULT_PATHS
   if (gp_lkr_path != NULL) {
     printf("Default linker script path %s\n", gp_lkr_path);
-  } else {
+  }
+  else {
     printf("Default linker script path NOT SET\n");
   }
 
   if (gp_lib_path != NULL) {
     printf("Default library path %s\n", gp_lib_path);
-  } else {
+  }
+  else {
     printf("Default library path NOT SET\n");
   }
   printf("\n");
@@ -148,7 +150,8 @@ _object_append(gp_object_t *object)
     /* store the processor type from the first object file */
     state.processor = object->processor;
     state.class     = object->class;
-  } else {
+  }
+  else {
     list = state.object;
 
     while (list->next != NULL) {
@@ -158,12 +161,14 @@ _object_append(gp_object_t *object)
 
     if (object->class != state.class) {
       gp_error("Processor family mismatch in \"%s\".", object->filename);
-    } else if ((processor_mismatch_warning) && (object->processor != state.processor)) {
+    }
+    else if ((processor_mismatch_warning) && (object->processor != state.processor)) {
       gp_warning("Processor mismatch in \"%s\".", object->filename);
     }
   }
 
   if (state.optimize.weak_symbols) {
+    gp_coffgen_check_relocations(object, RELOC_DISABLE_WARN);
     gp_coffopt_remove_weak(object);
   }
 }
@@ -184,7 +189,8 @@ _archive_append(gp_archive_t *file, const char *name)
   /* append the entry to the list */
   if (state.archives == NULL) {
     state.archives = new;
-  } else {
+  }
+  else {
     struct archivelist *list = state.archives;
 
     while (list->next != NULL){
@@ -376,17 +382,20 @@ _build_tables(void)
       if (_count_missing() == 0) {
         /* No more missing references, no need to continue. */
         break;
-      } else if (arlist->next == NULL) {
+      }
+      else if (arlist->next == NULL) {
         if (modified) {
           /* At least one object was loaded from an archive and there are
              still missing symbols.  Scan all the archives again. */
           modified = false;
           arlist = state.archives;
-        } else {
+        }
+        else {
           /* Quit */
           break;
         }
-      } else {
+      }
+      else {
         arlist = arlist->next;
       }
     }
@@ -456,30 +465,30 @@ gplink_open_coff(const char *name)
   /* FIXME: Three files are opened, surely one is sufficent. */
 
   switch(gp_identify_coff_file(file_name)) {
-  case GP_COFF_OBJECT_V2:
-  case GP_COFF_OBJECT:
-    /* read the object */
-    object = gp_read_coff(file_name);
-    /*object_append(object, file_name);*/
-    _object_append(object);
-    break;
+    case GP_COFF_OBJECT_V2:
+    case GP_COFF_OBJECT:
+      /* read the object */
+      object = gp_read_coff(file_name);
+      /*object_append(object, file_name);*/
+      _object_append(object);
+      break;
 
-  case GP_COFF_ARCHIVE:
-    /* read the archive */
-    archive = gp_archive_read(file_name);
-    _archive_append(archive, file_name);
-    break;
+    case GP_COFF_ARCHIVE:
+      /* read the archive */
+      archive = gp_archive_read(file_name);
+      _archive_append(archive, file_name);
+      break;
 
-  case GP_COFF_SYS_ERR:
-    gp_error("Can't open file \"%s\".", file_name);
-    break;
+    case GP_COFF_SYS_ERR:
+      gp_error("Can't open file \"%s\".", file_name);
+      break;
 
-  case GP_COFF_UNKNOWN:
-    gp_error("\"%s\" is not a valid coff object or archive.", file_name);
-    break;
+    case GP_COFF_UNKNOWN:
+      gp_error("\"%s\" is not a valid coff object or archive.", file_name);
+      break;
 
-  default:
-    assert(0);
+    default:
+      assert(0);
   }
 }
 
@@ -560,7 +569,8 @@ gplink_add_path(const char *path)
 {
   if (state.numpaths < MAX_PATHS) {
     state.paths[state.numpaths++] = GP_Strdup(path);
-  } else {
+  }
+  else {
     gp_error("Too many -I paths.");
   }
 }
@@ -642,11 +652,14 @@ _process_args(int argc, char *argv[])
     case 'a':
       if (strcasecmp(optarg, "inhx8m") == 0) {
         state.hex_format = INHX8M;
-      } else if (strcasecmp(optarg, "inhx16") == 0) {
+      }
+      else if (strcasecmp(optarg, "inhx16") == 0) {
         state.hex_format = INHX16;
-      } else if (strcasecmp(optarg, "inhx32") == 0) {
+      }
+      else if (strcasecmp(optarg, "inhx32") == 0) {
         state.hex_format = INHX32;
-      } else {
+      }
+      else {
         gp_error("Invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32.", optarg);
       }
       break;
@@ -676,9 +689,11 @@ _process_args(int argc, char *argv[])
       state.fill_value = strtol(optarg, &pc, 16);
       if ((pc == NULL) || (*pc != '\0')) {
         gp_error("Invalid character %#x in number constant.", *pc);
-      } else if (state.fill_value > 0xffff) {
+      }
+      else if (state.fill_value > 0xffff) {
         gp_error("Fill value exceeds 0xffff: %#x", *pc);
-      } else {
+      }
+      else {
         state.fill_enable = true;
       }
       break;
@@ -748,15 +763,17 @@ _process_args(int argc, char *argv[])
       }
       break;
 
-    case 't':
+    case 't': {
       state.stack_size = strtol(optarg, &pc, 10);
 
       if ((pc == NULL) || (*pc != '\0')) {
         gp_error("Invalid character %#x in number constant.", *pc);
-      } else {
+      }
+      else {
         state.has_stack = true;
       }
       break;
+    }
 
     case 'u':
       _parse_define(optarg, script_add_macro);
@@ -916,7 +933,7 @@ _linker(void)
 
   /* clean up symbol table */
   gp_cofflink_clean_table(state.object, state.symbol.definition);
-  gp_coffgen_check_relocations(state.object, enable_cinit_wanings);
+  gp_coffgen_check_relocations(state.object, (enable_cinit_wanings) ? RELOC_ENABLE_CINIT_WARN : 0);
 
   if (state.optimize.dead_sections) {
     gp_coffopt_remove_dead_sections(state.object, 0, enable_cinit_wanings);
@@ -1016,7 +1033,8 @@ _linker(void)
       gp_error("Error while writing object file.");
       exit(1);
     }
-  } else {
+  }
+  else {
     unlink(state.object->filename);
   }
 

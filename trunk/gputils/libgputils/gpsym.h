@@ -54,5 +54,6 @@ extern const char *sym_get_symbol_name(const symbol_t *Sym);
 extern void *sym_get_symbol_annotation(const symbol_t *Sym);
 
 extern int sym_compare_fn(const void *P0, const void *P1);
+extern int sym_version_compare_fn(const void *P0, const void *P1);
 
 #endif

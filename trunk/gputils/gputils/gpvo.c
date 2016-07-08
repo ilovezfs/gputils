@@ -80,8 +80,6 @@ _show_usage(void)
 static void
 _print_header(const gp_object_t *object)
 {
-#define NELEM(x)  (sizeof(x) / sizeof(*(x)))
-
   static struct magic_s {
     uint16_t    magic_num;
     const char *magic_name;
@@ -104,16 +102,16 @@ _print_header(const gp_object_t *object)
 
   printf("COFF File and Optional Headers\n");
 
-  for (i = 0; i < NELEM(magic); ++i) {
+  for (i = 0; i < ARRAY_SIZE(magic); ++i) {
     if (magic[i].magic_num == object->version) {
       break;
     }
   }
   printf("COFF version         %#x: %s\n", object->version,
-         (i < NELEM(magic)) ? magic[i].magic_name : "unknown");
+         (i < ARRAY_SIZE(magic)) ? magic[i].magic_name : "unknown");
   printf("Processor Type       %s\n",  processor_name);
   printf("Time Stamp           %s\n",  time_str);
-  printf("Number of Sections   %zu\n",  object->section_list.num_nodes);
+  printf("Number of Sections   %zu\n", object->section_list.num_nodes);
   printf("Number of Symbols    %u\n",  object->num_symbols);
   printf("Characteristics      %#x\n", object->flags);
 
@@ -153,7 +151,7 @@ _print_header(const gp_object_t *object)
 static const char *
 _format_reloc_type(uint16_t type, char *buffer, size_t sizeof_buffer)
 {
-  snprintf(buffer, sizeof_buffer, "%#-4x %-20s", type, gp_coffgen_reloc_type_to_str(type));
+  snprintf(buffer, sizeof_buffer, "0x%04x %-20s", type, gp_coffgen_reloc_type_to_str(type));
   return buffer;
 }
 
@@ -162,15 +160,20 @@ _format_reloc_type(uint16_t type, char *buffer, size_t sizeof_buffer)
 static void
 _print_relocation_list(proc_class_t class, const gp_reloc_t *relocation)
 {
-  char buffer[32];
+  char        buffer[32];
+  int         addr_digits;
+  const char *column_gap;
+
+  addr_digits = class->addr_digits;
+  column_gap  = (addr_digits > 4) ? "" : "  ";
 
   printf("Relocations Table\n"
-         "Address    Offset     Type                      Symbol\n");
+         "Address     Offset    Type                        Symbol\n");
 
   while (relocation != NULL) {
-    printf("%#-10x %#-10x %-25s %-s\n",
-           gp_processor_byte_to_org(class, relocation->address),
-           relocation->offset,
+    printf("0x%0*x%s    0x%0*x%s  %-25s %-s\n",
+           addr_digits, gp_processor_byte_to_org(class, relocation->address), column_gap,
+           addr_digits, relocation->offset, column_gap,
            _format_reloc_type(relocation->type, buffer, sizeof(buffer)),
            relocation->symbol->name);
 
@@ -186,9 +189,14 @@ static void
 _print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber)
 {
   const char *filename;
+  int         addr_digits;
+  const char *column_gap;
+
+  addr_digits = class->addr_digits;
+  column_gap  = (addr_digits > 4) ? "  " : "    ";
 
   printf("Line Number Table\n"
-         "Line     Address  Symbol\n");
+         "Line      Address     Symbol\n");
 
   while (linenumber != NULL) {
     if (state.suppress_names) {
@@ -198,9 +206,9 @@ _print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber)
       filename = linenumber->symbol->aux_list.first->_aux_symbol._aux_file.filename;
     }
 
-    printf("%-8i %#-8x %s\n",
+    printf("%-8i  0x%0*x%s  %s\n",
            linenumber->line_number,
-           gp_processor_byte_to_org(class, linenumber->address),
+           addr_digits, gp_processor_byte_to_org(class, linenumber->address), column_gap,
            filename);
 
     linenumber = linenumber->next;
@@ -215,14 +223,16 @@ static void
 _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *section)
 {
   char         buffer[BUFSIZ];
-  int          address;
+  unsigned int address;
   int          num_words;
+  int          addr_digits;
   unsigned int bsr_boundary;
   uint16_t     word;
   uint8_t      byte;
 
   address      = section->address;
   bsr_boundary = gp_processor_bsr_boundary(processor);
+  addr_digits  = class->addr_digits;
 
   buffer[0] = '\0';
 
@@ -235,24 +245,30 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
 
       num_words = gp_disassemble(section->data, address, class, bsr_boundary, 0,
                                  GPDIS_SHOW_ALL_BRANCH, buffer, sizeof(buffer), 0);
-      printf("%06x:  %04x  %s\n", gp_processor_byte_to_org(class, address), word, buffer);
+      printf("%0*x:  %04x  %s\n",
+             addr_digits, gp_processor_byte_to_org(class, address), word, buffer);
 
       if (num_words != 1) {
-        class->i_memory_get(section->data, address + WORD_SIZE, &word, NULL, NULL);
-        printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address + WORD_SIZE), word);
+        if (!class->i_memory_get(section->data, address + WORD_SIZE, &word, NULL, NULL)) {
+          break;
+        }
+
+        printf("%0*x:  %04x\n",
+               addr_digits, gp_processor_byte_to_org(class, address + WORD_SIZE), word);
       }
 
       address += num_words * WORD_SIZE;
     }
     else if ((section->flags & STYP_DATA_ROM) || (class == PROC_CLASS_EEPROM16)) {
       if (class->i_memory_get(section->data, address, &word, NULL, NULL)) {
-        printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address), word);
+        printf("%0*x:  %04x\n", addr_digits, gp_processor_byte_to_org(class, address), word);
         address += WORD_SIZE;
       }
       else {
         if (b_memory_get(section->data, address, &byte, NULL, NULL)) {
-          printf("%06x:  %02x\n", gp_processor_byte_to_org(class, address), byte);
+          printf("%0*x:  %02x\n", addr_digits, gp_processor_byte_to_org(class, address), byte);
         }
+
         break;
       }
     }
@@ -262,7 +278,7 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
         break;
       }
 
-      printf("%06x:  %02x\n", address, byte);
+      printf("%0*x:  %02x\n", addr_digits, address, byte);
       ++address;
     }
   }

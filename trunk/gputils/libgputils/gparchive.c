@@ -364,7 +364,8 @@ gp_archive_read(const char *File_name)
     if (archive == NULL) {
       /* this is the first entry */
       archive = new;
-    } else {
+    }
+    else {
       list->next = new;
     }
 
