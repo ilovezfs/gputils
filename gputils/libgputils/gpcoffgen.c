@@ -932,7 +932,7 @@ _clear_relocation_counts(const gp_object_t *Object)
 
 static gp_boolean
 _check_section_relocations(proc_class_t Class, gp_section_t *Section, unsigned int Pass,
-                           gp_boolean Enable_cinit_warns, unsigned int Level)
+                           unsigned int Behavior, unsigned int Level)
 {
   gp_reloc_t   *relocation;
   gp_symbol_t  *symbol;
@@ -957,9 +957,11 @@ _check_section_relocations(proc_class_t Class, gp_section_t *Section, unsigned i
     sym_sect = symbol->section;
     if (sym_sect == NULL) {
       /* This is an orphan symbol. */
-      if (Enable_cinit_warns || (strcmp(symbol->name, "_cinit") != 0)) {
-        gp_warning("Relocation symbol \"%s\" [0x%0*X] has no section. (pass %u)",
-                   symbol->name, Class->addr_digits, relocation->address, Pass);
+      if (FlagIsClr(Behavior, RELOC_DISABLE_WARN)) {
+        if (FlagIsSet(Behavior, RELOC_ENABLE_CINIT_WARN) || (strcmp(symbol->name, "_cinit") != 0)) {
+          gp_warning("Relocation symbol \"%s\" [0x%0*X] has no section. (pass %u)",
+                     symbol->name, Class->addr_digits, relocation->address, Pass);
+        }
       }
     }
     else {
@@ -982,7 +984,7 @@ _check_section_relocations(proc_class_t Class, gp_section_t *Section, unsigned i
           if (FlagIsClr(sym_sect->opt_flags, OPT_FLAGS_PROTECTED_SECTION)) {
             /* Only then modify and check if have not been under protection. */
             FlagSet(sym_sect->opt_flags, OPT_FLAGS_PROTECTED_SECTION);
-            change = _check_section_relocations(Class, sym_sect, Pass, Enable_cinit_warns, Level + 1);
+            change = _check_section_relocations(Class, sym_sect, Pass, Behavior, Level + 1);
           }
         }
       }
@@ -996,7 +998,7 @@ _check_section_relocations(proc_class_t Class, gp_section_t *Section, unsigned i
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_check_object_relocations(const gp_object_t *Object, unsigned int Pass, gp_boolean Enable_cinit_warns)
+_check_object_relocations(const gp_object_t *Object, unsigned int Pass, unsigned int Behavior)
 {
   proc_class_t  class;
   gp_section_t *section;
@@ -1008,7 +1010,7 @@ _check_object_relocations(const gp_object_t *Object, unsigned int Pass, gp_boole
   class   = Object->class;
   section = Object->section_list.first;
   while (section != NULL) {
-    change |= _check_section_relocations(class, section, Pass, Enable_cinit_warns, level);
+    change |= _check_section_relocations(class, section, Pass, Behavior, level);
     section = section->next;
   }
 

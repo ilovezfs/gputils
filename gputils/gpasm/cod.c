@@ -285,10 +285,11 @@ cod_init(void)
  *                the opcode's address, the source file, and the list file.
  */
 
+#define COD_LST_FIRST_LINE              7
+
 void
 cod_lst_line(unsigned int List_line)
 {
-#define COD_LST_FIRST_LINE  7
   static DirBlockInfo *dbi = NULL;
   static int           _64k_base = 0;
 
@@ -381,8 +382,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
     var  = sym_get_symbol_annotation(Symbol_list[i]);
     len  = strlen(name);
 
-    /* If this symbol extends past the end of the cod block
-     * then write this block out */
+    /* If this symbol extends past the end of the cod block then write this block out. */
 
     if ((sb == NULL) || ((main_dir->sym.offset + len + COD_SYM_EXTRA) >= COD_BLOCK_SIZE)) {
       sb = gp_blocks_append(&main_dir->sym, gp_blocks_new());

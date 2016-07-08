@@ -462,3 +462,14 @@ sym_compare_fn(const void *P0, const void *P1)
 
   return strcmp(sym0->name, sym1->name);
 }
+
+/*------------------------------------------------------------------------------------------------*/
+
+int
+sym_version_compare_fn(const void *P0, const void *P1)
+{
+  const symbol_t *sym0 = *(const symbol_t **)P0;
+  const symbol_t *sym1 = *(const symbol_t **)P1;
+
+  return strverscmp(sym0->name, sym1->name);
+}

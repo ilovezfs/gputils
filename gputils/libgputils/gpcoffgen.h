@@ -82,7 +82,13 @@ extern const char *gp_coffgen_symbol_class_to_str(uint8_t Class);
 
 extern gp_reloc_t *gp_coffgen_make_block_reloc(gp_section_t *Section, unsigned int Num_relocations);
 extern gp_reloc_t *gp_coffgen_add_reloc(gp_section_t *Section);
-extern void gp_coffgen_check_relocations(const gp_object_t *Object, gp_boolean Enable_cinit_warns);
+
+/* for "Behavior" */
+#define RELOC_DISABLE_WARN              (1 << 0)
+#define RELOC_ENABLE_CINIT_WARN         (1 << 1)
+
+extern void gp_coffgen_check_relocations(const gp_object_t *Object, unsigned int Behavior);
+
 extern gp_boolean gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation);
 extern const char *gp_coffgen_reloc_type_to_str(uint16_t Type);
 

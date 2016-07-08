@@ -1,3 +1,17 @@
+2016-07-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gplink/gplink.c, libgputils/gpcoffgen.c, libgputils/gpcoffgen.h:
+    bugfix
+
+  * gputils/dump.c, gputils/gpvo.c:
+    Make better readable list.
+
+  * gpasm/lst.c, libgputils/gpsym.c, libgputils/gpsym.h:
+    The version sort function help of sorts the symbols,
+    if it is possible.
+
+  * gpasm/cod.c, libgputils/gparchive.c:
+    Code formatting.
+
 2016-07-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * TODO, gputils/dump.c, gputils/dump.h, gputils/gpvo.c,
     libgputils/gpcod.h, libgputils/gpcoffgen.c,

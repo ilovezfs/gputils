@@ -225,13 +225,13 @@ _fget_line(int line, char *buffer, int size, FILE *pFile)
 */
 
 char *
-substr(char *a, size_t sizeof_a, const uint8_t *b, size_t n)
+substr(char *dst, size_t sizeof_dst, const uint8_t *src, size_t sizeof_src)
 {
-  size_t m = (n < sizeof_a) ? n : (sizeof_a - 1);
+  size_t size = (sizeof_src < sizeof_dst) ? sizeof_src : (sizeof_dst - 1);
 
-  memcpy(a, b, m);
-  a[m] = '\0';
-  return a;
+  memcpy(dst, src, size);
+  dst[size] = '\0';
+  return dst;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -483,15 +483,16 @@ dump_code(proc_class_t class, pic_processor_t processor)
   gp_boolean    used_act;
   gp_boolean    empty_signal;
   gp_boolean    empty_line;
+  const char   *addr_border;
 
   dump_memmap(class, true);
 
-  printf("Formatted Code Dump:\n"
-         "--+-------------------------\n");
-
   bsr_boundary = gp_processor_bsr_boundary(processor);
   addr_digits  = class->addr_digits;
+  addr_border  = (addr_digits > 4) ? "--" : "";
   dbi          = main_dir;
+
+  printf("Formatted Code Dump:\n");
 
   do {
     _64k_base = IMemAddrFromBase((unsigned int)gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]));
@@ -501,15 +502,15 @@ dump_code(proc_class_t class, pic_processor_t processor)
       if (block_index != 0) {
         read_block(temp, block_index);
 
-        if (block_index > 1) {
-          printf("  +-------------------------\n");
-        }
-
         byte_address = _64k_base + (k * COD_BLOCK_N_WORDS) * WORD_SIZE;
-        printf("  | Block %u -- %0*x-%0*x\n"
-               "  +-------------------------\n", block_index,
+        printf("%s-----------------------------------------------\n"
+               " Block %u -- %0*x-%0*x\n"
+               "%s------+----+----+----+----+----+----+----+----+\n",
+               addr_border,
+               block_index,
                addr_digits, byte_address,
-               addr_digits, byte_address + COD_BLOCK_SIZE - 1);
+               addr_digits, byte_address + COD_BLOCK_SIZE - 1,
+               addr_border);
 
         _memmap_create_used_map(byte_address);
 
@@ -538,7 +539,7 @@ dump_code(proc_class_t class, pic_processor_t processor)
                 }
                 else if (!_is_empty_to_last(i + j, i + CODE_COLUMN_NUM)) {
                   /* In this line there is also at least one used ROM word. */
-                  printf("     ");
+                  printf(" ....");
                 }
                 else {
                   /* Sooner ends the line. */
@@ -653,11 +654,11 @@ dump_code(proc_class_t class, pic_processor_t processor)
 void
 dump_symbols(void)
 {
-  uint16_t i;
-  uint16_t j;
+  char     buf[16];
   uint16_t start_block;
   uint16_t end_block;
-  char     b[16];
+  uint16_t i;
+  uint16_t j;
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_SYMTAB]);
 
@@ -672,8 +673,8 @@ dump_symbols(void)
 
       for (i = 0; i < SYMBOLS_PER_BLOCK; i++) {
         if (temp[i * SSYMBOL_SIZE + COD_SSYMBOL_NAME]) {
-          printf("%s = %04x, type = %s\n",
-                 substr(b, sizeof(b), &temp[i * SSYMBOL_SIZE + COD_SSYMBOL_NAME], 12),
+          printf("%-12s = %04x, type = %s\n",
+                 substr(buf, sizeof(buf), &temp[i * SSYMBOL_SIZE + COD_SSYMBOL_NAME], 12),
                  gp_getu16(&temp[i * SSYMBOL_SIZE + COD_SSYMBOL_SVALUE]),
                  SymbolType4[(unsigned int)temp[i * SSYMBOL_SIZE + COD_SSYMBOL_STYPE]]);
         }
@@ -689,6 +690,48 @@ dump_symbols(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
+static unsigned int
+_lsymbols_max_length(void)
+{
+  unsigned int   start_block;
+  unsigned int   end_block;
+  unsigned int   i;
+  unsigned int   j;
+  const uint8_t *sym;
+  unsigned int   length;
+  unsigned int   max_length;
+
+  start_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB]);
+
+  if (start_block != 0) {
+    end_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB + 2]);
+
+    max_length = 0;
+    for (j = start_block; j <= end_block; j++) {
+      read_block(temp, j);
+
+      for (i = 0; i < COD_BLOCK_SIZE; ) {
+        sym    = &temp[i];
+        length = *sym;
+
+        if (length == 0) {
+          break;
+        }
+
+        if (max_length < length) {
+          max_length = length;
+        }
+
+        i += length + 7;
+      }
+    }
+  }
+
+  return max_length;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /*
  * Dump all of the Long Symbol Table stuff in the .cod file.
  */
@@ -696,45 +739,47 @@ dump_symbols(void)
 void
 dump_lsymbols(void)
 {
-  uint8_t      *s;
-  uint8_t       length;
-  short         type;
-  uint16_t      i;
-  uint16_t      j;
-  uint16_t      start_block;
-  uint16_t      end_block;
-  unsigned int  value;
-  char          b[256];
+  char           buf[256];
+  unsigned int   start_block;
+  unsigned int   end_block;
+  unsigned int   i;
+  unsigned int   j;
+  const uint8_t *sym;
+  unsigned int   length;
+  uint16_t       type;
+  unsigned int   value;
+  int            symbol_align;
 
-  start_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB]);
+  symbol_align = _lsymbols_max_length();
+  start_block  = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB]);
 
   if (start_block != 0) {
     end_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB + 2]);
-    end_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB + 2]);
 
     printf("Long Symbol Table Information:\n"
-           "------------------------------\n");
+           "-----------------------------------------------\n");
 
     for (j = start_block; j <= end_block; j++) {
       read_block(temp, j);
 
       for (i = 0; i < COD_BLOCK_SIZE; ) {
-        s = &temp[i];
+        sym    = &temp[i];
+        length = *sym;
 
-        if (*s == 0) {
+        if (length == 0) {
           break;
         }
 
-        length = *s;
-        type   = gp_getl16(&s[length + 1]);
+        type = gp_getl16(&sym[length + 1]);
 
         if (type > 128) {
           type = 0;
         }
         /* read big endian */
-        value = gp_getb32(&s[length + 3]);
+        value = gp_getb32(&sym[length + 3]);
 
-        printf("%s = %08x, type = %s\n", substr(b, sizeof(b), &s[1], length), value, SymbolType4[type]);
+	++sym;
+        printf("%-*s = %08x, type = %s\n", symbol_align, substr(buf, sizeof(buf), sym, length), value, SymbolType4[type]);
         i += length + 7;
       }
     }

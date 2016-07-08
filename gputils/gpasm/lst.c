@@ -625,7 +625,13 @@ _cod_symbol_table(void)
     return;
   }
 
-  lst = sym_clone_symbol_array(state.stGlobal, sym_compare_fn);
+  if (!state.mpasm_compatible) {
+    lst = sym_clone_symbol_array(state.stGlobal, sym_version_compare_fn);
+  }
+  else {
+    lst = sym_clone_symbol_array(state.stGlobal, sym_compare_fn);
+  }
+
   assert(lst != NULL);
 
   cod_write_symbols(lst, sym_count);
@@ -1123,7 +1129,6 @@ _lst_symbol_cmp(const void *p0, const void *p1)
   return strcmp(sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
                 sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
 }
-
 
 /*------------------------------------------------------------------------------------------------*/
 
