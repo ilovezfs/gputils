@@ -1,4 +1,18 @@
 2016-07-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gputils/dump.c, gputils/dump.h, gputils/gpvc.c:
+    New command option: "-w" or "--wide"
+
+  * gputils/gpdasm.c:
+    Use colon (':') character after label names.
+
+  * gputils/gplib.c:
+    Talkative error messages.
+
+  * libgputils/gparchive.c, libgputils/gparchive.h,
+    libgputils/gpsystem.c, libgputils/gpsystem.h:
+    Use gp_arch_strncpy function instead of strncpy.
+
+2016-07-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gplink/gplink.c, libgputils/gpcoffgen.c, libgputils/gpcoffgen.h:
     bugfix
 

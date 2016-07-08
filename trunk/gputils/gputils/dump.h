@@ -24,7 +24,7 @@ Boston, MA 02111-1307, USA.  */
 
 extern void dump_directory_blocks(proc_class_t class);
 extern void dump_memmap(proc_class_t class, gp_boolean make_list);
-extern void dump_code(proc_class_t class, pic_processor_t processor);
+extern void dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump);
 extern void dump_symbols(void);
 extern void dump_lsymbols(void);
 extern void dump_source_files(void);

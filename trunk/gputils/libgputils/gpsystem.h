@@ -77,6 +77,7 @@ extern char *gp_strndup(const char *String, size_t Length, const char *File, siz
 extern char *gp_strdup_lower_case(const char *name);
 extern char *gp_strdup_upper_case(const char *name);
 extern char *gp_strncpy(char *Dest, const char *Src, size_t Maxlen);
+extern char *gp_arch_strncpy(char *Dest, const char *Src, size_t Maxlen);
 extern char *gp_stptoupper(char *Dest, const char *Src, size_t Maxlen);
 
 extern size_t gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length);

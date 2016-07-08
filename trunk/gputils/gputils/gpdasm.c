@@ -1407,7 +1407,7 @@ _dasm(MemBlock_t *memory)
           last_loc = i;
 
           if (state.show_names && (label_name != NULL)) {
-            length = snprintf(buffer, sizeof(buffer), "%s", label_name);
+            length = snprintf(buffer, sizeof(buffer), "%s:", label_name);
             gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits, org);
 
             if (! prev_empty_line) {

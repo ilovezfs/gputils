@@ -462,10 +462,13 @@ _is_empty_to_last(unsigned int Index, unsigned int End)
  */
 
 #define CODE_COLUMN_NUM         8
+#define CODE_COLUMN_NUM_WIDE    16
 
 void
-dump_code(proc_class_t class, pic_processor_t processor)
+dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
 {
+  char          border_gap0[16];
+  char          border_gap1[16];
   char          buffer[BUFSIZ];
   DirBlockInfo *dbi;
   MemBlock_t   *data;
@@ -475,22 +478,38 @@ dump_code(proc_class_t class, pic_processor_t processor)
   unsigned int  byte_address;
   int           num_words;
   unsigned int  bsr_boundary;
-  uint16_t      i;
-  uint16_t      j;
-  uint16_t      k;
+  unsigned int  i;
+  unsigned int  j;
+  unsigned int  k;
+  unsigned int  column_num;
   uint16_t      word;
   gp_boolean    used_prev;
   gp_boolean    used_act;
   gp_boolean    empty_signal;
   gp_boolean    empty_line;
-  const char   *addr_border;
 
   dump_memmap(class, true);
 
   bsr_boundary = gp_processor_bsr_boundary(processor);
   addr_digits  = class->addr_digits;
-  addr_border  = (addr_digits > 4) ? "--" : "";
+  column_num   = (wide_dump) ? CODE_COLUMN_NUM_WIDE : CODE_COLUMN_NUM;
   dbi          = main_dir;
+
+  i = addr_digits + 2;
+
+  j = (i < (sizeof(border_gap0) - 1)) ? i : (sizeof(border_gap0) - 1);
+  if (j > 0) {
+    memset(border_gap0, ' ', j);
+  }
+
+  border_gap0[j] = '\0';
+
+  j = (i < (sizeof(border_gap1) - 1)) ? i : (sizeof(border_gap1) - 1);
+  if (j > 0) {
+    memset(border_gap1, '-', j);
+  }
+
+  border_gap1[j] = '\0';
 
   printf("Formatted Code Dump:\n");
 
@@ -503,14 +522,34 @@ dump_code(proc_class_t class, pic_processor_t processor)
         read_block(temp, block_index);
 
         byte_address = _64k_base + (k * COD_BLOCK_N_WORDS) * WORD_SIZE;
-        printf("%s-----------------------------------------------\n"
-               " Block %u -- %0*x-%0*x\n"
-               "%s------+----+----+----+----+----+----+----+----+\n",
-               addr_border,
-               block_index,
-               addr_digits, byte_address,
-               addr_digits, byte_address + COD_BLOCK_SIZE - 1,
-               addr_border);
+        if (wide_dump) {
+          printf("%s---------------------------------------------------------------------------------\n"
+                 " Block %u -- %0*x-%0*x\n"
+                 "%s+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n"
+                 "%s|  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 |  a |  b |  c |  d |  e |  f |\n"
+                 "%s+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n",
+                 border_gap1,
+                 block_index,
+                 addr_digits, byte_address,
+                 addr_digits, byte_address + COD_BLOCK_SIZE - 1,
+                 border_gap1,
+                 border_gap0,
+                 border_gap1);
+        }
+        else {
+          printf("%s-----------------------------------------\n"
+                 " Block %u -- %0*x-%0*x\n"
+                 "%s+----+----+----+----+----+----+----+----+\n"
+                 "%s| 0;8| 1;9| 2;a| 3;b| 4;c| 5;d| 6;e| 7;f|\n"
+                 "%s+----+----+----+----+----+----+----+----+\n",
+                 border_gap1,
+                 block_index,
+                 addr_digits, byte_address,
+                 addr_digits, byte_address + COD_BLOCK_SIZE - 1,
+                 border_gap1,
+                 border_gap0,
+                 border_gap1);
+        }
 
         _memmap_create_used_map(byte_address);
 
@@ -521,7 +560,7 @@ dump_code(proc_class_t class, pic_processor_t processor)
           i = 0;
           do {
             empty_line = true;
-            for (j = 0; j < CODE_COLUMN_NUM; j++) {
+            for (j = 0; j < column_num; j++) {
               if (used_map[(i + j) * WORD_SIZE]) {
                 empty_line = false;
                 break;
@@ -532,12 +571,12 @@ dump_code(proc_class_t class, pic_processor_t processor)
               byte_address = _64k_base + (k * COD_BLOCK_N_WORDS + i) * WORD_SIZE;
               printf("%0*x: ", addr_digits, gp_processor_byte_to_org(class, byte_address));
 
-              for (j = 0; j < CODE_COLUMN_NUM; j++) {
+              for (j = 0; j < column_num; j++) {
                 if (used_map[(i + j) * WORD_SIZE]) {
                   /* This is a used ROM word. */
                   printf(" %04x", gp_getu16(&temp[(i + j) * WORD_SIZE]));
                 }
-                else if (!_is_empty_to_last(i + j, i + CODE_COLUMN_NUM)) {
+                else if (!_is_empty_to_last(i + j, i + column_num)) {
                   /* In this line there is also at least one used ROM word. */
                   printf(" ....");
                 }
@@ -549,7 +588,7 @@ dump_code(proc_class_t class, pic_processor_t processor)
               putchar('\n');
             }
 
-            i += CODE_COLUMN_NUM;
+            i += column_num;
           } while (i < COD_BLOCK_N_WORDS);
 	}
 	else {
@@ -557,7 +596,7 @@ dump_code(proc_class_t class, pic_processor_t processor)
           i = 0;
           do {
             empty_line = true;
-            for (j = 0; j < CODE_COLUMN_NUM; j++) {
+            for (j = 0; j < column_num; j++) {
               if (gp_getu16(&temp[(i + j) * WORD_SIZE]) != 0) {
                 empty_line = false;
                 break;
@@ -568,14 +607,14 @@ dump_code(proc_class_t class, pic_processor_t processor)
               byte_address = _64k_base + (k * COD_BLOCK_N_WORDS + i) * WORD_SIZE;
               printf("%0*x: ", addr_digits, gp_processor_byte_to_org(class, byte_address));
 
-              for (j = 0; j < CODE_COLUMN_NUM; j++) {
+              for (j = 0; j < column_num; j++) {
                 printf(" %04x", gp_getu16(&temp[(i + j) * WORD_SIZE]));
               }
 
               putchar('\n');
             }
 
-            i += CODE_COLUMN_NUM;
+            i += column_num;
           } while (i < COD_BLOCK_N_WORDS);
         }
 
@@ -654,11 +693,11 @@ dump_code(proc_class_t class, pic_processor_t processor)
 void
 dump_symbols(void)
 {
-  char     buf[16];
-  uint16_t start_block;
-  uint16_t end_block;
-  uint16_t i;
-  uint16_t j;
+  char         buf[16];
+  unsigned int start_block;
+  unsigned int end_block;
+  unsigned int i;
+  unsigned int j;
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_SYMTAB]);
 
@@ -800,18 +839,17 @@ dump_lsymbols(void)
 void
 dump_source_files(void)
 {
-  uint16_t  i;
-  uint16_t  j;
-  uint16_t  start_block;
-  uint16_t  end_block;
-  uint16_t  offset;
-  char      b[FILE_SIZE];
-  char     *name;
+  unsigned int  start_block;
+  unsigned int  end_block;
+  unsigned int  i;
+  unsigned int  j;
+  unsigned int  offset;
+  char          b[FILE_SIZE];
+  char         *name;
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB]);
 
   if (start_block != 0) {
-    end_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB + 2]);
     end_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB + 2]);
 
     printf("Source File Information:\n"
@@ -884,10 +922,10 @@ dump_line_symbols(void)
   gp_boolean    has_line_num_info;
   unsigned int  _64k_base;
   unsigned int  offset;
-  uint16_t      start_block;
-  uint16_t      end_block;
-  uint16_t      i;
-  uint16_t      j;
+  unsigned int  start_block;
+  unsigned int  end_block;
+  unsigned int  i;
+  unsigned int  j;
   uint8_t       sfile;
   uint8_t       smod;
   uint16_t      sline;
@@ -970,13 +1008,13 @@ dump_line_symbols(void)
 void
 dump_message_area(void)
 {
-  char     DebugType;
-  char     DebugMessage[MAX_STRING_LEN];
-  uint16_t i;
-  uint16_t j;
-  uint16_t start_block;
-  uint16_t end_block;
-  uint16_t laddress;
+  char         DebugType;
+  char         DebugMessage[MAX_STRING_LEN];
+  unsigned int start_block;
+  unsigned int end_block;
+  unsigned int i;
+  unsigned int j;
+  uint32_t     laddress;
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_MESSTAB]);
 
@@ -1025,10 +1063,10 @@ void
 dump_local_vars(proc_class_t proc_class)
 {
   uint8_t      *sh; /* scope_head */
-  uint16_t      i;
-  uint16_t      j;
-  uint16_t      start_block;
-  uint16_t      end_block;
+  unsigned int  start_block;
+  unsigned int  end_block;
+  unsigned int  i;
+  unsigned int  j;
   unsigned int  start;
   unsigned int  stop;
 
