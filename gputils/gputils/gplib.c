@@ -216,7 +216,8 @@ int main(int argc, char *argv[])
       }
       state.numobjects++;
     }
-  } else {
+  }
+  else {
     usage = true;
   }
 

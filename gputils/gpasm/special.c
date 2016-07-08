@@ -273,7 +273,8 @@ _do_negf(gpasmVal r, const char *name, int arity, pnode_t *parms)
   if ((arity == 1) || (arity == 2)) {
     do_insn("comf", _add_symbol_constant(parms, 1));
     do_insn("incf", parms);
-  } else {
+  }
+  else {
     eval_enforce_arity(arity, 2);
   }
 

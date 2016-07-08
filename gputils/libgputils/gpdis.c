@@ -1904,7 +1904,8 @@ gp_disassemble(MemBlock_t *M, unsigned int Byte_address, proc_class_t Class, uns
       if (value & 0x20) {
         value = (value ^ 0x3f) + 1;
         neg = "-";
-      } else {
+      }
+      else {
         neg = "";
       }
 

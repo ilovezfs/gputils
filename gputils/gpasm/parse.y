@@ -242,7 +242,8 @@ void next_line(int value)
     if (state.src->mac_body != NULL) {
       state.src->mac_body = state.src->mac_body->next;
     }
-  } else if (IN_FILE_EXPANSION) {
+  }
+  else if (IN_FILE_EXPANSION) {
     if (!IN_WHILE_DEFINITION && (state.pass == 2) &&
         (state.lst.line.linetype != LTY_DOLIST_DIR) &&
         (state.lst.line.linetype != LTY_NOLIST_DIR)) {
@@ -505,7 +506,8 @@ line:
               /* It's not an error if macro was defined on pass 1 and we're in pass 2. */
               if ((h != NULL) && !((h->pass == 1) && (state.pass == 2))) {
                 gpmsg_verror(GPE_DUPLICATE_MACRO, NULL);
-              } else {
+              }
+              else {
                 if (mac == NULL) {
                   mac = sym_add_symbol(state.stMacros, $1);
                 }
@@ -522,7 +524,8 @@ line:
               }
 
               state.mac_head = NULL;
-            } else if (!IN_MACRO_WHILE_DEFINITION) {
+            }
+            else if (!IN_MACRO_WHILE_DEFINITION) {
               /* Outside a macro definition, just define the label. */
               switch (state.lst.line.linetype) {
               case LTY_SEC:
@@ -572,7 +575,8 @@ line:
             /* This is a macro definition, but the label was missing. */
             state.mac_head = NULL;
             gpmsg_verror(GPE_NO_MACRO_NAME, NULL);
-          } else {
+          }
+          else {
             if (state.found_end) {
               switch (state.src->type) {
               case SRC_WHILE:
@@ -618,7 +622,8 @@ statement:
             $$ = (IS_RAM_ORG) ? state.byte_addr :
                                 /* We want to have r as the value to assign to label. */
                                 gp_processor_byte_to_real(state.processor, state.byte_addr);
-          } else {
+          }
+          else {
             macro_append();
           }
         }
@@ -695,7 +700,8 @@ statement:
             for (i = 0; i < number; i++) {
               $$ = do_insn($2, NULL);
             }
-          } else {
+          }
+          else {
             macro_append();
           }
         }
@@ -711,7 +717,8 @@ statement:
             for (i = 0; i < number; i++) {
               $$ = do_insn($2, $3);
             }
-          } else {
+          }
+          else {
             macro_append();
           }
         }
@@ -720,7 +727,8 @@ statement:
         {
           if (!IN_MACRO_WHILE_DEFINITION) {
             begin_cblock($2);
-          } else {
+          }
+          else {
             macro_append();
           }
           next_line(0);
@@ -739,7 +747,8 @@ statement:
         {
           if (!IN_MACRO_WHILE_DEFINITION) {
             continue_cblock();
-          } else {
+          }
+          else {
             macro_append();
           }
           next_line(0);
@@ -785,7 +794,8 @@ const_line:
           if (!IN_MACRO_WHILE_DEFINITION) {
             state.lst.cblock_lst = state.cblock;
             cblock_expr(mk_symbol($1));
-          } else {
+          }
+          else {
             macro_append();
           }
         }
@@ -795,7 +805,8 @@ const_line:
           if (!IN_MACRO_WHILE_DEFINITION) {
             state.lst.cblock_lst = state.cblock;
             cblock_expr_incr(mk_symbol($1), $2);
-          } else {
+          }
+          else {
             macro_append();
           }
         }

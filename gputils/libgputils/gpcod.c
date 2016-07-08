@@ -105,7 +105,8 @@ gp_blocks_append(Blocks *Bl, BlockList *B)
   if (Bl->first == NULL) {
     Bl->first = B;
     Bl->count = 1;
-  } else {
+  }
+  else {
     Bl->last->next = B;
     (Bl->count)++;
   }

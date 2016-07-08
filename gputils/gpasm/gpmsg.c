@@ -478,7 +478,8 @@ gpmsg_init(void)
   if (state.err_file == OUT_SUPPRESS) {
     state.err.enabled = false;
     unlink(state.err_file_name);
-  } else {
+  }
+   else {
     state.err.f = fopen(state.err_file_name, "wt");
 
     if (state.err.f == NULL) {
@@ -657,7 +658,8 @@ gpmsg_warning(int Code, const char *Message)
     lst_line("Warning[%03d]: %s", Code, Message);
 
     state.num.warnings++;
-  } else {
+  }
+  else {
     state.num.warnings_suppressed++;
   }
 }
@@ -693,7 +695,8 @@ gpmsg_vwarning(int Code, const char *Message, ...)
     va_end(ap);
 
     state.num.warnings++;
-  } else {
+  }
+  else {
     state.num.warnings_suppressed++;
   }
 }
@@ -719,7 +722,8 @@ gpmsg_message(int Code, const char *Message)
     lst_line("Message[%03d]: %s", Code, Message);
 
     state.num.messages++;
-  } else {
+  }
+  else {
     state.num.messages_suppressed++;
   }
 }
@@ -756,7 +760,8 @@ gpmsg_vmessage(int Code, const char *Message, ...)
     va_end(ap);
 
     state.num.messages++;
-  } else {
+  }
+  else {
     state.num.messages_suppressed++;
   }
 }
