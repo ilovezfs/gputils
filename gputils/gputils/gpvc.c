@@ -36,13 +36,15 @@ Boston, MA 02111-1307, USA.  */
 #define DISPLAY_MESS            (1 << 4)
 #define DISPLAY_ALL             (DISPLAY_DIR | DISPLAY_SYM | DISPLAY_ROM | DISPLAY_SRC | DISPLAY_MESS)
 
+#define DISPLAY_WIDE            (1 << 5)
+
 FILE         *codefile;
 char         *source_file_names[MAX_SOURCE_FILES];
 DirBlockInfo *main_dir = NULL;
 
 static char filename[BUFFER_LENGTH];
 
-#define GET_OPTIONS         "adhlmrsv"
+#define GET_OPTIONS         "adhlmrsvw"
 
 /* Used: adhlmrsv */
 static struct option longopts[] =
@@ -55,6 +57,7 @@ static struct option longopts[] =
   { "rom",       no_argument, NULL, 'r' },
   { "symbols",   no_argument, NULL, 's' },
   { "version",   no_argument, NULL, 'v' },
+  { "wide",      no_argument, NULL, 'w' },
   { NULL,        no_argument, NULL, '\0'}
 };
 
@@ -73,6 +76,7 @@ _show_usage(void)
   printf("  -r, --rom          Display rom.\n");
   printf("  -s, --symbols      Display symbols.\n");
   printf("  -v, --version      Show version.\n\n");
+  printf("  -w, --wide         Show code table in wider view.\n");
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
@@ -126,6 +130,10 @@ main(int argc, char *argv[])
       display_flags |= DISPLAY_MESS;
       break;
 
+    case 'w':
+      display_flags |= DISPLAY_WIDE;
+      break;
+
     case 'v':
       fprintf(stderr, "%s\n", GPVC_VERSION_STRING);
       exit(0);
@@ -170,7 +178,7 @@ main(int argc, char *argv[])
   }
 
   if (display_flags & DISPLAY_ROM) {
-    dump_code(processor_class, processor_info);
+    dump_code(processor_class, processor_info, (display_flags & DISPLAY_WIDE));
   }
 
   if (display_flags & DISPLAY_SYM) {

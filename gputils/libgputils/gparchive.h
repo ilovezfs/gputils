@@ -51,30 +51,35 @@ Boston, MA 02111-1307, USA.  */
 /* Note that the usual '\n' in magic strings may translate to different
    characters, as allowed by ANSI.  '\012' has a fixed value. */
 
-#define ARMAG  "!<arch>\012"
-#define SARMAG 8
-#define ARFMAG "`\012"
+#define ARMAG                   "!<arch>\012"
+#define SARMAG                  8
+#define ARFMAG                  "`\012"
+
+#define AR_MEM_NAME_SIZ         256
+#define AR_MEM_DATE_SIZ         12
+#define AR_MEM_FSIZE_SIZ        10
+#define AR_MEM_FMAG_SIZ         2
 
 /* archive file member header */
 typedef struct ar_hdr {
-  char ar_name[256];            /* name of this member */
-  char ar_date[12];             /* file mtime */
-  char ar_size[10];             /* file size, printed as decimal */
-  char ar_fmag[2];              /* should contain ARFMAG */
+  char ar_name[AR_MEM_NAME_SIZ];    /* name of this member */
+  char ar_date[AR_MEM_DATE_SIZ];    /* file mtime */
+  char ar_size[AR_MEM_FSIZE_SIZ];   /* file size, printed as decimal */
+  char ar_fmag[AR_MEM_FMAG_SIZ];    /* should contain ARFMAG */
 } ar_hdr_t;
 
-#define AR_HDR_SIZ 280
+#define AR_HDR_SIZ              (AR_MEM_NAME_SIZ + AR_MEM_DATE_SIZ + AR_MEM_FSIZE_SIZ + AR_MEM_FMAG_SIZ)
 
 typedef struct gp_archive {
-  ar_hdr_t           header;    /* archive header file */
-  gp_binary_t        data;      /* binary data */
-  unsigned int       offset;    /* offset from the beginning of the archive */
-  struct gp_archive *next;      /* next file in linked list */
+  ar_hdr_t           header;        /* archive header file */
+  gp_binary_t        data;          /* binary data */
+  unsigned int       offset;        /* offset from the beginning of the archive */
+  struct gp_archive *next;          /* next file in linked list */
 } gp_archive_t;
 
 /* symbol index data */
-#define AR_INDEX_NUMBER_SIZ 4  /* number of symbols is 4 bytes long */
-#define AR_INDEX_OFFSET_SIZ 4  /* symbol index offsets are 4 bytes long */
+#define AR_INDEX_NUMBER_SIZ     4   /* number of symbols is 4 bytes long */
+#define AR_INDEX_OFFSET_SIZ     4   /* symbol index offsets are 4 bytes long */
 
 extern unsigned int gp_archive_count_members(const gp_archive_t *Archive);
 extern char *gp_archive_member_name(const gp_archive_t *Archive);
@@ -82,8 +87,13 @@ extern void gp_archive_list_members(const gp_archive_t *Archive);
 extern gp_archive_t *gp_archive_find_member(gp_archive_t *Archive, const char *Object_name);
 extern void gp_archive_free_member(gp_archive_t *Archive);
 extern gp_archive_t *gp_archive_delete_member(gp_archive_t *Archive, const char *Object_name);
+
+extern gp_boolean gp_archive_rename_member(gp_archive_t *Archive, const char *Object_name_old,
+                                           const char *Object_name_new);
+
 extern gp_archive_t *gp_archive_add_member(gp_archive_t *Archive, const char *File_name,
                                               const char *Object_name);
+
 extern gp_boolean gp_archive_extract_member(gp_archive_t *Archive, const char *Object_name);
 extern gp_boolean gp_archive_write(gp_archive_t *Archive, const char *Archive_name);
 extern void gp_archive_update_offsets(gp_archive_t *Archive);

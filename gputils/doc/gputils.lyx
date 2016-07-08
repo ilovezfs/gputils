@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 06
+2016 Jul 08
 \end_layout
 
 \begin_layout Standard
@@ -12865,7 +12865,7 @@ Remove unnecessary Banksel directives.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Output an executable object
+Output an executable object.
 \end_layout
 
 \end_inset
@@ -12924,7 +12924,7 @@ Disable this warnings of _cinit section with -O2 option: "Relocation symbol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display debug messages
+Display debug messages.
 \end_layout
 
 \end_inset
@@ -12982,7 +12982,7 @@ Fill unused unprotected program memory with <value>
 \begin_inset Text
 
 \begin_layout Plain Layout
-Show the help message
+Show the help message.
 \end_layout
 
 \end_inset
@@ -13011,7 +13011,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-Specify an include directory
+Specify an include directory.
 \end_layout
 
 \end_inset
@@ -13040,7 +13040,7 @@ Specify an include directory
 \begin_inset Text
 
 \begin_layout Plain Layout
-Disable the list file output
+Disable the list file output.
 \end_layout
 
 \end_inset
@@ -13069,7 +13069,7 @@ Disable the list file output
 \begin_inset Text
 
 \begin_layout Plain Layout
-Output a map file
+Output a map file.
 \end_layout
 
 \end_inset
@@ -13098,7 +13098,7 @@ Output a map file
 \begin_inset Text
 
 \begin_layout Plain Layout
-MPLINK compatibility mode
+MPLINK compatibility mode.
 \end_layout
 
 \end_inset
@@ -13127,7 +13127,7 @@ MPLINK compatibility mode
 \begin_inset Text
 
 \begin_layout Plain Layout
-Alternate name of hex output file
+Alternate name of hex output file.
 \end_layout
 
 \end_inset
@@ -13216,7 +13216,7 @@ Remove unnecessary Pagesel directives.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Quiet
+Quiet.
 \end_layout
 
 \end_inset
@@ -13246,7 +13246,7 @@ Quiet
 
 \begin_layout Plain Layout
 Attempt to relocate unshared data sections to shared memory if relocation
- fails
+ fails.
 \end_layout
 
 \end_inset
@@ -13275,7 +13275,7 @@ Attempt to relocate unshared data sections to shared memory if relocation
 \begin_inset Text
 
 \begin_layout Plain Layout
-Specify linker script
+Specify linker script.
 \end_layout
 
 \end_inset
@@ -13304,7 +13304,7 @@ Specify linker script
 \begin_inset Text
 
 \begin_layout Plain Layout
-Create a stack section
+Create a stack section.
 \end_layout
 
 \end_inset
@@ -13392,7 +13392,7 @@ Add macro value for script.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Print gplink version information and exit
+Print gplink version information and exit.
 \end_layout
 
 \end_inset
@@ -13771,7 +13771,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-Create a new library
+Create a new library.
 \end_layout
 
 \end_inset
@@ -13800,7 +13800,7 @@ Create a new library
 \begin_inset Text
 
 \begin_layout Plain Layout
-Delete member from library
+Delete member from library.
 \end_layout
 
 \end_inset
@@ -13829,7 +13829,7 @@ Delete member from library
 \begin_inset Text
 
 \begin_layout Plain Layout
-Show the help message
+Show the help message.
 \end_layout
 
 \end_inset
@@ -13858,7 +13858,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-Don't add the symbol index
+Don't add the symbol index.
 \end_layout
 
 \end_inset
@@ -13887,7 +13887,7 @@ Don't add the symbol index
 \begin_inset Text
 
 \begin_layout Plain Layout
-Quiet mode
+Quiet mode.
 \end_layout
 
 \end_inset
@@ -13916,7 +13916,7 @@ Quiet mode
 \begin_inset Text
 
 \begin_layout Plain Layout
-Add or replace member from library
+Add or replace member from library.
 \end_layout
 
 \end_inset
@@ -13945,7 +13945,7 @@ Add or replace member from library
 \begin_inset Text
 
 \begin_layout Plain Layout
-List global symbols in libary
+List global symbols in libary.
 \end_layout
 
 \end_inset
@@ -13974,7 +13974,7 @@ List global symbols in libary
 \begin_inset Text
 
 \begin_layout Plain Layout
-List member in library
+List member in library.
 \end_layout
 
 \end_inset
@@ -14003,7 +14003,7 @@ List member in library
 \begin_inset Text
 
 \begin_layout Plain Layout
-Print gplib version information and exit
+Print gplib version information and exit.
 \end_layout
 
 \end_inset
@@ -14032,7 +14032,7 @@ Print gplib version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
-Extract member from library
+Extract member from library.
 \end_layout
 
 \end_inset
@@ -14366,7 +14366,7 @@ Display the help message.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Show the informations of the input hex file
+Show the informations of the input hex file.
 \end_layout
 
 \end_inset
@@ -15036,7 +15036,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-Strip debug symbols
+Strip debug symbols.
 \end_layout
 
 \end_inset
@@ -15065,7 +15065,7 @@ Strip debug symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
-Show the help message
+Show the help message.
 \end_layout
 
 \end_inset
@@ -15094,7 +15094,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-Keep symbol
+Keep symbol.
 \end_layout
 
 \end_inset
@@ -15123,7 +15123,7 @@ Keep symbol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Remove symbol
+Remove symbol.
 \end_layout
 
 \end_inset
@@ -15152,7 +15152,7 @@ Remove symbol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Alternate output file
+Alternate output file.
 \end_layout
 
 \end_inset
@@ -15181,7 +15181,7 @@ Alternate output file
 \begin_inset Text
 
 \begin_layout Plain Layout
-Preserve dates
+Preserve dates.
 \end_layout
 
 \end_inset
@@ -15210,7 +15210,7 @@ Preserve dates
 \begin_inset Text
 
 \begin_layout Plain Layout
-Remove section
+Remove section.
 \end_layout
 
 \end_inset
@@ -15269,7 +15269,7 @@ If this is set, then an option may not be parameter of an another option.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Remove all symbols
+Remove all symbols.
 \end_layout
 
 \end_inset
@@ -15298,7 +15298,7 @@ Remove all symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
-Remove all symbols not needed for relocations
+Remove all symbols not needed for relocations.
 \end_layout
 
 \end_inset
@@ -15327,7 +15327,7 @@ Remove all symbols not needed for relocations
 \begin_inset Text
 
 \begin_layout Plain Layout
-Show version
+Show version.
 \end_layout
 
 \end_inset
@@ -15356,7 +15356,7 @@ Show version
 \begin_inset Text
 
 \begin_layout Plain Layout
-Verbose mode
+Verbose mode.
 \end_layout
 
 \end_inset
@@ -15385,7 +15385,7 @@ Verbose mode
 \begin_inset Text
 
 \begin_layout Plain Layout
-Remove non-global symbols
+Remove non-global symbols.
 \end_layout
 
 \end_inset
@@ -15461,7 +15461,7 @@ Where options can be one of:
 \begin_layout Standard
 \noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="9" columns="3">
+<lyxtabular version="3" rows="10" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -15518,7 +15518,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display all information
+Display all information.
 \end_layout
 
 \end_inset
@@ -15547,7 +15547,7 @@ Display all information
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display directory header
+Display directory header.
 \end_layout
 
 \end_inset
@@ -15605,7 +15605,7 @@ Show the help message.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display source listing
+Display source listing.
 \end_layout
 
 \end_inset
@@ -15634,7 +15634,7 @@ Display source listing
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display debug message area
+Display debug message area.
 \end_layout
 
 \end_inset
@@ -15663,7 +15663,7 @@ Display debug message area
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display ROM
+Display ROM.
 \end_layout
 
 \end_inset
@@ -15692,14 +15692,14 @@ Display ROM
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display symbols
+Display symbols.
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -15708,7 +15708,7 @@ Display symbols
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -15717,11 +15717,40 @@ Display symbols
 
 \end_inset
 </cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Print gpvc version information and exit
+Print gpvc version information and exit.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-w
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-wide
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Show code table in wider view.
 \end_layout
 
 \end_inset
@@ -15930,7 +15959,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-Binary data
+Binary data.
 \end_layout
 
 \end_inset
@@ -15959,7 +15988,7 @@ Binary data
 \begin_inset Text
 
 \begin_layout Plain Layout
-Decode special mnemonics
+Decode special mnemonics.
 \end_layout
 
 \end_inset
@@ -15988,7 +16017,7 @@ Decode special mnemonics
 \begin_inset Text
 
 \begin_layout Plain Layout
-File header
+File header.
 \end_layout
 
 \end_inset
@@ -16017,7 +16046,7 @@ File header
 \begin_inset Text
 
 \begin_layout Plain Layout
-Show the help message
+Show the help message.
 \end_layout
 
 \end_inset
@@ -16046,7 +16075,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-Suppress filenames
+Suppress filenames.
 \end_layout
 
 \end_inset
@@ -16075,7 +16104,7 @@ Suppress filenames
 \begin_inset Text
 
 \begin_layout Plain Layout
-Section data
+Section data.
 \end_layout
 
 \end_inset
@@ -16134,7 +16163,7 @@ If this is set, then an option may not be parameter of an another option.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Symbol data
+Symbol data.
 \end_layout
 
 \end_inset
@@ -16163,7 +16192,7 @@ Symbol data
 \begin_inset Text
 
 \begin_layout Plain Layout
-Print gpvo version information and exit
+Print gpvo version information and exit.
 \end_layout
 
 \end_inset
@@ -16221,7 +16250,7 @@ Export symbols to an include file.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Enable 18xx extended mode
+Enable 18xx extended mode.
 \end_layout
 
 \end_inset

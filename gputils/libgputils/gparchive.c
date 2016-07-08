@@ -52,7 +52,7 @@ gp_archive_count_members(const gp_archive_t *Archive)
 char *
 gp_archive_member_name(const gp_archive_t *Archive)
 {
-  char  name[256];
+  char  name[AR_MEM_NAME_SIZ];
   char *end;
 
   sscanf(Archive->header.ar_name, "%255s/", name);
@@ -69,7 +69,7 @@ gp_archive_member_name(const gp_archive_t *Archive)
 void
 gp_archive_list_members(const gp_archive_t *Archive)
 {
-  char    name[256];
+  char    name[AR_MEM_NAME_SIZ];
   char   *end;
   int     date;
   time_t  time;
@@ -99,7 +99,7 @@ gp_archive_list_members(const gp_archive_t *Archive)
 gp_archive_t *
 gp_archive_find_member(gp_archive_t *Archive, const char *Object_name)
 {
-  char          name[256];
+  char          name[AR_MEM_NAME_SIZ];
   char         *end;
   gp_archive_t *found;
 
@@ -142,6 +142,29 @@ gp_archive_free_member(gp_archive_t *Archive)
 
 /*------------------------------------------------------------------------------------------------*/
 
+gp_boolean
+gp_archive_rename_member(gp_archive_t *Archive, const char *Object_name_old, const char *Object_name_new)
+{
+  gp_archive_t *object_old;
+  gp_archive_t *object_new;
+
+  object_new = gp_archive_find_member(Archive, Object_name_new);
+  if (object_new != NULL) {
+    /* With such name already exists a object. */
+    return false;
+  }
+
+  object_old = gp_archive_find_member(Archive, Object_name_old);
+  assert(object_old != NULL);
+
+  memset(object_old->header.ar_name, ' ', sizeof(object_old->header.ar_name));
+  gp_arch_strncpy(object_old->header.ar_name, Object_name_new,  sizeof(object_old->header.ar_name));
+
+  return true;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 gp_archive_t *
 gp_archive_delete_member(gp_archive_t *Archive, const char *Object_name)
 {
@@ -180,9 +203,9 @@ gp_archive_add_member(gp_archive_t *Archive, const char *File_name, const char *
   gp_archive_t *new_member;
   gp_archive_t *list;
   gp_binary_t  *new_object;
-  char          name[256];
-  char          date[12];
-  char          size[10];
+  char          name[AR_MEM_NAME_SIZ];
+  char          date[AR_MEM_DATE_SIZ];
+  char          size[AR_MEM_FSIZE_SIZ];
   int           timer;
 
   new_object = gp_read_file(File_name);
@@ -203,11 +226,10 @@ gp_archive_add_member(gp_archive_t *Archive, const char *File_name, const char *
   snprintf(date, sizeof(date), "%il", timer);
   snprintf(size, sizeof(size), "%lil", new_object->size);
 
-  /* FIXME: These functions overwrite the ' ' that the header is filled with. */
-  strncpy(new_member->header.ar_name, name,  sizeof(new_member->header.ar_name));
-  strncpy(new_member->header.ar_date, date,  sizeof(new_member->header.ar_date));
-  strncpy(new_member->header.ar_size, size,  sizeof(new_member->header.ar_size));
-  strncpy(new_member->header.ar_fmag, ARMAG, sizeof(new_member->header.ar_fmag));
+  gp_arch_strncpy(new_member->header.ar_name, name,  sizeof(new_member->header.ar_name));
+  gp_arch_strncpy(new_member->header.ar_date, date,  sizeof(new_member->header.ar_date));
+  gp_arch_strncpy(new_member->header.ar_size, size,  sizeof(new_member->header.ar_size));
+  gp_arch_strncpy(new_member->header.ar_fmag, ARMAG, sizeof(new_member->header.ar_fmag));
 
   old_member = gp_archive_find_member(Archive, Object_name);
 
@@ -219,7 +241,8 @@ gp_archive_add_member(gp_archive_t *Archive, const char *File_name, const char *
   if (Archive == NULL) {
     /* the list is empty */
     Archive = new_member;
-  } else {
+  }
+  else {
     /* append the new object to the end of the list */
     list = Archive;
     while (list->next != NULL) {
@@ -237,7 +260,7 @@ gp_boolean
 gp_archive_extract_member(gp_archive_t *Archive, const char *Object_name)
 {
   gp_archive_t *object;
-  char          file_name[256];
+  char          file_name[AR_MEM_NAME_SIZ];
   FILE         *output_file;
   int           size;
 
@@ -426,7 +449,7 @@ void
 gp_archive_make_index(gp_archive_t *Archive, symbol_table_t *Definition)
 {
   gp_object_t *object;
-  char         name[256];
+  char         name[AR_MEM_NAME_SIZ];
   char        *end;
 
   /* If present, skip the symbol index. */
@@ -463,7 +486,7 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_t *Archive)
   const char             *sym_name;
   size_t                  sym_name_len;
   const gp_coffsymbol_t  *var;
-  char                    size[10];
+  char                    size[AR_MEM_FSIZE_SIZ];
   uint8_t                *ptr;
   long                    index_size;
 
@@ -499,8 +522,8 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_t *Archive)
   new_member->header.ar_name[0] = '/';
   snprintf(size, sizeof(size), "%lil", index_size);
 
-  strncpy(new_member->header.ar_size, size,  sizeof(new_member->header.ar_size));
-  strncpy(new_member->header.ar_fmag, ARMAG, sizeof(new_member->header.ar_fmag));
+  gp_arch_strncpy(new_member->header.ar_size, size,  sizeof(new_member->header.ar_size));
+  gp_arch_strncpy(new_member->header.ar_fmag, ARMAG, sizeof(new_member->header.ar_fmag));
 
   new_member->next = Archive;
   Archive = new_member;
@@ -617,7 +640,7 @@ gp_archive_print_table(const symbol_table_t *Table)
   size_t               sym_count;
   size_t               i;
   const gp_archive_t  *member;
-  char                 name[256];
+  char                 name[AR_MEM_NAME_SIZ];
   char                *end;
 
   assert(Table != NULL);
@@ -631,7 +654,7 @@ gp_archive_print_table(const symbol_table_t *Table)
     /* determine the archive member the symbol is defined in */
     member = sym_get_symbol_annotation(lst[i]);
     assert(member != NULL);
-    /* determine the archive member name */
+    /* determine the archive member name (AR_MEM_NAME_SIZ - 1) */
     sscanf(member->header.ar_name, "%255s/", name);
     end = strchr(name, '/');
     if (end != NULL) {

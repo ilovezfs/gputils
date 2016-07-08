@@ -440,6 +440,35 @@ gp_strncpy(char *Dest, const char *Src, size_t Maxlen)
 /*------------------------------------------------------------------------------------------------*/
 
 char *
+gp_arch_strncpy(char *Dest, const char *Src, size_t Maxlen)
+{
+  char ch;
+
+  if ((Dest == NULL) || (Src == NULL) || (Maxlen == 0)) {
+    return NULL;
+  }
+
+  while (true) {
+    if (--Maxlen == 0) {
+      break;
+    }
+
+    ch = *Src;
+    if (ch == '\0') {
+      break;
+    }
+
+    *Dest = ch;
+    ++Src;
+    ++Dest;
+  };
+
+  return Dest;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+char *
 gp_stptoupper(char *Dest, const char *Src, size_t Maxlen)
 {
   char ch;

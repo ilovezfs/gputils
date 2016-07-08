@@ -29,6 +29,11 @@ Boston, MA 02111-1307, USA.  */
 struct gplib_state state = {
   AR_NULL,              /* default mode, do nothing */
   0,                    /* number of objects */
+  NULL,
+  {
+    NULL,
+  },
+  NULL
 };
 
 static symbol_table_t *definition_tbl = NULL;
@@ -80,8 +85,9 @@ _select_mode(enum lib_modes mode)
 {
   if (state.mode == AR_NULL) {
     state.mode = mode;
-  } else {
-    gp_error("multiple library operations selected");
+  }
+  else {
+    gp_error("Multiple library operations selected!");
   }
 }
 
@@ -205,7 +211,7 @@ int main(int argc, char *argv[])
     for ( ; optind < argc; optind++) {
       state.objectname[state.numobjects] = argv[optind];
       if (state.numobjects >= MAX_OBJ_NAMES) {
-        gp_error("exceeded maximum number of object files");
+        gp_error("Exceeded maximum number of object files: %d", MAX_OBJ_NAMES);
         break;
       }
       state.numobjects++;
@@ -214,12 +220,12 @@ int main(int argc, char *argv[])
     usage = true;
   }
 
-  /* User did not select an operation */
+  /* User did not select an operation. */
   if (state.mode == AR_NULL) {
     usage = true;
   }
 
-  /* User did not provide object names */
+  /* User did not provide object names. */
   if ((state.mode != AR_LIST) && (state.mode != AR_SYMBOLS) && (state.numobjects == 0)) {
     usage = true;
   }
@@ -228,10 +234,10 @@ int main(int argc, char *argv[])
     _show_usage();
   }
 
-  /* if we are not creating a new archive, we have to read an existing one */
+  /* If we are not creating a new archive, we have to read an existing one. */
   if (state.mode != AR_CREATE) {
     if (gp_identify_coff_file(state.filename) != GP_COFF_ARCHIVE) {
-      gp_error("\"%s\" is not a valid archive file", state.filename);
+      gp_error("\"%s\" is not a valid archive file.", state.filename);
       exit(1);
     }
     else {
@@ -248,7 +254,7 @@ int main(int argc, char *argv[])
       type = gp_identify_coff_file(state.objectname[i]);
 
       if ((type != GP_COFF_OBJECT_V2) && (type != GP_COFF_OBJECT)) {
-        gp_error("\"%s\" is not a valid object file", state.objectname[i]);
+        gp_error("\"%s\" is not a valid object file.", state.objectname[i]);
         break;
       }
       else {
@@ -264,13 +270,13 @@ int main(int argc, char *argv[])
   case AR_DELETE: {
     while (i < state.numobjects) {
       if (_has_path(state.objectname[i])) {
-        gp_error("invalid object name \"%s\"", state.objectname[i]);
+        gp_error("Invalid object name: \"%s\"", state.objectname[i]);
         break;
       }
 
       object = gp_archive_find_member(state.archive, state.objectname[i]);
       if (object == NULL) {
-        gp_error("object \"%s\" not found", state.objectname[i]);
+        gp_error("Object \"%s\" not found.", state.objectname[i]);
         break;
       }
       else {
@@ -285,18 +291,18 @@ int main(int argc, char *argv[])
   case AR_EXTRACT: {
     while (i < state.numobjects) {
       if (_has_path(state.objectname[i])) {
-        gp_error("invalid object name \"%s\"", state.objectname[i]);
+        gp_error("Invalid object name: \"%s\"", state.objectname[i]);
         break;
       }
 
       object = gp_archive_find_member(state.archive, state.objectname[i]);
       if (object == NULL) {
-        gp_error("object \"%s\" not found", state.objectname[i]);
+        gp_error("Object \"%s\" not found.", state.objectname[i]);
         break;
       }
       else {
         if (!gp_archive_extract_member(state.archive, state.objectname[i])) {
-          gp_error("can't write file \"%s\"", state.objectname[i]);
+          gp_error("Can't write this file: \"%s\"", state.objectname[i]);
           exit(1);
           break;
         }
@@ -312,7 +318,7 @@ int main(int argc, char *argv[])
 
   case AR_SYMBOLS: {
     if (gp_archive_have_index(state.archive) == 0) {
-      gp_error("this archive has no symbol index");
+      gp_error("This archive has no symbol index.");
     }
     else {
       gp_archive_read_index(symbol_index, state.archive);
@@ -326,7 +332,7 @@ int main(int argc, char *argv[])
     assert(0);
   }
 
-  /* If the archive is being modified remove the old symbol index */
+  /* If the archive is being modified remove the old symbol index. */
   if (update_archive) {
     state.archive = gp_archive_remove_index(state.archive);
   }
@@ -342,7 +348,7 @@ int main(int argc, char *argv[])
   /* write the new or modified archive */
   if (update_archive && (gp_num_errors == 0)) {
     if (!gp_archive_write(state.archive, state.filename)) {
-      gp_error("can't write the new archive file");
+      gp_error("Can't write this new archive file: \"%s\"", state.filename);
       exit(1);
     }
   }
