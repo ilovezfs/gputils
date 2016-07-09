@@ -107,7 +107,7 @@ _data_line(unsigned int Start, unsigned int Stop, enum mode_flags_e Mode)
   if (Mode == HMODE_ALL) {
     _start_record(Start, Stop - Start);
     while (Start < Stop) {
-      if (!b_memory_get(memory, Start++, &byte, NULL, NULL)) {
+      if (!gp_mem_b_get(memory, Start++, &byte, NULL, NULL)) {
         byte = 0xff;
       }
       _write_byte(byte);
@@ -120,7 +120,7 @@ _data_line(unsigned int Start, unsigned int Stop, enum mode_flags_e Mode)
     assert(((Start % 2) == 0) && ((Stop % 2) == 0));
     _start_record(Start / 2, (Stop  - Start) / 2);
     while (Start < Stop) {
-      if (!b_memory_get(memory, (Start++) ^ 1, &byte, NULL, NULL)) {
+      if (!gp_mem_b_get(memory, (Start++) ^ 1, &byte, NULL, NULL)) {
         byte = 0xff;
       }
       _write_byte(byte);
@@ -134,7 +134,7 @@ _data_line(unsigned int Start, unsigned int Stop, enum mode_flags_e Mode)
     }
 
     while (Start < Stop) {
-      if (!b_memory_get(memory, Start, &byte, NULL, NULL)) {
+      if (!gp_mem_b_get(memory, Start, &byte, NULL, NULL)) {
         byte = 0xff;
       }
       _write_byte(byte);
@@ -195,12 +195,12 @@ _write_i_mem(enum formats Hex_format, enum mode_flags_e Mode, unsigned int Core_
     }
 
     while (i < maximum) {
-      if (!b_memory_get(memory, i, &byte, NULL, NULL)) {
+      if (!gp_mem_b_get(memory, i, &byte, NULL, NULL)) {
         ++i;
       }
       else {
         j = i;
-        while (b_memory_get(memory, i, &byte, NULL, NULL)) {
+        while (gp_mem_b_get(memory, i, &byte, NULL, NULL)) {
           ++i;
           if ((((Mode == HMODE_ALL) || (Mode == HMODE_SWAP)) && ((i & 0xf) == 0)) || ((i & 0x1f) == 0)) {
             break;

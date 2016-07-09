@@ -151,7 +151,7 @@ gp_coffgen_new_section(const char *Name, MemBlock_t *Data)
 
   /* initialize section */
   new->name      = GP_Strdup(Name);
-  new->data      = (Data != NULL) ? Data : i_memory_create();
+  new->data      = (Data != NULL) ? Data : gp_mem_i_create();
   new->serial_id = section_serial_id++;
 
   return new;
@@ -740,6 +740,39 @@ gp_coffgen_del_symbol(gp_object_t *Object, gp_symbol_t *Symbol)
   gp_node_remove(&Object->symbol_list, Symbol);
   Object->num_symbols -= 1 + gp_coffgen_free_symbol(Symbol);
   return true;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Make an array from symbol list of object. */
+
+gp_symbol_t **
+gp_coffgen_make_symbol_array(const gp_object_t *Object, int (*Cmp)(const void *, const void *))
+{
+  gp_symbol_t  **array;
+  gp_symbol_t   *symbol;
+  unsigned int   i;
+
+  if ((Object == NULL) || (Object->symbol_list.first == NULL)) {
+    return NULL;
+  }
+
+  array = (gp_symbol_t **)GP_Malloc(Object->symbol_list.num_nodes * sizeof(gp_symbol_t *));
+
+  symbol = Object->symbol_list.first;
+  while (symbol != NULL) {
+    array[i] = symbol;
+    ++i;
+    symbol = symbol->next;
+  }
+
+  assert(Object->symbol_list.num_nodes == i);
+
+  if ((Cmp != NULL) && (i > 1)) {
+    qsort(array, i, sizeof(gp_symbol_t *), Cmp);
+  }
+
+  return array;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1467,7 +1500,7 @@ void
 gp_coffgen_free_section(gp_section_t *Section)
 {
   if (Section->data != NULL) {
-    i_memory_free(Section->data);
+    gp_mem_i_free(Section->data);
   }
 
   gp_list_delete(&Section->relocation_list);

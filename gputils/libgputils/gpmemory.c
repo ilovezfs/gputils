@@ -140,7 +140,7 @@ _store_symbol_name(MemByte_t *Mb, const char *Name)
 /*------------------------------------------------------------------------------------------------*/
 
 MemBlock_t *
-i_memory_create(void)
+gp_mem_i_create(void)
 {
   return (MemBlock_t *)GP_Calloc(1, sizeof(MemBlock_t));
 }
@@ -148,7 +148,7 @@ i_memory_create(void)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_free(MemBlock_t *M)
+gp_mem_i_free(MemBlock_t *M)
 {
   MemBlock_t   *next;
   MemByte_t    *b;
@@ -181,7 +181,7 @@ i_memory_free(MemBlock_t *M)
 }
 
 /**************************************************************************************************
- * b_memory_is_used
+ * gp_mem_b_is_used
  *
  * Check if byte at address is used. This function will traverse through
  * the linked list of memory blocks searching for the address from the
@@ -196,7 +196,7 @@ i_memory_free(MemBlock_t *M)
  **************************************************************************************************/
 
 gp_boolean
-b_memory_is_used(MemBlock_t *M, unsigned int Byte_address)
+gp_mem_b_is_used(MemBlock_t *M, unsigned int Byte_address)
 {
   unsigned int block  = IMemBaseFromAddr(Byte_address);
   unsigned int offset = IMemOffsFromAddr(Byte_address);
@@ -213,7 +213,7 @@ b_memory_is_used(MemBlock_t *M, unsigned int Byte_address)
 }
 
 /**************************************************************************************************
- * b_memory_get
+ * gp_mem_b_get
  *
  * Fetch a byte from the pic memory. This function will traverse through
  * the linked list of memory blocks searching for the address from the
@@ -230,7 +230,7 @@ b_memory_is_used(MemBlock_t *M, unsigned int Byte_address)
  **************************************************************************************************/
 
 gp_boolean
-b_memory_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
+gp_mem_b_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
              const char **Section_name, const char **Symbol_name)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
@@ -284,7 +284,7 @@ b_memory_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
 }
 
 /**************************************************************************************************
- *  b_memory_put
+ *  gp_mem_b_put
  *
  * This function will write one byte to a pic memory address. If the
  * destination memory block is non-existant, a new one will be created.
@@ -301,7 +301,7 @@ b_memory_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
  **************************************************************************************************/
 
 void
-b_memory_put(MemBlock_t *I_memory, unsigned int Byte_address, uint8_t Value,
+gp_mem_b_put(MemBlock_t *I_memory, unsigned int Byte_address, uint8_t Value,
 	     const char *Section_name, const char *Symbol_name)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
@@ -343,7 +343,7 @@ b_memory_put(MemBlock_t *I_memory, unsigned int Byte_address, uint8_t Value,
 }
 
 /**************************************************************************************************
- *  b_memory_clear
+ *  gp_mem_b_clear
  *
  * This function will clear one byte of a pic memory address.
  *
@@ -356,7 +356,7 @@ b_memory_put(MemBlock_t *I_memory, unsigned int Byte_address, uint8_t Value,
  **************************************************************************************************/
 
 void
-b_memory_clear(MemBlock_t *M, unsigned int Byte_address)
+gp_mem_b_clear(MemBlock_t *M, unsigned int Byte_address)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
   unsigned int  offset = IMemOffsFromAddr(Byte_address);
@@ -391,7 +391,7 @@ b_memory_clear(MemBlock_t *M, unsigned int Byte_address)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-b_memory_move(MemBlock_t *M, unsigned int From_byte_address, unsigned int To_byte_address,
+gp_mem_b_move(MemBlock_t *M, unsigned int From_byte_address, unsigned int To_byte_address,
               unsigned int Byte_size)
 {
   unsigned int from_block  = IMemBaseFromAddr(From_byte_address);
@@ -471,7 +471,7 @@ b_memory_move(MemBlock_t *M, unsigned int From_byte_address, unsigned int To_byt
 /*------------------------------------------------------------------------------------------------*/
 
 void
-b_memory_delete(MemBlock_t *M, unsigned int Byte_address)
+gp_mem_b_delete(MemBlock_t *M, unsigned int Byte_address)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
   unsigned int  offset = IMemOffsFromAddr(Byte_address);
@@ -510,7 +510,7 @@ b_memory_delete(MemBlock_t *M, unsigned int Byte_address)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-b_memory_delete_area(MemBlock_t *M, unsigned int Byte_address, unsigned int Byte_number)
+gp_mem_b_delete_area(MemBlock_t *M, unsigned int Byte_address, unsigned int Byte_number)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
   unsigned int  offset = IMemOffsFromAddr(Byte_address);
@@ -623,7 +623,7 @@ b_range_memory_used(const MemBlock_t *M, unsigned int From_byte_address, unsigne
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_used(const MemBlock_t *M)
+gp_mem_b_used(const MemBlock_t *M)
 {
   return b_range_memory_used(M, 0, UINT_MAX);
 }
@@ -637,14 +637,14 @@ b_memory_used(const MemBlock_t *M)
  **************************************************************************************************/
 
 unsigned int
-i_memory_get_le(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
+gp_mem_i_get_le(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
                 const char **Section_name, const char **Symbol_name)
 {
   unsigned int ret;
   bword_t      bw;
 
-  ret  = (b_memory_get(M, Byte_address,     &bw.b[0], Section_name, Symbol_name)) ? W_USED_L : 0;
-  ret |= (b_memory_get(M, Byte_address + 1, &bw.b[1], NULL,         NULL))        ? W_USED_H : 0;
+  ret  = (gp_mem_b_get(M, Byte_address,     &bw.b[0], Section_name, Symbol_name)) ? W_USED_L : 0;
+  ret |= (gp_mem_b_get(M, Byte_address + 1, &bw.b[1], NULL,         NULL))        ? W_USED_H : 0;
   *Word = bw.w;
   return ret;
 }
@@ -652,24 +652,24 @@ i_memory_get_le(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_put_le(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
+gp_mem_i_put_le(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
                 const char *Section_name, const char *Symbol_name)
 {
-  b_memory_put(M, Byte_address,     Word & 0xff, Section_name, Symbol_name);
-  b_memory_put(M, Byte_address + 1, Word >> 8,   Section_name, Symbol_name);
+  gp_mem_b_put(M, Byte_address,     Word & 0xff, Section_name, Symbol_name);
+  gp_mem_b_put(M, Byte_address + 1, Word >> 8,   Section_name, Symbol_name);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-i_memory_get_be(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
+gp_mem_i_get_be(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
                 const char **Section_name, const char **Symbol_name)
 {
   unsigned int ret;
   bword_t      bw;
 
-  ret  = (b_memory_get(M, Byte_address,     &bw.b[1], Section_name, Symbol_name)) ? W_USED_H : 0;
-  ret |= (b_memory_get(M, Byte_address + 1, &bw.b[0], NULL,         NULL))        ? W_USED_L : 0;
+  ret  = (gp_mem_b_get(M, Byte_address,     &bw.b[1], Section_name, Symbol_name)) ? W_USED_H : 0;
+  ret |= (gp_mem_b_get(M, Byte_address + 1, &bw.b[0], NULL,         NULL))        ? W_USED_L : 0;
   *Word = bw.w;
   return ret;
 }
@@ -677,26 +677,26 @@ i_memory_get_be(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_put_be(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
+gp_mem_i_put_be(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
                 const char *Section_name, const char *Symbol_name)
 {
-  b_memory_put(M, Byte_address,     Word >> 8,   Section_name, Symbol_name);
-  b_memory_put(M, Byte_address + 1, Word & 0xff, Section_name, Symbol_name);
+  gp_mem_b_put(M, Byte_address,     Word >> 8,   Section_name, Symbol_name);
+  gp_mem_b_put(M, Byte_address + 1, Word & 0xff, Section_name, Symbol_name);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_delete(MemBlock_t *m, unsigned int byte_address)
+gp_mem_i_delete(MemBlock_t *m, unsigned int byte_address)
 {
-  b_memory_delete(m, byte_address);
-  b_memory_delete(m, byte_address);
+  gp_mem_b_delete(m, byte_address);
+  gp_mem_b_delete(m, byte_address);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-i_memory_print(const MemBlock_t *M, pic_processor_t Processor)
+gp_mem_i_print(const MemBlock_t *M, pic_processor_t Processor)
 {
   proc_class_t class;
   unsigned int byte_addr;
@@ -736,7 +736,7 @@ i_memory_print(const MemBlock_t *M, pic_processor_t Processor)
                 (gp_processor_is_config_org(Processor, org) >= 0)))) {
             /* The row should be shown byte by byte. */
             for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-              if (b_memory_get(M, byte_addr + i + j, &data.b[0], NULL, NULL)) {
+              if (gp_mem_b_get(M, byte_addr + i + j, &data.b[0], NULL, NULL)) {
                 printf("%02X ", data.b[0]);
               }
               else {
@@ -795,7 +795,7 @@ i_memory_print(const MemBlock_t *M, pic_processor_t Processor)
  **************************************************************************************************/
 
 void
-b_memory_set_listed(MemBlock_t *M, unsigned int Byte_address, unsigned int N_bytes)
+gp_mem_b_set_listed(MemBlock_t *M, unsigned int Byte_address, unsigned int N_bytes)
 {
   unsigned int block = IMemBaseFromAddr(Byte_address);
 
@@ -820,7 +820,7 @@ b_memory_set_listed(MemBlock_t *M, unsigned int Byte_address, unsigned int N_byt
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_unlisted_size(const MemBlock_t *M, unsigned int Byte_address)
+gp_mem_b_get_unlisted_size(const MemBlock_t *M, unsigned int Byte_address)
 {
   unsigned int block   = IMemBaseFromAddr(Byte_address);
   unsigned int n_bytes = 0;
@@ -855,7 +855,7 @@ b_memory_get_unlisted_size(const MemBlock_t *M, unsigned int Byte_address)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_set_addr_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type,
+gp_mem_b_set_addr_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type,
                        unsigned int Dest_byte_addr)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
@@ -888,7 +888,7 @@ b_memory_set_addr_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Ty
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_addr_type(const MemBlock_t *M, unsigned int Byte_address, const char **Label_name,
+gp_mem_b_get_addr_type(const MemBlock_t *M, unsigned int Byte_address, const char **Label_name,
                        unsigned int *Dest_byte_addr)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
@@ -927,7 +927,7 @@ b_memory_get_addr_type(const MemBlock_t *M, unsigned int Byte_address, const cha
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_set_addr_name(MemBlock_t *M, unsigned int Byte_address, const char *Name)
+gp_mem_b_set_addr_name(MemBlock_t *M, unsigned int Byte_address, const char *Name)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
   unsigned int  offset = IMemOffsFromAddr(Byte_address);
@@ -953,7 +953,7 @@ b_memory_set_addr_name(MemBlock_t *M, unsigned int Byte_address, const char *Nam
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_set_args(MemBlock_t *M, unsigned int Byte_address, unsigned int Type, const MemArgList_t *Args)
+gp_mem_b_set_args(MemBlock_t *M, unsigned int Byte_address, unsigned int Type, const MemArgList_t *Args)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
   unsigned int  offset = IMemOffsFromAddr(Byte_address);
@@ -993,7 +993,7 @@ b_memory_set_args(MemBlock_t *M, unsigned int Byte_address, unsigned int Type, c
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_args(const MemBlock_t *M, unsigned int Byte_address, MemArgList_t *Args)
+gp_mem_b_get_args(const MemBlock_t *M, unsigned int Byte_address, MemArgList_t *Args)
 {
   unsigned int  block  = IMemBaseFromAddr(Byte_address);
   unsigned int  offset = IMemOffsFromAddr(Byte_address);
@@ -1050,7 +1050,7 @@ b_memory_get_args(const MemBlock_t *M, unsigned int Byte_address, MemArgList_t *
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_set_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
+gp_mem_b_set_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
 {
   unsigned int block  = IMemBaseFromAddr(Byte_address);
   unsigned int offset = IMemOffsFromAddr(Byte_address);
@@ -1070,7 +1070,7 @@ b_memory_set_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_boolean
-b_memory_clear_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
+gp_mem_b_clear_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
 {
   unsigned int block  = IMemBaseFromAddr(Byte_address);
   unsigned int offset = IMemOffsFromAddr(Byte_address);
@@ -1090,7 +1090,7 @@ b_memory_clear_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_type(const MemBlock_t *M, unsigned int Byte_address)
+gp_mem_b_get_type(const MemBlock_t *M, unsigned int Byte_address)
 {
   unsigned int block  = IMemBaseFromAddr(Byte_address);
   unsigned int offset = IMemOffsFromAddr(Byte_address);

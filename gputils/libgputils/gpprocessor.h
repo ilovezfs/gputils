@@ -268,7 +268,7 @@ struct proc_class {
                                       const char **section_name, const char **symbol_name);
 
   void                (*i_memory_put)(MemBlock_t *m, unsigned int byte_address, uint16_t value,
-                                  const char *section_name, const char *symbol_name);
+                                      const char *section_name, const char *symbol_name);
 
   void                (*patch_strict)(void);
 };

@@ -502,7 +502,7 @@ _recognize_labels_and_spec_words(MemBlock_t *memory)
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
 
         if (state.class == PROC_CLASS_PIC16E) {
-          if (b_memory_get(m, i, &byte, NULL, NULL)) {
+          if (gp_mem_b_get(m, i, &byte, NULL, NULL)) {
             idlocs_pack.words[index] = byte;
 
             if (!isprint(byte)) {
@@ -521,7 +521,7 @@ _recognize_labels_and_spec_words(MemBlock_t *memory)
 
             if ((sym != NULL) && !(sym->attr & CSYM_ORG)) {
               if (sym->start == (long)org) {
-                b_memory_set_addr_name(m, i, sym->name);
+                gp_mem_b_set_addr_name(m, i, sym->name);
                 sym->attr |= CSYM_USED;
               }
             }
@@ -540,7 +540,7 @@ _recognize_labels_and_spec_words(MemBlock_t *memory)
         if (dev != NULL) {
           if (addr_pack.hit_count < GP_CFG_ADDR_PACK_MAX) {
             if (state.class == PROC_CLASS_PIC16E) {
-              if (b_memory_get(m, i, &byte, NULL, NULL)) {
+              if (gp_mem_b_get(m, i, &byte, NULL, NULL)) {
                 hit = &addr_pack.hits[addr_pack.hit_count];
 
                 if (gp_cfg_decode_directive(dev, org, byte, hit) > 0) {
@@ -573,12 +573,12 @@ _recognize_labels_and_spec_words(MemBlock_t *memory)
         } /* if (dev != NULL) */
       } /* else if (gp_processor_is_config_org(state.processor, org) >= 0) */
       else if ((offset = gp_processor_is_eeprom_org(state.processor, org)) >= 0) {
-        if (b_memory_get(m, i, &byte, NULL, NULL)) {
+        if (gp_mem_b_get(m, i, &byte, NULL, NULL)) {
           sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_EEDATA], offset, -1, true);
 
           if ((sym != NULL) && !(sym->attr & CSYM_ORG)) {
             if (sym->start == (long)offset) {
-              b_memory_set_addr_name(m, i, sym->name);
+              gp_mem_b_set_addr_name(m, i, sym->name);
               sym->attr |= CSYM_USED;
             }
           }
@@ -595,10 +595,10 @@ _recognize_labels_and_spec_words(MemBlock_t *memory)
 
             if (sym->start == (long)org) {
               type |= W_ADDR_T_LABEL;
-              b_memory_set_addr_name(m, i, sym->name);
+              gp_mem_b_set_addr_name(m, i, sym->name);
             }
 
-            b_memory_set_type(m, i, type);
+            gp_mem_b_set_type(m, i, type);
             insn_size = 2;
           }
           else {
@@ -610,8 +610,8 @@ _recognize_labels_and_spec_words(MemBlock_t *memory)
             vector = gp_processor_find_vector(state.class, org);
 
             if (vector != NULL) {
-              b_memory_set_addr_type(m, i, W_ADDR_T_LABEL, 0);
-              b_memory_set_addr_name(m, i, vector->name);
+              gp_mem_b_set_addr_type(m, i, W_ADDR_T_LABEL, 0);
+              gp_mem_b_set_addr_name(m, i, vector->name);
             }
 
             num_words = gp_disassemble_find_labels(m, i, state.processor, &fstate);
@@ -729,16 +729,16 @@ _denominate_labels(MemBlock_t *memory)
     maximum = i + I_MEM_MAX;
 
     while (i < maximum) {
-      type = b_memory_get_addr_type(m, i, NULL, NULL);
+      type = gp_mem_b_get_addr_type(m, i, NULL, NULL);
 
       if (type & W_ADDR_T_FUNC) {
         snprintf(buffer, sizeof(buffer), "function_%03u", func_idx);
-        b_memory_set_addr_name(m, i, buffer);
+        gp_mem_b_set_addr_name(m, i, buffer);
         ++func_idx;
       }
       else if (type & W_ADDR_T_LABEL) {
         snprintf(buffer, sizeof(buffer), "label_%03u", label_idx);
-        b_memory_set_addr_name(m, i, buffer);
+        gp_mem_b_set_addr_name(m, i, buffer);
         ++label_idx;
       }
 
@@ -1185,7 +1185,7 @@ _dasm(MemBlock_t *memory)
         /* This is idlocs word/bytes. Not need disassemble. */
         if (state.class == PROC_CLASS_PIC16E) {
           if (!state.show_config) {
-            if (b_memory_get(m, i, &byte, NULL, NULL)) {
+            if (gp_mem_b_get(m, i, &byte, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
                 if (state.show_names && (offset == 0)) {
                   _ux_print(true, "\n"
@@ -1263,7 +1263,7 @@ _dasm(MemBlock_t *memory)
         /* This is config word/bytes. Not need disassemble. */
         if (state.class == PROC_CLASS_PIC16E) {
           if (!state.show_config) {
-            if (b_memory_get(m, i, &byte, NULL, NULL)) {
+            if (gp_mem_b_get(m, i, &byte, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
                 if (state.show_names && (offset == 0)) {
                   _ux_print(true, "\n"
@@ -1325,7 +1325,7 @@ _dasm(MemBlock_t *memory)
         }
       } /* else if (gp_processor_is_config_org(state.processor, org) >= 0) */
       else if ((offset = gp_processor_is_eeprom_org(state.processor, org)) >= 0) {
-        if (b_memory_get(m, i, &byte, NULL, &label_name)) {
+        if (gp_mem_b_get(m, i, &byte, NULL, &label_name)) {
           if (last_loc != (i - insn_size)) {
             sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_EEDATA], org, -1, true);
 
@@ -1426,7 +1426,7 @@ _dasm(MemBlock_t *memory)
             length = snprintf(buffer, sizeof(buffer), "        ");
           }
 
-          type = b_memory_get_type(m, i);
+          type = gp_mem_b_get_type(m, i);
 
           if (type & W_CONST_DATA) {
             gp_disassemble_show_data(m, i, state.class, behavior, buffer, sizeof(buffer), length);
@@ -1485,7 +1485,7 @@ int main(int argc, char *argv[])
 
   gp_init();
 
-  state.i_memory = i_memory_create();
+  state.i_memory = gp_mem_i_create();
   state.show_names  = false;
   state.show_fsrn   = false;
   state.show_config = false;
@@ -1663,7 +1663,7 @@ int main(int argc, char *argv[])
 
   if (state.num.errors == 0) {
     if (memory_dump) {
-      i_memory_print(state.i_memory, state.processor);
+      gp_mem_i_print(state.i_memory, state.processor);
     }
     else {
       _load_processor_constants();
@@ -1672,7 +1672,7 @@ int main(int argc, char *argv[])
   }
 
   lset_delete(&state.lset_root);
-  i_memory_free(state.i_memory);
+  gp_mem_i_free(state.i_memory);
 
   return ((state.num.errors > 0) ? EXIT_FAILURE : EXIT_SUCCESS);
 }

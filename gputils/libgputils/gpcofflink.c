@@ -306,7 +306,7 @@ gp_cofflink_make_stack(gp_object_t *Object, unsigned int Num_bytes)
 
   /* mark the memory locations as used */
   for (i = 0; i < Num_bytes; i++) {
-    b_memory_put(new->data, i, 0, ".stack", NULL);
+    gp_mem_b_put(new->data, i, 0, ".stack", NULL);
   }
 
   /* create the symbol for the start address of the stack */
@@ -391,12 +391,12 @@ gp_cofflink_merge_sections(gp_object_t *Object)
 
         if (!gp_writeobj_has_data(first)) {
           /* TODO optimization: adopt data from second by moving second->size bytes from org to org + offset */
-          first->data = i_memory_create();
+          first->data = gp_mem_i_create();
         }
 
         for (byte_addr = 0; byte_addr < last; byte_addr++) {
-          if (b_memory_get(second->data, byte_addr, &data, &section_name, &symbol_name)) {
-            b_memory_put(first->data, byte_addr + offset, data, section_name, symbol_name);
+          if (gp_mem_b_get(second->data, byte_addr, &data, &section_name, &symbol_name)) {
+            gp_mem_b_put(first->data, byte_addr + offset, data, section_name, symbol_name);
           }
           else {
             assert(0);
@@ -467,8 +467,8 @@ _copy_rom_section(const gp_object_t *Object, const gp_section_t *Idata, gp_secti
   if (class->rom_width == 8) {
     /* PIC16E */
     for ( ; from < stop; ++from, ++to) {
-      if (b_memory_get(Idata->data, from, &data, &section_name, &symbol_name)) {
-        b_memory_put(Rom->data, to, data, section_name, symbol_name);
+      if (gp_mem_b_get(Idata->data, from, &data, &section_name, &symbol_name)) {
+        gp_mem_b_put(Rom->data, to, data, section_name, symbol_name);
       }
     }
   }
@@ -478,7 +478,7 @@ _copy_rom_section(const gp_object_t *Object, const gp_section_t *Idata, gp_secti
     insn_retlw = gp_processor_retlw(class);
 
     for ( ; from < stop; ++from, to += 2) {
-      if (b_memory_get(Idata->data, from, &data, &section_name, &symbol_name)) {
+      if (gp_mem_b_get(Idata->data, from, &data, &section_name, &symbol_name)) {
         class->i_memory_put(Rom->data, to, insn_retlw | data, section_name, symbol_name);
       }
     }
@@ -520,7 +520,7 @@ _create_rom_section(gp_object_t *Object, gp_section_t *Section)
     new->size = Section->size;
     /* Force the section size to be an even number of bytes. */
     if (Section->size & 1) {
-      b_memory_put(new->data, Section->size, 0, Object->filename, "adjust");
+      gp_mem_b_put(new->data, Section->size, 0, Object->filename, "adjust");
       new->size++;
     }
   }
@@ -645,7 +645,7 @@ gp_cofflink_make_idata(gp_object_t *Object, gp_boolean Force_cinit)
 
     /* load the table with data */
     for (i = 0; i < byte_count; i++) {
-      b_memory_put(new->data, i, 0, ".cinit", "table");
+      gp_mem_b_put(new->data, i, 0, ".cinit", "table");
     }
 
     if (class->rom_width == 8) {
@@ -788,7 +788,7 @@ _set_used(const gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shi
            addr_digits, gp_byte_to_org(Org_to_byte_shift, Byte_address + Size - 1));
 
   for ( ; Size > 0; Byte_address++, Size--) {
-    if (b_memory_get(M, Byte_address, &data, &old_section_name, &old_symbol_name)) {
+    if (gp_mem_b_get(M, Byte_address, &data, &old_section_name, &old_symbol_name)) {
       if ((old_section_name != NULL) && (Section_name != NULL)) {
         symbol      = gp_symbol_find(Object, Section_name, Byte_address);
         symbol_name = (symbol != NULL) ? symbol->name : NULL;
@@ -805,7 +805,7 @@ _set_used(const gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shi
     else {
       symbol      = gp_symbol_find(Object, Section_name, Byte_address);
       symbol_name = (symbol != NULL) ? symbol->name : NULL;
-      b_memory_put(M, Byte_address, 0, Section_name, symbol_name);
+      gp_mem_b_put(M, Byte_address, 0, Section_name, symbol_name);
     }
   }
 }
@@ -931,7 +931,7 @@ _search_memory(const MemBlock_t *M, unsigned int Org_to_byte_shift, unsigned int
   *Block_size = (unsigned int)(-1);
 
   for (address = Start; address <= Stop; address++) {
-    mem_used = b_memory_get(M, address, &byte, NULL, NULL);
+    mem_used = gp_mem_b_get(M, address, &byte, NULL, NULL);
 
     if (address == Stop) {
       if (in_block) {
@@ -1015,10 +1015,10 @@ _move_data(MemBlock_t *M, unsigned int Byte_address, unsigned int Size, unsigned
   gp_debug("    moving %#x (%u) bytes from %#x to %#x", Size, Size, Byte_address, New_address);
 
   for (org = Byte_address + Size - 1; org >= 0; org--) {
-    b_memory_assert_get(M, org, &data, &section_name, &symbol_name);
+    gp_mem_b_assert_get(M, org, &data, &section_name, &symbol_name);
     gp_debug("      moving byte %#x from %#x to %#x", data, org, New_address + org);
-    b_memory_put(M, New_address + org, data, section_name, symbol_name);
-    b_memory_clear(M, org);
+    gp_mem_b_put(M, New_address + org, data, section_name, symbol_name);
+    gp_mem_b_clear(M, org);
   }
 }
 
@@ -1818,7 +1818,7 @@ gp_cofflink_make_memory(gp_object_t *Object)
   uint8_t             byte;
   gp_boolean          not_8_bit;
 
-  m           = i_memory_create();
+  m           = gp_mem_i_create();
   section     = Object->section_list.first;
   class       = Object->class;
   processor   = Object->processor;
@@ -1843,7 +1843,7 @@ gp_cofflink_make_memory(gp_object_t *Object)
 
       for ( ; addr < stop; addr++) {
         /* fetch the current contents of the memory */
-        b_memory_assert_get(section->data, addr, &byte, &section_name, &symbol_name);
+        gp_mem_b_assert_get(section->data, addr, &byte, &section_name, &symbol_name);
 
         if (not_8_bit) {
           org = gp_processor_byte_to_org(class, addr);
@@ -1861,7 +1861,7 @@ gp_cofflink_make_memory(gp_object_t *Object)
         }
 
         /* write data to new memory */
-        b_memory_put(m, addr, byte, section_name, symbol_name);
+        gp_mem_b_put(m, addr, byte, section_name, symbol_name);
       }
     }
     section = section->next;

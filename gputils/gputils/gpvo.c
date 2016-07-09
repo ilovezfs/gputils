@@ -158,14 +158,12 @@ _format_reloc_type(uint16_t type, char *buffer, size_t sizeof_buffer)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_relocation_list(proc_class_t class, const gp_reloc_t *relocation)
+_print_relocation_list(proc_class_t class, const gp_reloc_t *relocation, const char *column_gap)
 {
   char        buffer[32];
   int         addr_digits;
-  const char *column_gap;
 
   addr_digits = class->addr_digits;
-  column_gap  = (addr_digits > 4) ? "" : "  ";
 
   printf("Relocations Table\n"
          "Address     Offset    Type                        Symbol\n");
@@ -186,14 +184,12 @@ _print_relocation_list(proc_class_t class, const gp_reloc_t *relocation)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber)
+_print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber, const char *column_gap)
 {
   const char *filename;
   int         addr_digits;
-  const char *column_gap;
 
   addr_digits = class->addr_digits;
-  column_gap  = (addr_digits > 4) ? "  " : "    ";
 
   printf("Line Number Table\n"
          "Line      Address     Symbol\n");
@@ -206,7 +202,7 @@ _print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber)
       filename = linenumber->symbol->aux_list.first->_aux_symbol._aux_file.filename;
     }
 
-    printf("%-8i  0x%0*x%s  %s\n",
+    printf("%-8i  0x%0*x%s    %s\n",
            linenumber->line_number,
            addr_digits, gp_processor_byte_to_org(class, linenumber->address), column_gap,
            filename);
@@ -239,7 +235,7 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
   printf("Data\n");
   while (true) {
     if ((section->flags & STYP_TEXT) && (class->find_insn != NULL)) {
-      if (!class->i_memory_get(section->data, address, &word, NULL, NULL)) {
+      if (class->i_memory_get(section->data, address, &word, NULL, NULL) != W_USED_ALL) {
         break;
       }
 
@@ -249,7 +245,7 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
              addr_digits, gp_processor_byte_to_org(class, address), word, buffer);
 
       if (num_words != 1) {
-        if (!class->i_memory_get(section->data, address + WORD_SIZE, &word, NULL, NULL)) {
+        if (class->i_memory_get(section->data, address + WORD_SIZE, &word, NULL, NULL) != W_USED_ALL) {
           break;
         }
 
@@ -260,12 +256,12 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
       address += num_words * WORD_SIZE;
     }
     else if ((section->flags & STYP_DATA_ROM) || (class == PROC_CLASS_EEPROM16)) {
-      if (class->i_memory_get(section->data, address, &word, NULL, NULL)) {
+      if (class->i_memory_get(section->data, address, &word, NULL, NULL) != 0) {
         printf("%0*x:  %04x\n", addr_digits, gp_processor_byte_to_org(class, address), word);
         address += WORD_SIZE;
       }
       else {
-        if (b_memory_get(section->data, address, &byte, NULL, NULL)) {
+        if (gp_mem_b_get(section->data, address, &byte, NULL, NULL)) {
           printf("%0*x:  %02x\n", addr_digits, gp_processor_byte_to_org(class, address), byte);
         }
 
@@ -274,7 +270,7 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
     }
     else {
       /* STYP_DATA or STYP_ACTREC, or EEPROM8 */
-      if (!b_memory_get(section->data, address, &byte, NULL, NULL)) {
+      if (!gp_mem_b_get(section->data, address, &byte, NULL, NULL)) {
         break;
       }
 
@@ -282,13 +278,14 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
       ++address;
     }
   }
+
   printf("\n");
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_sec_header(proc_class_t class, const gp_section_t *section)
+_print_section_header(proc_class_t class, const gp_section_t *section)
 {
   unsigned int org_to_byte_shift;
 
@@ -345,24 +342,46 @@ _print_sec_header(proc_class_t class, const gp_section_t *section)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_sec_list(const gp_object_t *object)
+_print_section_list(const gp_object_t *object)
 {
+  proc_class_t        class;
   const gp_section_t *section;
+  char                column_gap[16];
+  unsigned int        i;
+
+  class = object->class;
+  i = class->addr_digits;
+
+  if (i > 6) {
+    i = 6;
+  }
+
+  i = 6 - i;
+
+  if (i >= (sizeof(column_gap) - 1)) {
+    i = (sizeof(column_gap) - 1);
+  }
+
+  if (i > 0) {
+    memset(column_gap, ' ', i);
+  }
+
+  column_gap[i] = '\0';
 
   section = object->section_list.first;
   while (section != NULL) {
-    _print_sec_header(object->class, section);
+    _print_section_header(class, section);
 
     if ((section->size > 0) && (section->data_ptr > 0)) {
-      _print_data(object->class, object->processor, section);
+      _print_data(class, object->processor, section);
     }
 
     if (section->relocation_list.num_nodes > 0) {
-      _print_relocation_list(object->class, section->relocation_list.first);
+      _print_relocation_list(class, section->relocation_list.first, column_gap);
     }
 
     if (section->line_number_list.num_nodes > 0) {
-      _print_linenum_list(object->class, section->line_number_list.first);
+      _print_linenum_list(class, section->line_number_list.first, column_gap);
     }
 
     section = section->next;
@@ -460,7 +479,7 @@ _format_sym_class(unsigned int cls, char *buffer, size_t sizeof_buffer)
 #define AUX_INDENT              "      "
 
 static void
-_print_sym_table(const gp_object_t *object)
+_print_symbol_table(const gp_object_t *object)
 {
   static char  buf[64];
 
@@ -574,7 +593,7 @@ _print_sym_table(const gp_object_t *object)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_export_sym_table(gp_object_t *object)
+_export_symbol_table(gp_object_t *object)
 {
   gp_symbol_t *symbol;
   char         buffer[BUFSIZ];
@@ -766,7 +785,7 @@ int main(int argc, char *argv[])
     fprintf(state.export.f, "; generated by %s on %s\n", GPVO_VERSION_STRING, buffer);
     fprintf(state.export.f, "; from %s\n\n", state.filename);
 
-    _export_sym_table(state.object);
+    _export_symbol_table(state.object);
 
     fclose(state.export.f);
 
@@ -779,11 +798,11 @@ int main(int argc, char *argv[])
   }
 
   if (state.dump_flags & PRINT_SECTIONS) {
-    _print_sec_list(state.object);
+    _print_section_list(state.object);
   }
 
   if (state.dump_flags & PRINT_SYMTBL) {
-    _print_sym_table(state.object);
+    _print_symbol_table(state.object);
   }
 
   if (state.dump_flags & PRINT_BINARY) {

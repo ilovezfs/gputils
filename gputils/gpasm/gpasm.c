@@ -964,7 +964,7 @@ assemble(void)
 
   /* store the command line defines to restore on second pass */
   cmd_defines    = state.stDefines;
-  state.c_memory = state.i_memory = i_memory_create();
+  state.c_memory = state.i_memory = gp_mem_i_create();
 
   if (state.base_file_name[0] == '\0') {
     gp_strncpy(state.base_file_name, state.src_file_name, sizeof(state.base_file_name));
@@ -1073,7 +1073,7 @@ assemble(void)
   hex_init();
 
   if (state.memory_dump) {
-    i_memory_print(state.i_memory, state.processor);
+    gp_mem_i_print(state.i_memory, state.processor);
   }
 
   /* Maybe produce a symbol table. */

@@ -623,9 +623,9 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
         /* Create the instruction memory and populates from COD block. */
 
         byte_address = _64k_base + k * COD_BLOCK_N_WORDS * WORD_SIZE;
-        data         = i_memory_create();
+        data         = gp_mem_i_create();
         for (j = 0; j < COD_BLOCK_SIZE; j++) {
-          b_memory_put(data, byte_address + j, temp[j], NULL, NULL);
+          gp_mem_b_put(data, byte_address + j, temp[j], NULL, NULL);
         }
 
         /* Disassembles this code array. */
@@ -673,7 +673,7 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
           i            += num_words;
         } while (i < COD_BLOCK_N_WORDS);
 
-        i_memory_free(data);
+        gp_mem_i_free(data);
       } /* if (block_index != 0) */
     } /* for (k = 0; k < COD_CODE_IMAGE_BLOCKS; k++) */
 

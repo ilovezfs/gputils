@@ -1921,22 +1921,22 @@ _set_page_pic12_14(unsigned int num_pages, unsigned int page, MemBlock_t *m, uns
 
   if (use_wreg) {
     data = movlw_insn | page;
-    i_memory_put_le(m, byte_address, data, buf, NULL);
+    gp_mem_i_put_le(m, byte_address, data, buf, NULL);
     insn_byte_len = 2;
     data = movwf_insn | location;
-    i_memory_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
+    gp_mem_i_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
     insn_byte_len += 2;
   }
   else {
     /* page low bit */
     data = ((page & 1) ? bsf_insn : bcf_insn) | page0 | location;
-    i_memory_put_le(m, byte_address, data, buf, NULL);
+    gp_mem_i_put_le(m, byte_address, data, buf, NULL);
     insn_byte_len = 2;
 
     if (num_pages > 2) {
       /* page high bit */
       data = ((page & 2) ? bsf_insn : bcf_insn) | page1 | location;
-      i_memory_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
+      gp_mem_i_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
       insn_byte_len += 2;
     }
   }
@@ -1983,20 +1983,20 @@ _set_bank_pic12_14(unsigned int num_banks, unsigned int bank, MemBlock_t *m, uns
 
   /* bank low bit */
   data = ((bank & 1) ? bsf_insn : bcf_insn) | bank0 | location;
-  i_memory_put_le(m, byte_address, data, buf, NULL);
+  gp_mem_i_put_le(m, byte_address, data, buf, NULL);
   insn_byte_len = 2;
 
   if (num_banks > 2) {
     /* bank high bit */
     data = ((bank & 2) ? bsf_insn : bcf_insn) | bank1 | location;
-    i_memory_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
+    gp_mem_i_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
     insn_byte_len += 2;
   }
 
   if (num_banks > 4) {
     /* bank upper bit */
     data = ((bank & 4) ? bsf_insn : bcf_insn) | bank2 | location;
-    i_memory_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
+    gp_mem_i_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
     insn_byte_len += 2;
   }
 
@@ -2160,7 +2160,7 @@ _set_bank_pic12e(unsigned int num_banks, unsigned int bank, MemBlock_t *m, unsig
   data  = PIC12E_INSN_MOVLB | bank;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
-  i_memory_put_le(m, byte_address, data, buf, NULL);
+  gp_mem_i_put_le(m, byte_address, data, buf, NULL);
   return 2;
 }
 
@@ -2246,7 +2246,7 @@ _set_page_sx(unsigned int num_pages, unsigned int page, MemBlock_t *m, unsigned 
   snprintf(buf, sizeof(buf), "page_%02x", page);
 
   data = SX_INSN_PAGE | page;
-  i_memory_put_le(m, byte_address, data, buf, NULL);
+  gp_mem_i_put_le(m, byte_address, data, buf, NULL);
   return 2;
 }
 
@@ -2301,7 +2301,7 @@ _set_ibank_pic14(unsigned int num_banks, unsigned int bank, MemBlock_t *m, unsig
   /* bcf STATUS,7 or bsf STATUS,7  (STATUS: 3) */
   /* bcf: 01 00bb bfff ffff
    * bsf: 01 01bb bfff ffff */
-  i_memory_put_le(m, byte_address, (bank == 0) ? 0x1383 : 0x1783, (bank == 0) ? "ibank0" : "ibank1", NULL);
+  gp_mem_i_put_le(m, byte_address, (bank == 0) ? 0x1383 : 0x1783, (bank == 0) ? "ibank0" : "ibank1", NULL);
   return 2;
 }
 
@@ -2414,7 +2414,7 @@ _set_bank_pic14e(unsigned int num_banks, unsigned int bank, MemBlock_t *m, unsig
   data  = PIC14E_INSN_MOVLB | bank;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
-  i_memory_put_le(m, byte_address, data, buf, NULL);
+  gp_mem_i_put_le(m, byte_address, data, buf, NULL);
   return 2;
 }
 
@@ -2456,7 +2456,7 @@ _set_ibank_pic14e(unsigned int num_banks, unsigned int bank, MemBlock_t *m, unsi
 
   num_banks >>= 1; /* FSR0L bit 7. */
   for (bit = 0, mask = 0x01; mask < num_banks; ++bit, mask <<= 1, byte_address += 2)
-    i_memory_put_le(m,
+    gp_mem_i_put_le(m,
                     byte_address,
                     ((bank & mask) ? PIC14_INSN_BSF : PIC14_INSN_BCF) |
                         (bit << PIC14_INSN_BxF_BITSHIFT) |
@@ -2510,15 +2510,15 @@ _set_page_pic14e(unsigned int num_pages, unsigned int page, MemBlock_t *m, unsig
 
   if (use_wreg) {
     data = PIC14_INSN_MOVLW | page;
-    i_memory_put_le(m, byte_address, data, buf, NULL);
+    gp_mem_i_put_le(m, byte_address, data, buf, NULL);
     insn_byte_len = 2;
     data = PIC14_INSN_MOVWF | PIC14_REG_PCLATH;
-    i_memory_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
+    gp_mem_i_put_le(m, byte_address + insn_byte_len, data, buf, NULL);
     insn_byte_len += 2;
   }
   else {
     data = PIC14E_INSN_MOVLP | page;
-    i_memory_put_le(m, byte_address, data, buf, NULL);
+    gp_mem_i_put_le(m, byte_address, data, buf, NULL);
     insn_byte_len = 2;
   }
 
@@ -2610,7 +2610,7 @@ _set_bank_pic14ex(unsigned int num_banks, unsigned int bank, MemBlock_t *m, unsi
   data  = PIC14EX_INSN_MOVLB | bank;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
-  i_memory_put_le(m, byte_address, data, buf, NULL);
+  gp_mem_i_put_le(m, byte_address, data, buf, NULL);
   return 2;
 }
 
@@ -2660,7 +2660,7 @@ _set_bank_pic16(unsigned int num_banks, unsigned int bank, MemBlock_t *m, unsign
   bank &= 0x200 | PIC16_BMSK_BANK;
   snprintf(buf, sizeof(buf), "bank_%i", bank & PIC16_BMSK_BANK);
 
-  i_memory_put_le(m, byte_address, PIC16_INSN_MOVLB | bank, buf, NULL);
+  gp_mem_i_put_le(m, byte_address, PIC16_INSN_MOVLB | bank, buf, NULL);
   return 2;
 }
 
@@ -2709,9 +2709,9 @@ _set_page_pic16(unsigned int num_pages, unsigned int page, MemBlock_t *m, unsign
   snprintf(buf, sizeof(buf), "page_%02x", page);
 
   data = PIC16_INSN_MOVLW | page;
-  i_memory_put_le(m, byte_address,     data, buf, NULL);
+  gp_mem_i_put_le(m, byte_address,     data, buf, NULL);
   data = PIC16_INSN_MOVWF | PIC16_REG_PCLATH;
-  i_memory_put_le(m, byte_address + 2, data, buf, NULL);
+  gp_mem_i_put_le(m, byte_address + 2, data, buf, NULL);
   return 4;
 }
 
@@ -2772,7 +2772,7 @@ _set_bank_pic16e(unsigned int num_banks, unsigned int bank, MemBlock_t *m, unsig
   bank &= ~PIC16E_MASK_MOVLB;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
-  i_memory_put_le(m, byte_address, PIC16E_INSN_MOVLB | bank, buf, NULL);
+  gp_mem_i_put_le(m, byte_address, PIC16E_INSN_MOVLB | bank, buf, NULL);
   return 2;
 }
 
@@ -3148,8 +3148,8 @@ const struct proc_class proc_class_eeprom8 = {
   NULL,                                 /* instructions */
   NULL,                                 /* num_instructions */
   NULL,                                 /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
 };
 
@@ -3194,8 +3194,8 @@ const struct proc_class proc_class_eeprom16 = {
   NULL,                                 /* instructions */
   NULL,                                 /* num_instructions */
   NULL,                                 /* find_insn */
-  i_memory_get_be,                      /* i_memory_get */
-  i_memory_put_be,                      /* i_memory_put */
+  gp_mem_i_get_be,                      /* i_memory_get */
+  gp_mem_i_put_be,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
 };
 
@@ -3240,8 +3240,8 @@ const struct proc_class proc_class_generic = {
   NULL,                                 /* instructions */
   NULL,                                 /* num_instructions */
   NULL,                                 /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
 };
 
@@ -3286,8 +3286,8 @@ const struct proc_class proc_class_pic12 = {
   op_12c5xx,                            /* instructions */
   &num_op_12c5xx,                       /* num_instructions */
   _find_insn_generic,                   /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
 };
 
@@ -3332,8 +3332,8 @@ const struct proc_class proc_class_pic12e = {
   op_12c5xx,                            /* instructions */
   &num_op_12c5xx,                       /* num_instructions */
   _find_insn_pic12e,                    /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
 };
 
@@ -3378,8 +3378,8 @@ const struct proc_class proc_class_pic12i = {
   op_12c5xx,                            /* instructions */
   &num_op_12c5xx,                       /* num_instructions */
   _find_insn_pic12e,                    /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
 };
 
@@ -3424,8 +3424,8 @@ const struct proc_class proc_class_sx = {
   op_sx,                                /* instructions */
   &num_op_sx,                           /* num_instructions */
   _find_insn_generic,                   /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
 };
 
@@ -3470,8 +3470,8 @@ const struct proc_class proc_class_pic14 = {
   op_16cxx,                             /* instructions */
   &num_op_16cxx,                        /* num_instructions */
   _find_insn_generic,                   /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   _patch_strict_pic14,                  /* patch_strict */
 };
 
@@ -3516,8 +3516,8 @@ const struct proc_class proc_class_pic14e = {
   op_16cxx,                             /* instructions */
   &num_op_16cxx,                        /* num_instructions */
   _find_insn_pic14e,                    /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   _patch_strict_pic14,                  /* patch_strict */
 };
 
@@ -3562,8 +3562,8 @@ const struct proc_class proc_class_pic14ex = {
   op_16cxx,                             /* instructions */
   &num_op_16cxx,                        /* num_instructions */
   _find_insn_pic14ex,                   /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   _patch_strict_pic14,                  /* patch_strict */
 };
 
@@ -3608,8 +3608,8 @@ const struct proc_class proc_class_pic16 = {
   op_17cxx,                             /* instructions */
   &num_op_17cxx,                        /* num_instructions */
   _find_insn_generic,                   /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
 };
 
@@ -3654,7 +3654,7 @@ const struct proc_class proc_class_pic16e = {
   op_18cxx,                             /* instructions */
   &num_op_18cxx,                        /* num_instructions */
   _find_insn_pic16e,                    /* find_insn */
-  i_memory_get_le,                      /* i_memory_get */
-  i_memory_put_le,                      /* i_memory_put */
+  gp_mem_i_get_le,                      /* i_memory_get */
+  gp_mem_i_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
 };

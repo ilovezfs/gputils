@@ -246,7 +246,7 @@ _read_section_header(gp_object_t *Object, gp_section_t *Section, const uint8_t *
   Section->line_number_list.num_nodes = _check_getl16(&File[34], Data);
   /* 's_flags'   -- section flags */
   Section->flags                      = _check_getl32(&File[36], Data);
-  Section->data                       = (Section->data_ptr != 0) ? i_memory_create() : NULL;
+  Section->data                       = (Section->data_ptr != 0) ? gp_mem_i_create() : NULL;
 
   if (FlagsIsNotAllClr(Section->flags, STYP_ROM_AREA)) {
     Section->address = gp_processor_org_to_byte(Object->class, Section->address);
@@ -586,7 +586,7 @@ _read_sections(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Data
       data_ptr  = &File[section->data_ptr];
 
       for (j = 0; j < number; j++) {
-        b_memory_put(section->data, byte_addr + j, data_ptr[j], section->name, NULL);
+        gp_mem_b_put(section->data, byte_addr + j, data_ptr[j], section->name, NULL);
       }
     }
 

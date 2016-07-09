@@ -396,7 +396,7 @@ _sections_decrease_start_address(proc_class_t Class, const gp_section_t *Section
     if (section->address > Section->address) {
       byte_address = section->address - Byte_offset;
       insn_address = gp_processor_byte_to_org(Class, byte_address);
-      b_memory_move(section->data, section->address, byte_address, section->size);
+      gp_mem_b_move(section->data, section->address, byte_address, section->size);
       section->address = byte_address;
 
       symbol = section->symbol;
@@ -445,7 +445,7 @@ static void
 _destroy_insn(proc_class_t Class, gp_section_t *Section, uint32_t Byte_address, uint32_t Byte_length,
               const char *Symbol_name)
 {
-  b_memory_delete_area(Section->data, Byte_address, Byte_length);
+  gp_mem_b_delete_area(Section->data, Byte_address, Byte_length);
   Section->size -= Byte_length;
 }
 

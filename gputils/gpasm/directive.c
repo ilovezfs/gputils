@@ -98,9 +98,11 @@ static gp_boolean prev_btfsx = false;
 static uint16_t
 _check_write(uint16_t Value)
 {
-  int      addr_digits;
-  uint16_t insn;
-  int      org;
+  proc_class_t class;
+  int          addr_digits;
+  uint16_t     word;
+  uint8_t      byte;
+  int          org;
 
   if (state.mode == MODE_RELOCATABLE) {
     if (state.obj.section == NULL) {
@@ -113,7 +115,8 @@ _check_write(uint16_t Value)
     }
   }
 
-  addr_digits = state.device.class->addr_digits;
+  class       = state.device.class;
+  addr_digits = class->addr_digits;
 
   if (IS_PIC16_CORE && (state.byte_addr > 0x1ffff)) {
     gpmsg_verror(GPE_ADDROVF, "Address{0x%0*X}", addr_digits, state.byte_addr);
@@ -128,13 +131,13 @@ _check_write(uint16_t Value)
 
   if (state.mpasm_compatible) {
     /* MPASM(X) compatible mode. */
-    if (Value > state.device.class->core_mask) {
+    if (Value > class->core_mask) {
       gpmsg_vmessage(GPM_RANGE, NULL, Value);
-      Value &= state.device.class->core_mask;
+      Value &= class->core_mask;
     }
 
     if ((state.num.errors == 0) &&
-        state.device.class->i_memory_get(state.i_memory, state.byte_addr, &insn, NULL, NULL)) {
+        class->i_memory_get(state.i_memory, state.byte_addr, &word, NULL, NULL) != 0) {
       gpmsg_verror(GPE_ADDROVR, NULL, org);
     }
   }
@@ -142,28 +145,26 @@ _check_write(uint16_t Value)
     /* GPASM compatible mode. */
     gp_boolean is_config = (gp_processor_is_config_org(state.processor, org) >= 0) ? true : false;
 
-    if (Value > state.device.class->core_mask) {
+    if (Value > class->core_mask) {
     /* The size of the config words may be differ the size of the program words. */
       if (!is_config) {
         gpmsg_vmessage(GPM_RANGE, NULL, Value);
-        Value &= state.device.class->core_mask;
+        Value &= class->core_mask;
       }
       else if (Value > state.device.class->config_mask) {
         gpmsg_vmessage(GPM_RANGE, NULL, Value);
-        Value &= state.device.class->config_mask;
+        Value &= class->config_mask;
       }
     }
 
     if (state.num.errors == 0) {
-      if (is_config && (state.device.class->config_mask <= 0xFF)) {
-        uint8_t byte;
-
-        if (b_memory_get(state.i_memory, state.byte_addr, &byte, NULL, NULL)) {
+      if (is_config && (class->config_mask <= 0xFF)) {
+        if (gp_mem_b_get(state.i_memory, state.byte_addr, &byte, NULL, NULL)) {
           gpmsg_verror(GPE_ADDROVR, NULL, org);
         }
       }
       else {
-        if (state.device.class->i_memory_get(state.i_memory, state.byte_addr, &insn, NULL, NULL)) {
+        if (class->i_memory_get(state.i_memory, state.byte_addr, &word, NULL, NULL) != 0) {
           gpmsg_verror(GPE_ADDROVR, NULL, org);
         }
       }
@@ -236,6 +237,7 @@ _emit(uint16_t Value, const char *Name)
 static void
 _emit_byte(uint16_t Value, const char *Name)
 {
+  proc_class_t  class;
   int           addr_digits;
   uint8_t       byte;
   uint16_t      word;
@@ -243,7 +245,8 @@ _emit_byte(uint16_t Value, const char *Name)
   range_pair_t *cur_badrom;
 
   if (state.pass == 2) {
-    addr_digits = state.device.class->addr_digits;
+    class       = state.device.class;
+    addr_digits = class->addr_digits;
 
     if ((state.mode == MODE_RELOCATABLE) && (state.obj.section == NULL)) {
       gpmsg_verror(GPE_WRONG_SECTION, NULL);
@@ -251,15 +254,14 @@ _emit_byte(uint16_t Value, const char *Name)
 
     if (!IS_RAM_ORG) {
       if (IS_PIC16_CORE && (state.byte_addr > 0x1ffff)) {
-        gpmsg_verror(GPE_ADDROVF, "Address{0x%0*X} > 0x1ffff",
-                     state.device.class->addr_digits, state.byte_addr);
+        gpmsg_verror(GPE_ADDROVF, "Address{0x%0*X} > 0x1ffff", addr_digits, state.byte_addr);
       }
       else if ((!IS_PIC16E_CORE) && ((state.byte_addr & 0x1ffff) == 0) && ((int)state.byte_addr > 0)) {
         gpmsg_error(GPE_ADDROVF, "Address wrapped around 0.");
       }
 
-      if (Value > state.device.class->core_mask) {
-        word = Value & state.device.class->core_mask;
+      if (Value > class->core_mask) {
+        word = Value & class->core_mask;
 
         gpmsg_vwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", Value, Value, word, word);
         Value = word;
@@ -268,7 +270,7 @@ _emit_byte(uint16_t Value, const char *Name)
       org = gp_processor_byte_to_real(state.processor, state.byte_addr);
 
       if ((state.num.errors == 0) &&
-          b_memory_get(state.i_memory, state.byte_addr, &byte, NULL, NULL)) {
+          gp_mem_b_get(state.i_memory, state.byte_addr, &byte, NULL, NULL)) {
         gpmsg_verror(GPE_ADDROVR, NULL, org);
       }
 
@@ -293,7 +295,7 @@ _emit_byte(uint16_t Value, const char *Name)
       }
     }
 
-    b_memory_put(state.i_memory, state.byte_addr, (uint8_t)Value, Name, NULL);
+    gp_mem_b_put(state.i_memory, state.byte_addr, (uint8_t)Value, Name, NULL);
   }
 
   ++state.byte_addr;
@@ -548,10 +550,12 @@ _do_access_ovr(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_badram(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
+  int            addr_digits;
   const pnode_t *p;
   int            maxram;
   int            start;
   int            end;
+  int            loc;
 
   if (state.processor == NULL) {
     gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
@@ -564,7 +568,8 @@ _do_badram(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_verror(GPE_MISSING_ARGU, NULL);
   }
   else {
-    maxram = state.maxram;
+    addr_digits = state.device.class->addr_digits;
+    maxram      = state.maxram;
     if (maxram >= MAX_RAM) {
       maxram = MAX_RAM - 1;
     }
@@ -579,16 +584,14 @@ _do_badram(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
           if (end < start) {
             gpmsg_vwarning(GPW_INVALID_RAM, "Start{0x%0*X} > End{0x%0*X}",
-                           state.device.class->addr_digits, start,
-                           state.device.class->addr_digits, end);
+                           addr_digits, start, addr_digits, end);
           }
           else if (start < 0) {
             gpmsg_vwarning(GPW_INVALID_RAM, "Start{%i} < 0", start);
           }
           else if (end > maxram) {
             gpmsg_vwarning(GPW_INVALID_RAM, "End{0x%0*X} > MAXRAM{0x%0*X}",
-                           state.device.class->addr_digits, end,
-                           state.device.class->addr_digits, maxram);
+                           addr_digits, end, addr_digits, maxram);
           }
           else {
             for (; start <= end; start++) {
@@ -599,8 +602,6 @@ _do_badram(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       }
       else {
         if (eval_can_evaluate(p)) {
-          int loc;
-
           loc = eval_evaluate(p);
 
           if ((loc < 0) || (loc > maxram)) {
@@ -640,8 +641,10 @@ _do_badrom(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
+  proc_class_t   class;
   const pnode_t *p;
   int            num_reloc;
+  unsigned int   mask;
 
   if (state.processor == NULL) {
     gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
@@ -660,12 +663,12 @@ _do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
 
   if (eval_enforce_arity(Arity, 1)) {
-    p = PnListHead(Parms);
+    class = state.device.class;
+    p     = PnListHead(Parms);
 
     if (state.mode == MODE_ABSOLUTE) {
-      state.byte_addr += gp_processor_set_ibank(state.device.class,
-                                                state.processor->num_banks,
-                                                gp_processor_check_ibank(state.device.class, eval_maybe_evaluate(p)),
+      state.byte_addr += gp_processor_set_ibank(class, state.processor->num_banks,
+                                                gp_processor_check_ibank(class, eval_maybe_evaluate(p)),
                                                 state.i_memory, state.byte_addr);
     }
     else {
@@ -673,9 +676,8 @@ _do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
       if (num_reloc == 0) {
         /* it is an absolute address, generate the bankisel but no relocation */
-        state.byte_addr += gp_processor_set_ibank(state.device.class,
-                                                  state.processor->num_banks,
-                                                  gp_processor_check_ibank(state.device.class, eval_maybe_evaluate(p)),
+        state.byte_addr += gp_processor_set_ibank(class, state.processor->num_banks,
+                                                  gp_processor_check_ibank(class, eval_maybe_evaluate(p)),
                                                   state.i_memory, state.byte_addr);
       }
       else if (num_reloc != 1) {
@@ -685,8 +687,6 @@ _do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         eval_reloc_evaluate(p, RELOCT_IBANKSEL, NULL, NULL);
 
         if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
-          unsigned int mask;
-
           for (mask = 0x100; mask < (state.processor->num_banks << PIC14_BANK_SHIFT); mask <<= 1) {
             _emit(0, Name);
           }
@@ -724,6 +724,7 @@ _eval_update_reloc_value(const pnode_t *Pnode, uint16_t Type)
 static gpasmVal
 _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
+  proc_class_t   class;
   const pnode_t *p;
   int            address;
   int            bank;
@@ -750,6 +751,7 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_vwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, NULL, "Banksel");
   }
 
+  class    = state.device.class;
   bank_var = false;
   bank     = -1;
 
@@ -758,12 +760,9 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
     if (state.mode == MODE_ABSOLUTE) {
       address = eval_maybe_evaluate(p);
-      bank    = gp_processor_check_bank(state.device.class, address);
-      state.byte_addr += gp_processor_set_bank(state.device.class,
-                                               state.processor->num_banks,
-                                               bank,
-                                               state.i_memory,
-                                               state.byte_addr);
+      bank    = gp_processor_check_bank(class, address);
+      state.byte_addr += gp_processor_set_bank(class, state.processor->num_banks,
+                                               bank, state.i_memory, state.byte_addr);
       bank_var = true;
     }
     else {
@@ -773,12 +772,9 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       if (num_reloc == 0) {
         /* It is an absolute address, generate the banksel but no relocation. */
         address = eval_maybe_evaluate(p);
-        bank    = gp_processor_check_bank(state.device.class, address);
-        state.byte_addr += gp_processor_set_bank(state.device.class,
-                                                 state.processor->num_banks,
-                                                 bank,
-                                                 state.i_memory,
-                                                 state.byte_addr);
+        bank    = gp_processor_check_bank(class, address);
+        state.byte_addr += gp_processor_set_bank(class, state.processor->num_banks,
+                                                 bank, state.i_memory, state.byte_addr);
         bank_var = true;
       }
       else if (num_reloc != 1) {
@@ -786,31 +782,31 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       }
       else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_MOVLB);
-        bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
+        bank     = (address >= 0) ? gp_processor_check_bank(class, address) : -1;
         bank_var = true;
         _emit(PIC12E_INSN_MOVLB, Name);
       }
       else if (IS_PIC14E_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_MOVLB);
-        bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
+        bank     = (address >= 0) ? gp_processor_check_bank(class, address) : -1;
         bank_var = true;
         _emit(PIC14E_INSN_MOVLB, Name);
       }
       else if (IS_PIC14EX_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_MOVLB);
-        bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
+        bank     = (address >= 0) ? gp_processor_check_bank(class, address) : -1;
         bank_var = true;
         _emit(PIC14EX_INSN_MOVLB, Name);
       }
       else if (IS_PIC16_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_BANKSEL);
-        bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
+        bank     = (address >= 0) ? gp_processor_check_bank(class, address) : -1;
         bank_var = true;
         _emit(0x0000, Name);
       }
       else if (IS_PIC16E_CORE) {
         address  = _eval_update_reloc_value(p, RELOCT_BANKSEL);
-        bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
+        bank     = (address >= 0) ? gp_processor_check_bank(class, address) : -1;
         bank_var = true;
         _emit(PIC16E_INSN_MOVLB, Name);
       }
@@ -818,14 +814,14 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         switch (state.processor->num_banks) {
         case 2:
           address  = _eval_update_reloc_value(p, RELOCT_BANKSEL);
-          bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
+          bank     = (address >= 0) ? gp_processor_check_bank(class, address) : -1;
           bank_var = true;
           _emit(0, Name);
           break;
 
         case 4:
           address  = _eval_update_reloc_value(p, RELOCT_BANKSEL);
-          bank     = (address >= 0) ? gp_processor_check_bank(state.device.class, address) : -1;
+          bank     = (address >= 0) ? gp_processor_check_bank(class, address) : -1;
           bank_var = true;
           _emit(0, Name);
           _emit(0, Name);
@@ -1031,7 +1027,7 @@ _add_conf_sec_mem(unsigned int Ca, gp_boolean New_config)
   conf_mem_block_t *new = GP_Calloc(1, sizeof(conf_mem_block_t));
 
   new->addr       = ((IS_PIC16_CORE || IS_PIC16E_CORE) && New_config) ? Ca : (Ca & ~1);
-  new->m          = i_memory_create();
+  new->m          = gp_mem_i_create();
   new->new_config = New_config;
 
   if (state.debug_info) {
@@ -1090,11 +1086,11 @@ _config_16_set_byte_mem(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev, un
 
   snprintf(buf, sizeof(buf), "CONFIG_%0*X", state.device.class->addr_digits, Ca);
 
-  if (!b_memory_get(Config_mem, Ca, &old_byte, NULL, NULL)) {
+  if (!gp_mem_b_get(Config_mem, Ca, &old_byte, NULL, NULL)) {
     old_byte = (uint8_t)gp_cfg_get_default(P_dev, Ca);
   }
 
-  b_memory_put(Config_mem, Ca, (old_byte & ~Mask) | Byte, buf, NULL);
+  gp_mem_b_put(Config_mem, Ca, (old_byte & ~Mask) | Byte, buf, NULL);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1106,10 +1102,10 @@ _config_16_set_word_mem(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev,
   uint8_t other_byte;
   char    buf[BUFSIZ];
 
-  if (!b_memory_get(Config_mem, Ca ^ 1, &other_byte, NULL, NULL)) {
+  if (!gp_mem_b_get(Config_mem, Ca ^ 1, &other_byte, NULL, NULL)) {
     snprintf(buf, sizeof(buf), "CONFIG_%0*X", state.device.class->addr_digits, Ca);
     other_byte = gp_cfg_get_default(P_dev, Ca ^ 1);
-    b_memory_put(Config_mem, Ca ^ 1, other_byte, buf, NULL);
+    gp_mem_b_put(Config_mem, Ca ^ 1, other_byte, buf, NULL);
   }
   _config_16_set_byte_mem(Config_mem, P_dev, Ca, Byte, Mask);
 }
@@ -1119,6 +1115,7 @@ _config_16_set_word_mem(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev,
 static gpasmVal
 _do_config(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
+  proc_class_t           class;
   const pnode_t         *p;
   int                    ca;
   int                    value;
@@ -1143,6 +1140,7 @@ _do_config(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_warning(GPW_EXPECTED, "__CONFIG has been deprecated for PIC18 devices. Use directive CONFIG.");
   }
 
+  class                   = state.device.class;
   state.lst.line.linetype = LTY_CONFIG;
 
   switch(Arity) {
@@ -1172,7 +1170,7 @@ _do_config(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     return Value;
   }
 
-  ca = gp_processor_org_to_byte(state.device.class, ca);
+  ca = gp_processor_org_to_byte(class, ca);
   state.lst.config_address = ca;
 
   if ((eval_can_evaluate(p)) && (state.pass == 2)) {
@@ -1191,7 +1189,7 @@ _do_config(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       }
       else {
         assert(0); /* this shouldn't happen */
-        b_memory_put(config_mem, ca, value, NULL, NULL);
+        gp_mem_b_put(config_mem, ca, value, NULL, NULL);
         /* Hack in case the config defaults are not available. */
       }
     }
@@ -1199,19 +1197,19 @@ _do_config(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       /* Don't complain for 14 bit enhanced devices.
          Why are the config words 16 bits long in headers?? */
       if ((!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE)) {
-        if (value > state.device.class->core_mask) {
+        if (value > class->core_mask) {
           gpmsg_vmessage(GPM_RANGE, NULL, value);
-          value &= state.device.class->core_mask;
+          value &= class->core_mask;
         }
       }
 
-      if (state.device.class->i_memory_get(state.c_memory, ca, &word, NULL, NULL)) {
-        gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, ca));
+      if (class->i_memory_get(state.c_memory, ca, &word, NULL, NULL)) {
+        gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(class, ca));
       }
 
       snprintf(buf, sizeof(buf), "CONFIG_%0*X",
-               state.device.class->addr_digits, gp_processor_byte_to_org(state.device.class, ca));
-      state.device.class->i_memory_put(config_mem, ca, value, buf, NULL);
+               class->addr_digits, gp_processor_byte_to_org(class, ca));
+      class->i_memory_put(config_mem, ca, value, buf, NULL);
     }
   }
 
@@ -1240,7 +1238,7 @@ _config_16_check_defaults(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev)
    * approach here - defaults or nothing. Going to go with defaults.
    */
   for (t = 0; t < P_dev->address_count; ++addrs, ++t) {
-    if (!b_memory_get(Config_mem, addrs->address, &byte, NULL, NULL)) {
+    if (!gp_mem_b_get(Config_mem, addrs->address, &byte, NULL, NULL)) {
       _config_16_set_byte_mem(Config_mem, P_dev, addrs->address, addrs->def_value, 0xff);
     }
   }
@@ -1380,20 +1378,23 @@ static void
 _config_12_14_set_word_mem(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev,
                            unsigned int Ca, uint16_t Word, uint16_t Mask)
 {
+  proc_class_t class;
   unsigned int org;
   uint16_t     old_word;
   char         buf[BUFSIZ];
 
-  org = gp_processor_byte_to_org(state.device.class, Ca);
-  snprintf(buf, sizeof(buf), "CONFIG_%0*X", state.device.class->addr_digits, org);
+  class = state.device.class;
 
-  if (!state.device.class->i_memory_get(Config_mem, Ca, &old_word, NULL, NULL)) {
+  org = gp_processor_byte_to_org(class, Ca);
+  snprintf(buf, sizeof(buf), "CONFIG_%0*X", class->addr_digits, org);
+
+  if (!class->i_memory_get(Config_mem, Ca, &old_word, NULL, NULL)) {
     old_word = gp_cfg_get_default(P_dev, org);
   }
 
   Word |= (old_word & ~Mask);
-  Word &= state.device.class->config_mask;
-  state.device.class->i_memory_put(Config_mem, Ca, Word, buf, NULL);
+  Word &= class->config_mask;
+  class->i_memory_put(Config_mem, Ca, Word, buf, NULL);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1403,17 +1404,21 @@ _config_12_14_set_word_mem(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev,
 static void
 _config_12_14_check_defaults(MemBlock_t *Config_mem, const gp_cfg_device_t *P_dev)
 {
-  const gp_cfg_addr_t *addrs = P_dev->addresses;
+  proc_class_t         class;
+  const gp_cfg_addr_t *addrs;
   unsigned int         addr;
   uint16_t             word;
   unsigned int         t;
 
-  for (t = 0; t < P_dev->address_count; ++addrs, ++t) {
-    addr = gp_processor_org_to_byte(state.device.class, addrs->address);
+  class = state.device.class;
+  addrs = P_dev->addresses;
 
-    if (!state.device.class->i_memory_get(Config_mem, addr, &word, NULL, NULL)) {
-      word = addrs->def_value & state.device.class->config_mask;
-      state.device.class->i_memory_put(Config_mem, addr, word, NULL, NULL);
+  for (t = 0; t < P_dev->address_count; ++addrs, ++t) {
+    addr = gp_processor_org_to_byte(class, addrs->address);
+
+    if (!class->i_memory_get(Config_mem, addr, &word, NULL, NULL)) {
+      word = addrs->def_value & class->config_mask;
+      class->i_memory_put(Config_mem, addr, word, NULL, NULL);
     }
   }
 }
@@ -1885,6 +1890,7 @@ _do_de(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
+  proc_class_t        class;
   const pnode_t      *p;
   const char         *symbol_name;
   gp_symbol_t        *coff_symbol;
@@ -1898,6 +1904,7 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   const char         *lhs;
   const char         *str;
 
+  class       = state.device.class;
   symbol_name = NULL;
   coff_symbol = NULL;
   value       = 0;
@@ -1943,7 +1950,7 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           }
           else if (strcasecmp(lhs, "size") == 0) {
             eval = eval_maybe_evaluate(PnBinOpP1(p));
-            state.byte_addr += IS_RAM_ORG ? eval : gp_processor_org_to_byte(state.device.class, eval);
+            state.byte_addr += IS_RAM_ORG ? eval : gp_processor_org_to_byte(class, eval);
           }
           else if (strcasecmp(lhs, "type") == 0) {
             eval = eval_maybe_evaluate(PnBinOpP1(p));
@@ -1996,11 +2003,11 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           }
           else if (strcasecmp(str, "global") == 0) {
             type  = VAL_GLOBAL;
-            value = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(state.device.class, state.byte_addr);
+            value = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(class, state.byte_addr);
           }
           else if (strcasecmp(str, "static") == 0) {
             type  = VAL_STATIC;
-            value = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(state.device.class, state.byte_addr);
+            value = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(class, state.byte_addr);
           }
           else {
             gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, PnSymbol(p));
@@ -3118,6 +3125,8 @@ _do_ident(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
+  proc_class_t  class;
+  int           addr_digits;
   int           value;
   int           v;
   unsigned int  id_location;
@@ -3133,6 +3142,8 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
 
   id_location = gp_processor_id_location(state.processor);
+  class       = state.device.class;
+  addr_digits = class->addr_digits;
 
   if (id_location == 0) {
     gpmsg_verror(GPE_ILLEGAL_DIR, NULL, Name);
@@ -3141,7 +3152,7 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
   if (IS_PIC16E_CORE) {
     if (eval_enforce_arity(Arity, 2)) {
-      idreg = gp_processor_org_to_byte(state.device.class, eval_maybe_evaluate(PnListHead(Parms)));
+      idreg = gp_processor_org_to_byte(class, eval_maybe_evaluate(PnListHead(Parms)));
       value = eval_maybe_evaluate(PnListHead(PnListTail(Parms)));
     }
     else {
@@ -3170,13 +3181,13 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     if (IS_PIC16E_CORE) {
       if (idreg < state.processor->idlocs_addrs[0]) {
         gpmsg_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} < IDLOCS_MIN{0x%0*X}",
-                     state.device.class->addr_digits, idreg,
-                     state.device.class->addr_digits, state.processor->idlocs_addrs[0]);
+                     addr_digits, idreg,
+                     addr_digits, state.processor->idlocs_addrs[0]);
       }
       else if (idreg > state.processor->idlocs_addrs[1]) {
         gpmsg_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} > IDLOCS_MAX{0x%0*X}",
-                     state.device.class->addr_digits, idreg,
-                     state.device.class->addr_digits, state.processor->idlocs_addrs[1]);
+                     addr_digits, idreg,
+                     addr_digits, state.processor->idlocs_addrs[1]);
       }
       else {
         state.lst.line.linetype = LTY_CONFIG;
@@ -3193,12 +3204,12 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           gpmsg_verror(GPE_IDLOCS_ORDER, NULL);
         }
 
-        if (b_memory_get(m, idreg, &byte, NULL, NULL)) {
-          gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
+        if (gp_mem_b_get(m, idreg, &byte, NULL, NULL)) {
+          gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(class, idreg));
         }
 
-        snprintf(buf, sizeof(buf), "IDLOCS_%0*X", state.device.class->addr_digits, idreg);
-        b_memory_put(m, idreg, value, buf, NULL);
+        snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg);
+        gp_mem_b_put(m, idreg, value, buf, NULL);
         state.lst.line.was_byte_addr = idreg;
         coff_linenum(1);
 
@@ -3216,18 +3227,18 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         gpmsg_vmessage(GPM_IDLOC, NULL, v, value);
       }
 
-      if (state.device.class->i_memory_get(m, idreg, &word, NULL, NULL)) {
-        gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
+      if (class->i_memory_get(m, idreg, &word, NULL, NULL)) {
+        gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(class, idreg));
       }
 
-      snprintf(buf, sizeof(buf), "IDLOCS_%0*X", state.device.class->addr_digits, idreg);
-      state.device.class->i_memory_put(m, idreg,     (value & 0xf000) >> 12, buf, NULL);
-      snprintf(buf, sizeof(buf), "IDLOCS_%0*X", state.device.class->addr_digits, idreg + 2);
-      state.device.class->i_memory_put(m, idreg + 2, (value & 0x0f00) >> 8,  buf, NULL);
-      snprintf(buf, sizeof(buf), "IDLOCS_%0*X", state.device.class->addr_digits, idreg + 4);
-      state.device.class->i_memory_put(m, idreg + 4, (value & 0x00f0) >> 4,  buf, NULL);
-      snprintf(buf, sizeof(buf), "IDLOCS_%0*X", state.device.class->addr_digits, idreg + 6);
-      state.device.class->i_memory_put(m, idreg + 6, (value & 0x000f),       buf, NULL);
+      snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg);
+      class->i_memory_put(m, idreg,     (value & 0xf000) >> 12, buf, NULL);
+      snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg + 2);
+      class->i_memory_put(m, idreg + 2, (value & 0x0f00) >> 8,  buf, NULL);
+      snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg + 4);
+      class->i_memory_put(m, idreg + 4, (value & 0x00f0) >> 4,  buf, NULL);
+      snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg + 6);
+      class->i_memory_put(m, idreg + 6, (value & 0x000f),       buf, NULL);
       state.lst.line.was_byte_addr = idreg;
       coff_linenum(8);
 
@@ -3250,6 +3261,8 @@ _do_16_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   static unsigned int last_idreg = 0;
 
+  proc_class_t   class;
+  int            addr_digits;
   const pnode_t *p;
   unsigned int   idreg;
   uint8_t        curvalue;
@@ -3277,6 +3290,9 @@ _do_16_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     return Value;
   }
 
+  class       = state.device.class;
+  addr_digits = class->addr_digits;
+
   idreg = (last_idreg == 0) ? gp_processor_id_location(state.processor) : last_idreg;
 
   if (idreg == 0) {
@@ -3296,14 +3312,14 @@ _do_16_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
     if (idreg < state.processor->idlocs_addrs[0]) {
       gpmsg_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} < IDLOCS_MIN{0x%0*X}",
-                   state.device.class->addr_digits, idreg,
-                   state.device.class->addr_digits, state.processor->idlocs_addrs[0]);
+                   addr_digits, idreg,
+                   addr_digits, state.processor->idlocs_addrs[0]);
       return Value;
     }
     else if (idreg > state.processor->idlocs_addrs[1]) {
       gpmsg_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} > IDLOCS_MAX{0x%0*X}",
-                   state.device.class->addr_digits, idreg,
-                   state.device.class->addr_digits, state.processor->idlocs_addrs[1]);
+                   addr_digits, idreg,
+                   addr_digits, state.processor->idlocs_addrs[1]);
       return Value;
     }
 
@@ -3340,13 +3356,13 @@ constant:
           gpmsg_message(GPM_IDLOC, buf);
         }
 
-        if (b_memory_get(m, idreg, &curvalue, NULL, NULL)) {
-          gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
+        if (gp_mem_b_get(m, idreg, &curvalue, NULL, NULL)) {
+          gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(class, idreg));
           return Value;
         }
 
-        snprintf(buf, sizeof(buf), "IDLOCS_%0*X", state.device.class->addr_digits, idreg);
-        b_memory_put(m, idreg, value, buf, NULL);
+        snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg);
+        gp_mem_b_put(m, idreg, value, buf, NULL);
         state.lst.line.was_byte_addr = idreg;
 
         if (state.mode == MODE_RELOCATABLE) {
@@ -3368,13 +3384,13 @@ constant:
 
           pc = convert_escape_chars(pc, &value);
 
-          if (b_memory_get(m, idreg, &curvalue, NULL, NULL)) {
-            gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
+          if (gp_mem_b_get(m, idreg, &curvalue, NULL, NULL)) {
+            gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(class, idreg));
             return Value;
           }
 
-          snprintf(buf, sizeof(buf), "IDLOCS_%0*X", state.device.class->addr_digits, idreg);
-          b_memory_put(m, idreg, value, buf, NULL);
+          snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg);
+          gp_mem_b_put(m, idreg, value, buf, NULL);
           state.lst.line.was_byte_addr = idreg;
 
           if (state.mode == MODE_RELOCATABLE) {
@@ -4038,6 +4054,7 @@ _do_messg(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_org(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
+  int            addr_digits;
   const pnode_t *p;
   gpasmVal       new_byte_addr;
 
@@ -4047,7 +4064,8 @@ _do_org(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
 
   if (eval_enforce_arity(Arity, 1)) {
-    p = PnListHead(Parms);
+    addr_digits = state.device.class->addr_digits;
+    p           = PnListHead(Parms);
 
     if (eval_can_evaluate(p)) {
       Value = eval_evaluate(p);
@@ -4056,7 +4074,7 @@ _do_org(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           ((gp_processor_is_config_org(state.processor, Value) < 0) &&
            (gp_processor_is_eeprom_org(state.processor, Value) < 0))) {
         if (IS_PIC16E_CORE && (Value & 1)) {
-          gpmsg_verror(GPE_ORG_ODD, "Address{0x%0*X}", state.device.class->addr_digits, Value);
+          gpmsg_verror(GPE_ORG_ODD, "Address{0x%0*X}", addr_digits, Value);
         }
       }
 
@@ -4067,7 +4085,7 @@ _do_org(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       else {
         /* Default section name, this will be overwritten if a label is present. */
         snprintf(state.obj.new_sect_name, sizeof(state.obj.new_sect_name), ".org_%0*X",
-                 state.device.class->addr_digits, Value);
+                 addr_digits, Value);
         state.obj.new_sect_addr  = new_byte_addr;
         state.obj.new_sect_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype  = LTY_SEC;
@@ -4104,6 +4122,7 @@ _do_page(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_pagesel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms, uint16_t reloc_type)
 {
+  proc_class_t   class;
   const pnode_t *p;
   int            page;
   int            num_reloc;
@@ -4124,19 +4143,15 @@ _do_pagesel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms, uint16_
   }
 
   if (eval_enforce_arity(Arity, 1)) {
-    p = PnListHead(Parms);
+    class = state.device.class;
+    p     = PnListHead(Parms);
 
     if (state.mode == MODE_ABSOLUTE) {
-      page = gp_processor_check_page(state.device.class, eval_maybe_evaluate(p));
-      state.byte_addr += gp_processor_set_page(state.device.class,
-                                               state.processor->num_pages,
-                                               page,
-                                               state.i_memory,
-                                               state.byte_addr,
-                                               use_wreg);
+      page = gp_processor_check_page(class, eval_maybe_evaluate(p));
+      state.byte_addr += gp_processor_set_page(class, state.processor->num_pages, page,
+                                               state.i_memory, state.byte_addr, use_wreg);
       if (!state.mpasm_compatible) {
-        set_global(GLOBAL_ACT_PAGE_ADDR,
-                   gp_processor_page_bits_to_addr(state.device.class, page),
+        set_global(GLOBAL_ACT_PAGE_ADDR, gp_processor_page_bits_to_addr(class, page),
                    LFT_TEMPORARY, VAL_CONSTANT, true);
       }
     }
@@ -4145,8 +4160,8 @@ _do_pagesel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms, uint16_
 
       if (num_reloc == 0) {
         /* it is an absolute address, generate the pagesel but no relocation */
-        page = gp_processor_check_page(state.device.class, eval_maybe_evaluate(p));
-        state.byte_addr += gp_processor_set_page(state.device.class, state.processor->num_pages,
+        page = gp_processor_check_page(class, eval_maybe_evaluate(p));
+        state.byte_addr += gp_processor_set_page(class, state.processor->num_pages,
                                                  page, state.i_memory, state.byte_addr, use_wreg);
       }
       else if (num_reloc != 1) {
@@ -4264,6 +4279,7 @@ _do_radix(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_res(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
+  proc_class_t   class;
   const pnode_t *p;
   int            count;
   int            i;
@@ -4274,7 +4290,8 @@ _do_res(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
 
   if (eval_enforce_arity(Arity, 1)) {
-    p = PnListHead(Parms);
+    class = state.device.class;
+    p     = PnListHead(Parms);
 
     if (eval_can_evaluate(p)) {
       count = eval_evaluate(p);
@@ -4286,17 +4303,17 @@ _do_res(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           gpmsg_verror(GPE_RES_ODD_PIC16EA, "res = %i", count);
         }
 
-        count = gp_processor_org_to_byte(state.device.class, count);
+        count = gp_processor_org_to_byte(class, count);
 
         for (i = 0; (i + 1) < count; i += 2) {
-          _emit(state.device.class->core_mask, Name);
+          _emit(class->core_mask, Name);
         }
       }
       else {
         if (SECTION_FLAGS & STYP_TEXT) {
-          count = gp_processor_org_to_byte(state.device.class, count);
+          count = gp_processor_org_to_byte(class, count);
 
-          if (state.device.class->rom_width < 16) {
+          if (class->rom_width < 16) {
             /* FIXME: Most likely this check belongs to our caller. */
             if (count < 2) {
               gpmsg_warning(GPW_UNKNOWN, "No memory has been reserved by this instruction.");
@@ -4304,7 +4321,7 @@ _do_res(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           }
           for (i = 0; (i + 1) < count; i += 2) {
             /* For some reason program memory is filled with a different value. */
-            _emit(state.device.class->core_mask, Name);
+            _emit(class->core_mask, Name);
           }
         }
         else {
@@ -4983,9 +5000,10 @@ _check_and_set_bank_bit(enum common_insn Icode, int Bit, int BankSel0, int BankS
 static gp_boolean
 _check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageSel1, int PageSel2)
 {
-  variable_t *var;
-  int         addr;
-  int         num_of_pages;
+  proc_class_t  class;
+  variable_t   *var;
+  int           addr;
+  int           num_of_pages;
 
   num_of_pages = gp_processor_num_pages(state.processor);
 
@@ -4999,7 +5017,8 @@ _check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageS
     return false;
   }
 
-  addr = gp_processor_page_bits_to_addr(state.device.class, 1);
+  class = state.device.class;
+  addr  = gp_processor_page_bits_to_addr(class, 1);
 
   if (var->value < 0) {
     /* This value is not valid Page address. */
@@ -5028,7 +5047,7 @@ _check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageS
     }
   }
   else if (Bit == PageSel1) {
-    addr = gp_processor_page_bits_to_addr(state.device.class, 2);
+    addr = gp_processor_page_bits_to_addr(class, 2);
 
     if (Icode == ICODE_BCF) {
       /* bcf STATUS, PA1 or bcf PCLATH, 4 */
@@ -5040,7 +5059,7 @@ _check_and_set_page_bit(enum common_insn Icode, int Bit, int PageSel0, int PageS
     }
   }
   else if (Bit == PageSel2) {
-    addr = gp_processor_page_bits_to_addr(state.device.class, 4);
+    addr = gp_processor_page_bits_to_addr(class, 4);
 
     if (Icode == ICODE_BCF) {
       /* bcf STATUS, PA2 */
@@ -7640,8 +7659,8 @@ opcode_init(int Stage)
 
     case 2: {
       state.device.class = gp_processor_class(state.processor);
-      base  = state.device.class->instructions;
-      count = (base == NULL) ? 0 : *state.device.class->num_instructions;
+      base               = state.device.class->instructions;
+      count              = (base == NULL) ? 0 : *state.device.class->num_instructions;
 
       if (IS_SX_CORE) {
         /* The page instruction conflicts with the page directive. */

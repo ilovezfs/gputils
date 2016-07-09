@@ -564,7 +564,7 @@ _lst_data(unsigned int Position, MemBlock_t *M, unsigned int Byte_addr, unsigned
   /* When in a idata or byte packed section or eeprom area, print byte by byte. */
   if (IS_EEPROM8 || is_eeprom_area || (state.obj.new_sect_flags & (STYP_DATA | STYP_BPACK))) {
     while ((Bytes_emitted > lst_bytes) && ((Position + 3) <= LST_LINENUM_POS)) {
-      b_memory_get(M, Byte_addr, &emit_byte, NULL, NULL);
+      gp_mem_b_get(M, Byte_addr, &emit_byte, NULL, NULL);
       Position += _lst_printf("%02X ", emit_byte);
       ++Byte_addr;
       ++lst_bytes;
@@ -573,7 +573,7 @@ _lst_data(unsigned int Position, MemBlock_t *M, unsigned int Byte_addr, unsigned
   else {    /* non-code pack section */
     /* list first byte on odd address */
     if ((Bytes_emitted != 0) && (Byte_addr & 1)) {
-      b_memory_get(M, Byte_addr, &emit_byte, NULL, NULL);
+      gp_mem_b_get(M, Byte_addr, &emit_byte, NULL, NULL);
       Position += _lst_printf("%02X ", emit_byte);
       ++Byte_addr;
       ++lst_bytes;
@@ -598,7 +598,7 @@ _lst_data(unsigned int Position, MemBlock_t *M, unsigned int Byte_addr, unsigned
     }
 
     if (((Bytes_emitted - lst_bytes) == 1) && ((Position + 3) <= LST_LINENUM_POS)) {
-      b_memory_get(M, Byte_addr, &emit_byte, NULL, NULL);
+      gp_mem_b_get(M, Byte_addr, &emit_byte, NULL, NULL);
       Position += _lst_printf("%02X ", emit_byte);
       ++Byte_addr;
       ++lst_bytes;
@@ -866,13 +866,13 @@ lst_memory_map(MemBlock_t *M)
 #define IS_PIC16  (IS_PIC16_CORE || IS_PIC16E_CORE)
 
   if (IS_EEPROM) {
-    lst_line("Memory Bytes Used: %5i", b_memory_used(state.i_memory));
+    lst_line("Memory Bytes Used: %5i", gp_mem_b_used(state.i_memory));
   }
   else {
     unsigned int used = gp_processor_byte_to_real(state.processor, ((!IS_PIC16) && (state.processor != NULL)) ?
                                 b_range_memory_used(state.i_memory, 0,
                                                     gp_processor_org_to_byte(state.device.class, state.processor->prog_mem_size)) :
-                                b_memory_used(state.i_memory));
+                                gp_mem_b_used(state.i_memory));
 
     lst_line("Program Memory %s Used: %5i", IS_BYTE ? "Bytes" : "Words", used);
 
@@ -1145,6 +1145,8 @@ lst_symbol_table(void)
   lst_symbol_t    *ps;
   size_t           count;
   size_t           i;
+  const char      *name;
+  const void      *ptr;
 
   state.lst.lst_state = LST_IN_SYMTAB;
 
@@ -1208,31 +1210,32 @@ lst_symbol_table(void)
   }
 
   for (i = 0; i < count; i++) {
-    const char *name = sym_get_symbol_name(lst[i].sym);
-    const void *p    = sym_get_symbol_annotation(lst[i].sym);
+    name = sym_get_symbol_name(lst[i].sym);
+    ptr  = sym_get_symbol_annotation(lst[i].sym);
 
     switch (lst[i].type) {
-    case LST_SYMBOL:
-      /* symbol */
-      lst_line("%-32s  %08X", name, (p != NULL) ? ((const variable_t *)p)->value : 0);
-      break;
+      case LST_SYMBOL:
+        /* symbol */
+        lst_line("%-32s  %08X", name, (ptr != NULL) ? ((const variable_t *)ptr)->value : 0);
+        break;
 
-    case LST_DEFINE:
-      /* define */
-      p0 = (const pnode_t *)p;
+      case LST_DEFINE: {
+        /* define */
+        p0 = (const pnode_t *)ptr;
 
-      if (p0 != NULL) {
-        assert(PnIsList(p0));
-        assert(PnIsString(PnListHead(p0)));
+        if (p0 != NULL) {
+          assert(PnIsList(p0));
+          assert(PnIsString(PnListHead(p0)));
+        }
+
+        lst_line("%-32s  %s", name, (p0 != NULL) ? PnString(PnListHead(p0)) : "");
+        break;
       }
 
-      lst_line("%-32s  %s", name, (p0 != NULL) ? PnString(PnListHead(p0)) : "");
-      break;
-
-    case LST_MACRO:
-      /* define */
-      lst_line("%-32s  ", name);
-      break;
+      case LST_MACRO:
+        /* define */
+        lst_line("%-32s  ", name);
+        break;
     }
   }
 
