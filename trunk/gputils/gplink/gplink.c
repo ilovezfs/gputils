@@ -950,8 +950,8 @@ _linker(void)
   gp_cofflink_make_idata(state.object, state.mplink_compatible);
 
   /* create memory representing target memory */
-  data    = i_memory_create();
-  program = i_memory_create();
+  data    = gp_mem_i_create();
+  program = gp_mem_i_create();
 
   /* allocate memory for absolute sections */
   gp_debug("Verifying absolute sections.");
@@ -1013,8 +1013,8 @@ _linker(void)
 
   gp_cofflink_fill_pages(state.object, program, state.section.definition);
 
-  i_memory_free(data);
-  i_memory_free(program);
+  gp_mem_i_free(data);
+  gp_mem_i_free(program);
 
   /* patch raw data with the relocated symbol values */
   gp_cofflink_patch(state.object);
@@ -1056,7 +1056,7 @@ _linker(void)
   /* write map file */
   make_map();
 
-  i_memory_free(state.i_memory);
+  gp_mem_i_free(state.i_memory);
   gp_coffgen_free_object(state.object);
 
   return (gp_num_errors <= 0);

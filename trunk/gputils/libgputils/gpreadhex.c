@@ -162,10 +162,10 @@ gp_readhex(const char *File_name, MemBlock_t *M)
 	byte = _readbyte();
 
 	if (info->hex_format == INHX16) {
-	  b_memory_put(M, page | ((address + i) ^ 1), byte, File_name, NULL);
+	  gp_mem_b_put(M, page | ((address + i) ^ 1), byte, File_name, NULL);
 	}
 	else {
-	  b_memory_put(M, page | (address + i),       byte, File_name, NULL);
+	  gp_mem_b_put(M, page | (address + i),       byte, File_name, NULL);
 	}
       }
 
@@ -182,8 +182,8 @@ gp_readhex(const char *File_name, MemBlock_t *M)
         info->hex_format = INHX16;
         info->size       = 0;
         /* Data in i_memory is trash. */
-        i_memory_free(M);
-        M = i_memory_create();
+        gp_mem_i_free(M);
+        M = gp_mem_i_create();
       }
       else {
         printf("\nChecksum Error\n");

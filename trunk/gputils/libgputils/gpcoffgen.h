@@ -74,6 +74,7 @@ extern gp_aux_t *gp_coffgen_add_aux(gp_object_t *Object, gp_symbol_t *Symbol);
 extern gp_aux_t *gp_coffgen_make_block_aux(gp_symbol_t *Symbol, unsigned int Num_auxsyms);
 extern gp_symbol_t *gp_coffgen_move_reserve_symbol(gp_object_t *Object, gp_symbol_t *Symbol);
 extern gp_boolean gp_coffgen_del_symbol(gp_object_t *Object, gp_symbol_t *Symbol);
+extern gp_symbol_t **gp_coffgen_make_symbol_array(const gp_object_t *Object, int (*Cmp)(const void *, const void *));
 extern const char *gp_coffgen_symbol_type_to_str(uint8_t Type);
 extern const char *gp_coffgen_symbol_derived_type_to_str(uint32_t Type);
 extern const char *gp_coffgen_symbol_class_to_str(uint8_t Class);

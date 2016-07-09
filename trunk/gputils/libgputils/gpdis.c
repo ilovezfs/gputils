@@ -178,7 +178,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
       /* PIC16E movsf */
       if ((class->i_memory_get(M, Byte_address + 2, &opcode, NULL, NULL) == W_USED_ALL) &&
           ((opcode & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
-        b_memory_set_type(M, Byte_address + 2, W_SECOND_WORD);
+        gp_mem_b_set_type(M, Byte_address + 2, W_SECOND_WORD);
         num_words = 2;
       }
       break;
@@ -187,7 +187,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
       /* PIC16E movss */
       if ((class->i_memory_get(M, Byte_address + 2, &opcode, NULL, NULL) == W_USED_ALL) &&
           ((opcode & 0xff80) == PIC16E_BMSK_SEC_INSN_WORD)) {
-        b_memory_set_type(M, Byte_address + 2, W_SECOND_WORD);
+        gp_mem_b_set_type(M, Byte_address + 2, W_SECOND_WORD);
         num_words = 2;
       }
       break;
@@ -278,8 +278,8 @@ _class_lit8c12:
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
           dest_byte_addr = gp_processor_org_to_byte(class, dst_org);
-          b_memory_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-          b_memory_set_addr_type(M, dest_byte_addr, W_ADDR_T_FUNC, 0);
+          gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          gp_mem_b_set_addr_type(M, dest_byte_addr, W_ADDR_T_FUNC, 0);
           wreg = -1;
 
           if ((dst_org & page_mask) != src_page) {
@@ -302,8 +302,8 @@ _class_lit8c12:
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
           dest_byte_addr = gp_processor_org_to_byte(class, dst_org);
-          b_memory_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-          b_memory_set_addr_type(M, dest_byte_addr, W_ADDR_T_FUNC, 0);
+          gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          gp_mem_b_set_addr_type(M, dest_byte_addr, W_ADDR_T_FUNC, 0);
           wreg = -1;
 
           if ((dst_org & page_mask) != src_page) {
@@ -366,8 +366,8 @@ _class_lit9:
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
           dest_byte_addr = gp_processor_org_to_byte(class, dst_org);
-          b_memory_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-          b_memory_set_addr_type(M, dest_byte_addr, W_ADDR_T_FUNC, 0);
+          gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          gp_mem_b_set_addr_type(M, dest_byte_addr, W_ADDR_T_FUNC, 0);
         }
       }
       break;
@@ -393,8 +393,8 @@ _class_lit11:
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
           dest_byte_addr = gp_processor_org_to_byte(class, dst_org);
           type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
-          b_memory_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-          b_memory_set_addr_type(M, dest_byte_addr, type, 0);
+          gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          gp_mem_b_set_addr_type(M, dest_byte_addr, type, 0);
 
           if (icode == ICODE_CALL) {
             wreg = -1;
@@ -419,12 +419,12 @@ _class_lit11:
 
       dest_byte_addr = Byte_address + value * 2 + 2;
 
-      if ((b_memory_get_type(M, dest_byte_addr) & W_SECOND_WORD) == 0) {
+      if ((gp_mem_b_get_type(M, dest_byte_addr) & W_SECOND_WORD) == 0) {
         dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
-          b_memory_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-          b_memory_set_addr_type(M, dest_byte_addr, W_ADDR_T_LABEL, 0);
+          gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          gp_mem_b_set_addr_type(M, dest_byte_addr, W_ADDR_T_LABEL, 0);
         }
       }
       break;
@@ -443,8 +443,8 @@ _class_lit11:
       dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
 
       if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
-        b_memory_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-        b_memory_set_addr_type(M, dest_byte_addr, W_ADDR_T_LABEL, 0);
+        gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+        gp_mem_b_set_addr_type(M, dest_byte_addr, W_ADDR_T_LABEL, 0);
       }
       break;
 
@@ -460,13 +460,13 @@ _class_lit11:
 
       dest_byte_addr = Byte_address + value * 2 + 2;
 
-      if ((b_memory_get_type(M, dest_byte_addr) & W_SECOND_WORD) == 0) {
+      if ((gp_mem_b_get_type(M, dest_byte_addr) & W_SECOND_WORD) == 0) {
         dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
           type = (icode == ICODE_RCALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
-          b_memory_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-          b_memory_set_addr_type(M, dest_byte_addr, type, 0);
+          gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          gp_mem_b_set_addr_type(M, dest_byte_addr, type, 0);
         }
       }
       break;
@@ -486,13 +486,13 @@ _class_lit11:
           dest |= opcode & PIC16E_BMSK_BRANCH_LOWER;
           dest_byte_addr = dest * 2;
 
-          if ((b_memory_get_type(M, dest_byte_addr) & W_SECOND_WORD) == 0) {
+          if ((gp_mem_b_get_type(M, dest_byte_addr) & W_SECOND_WORD) == 0) {
             dst_org = gp_processor_org_to_byte(class, dest_byte_addr);
 
             if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
               type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
-              b_memory_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-              b_memory_set_addr_type(M, dest_byte_addr, type, 0);
+              gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+              gp_mem_b_set_addr_type(M, dest_byte_addr, type, 0);
             }
 
             num_words = 2;
@@ -791,7 +791,7 @@ _pic12_reg_eval(MemBlock_t *M, unsigned int Byte_address, gpdasm_fstate_t *Fstat
     (*User_data_finder)(&args.first);
   }
 
-  b_memory_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
+  gp_mem_b_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -846,7 +846,7 @@ _pic14_reg_eval(MemBlock_t *M, unsigned int Byte_address, gpdasm_fstate_t *Fstat
     (*User_data_finder)(&args.first);
   }
 
-  b_memory_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
+  gp_mem_b_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -897,7 +897,7 @@ _pic16_reg_eval(MemBlock_t *M, unsigned int Byte_address, gpdasm_fstate_t *Fstat
     (*User_data_finder)(&args.first);
   }
 
-  b_memory_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
+  gp_mem_b_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -959,7 +959,7 @@ _pic16e_reg_eval(MemBlock_t *M, unsigned int Byte_address, gpdasm_fstate_t *Fsta
     (*User_data_finder)(&args.first);
   }
 
-  b_memory_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
+  gp_mem_b_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
   return reg_addr;
 }
 
@@ -1003,7 +1003,7 @@ gp_disassemble_find_registers(MemBlock_t *M, unsigned int Byte_address, pic_proc
 
   icode = instruction->icode;
 
-  if ((Byte_address > 0) && (b_memory_get_addr_type(M, Byte_address, NULL, NULL) & W_ADDR_T_MASK)) {
+  if ((Byte_address > 0) && (gp_mem_b_get_addr_type(M, Byte_address, NULL, NULL) & W_ADDR_T_MASK)) {
     /* This address is destination of a branch. */
     Fstate->wreg = -1;
     Fstate->bank_valid = 0;
@@ -1175,7 +1175,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
           (*User_data_finder)(&args.second);
         }
 
-        b_memory_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
+        gp_mem_b_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
         num_words = 2;
       }
       break;
@@ -1295,7 +1295,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
 
 _insn_class_pf:
 
-      b_memory_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
+      gp_mem_b_set_args(M, Byte_address, W_ARG_T_BOTH, &args);
 
       if (args.second.val == PIC16_REG_WREG) {
         /* The destination the WREG. */
@@ -1334,7 +1334,7 @@ _insn_class_pf:
         }
 
         if (args.second.arg != NULL) {
-          b_memory_set_args(M, Byte_address, W_ARG_T_SECOND, &args);
+          gp_mem_b_set_args(M, Byte_address, W_ARG_T_SECOND, &args);
         }
 
         num_words = 2;
@@ -1873,14 +1873,14 @@ gp_disassemble(MemBlock_t *M, unsigned int Byte_address, proc_class_t Class, uns
 
   if (Class->i_memory_get(M, Byte_address, &opcode, NULL, NULL) == W_USED_ALL) {
     org  = gp_processor_byte_to_org(Class, Byte_address);
-    type = b_memory_get_addr_type(M, Byte_address, NULL, &dest_byte_addr);
+    type = gp_mem_b_get_addr_type(M, Byte_address, NULL, &dest_byte_addr);
 
     if (Behavior & GPDIS_SHOW_NAMES) {
       if (type & W_ADDR_T_BRANCH_SRC) {
-        b_memory_get_addr_type(M, dest_byte_addr, &dest_name, NULL);
+        gp_mem_b_get_addr_type(M, dest_byte_addr, &dest_name, NULL);
       }
 
-      b_memory_get_args(M, Byte_address, &args);
+      gp_mem_b_get_args(M, Byte_address, &args);
     }
   }
 
@@ -2951,7 +2951,7 @@ gp_disassemble_byte(MemBlock_t *M, unsigned int Byte_address, char *Buffer, size
 {
   uint8_t byte;
 
-  b_memory_assert_get(M, Byte_address, &byte, NULL, NULL);
+  gp_mem_b_assert_get(M, Byte_address, &byte, NULL, NULL);
   snprintf(Buffer, Buffer_length, "%-*s0x%02x", TABULATOR_SIZE, "db", (unsigned int)byte);
   return 1;
 }

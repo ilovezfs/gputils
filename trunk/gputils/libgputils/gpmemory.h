@@ -88,77 +88,77 @@ typedef struct MemBlock {
   struct MemBlock *next;
 } MemBlock_t;
 
-extern MemBlock_t *i_memory_create(void);
-extern void i_memory_free(MemBlock_t *M);
+extern MemBlock_t *gp_mem_i_create(void);
+extern void gp_mem_i_free(MemBlock_t *M);
 
-extern gp_boolean b_memory_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
+extern gp_boolean gp_mem_b_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
                                const char **Section_name, const char **Symbol_name);
 
 #ifndef NDEBUG
 
-#define b_memory_assert_get(M, Byte_address, Byte, Section_name, Symbol_name) \
-    assert(b_memory_get(M, Byte_address, Byte, Section_name, Symbol_name) != 0)
+#define gp_mem_b_assert_get(M, Byte_address, Byte, Section_name, Symbol_name) \
+    assert(gp_mem_b_get(M, Byte_address, Byte, Section_name, Symbol_name) != 0)
 
 #else
 
-#define b_memory_assert_get(M, Byte_address, Byte, Section_name, Symbol_name) \
-    b_memory_get(M, Byte_address, Byte, Section_name, Symbol_name)
+#define gp_mem_b_assert_get(M, Byte_address, Byte, Section_name, Symbol_name) \
+    gp_mem_b_get(M, Byte_address, Byte, Section_name, Symbol_name)
 
 #endif
 
-extern void b_memory_put(MemBlock_t *M, unsigned int Byte_address, uint8_t Value,
+extern void gp_mem_b_put(MemBlock_t *M, unsigned int Byte_address, uint8_t Value,
                          const char *Section_name, const char *Symbol_name);
 
-extern void b_memory_clear(MemBlock_t *M, unsigned int Byte_address);
+extern void gp_mem_b_clear(MemBlock_t *M, unsigned int Byte_address);
 
-extern void b_memory_move(MemBlock_t *M, unsigned int From_byte_address, unsigned int To_byte_address,
+extern void gp_mem_b_move(MemBlock_t *M, unsigned int From_byte_address, unsigned int To_byte_address,
                           unsigned int Byte_size);
 
-extern void b_memory_delete(MemBlock_t *M, unsigned int Byte_address);
+extern void gp_mem_b_delete(MemBlock_t *M, unsigned int Byte_address);
 
-extern void b_memory_delete_area(MemBlock_t *M, unsigned int Byte_address, unsigned int Byte_number);
+extern void gp_mem_b_delete_area(MemBlock_t *M, unsigned int Byte_address, unsigned int Byte_number);
 
 extern unsigned int b_range_memory_used(const MemBlock_t *M, unsigned int From_byte_address,
                                         unsigned int To_byte_address);
 
-extern unsigned int b_memory_used(const MemBlock_t *M);
+extern unsigned int gp_mem_b_used(const MemBlock_t *M);
 
 struct px;
 
-extern void i_memory_print(const MemBlock_t *M, const struct px *Processor);
+extern void gp_mem_i_print(const MemBlock_t *M, const struct px *Processor);
 
-extern unsigned int i_memory_get_le(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
+extern unsigned int gp_mem_i_get_le(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
                                     const char **Section_name, const char **Symbol_name);
 
-extern unsigned int i_memory_get_be(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
+extern unsigned int gp_mem_i_get_be(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
                                     const char **Section_name, const char **Symbol_name);
 
-extern void i_memory_put_le(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
+extern void gp_mem_i_put_le(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
                             const char *Section_name, const char *Symbol_name);
 
-extern void i_memory_put_be(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
+extern void gp_mem_i_put_be(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
                             const char *Section_name, const char *Symbol_name);
 
-extern void i_memory_delete(MemBlock_t *M, unsigned int Byte_address);
+extern void gp_mem_i_delete(MemBlock_t *M, unsigned int Byte_address);
 
-extern void b_memory_set_listed(MemBlock_t *M, unsigned int Byte_address, unsigned int N_bytes);
-extern unsigned int b_memory_get_unlisted_size(const MemBlock_t *M, unsigned int Byte_address);
+extern void gp_mem_b_set_listed(MemBlock_t *M, unsigned int Byte_address, unsigned int N_bytes);
+extern unsigned int gp_mem_b_get_unlisted_size(const MemBlock_t *M, unsigned int Byte_address);
 
-extern gp_boolean b_memory_set_addr_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type,
+extern gp_boolean gp_mem_b_set_addr_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type,
                                          unsigned int Dest_byte_addr);
 
-extern unsigned int b_memory_get_addr_type(const MemBlock_t *M, unsigned int Byte_address,
+extern unsigned int gp_mem_b_get_addr_type(const MemBlock_t *M, unsigned int Byte_address,
                                            const char **Label_name, unsigned int *Dest_byte_addr);
 
-extern gp_boolean b_memory_set_addr_name(MemBlock_t *M, unsigned int Byte_address, const char *Name);
+extern gp_boolean gp_mem_b_set_addr_name(MemBlock_t *M, unsigned int Byte_address, const char *Name);
 
-extern gp_boolean b_memory_set_args(MemBlock_t *M, unsigned int Byte_address, unsigned int Type,
+extern gp_boolean gp_mem_b_set_args(MemBlock_t *M, unsigned int Byte_address, unsigned int Type,
                                     const MemArgList_t *Args);
 
-extern unsigned int b_memory_get_args(const MemBlock_t *M, unsigned int Byte_address, MemArgList_t *Args);
+extern unsigned int gp_mem_b_get_args(const MemBlock_t *M, unsigned int Byte_address, MemArgList_t *Args);
 
-extern gp_boolean b_memory_set_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type);
-extern gp_boolean b_memory_clear_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type);
-extern unsigned int b_memory_get_type(const MemBlock_t *M, unsigned int Byte_address);
+extern gp_boolean gp_mem_b_set_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type);
+extern gp_boolean gp_mem_b_clear_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type);
+extern unsigned int gp_mem_b_get_type(const MemBlock_t *M, unsigned int Byte_address);
 
 #endif

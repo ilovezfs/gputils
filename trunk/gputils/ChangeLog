@@ -1,3 +1,22 @@
+2016-07-09  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, gpasm/gpasm.c, gpasm/lst.c, gplink/gplink.c,
+    gplink/lst.c, gputils/dump.c, gputils/gpdasm.c, gputils/gpvo.c,
+    libgputils/gpcoffgen.c, libgputils/gpcoffgen.h,
+    libgputils/gpcofflink.c, libgputils/gpdis.c,
+    libgputils/gpmemory.c, libgputils/gpmemory.h,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h,
+    libgputils/gpreadhex.c, libgputils/gpreadobj.c,
+    libgputils/gpwritehex.c, libgputils/gpwriteobj.c:
+    Changed this function names:
+	i_memory_... --> gp_mem_i_...
+	b_memory_... --> gp_mem_b_...
+
+  * gpasm/directive.c:
+    Minor optimization.
+
+  * libgputils/gpcoffgen.c, libgputils/gpcoffgen.h:
+    New function: gp_coffgen_make_symbol_array
+
 2016-07-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gpasm/coff.c, gpasm/deps.c, gpasm/gpmsg.c,
     gpasm/lst.c, gpasm/parse.y, gpasm/ppscan.l, gpasm/preprocess.c,

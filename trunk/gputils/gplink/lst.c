@@ -241,7 +241,7 @@ _write_source(int last_line)
 
         state.cod.emitting = true;
         org = line->address;
-        len = b_memory_get_unlisted_size(line_section->data, org);
+        len = gp_mem_b_get_unlisted_size(line_section->data, org);
 
         if (len == 0) {
           if (linebuf[0] != '\0') {
@@ -257,11 +257,11 @@ _write_source(int last_line)
           if ((org & 1) || (len < 2)) {
             /* even address or less then two byts to disassemble: disassemble one byte */
             if (len != 0) {
-              b_memory_assert_get(line_section->data, org, &byte, NULL, NULL);
+              gp_mem_b_assert_get(line_section->data, org, &byte, NULL, NULL);
               gp_disassemble_byte(line_section->data, org, dasmbuf, sizeof(dasmbuf));
               _lst_line("%06lx   %02x       %-24s %s", gp_processor_byte_to_org(state.class, org),
                         (unsigned int)byte, _expand_tabs(dasmbuf), linebuf);
-              b_memory_set_listed(line_section->data, org, 1);
+              gp_mem_b_set_listed(line_section->data, org, 1);
               state.lst.was_org = org;
               cod_lst_line(COD_NORMAL_LST_LINE);
               ++org;
@@ -275,7 +275,7 @@ _write_source(int last_line)
                                             dasmbuf, sizeof(dasmbuf), len);
             _lst_line("%06lx   %04x     %-24s %s", gp_processor_byte_to_org(state.class, org),
                       word, _expand_tabs(dasmbuf), linebuf);
-            b_memory_set_listed(line_section->data, org, num_bytes);
+            gp_mem_b_set_listed(line_section->data, org, num_bytes);
             state.lst.was_org = org;
             cod_lst_line(COD_NORMAL_LST_LINE);
             org += 2;

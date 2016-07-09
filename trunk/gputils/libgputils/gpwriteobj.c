@@ -199,11 +199,11 @@ _write_data(pic_processor_t Processor, const gp_section_t *Section, FILE *Fp)
 
 #ifdef GPUTILS_DEBUG
   printf("section \"%s\"\nsize= %li\ndata:\n", Section->name, Section->size);
-  i_memory_print(Section->data, Processor);
+  gp_mem_i_print(Section->data, Processor);
 #endif
 
   for ( ; org < end; org++) {
-    b_memory_assert_get(Section->data, org, &byte, NULL, NULL);
+    gp_mem_b_assert_get(Section->data, org, &byte, NULL, NULL);
     fputc(byte, Fp);
   }
 }
@@ -353,37 +353,37 @@ _write_auxsymbols(const gp_aux_t *Aux, uint8_t *Table, gp_boolean Isnew, FILE *F
 static void
 _write_symbols(const gp_object_t *Object, uint8_t *Table, FILE *Fp)
 {
-  gp_symbol_t *current;
+  gp_symbol_t *symbol;
   gp_boolean   isnew;
 
   isnew   = Object->isnew;
-  current = Object->symbol_list.first;
-  while (current != NULL) {
-    _add_name(current->name, Table, Fp);
-    gp_fputl32(current->value, Fp);
+  symbol = Object->symbol_list.first;
+  while (symbol != NULL) {
+    _add_name(symbol->name, Table, Fp);
+    gp_fputl32(symbol->value, Fp);
 
-    if (current->section_number < N_SCNUM) {
-      gp_fputl16(current->section_number, Fp);
+    if (symbol->section_number < N_SCNUM) {
+      gp_fputl16(symbol->section_number, Fp);
     }
     else {
-      gp_fputl16(current->section->number, Fp);
+      gp_fputl16(symbol->section->number, Fp);
     }
 
     if (isnew) {
-      gp_fputl32((uint32_t)current->type | (current->derived_type << T_SHIFT_v2), Fp);
+      gp_fputl32((uint32_t)symbol->type | (symbol->derived_type << T_SHIFT_v2), Fp);
     }
     else {
-      gp_fputl16((uint16_t)current->type | (uint16_t)(current->derived_type << T_SHIFT_v1), Fp);
+      gp_fputl16((uint16_t)symbol->type | (uint16_t)(symbol->derived_type << T_SHIFT_v1), Fp);
     }
 
-    fputc(current->class, Fp);
-    fputc(current->aux_list.num_nodes, Fp);
+    fputc(symbol->class, Fp);
+    fputc(symbol->aux_list.num_nodes, Fp);
 
-    if (current->aux_list.num_nodes > 0) {
-      _write_auxsymbols(current->aux_list.first, Table, isnew, Fp);
+    if (symbol->aux_list.num_nodes > 0) {
+      _write_auxsymbols(symbol->aux_list.first, Table, isnew, Fp);
     }
 
-    current = current->next;
+    symbol = symbol->next;
   }
 }
 
