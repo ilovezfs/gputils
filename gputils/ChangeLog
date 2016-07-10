@@ -1,4 +1,8 @@
 2016-07-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpmsg.c, gpasm/gpmsg.h:
+    Use this new codes: GPW_BANK, GPE_BANK
+
+2016-07-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c
     gpasm/gpasm.c, gpasm/lst.c, gpasm/macro.c, gpasm/parse.y,
     gpasm/ppparse.y, gpasm/preprocess.c, gpasm/processor.c,

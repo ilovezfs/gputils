@@ -98,7 +98,8 @@ enum GPE_codes {
   GPE_ACC_NOSEL        = 1503,  /* The access of RAM is not selected. */
   GPE_TOO_LONG         = 1504,  /* A string too long. */
   GPE_IS_ACCRAM        = 1505,  /* A register is located on the Access RAM. */
-  GPE_NO_ACCRAM        = 1506   /* A register is not located on the Access RAM. */
+  GPE_NO_ACCRAM        = 1506,  /* A register is not located on the Access RAM. */
+  GPE_BANK             = 1507
 };
 
 #define GMSG_ERR_LEVEL0_MIN     GPE_USER
@@ -143,6 +144,7 @@ enum GPW_codes {
   GPW_IS_ACCRAM        = 1203, /* A register is located on the Access RAM. */
   GPW_NO_ACCRAM        = 1204, /* A register is not located on the Access RAM. */
   GPW_NOF              = 1205, /* The destination of the storage is not selected. */
+  GPW_BANK             = 1206,
   GPW_USER             = 1299
 };
 

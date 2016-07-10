@@ -231,6 +231,8 @@ _get_error(int Code)
       return "This register is located on the Access RAM:";
     case GPE_NO_ACCRAM:
       return "This register is not located on the Access RAM:";
+    case GPE_BANK:
+      return "Register in operand not located in RAM Bank %i. Ensure that Bank bits are correct:";
 
     default:
       return "UNKNOWN ERROR";
@@ -295,6 +297,8 @@ _get_warning(int Code)
       return "This register is not located on the Access RAM:";
     case GPW_NOF:
       return "The destination of the storage is not selected, use W or F.";
+    case GPW_BANK:
+      return "Register in operand not located in RAM Bank %i. Ensure that Bank bits are correct:";
     case GPW_USER:
       return "WARNING: (%s)";
 
