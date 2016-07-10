@@ -1,5 +1,9 @@
 2016-07-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
+    revert bugfix (This is no bug.)
+
+2016-07-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
     bugfix
 
 2016-07-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
