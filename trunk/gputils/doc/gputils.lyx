@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 08
+2016 Jul 10
 \end_layout
 
 \begin_layout Standard
@@ -12385,6 +12385,16 @@ CONFIG and __CONFIG directives cannot both be used in the same project.
 1506 A register is not located on the Access RAM.
 \end_layout
 
+\begin_layout Description
+1507 Register in operand not in bank 0.
+ Ensure bank bits are correct.
+\end_layout
+
+\begin_layout Standard
+Accessing a register outside of bank 0.
+ User must select the appropriate bank with banksel or similar directives.
+\end_layout
+
 \begin_layout Subsection
 Warnings
 \end_layout
@@ -12568,6 +12578,16 @@ gpasm encountered an invalid ROM location as specified by the __MAXROM and
 
 \begin_layout Description
 1205 The destination of the storage is not selected (W or F).
+\end_layout
+
+\begin_layout Description
+1206 Register in operand not in bank 0.
+ Ensure bank bits are correct.
+\end_layout
+
+\begin_layout Standard
+Accessing a register outside of bank 0.
+ User must select the appropriate bank with banksel or similar directives.
 \end_layout
 
 \begin_layout Description

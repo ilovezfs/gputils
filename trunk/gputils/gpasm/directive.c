@@ -5192,10 +5192,12 @@ _msg_access_nosel_def(int Reg_address, const char *Reg_name)
 static void
 _msg_ram_bank(int Reg_address, const char *Reg_name, int Bank_number)
 {
-  unsigned int bank_addr;
-  unsigned int bank_num;
-  unsigned int reg_offs;
-  int          word_digits;
+  unsigned int   bank_addr;
+  unsigned int   bank_num;
+  unsigned int   reg_offs;
+  void         (*msg)(int, const char *, ...);
+  int            code;
+  int            word_digits;
 
   if (state.strict_level <= 0) {
     return;
@@ -5205,6 +5207,21 @@ _msg_ram_bank(int Reg_address, const char *Reg_name, int Bank_number)
     Bank_number = 0;
   }
 
+  if (state.mpasm_compatible) {
+    msg  = gpmsg_vmessage;
+    code = GPM_BANK;
+  }
+  else {
+    if (state.strict_level == 2) {
+      msg  = gpmsg_verror;
+      code = GPE_BANK;
+    }
+    else {
+      msg  = gpmsg_vwarning;
+      code = GPW_BANK;
+    }
+  }
+
   if (Reg_address >= 0) {
     bank_addr   = gp_processor_bank_addr(state.processor, Reg_address);
     bank_num    = gp_processor_bank_num(state.processor, Reg_address);
@@ -5212,32 +5229,30 @@ _msg_ram_bank(int Reg_address, const char *Reg_name, int Bank_number)
     word_digits = (state.device.class != NULL) ? state.device.class->word_digits : 4;
 
     if (Reg_name != NULL) {
-      gpmsg_vmessage(GPM_BANK,
-                     "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)", Bank_number,
-                     Reg_name,
-                     word_digits, Reg_address,
-                     bank_num,
-                     word_digits, bank_addr,
-                     word_digits, reg_offs);
+      (*msg)(code,
+             "'%s' (Addr: 0x%0*X; Bank_%u: 0x%0*X; Offs: 0x%0*X)", Bank_number,
+             Reg_name,
+             word_digits, Reg_address,
+             bank_num,
+             word_digits, bank_addr,
+             word_digits, reg_offs);
     }
     else {
-      gpmsg_vmessage(GPM_BANK,
-                     "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)", Bank_number,
-                     word_digits, Reg_address,
-                     bank_num,
-                     word_digits, bank_addr,
-                     word_digits, reg_offs);
+      (*msg)(code,
+             "Addr: 0x%0*X (Bank_%u: 0x%0*X; Offs: 0x%0*X)", Bank_number,
+             word_digits, Reg_address,
+             bank_num,
+             word_digits, bank_addr,
+             word_digits, reg_offs);
     }
   }
   else {
     if (Reg_name != NULL) {
-      gpmsg_vmessage(GPM_BANK, 
-                     "'%s' (Addr: 0x?\?\?\?; Bank_?: 0x?\?\?\?; Offs: 0x?\?\?\?)", -1,
-                     Reg_name);
+      (*msg)(code, "'%s' (Addr: 0x?\?\?\?; Bank_?: 0x?\?\?\?; Offs: 0x?\?\?\?)", -1,
+             Reg_name);
     }
     else {
-      gpmsg_vmessage(GPM_BANK,
-                     "Addr: 0x?\?\?\? (Bank_?: 0x?\?\?\?; Offs: 0x?\?\?\?)", -1);
+      (*msg)(code, "Addr: 0x?\?\?\? (Bank_?: 0x?\?\?\?; Offs: 0x?\?\?\?)", -1);
     }
   }
 }

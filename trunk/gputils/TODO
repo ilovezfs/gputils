@@ -4,8 +4,6 @@ list is in no particular order.
 gputils
   * Grep the source for FIXME and fix.
   * Add a check for the version of flex.
-  * Start migrating to the GNU coding style.
-  * Switch to xmalloc and obstacks.
   * Use dejagnu for testing.
 
 gpasm
