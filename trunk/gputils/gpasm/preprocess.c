@@ -63,8 +63,8 @@ _check_defines(char *symbol, int symlen, pnode_t **param_list_p)
   *param_list_p = NULL;
 
   /* If not quoted, check for #define substitution. */
-  if ((sym = sym_get_symbol_len(state.stDefines, symbol, symlen)) != NULL) {
-    p = sym_get_symbol_annotation(sym);
+  if ((sym = gp_sym_get_symbol_len(state.stDefines, symbol, symlen)) != NULL) {
+    p = gp_sym_get_symbol_annotation(sym);
 
     if (p != NULL) {
       p2 = PnListHead(p);
@@ -683,8 +683,8 @@ _check_macro_params(char *symbol, int symlen)
   const pnode_t  *p2;
   const char     *subst = NULL;
 
-  if ((sym = sym_get_symbol_len(state.stMacroParams, symbol, symlen)) != NULL) {
-    p = sym_get_symbol_annotation(sym);
+  if ((sym = gp_sym_get_symbol_len(state.stMacroParams, symbol, symlen)) != NULL) {
+    p = gp_sym_get_symbol_annotation(sym);
     if (p != NULL) {
       p2 = PnListHead(p);
 

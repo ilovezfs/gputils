@@ -2060,16 +2060,16 @@ _do_define(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     assert(PnIsString(p));
 
     if (asm_enabled() && !IN_MACRO_WHILE_DEFINITION) {
-      if (sym_get_symbol(state.stDefines, PnString(p)) != NULL) {
+      if (gp_sym_get_symbol(state.stDefines, PnString(p)) != NULL) {
         gpmsg_verror(GPE_DUPLAB, NULL, PnString(p));
       }
       else {
-        curr_def = sym_add_symbol(state.stDefines, PnString(p));
+        curr_def = gp_sym_add_symbol(state.stDefines, PnString(p));
         p        = PnListTail(Parms);
 
         if (p != NULL) {
           assert(PnIsList(p));
-          sym_annotate_symbol(curr_def, p);
+          gp_sym_annotate_symbol(curr_def, p);
         }
       }
     }
@@ -2285,8 +2285,8 @@ _do_dtm(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     return Value;
   }
 
-  s = sym_get_symbol(state.stBuiltin, "movlw");
-  i = sym_get_symbol_annotation(s);
+  s = gp_sym_get_symbol(state.stBuiltin, "movlw");
+  i = gp_sym_get_symbol_annotation(s);
 
   if ((!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE)) {
     gpmsg_verror(GPE_ILLEGAL_DIR, NULL, Name);
@@ -2964,13 +2964,13 @@ _do_global(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       p = PnSymbol(PnListHead(Parms));
 
       if (p != NULL) {
-        s = sym_get_symbol(state.stTop, p);
+        s = gp_sym_get_symbol(state.stTop, p);
 
         if (s == NULL) {
           gpmsg_verror(GPE_NOSYM, NULL, p);
         }
         else {
-          var = sym_get_symbol_annotation(s);
+          var = gp_sym_get_symbol_annotation(s);
 
           if (var == NULL) {
             snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", p);
@@ -3506,8 +3506,8 @@ _do_ifdef(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       if (!PnIsSymbol(p)) {
         gpmsg_error(GPE_ILLEGAL_LABEL, "Illegal label.");
       }
-      else if ((sym_get_symbol(state.stDefines, PnSymbol(p)) != NULL) ||
-               (sym_get_symbol(state.stTop, PnSymbol(p)) != NULL)) {
+      else if ((gp_sym_get_symbol(state.stDefines, PnSymbol(p)) != NULL) ||
+               (gp_sym_get_symbol(state.stTop, PnSymbol(p)) != NULL)) {
         state.astack->enabled             = true;
         state.astack->before_else_enabled = state.astack->enabled;
       }
@@ -3548,8 +3548,8 @@ _do_elifdef(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       if (!PnIsSymbol(p)) {
         gpmsg_error(GPE_ILLEGAL_LABEL, "Illegal label.");
       }
-      else if ((sym_get_symbol(state.stDefines, PnSymbol(p)) != NULL) ||
-               (sym_get_symbol(state.stTop, PnSymbol(p)) != NULL)) {
+      else if ((gp_sym_get_symbol(state.stDefines, PnSymbol(p)) != NULL) ||
+               (gp_sym_get_symbol(state.stTop, PnSymbol(p)) != NULL)) {
         state.astack->enabled              = true;
         state.astack->before_else_enabled |= state.astack->enabled;
       }
@@ -3583,8 +3583,8 @@ _do_ifndef(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       if (!PnIsSymbol(p)) {
         gpmsg_error(GPE_ILLEGAL_LABEL, "Illegal label.");
       }
-      else if ((sym_get_symbol(state.stDefines, PnSymbol(p)) == NULL) &&
-               (sym_get_symbol(state.stTop, PnSymbol(p)) == NULL)) {
+      else if ((gp_sym_get_symbol(state.stDefines, PnSymbol(p)) == NULL) &&
+               (gp_sym_get_symbol(state.stTop, PnSymbol(p)) == NULL)) {
         state.astack->enabled             = true;
         state.astack->before_else_enabled = state.astack->enabled;
       }
@@ -3625,8 +3625,8 @@ _do_elifndef(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       if (!PnIsSymbol(p)) {
         gpmsg_error(GPE_ILLEGAL_LABEL, "Illegal label.");
       }
-      else if ((sym_get_symbol(state.stDefines, PnSymbol(p)) == NULL) &&
-               (sym_get_symbol(state.stTop, PnSymbol(p)) == NULL)) {
+      else if ((gp_sym_get_symbol(state.stDefines, PnSymbol(p)) == NULL) &&
+               (gp_sym_get_symbol(state.stTop, PnSymbol(p)) == NULL)) {
         state.astack->enabled              = true;
         state.astack->before_else_enabled |= state.astack->enabled;
       }
@@ -3874,7 +3874,7 @@ _do_local(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           lhs = PnSymbol(PnBinOpP0(p));
           val = eval_maybe_evaluate(PnBinOpP1(p));
           /* put the symbol and value in the TOP table*/
-          sym_add_symbol(state.stTop, lhs);
+          gp_sym_add_symbol(state.stTop, lhs);
           set_global(lhs, val, LFT_TEMPORARY, VAL_CONSTANT, false);
 
           if (first) {
@@ -3885,7 +3885,7 @@ _do_local(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       }
       else if (PnIsSymbol(p)) {
         /* put the symbol in the Top table */
-        sym_add_symbol(state.stTop, PnSymbol(p));
+        gp_sym_add_symbol(state.stTop, PnSymbol(p));
 
         if (first) {
           Value = 0;
@@ -4677,7 +4677,7 @@ _do_undefine(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     p = PnListHead(Parms);
 
     if (PnIsSymbol(p)) {
-      if (!sym_remove_symbol(state.stDefines, PnSymbol(p))) {
+      if (!gp_sym_remove_symbol(state.stDefines, PnSymbol(p))) {
         gpmsg_vwarning(GPW_NOT_DEFINED, NULL, PnSymbol(p));
       }
     }
@@ -5241,7 +5241,6 @@ _msg_ram_bank(int Reg_address, const char *Reg_name, int Bank_number)
     }
   }
 }
-
 /*------------------------------------------------------------------------------------------------*/
 
 static void
@@ -5384,13 +5383,11 @@ _reg_addr_check(int Reg_address, const char *Reg_name, unsigned int Insn_flags, 
   if (Reg_address > state.maxram) {
     if ((!state.mpasm_compatible) && (Reg_name != NULL)) {
       gpmsg_vwarning(GPW_INVALID_RAM, "'%s' -- {0x%0*X} > MAXRAM{0x%0*X}", Reg_name,
-                     word_digits, Reg_address,
-                     word_digits, state.maxram);
+                     word_digits, Reg_address, word_digits, state.maxram);
     }
     else {
       gpmsg_vwarning(GPW_INVALID_RAM, "Address{0x%0*X} > MAXRAM{0x%0*X}",
-                     word_digits, Reg_address,
-                     word_digits, state.maxram);
+                     word_digits, Reg_address, word_digits, state.maxram);
     }
   }
   else if (state.badram[Reg_address]) {
@@ -5473,6 +5470,7 @@ _reg_addr_check(int Reg_address, const char *Reg_name, unsigned int Insn_flags, 
 gpasmVal
 do_insn(const char *Op_name, pnode_t *Parameters)
 {
+  proc_class_t      class;
   pnode_t          *p;
   const symbol_t   *sym;
   int               addr_digits;
@@ -5489,13 +5487,14 @@ do_insn(const char *Op_name, pnode_t *Parameters)
   /* We want to have r as the value to assign to label. */
   r = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(state.device.class, state.byte_addr);
 
-  addr_digits = (state.device.class != NULL) ? state.device.class->addr_digits : 4;
+  class       = state.device.class;
+  addr_digits = (class != NULL) ? class->addr_digits : 4;
   arity       = eval_list_length(Parameters);
-  sym         = sym_get_symbol(state.stBuiltin, Op_name);
+  sym         = gp_sym_get_symbol(state.stBuiltin, Op_name);
 
   if (sym != NULL) {
-    sym_name = sym_get_symbol_name(sym);
-    ins      = sym_get_symbol_annotation(sym);
+    sym_name = gp_sym_get_symbol_name(sym);
+    ins      = gp_sym_get_symbol_annotation(sym);
 
     /* Instructions in data sections are not allowed. */
     if (asm_enabled() && (ins->class != INSN_CLASS_FUNC) && IS_RAM_ORG) {
@@ -5534,7 +5533,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         if (eval_enforce_arity(arity, 1)) {
           p = PnListHead(Parameters);
-          _emit_check(ins->opcode, (eval_reloc_evaluate(p, RELOCT_F, NULL, NULL) >> PIC12_SHIFT_PAGE_ADDR),
+          _emit_check(ins->opcode, (eval_reloc_evaluate(p, RELOCT_F, NULL, NULL) >> PIC12_PAGE_SHIFT),
                       SX_BMSK_PAGE, sym_name);
         }
         break;
@@ -5732,7 +5731,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           if (!state.mpasm_compatible) {
             set_global(GLOBAL_ACT_PAGE_ADDR,
-                       gp_processor_page_bits_to_addr(state.device.class, page),
+                       gp_processor_page_bits_to_addr(class, page),
                        LFT_TEMPORARY, VAL_CONSTANT, true);
           }
         }
@@ -6044,7 +6043,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             offset = eval_reloc_evaluate(p, RELOCT_CONDBRA, NULL, NULL);
           }
 
-          offset = gp_processor_org_to_byte(state.device.class, offset) >> 1;
+          offset = gp_processor_org_to_byte(class, offset) >> 1;
 
           /* The offset for the relative branch must be
              between -127 <= offset <= 127. */
@@ -6073,7 +6072,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             offset = eval_reloc_evaluate(p, RELOCT_BRA, NULL, NULL);
           }
 
-          offset = gp_processor_org_to_byte(state.device.class, offset) >> 1;
+          offset = gp_processor_org_to_byte(class, offset) >> 1;
 
           /* The offset for the relative branch must be
              between -256 <= offset <= 255. */
@@ -6108,7 +6107,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             offset = eval_reloc_evaluate(p, RELOCT_BRA, NULL, NULL);
           }
 
-          offset = gp_processor_org_to_byte(state.device.class, offset) >> 1;
+          offset = gp_processor_org_to_byte(class, offset) >> 1;
 
           /* The offset for the relative branch must be
              between -1024 <= offset <= 1023. */
@@ -6132,7 +6131,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           p    = PnListHead(Parameters);
           dest = eval_reloc_evaluate(p, RELOCT_GOTO, NULL, NULL);
-          dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
+          dest = gp_processor_org_to_byte(class, dest) >> 1;
           _emit(ins->opcode | (dest & PIC16E_BMSK_BRANCH_LOWER), sym_name);
           eval_reloc_evaluate(p, RELOCT_GOTO2, NULL, NULL);     /* add the second relocation */
           _emit_check(0xf000, dest >> 8, PIC16E_BMSK_BRANCH_HIGHER, sym_name);
@@ -6184,7 +6183,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             }
 
             dest = eval_reloc_evaluate(p, RELOCT_CALL, NULL, NULL);
-            dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
+            dest = gp_processor_org_to_byte(class, dest) >> 1;
             _emit(ins->opcode | (flag << 8) | (dest & PIC16E_BMSK_BRANCH_LOWER), sym_name);
             eval_reloc_evaluate(p, RELOCT_CALL2, NULL, NULL);     /* add the second relocation */
             _emit_check(0xf000, (dest >> 8), PIC16E_BMSK_BRANCH_HIGHER, sym_name);
@@ -6912,8 +6911,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
            * is set on the basis of the target address. Declaring the
            * Access RAM bit in this mode will also generate an error
            * in the MPASM Assembler.": */
-          insn_flags.isAccessGPR = (file < state.device.bsr_boundary) ? true : false;
-          insn_flags.isAccessSFR = (file >= (0xf00 + state.device.bsr_boundary)) ? true : false;
+          insn_flags.isAccessGPR = gp_processor_is_p16e_access_low(state.processor, file);
+          insn_flags.isAccessSFR = gp_processor_is_p16e_access_high(state.processor, file, state.mpasm_compatible);
           insn_flags.isAccess    = insn_flags.isAccessGPR | insn_flags.isAccessSFR;
 
           a = ((!state.extended_pic16e) && (!insn_flags.isAccess)) ? BANKED : ACCESS;
@@ -6985,8 +6984,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             insn_flags.isReloc = true;
           }
 
-          insn_flags.isAccessGPR = (file < state.device.bsr_boundary) ? true : false;
-          insn_flags.isAccessSFR = (file >= (0xf00 + state.device.bsr_boundary)) ? true : false;
+          insn_flags.isAccessGPR = gp_processor_is_p16e_access_low(state.processor, file);
+          insn_flags.isAccessSFR = gp_processor_is_p16e_access_high(state.processor, file, state.mpasm_compatible);
           insn_flags.isAccess    = insn_flags.isAccessGPR | insn_flags.isAccessSFR;
 
           if (arity == 3) {
@@ -7140,8 +7139,8 @@ do_insn(const char *Op_name, pnode_t *Parameters)
            * is set on the basis of the target address. Declaring the
            * Access RAM bit in this mode will also generate an error
            * in the MPASM Assembler.": */
-          insn_flags.isAccessGPR = (file < state.device.bsr_boundary) ? true : false;
-          insn_flags.isAccessSFR = (file >= (0xf00 + state.device.bsr_boundary)) ? true : false;
+          insn_flags.isAccessGPR = gp_processor_is_p16e_access_low(state.processor, file);
+          insn_flags.isAccessSFR = gp_processor_is_p16e_access_high(state.processor, file, state.mpasm_compatible);
           insn_flags.isAccess    = insn_flags.isAccessGPR | insn_flags.isAccessSFR;
 
           a = ((!state.extended_pic16e) && (!insn_flags.isAccess)) ? BANKED : ACCESS;
@@ -7218,7 +7217,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           gpmsg_vwarning(GPW_EXTRANEOUS, NULL);
         }
 
-        if ((icode == ICODE_OPTION) && (state.device.class->core_mask != PIC12_CORE_MASK)){
+        if ((icode == ICODE_OPTION) && (class->core_mask != PIC12_CORE_MASK)){
           gpmsg_vwarning(GPW_NOT_RECOMMENDED, "\"option\"");
         }
 
@@ -7492,10 +7491,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
     } /* if (asm_enabled() || (ins->attribs & ATTRIB_COND)) */
   } /* if (sym != NULL) */
   else {
-    sym = sym_get_symbol(state.stMacros, Op_name);
+    sym = gp_sym_get_symbol(state.stMacros, Op_name);
 
     if (sym != NULL) {
-      macro_head_t *h = sym_get_symbol_annotation(sym);
+      macro_head_t *h = gp_sym_get_symbol_annotation(sym);
 
       /* Found the macro: execute it */
       if (asm_enabled()) {
@@ -7640,12 +7639,14 @@ const int num_op_1 = TABLE_SIZE(op_1);
 void
 opcode_init(int Stage)
 {
-  const insn_t *base = NULL;
+  const insn_t *base;
   int           i;
-  int           count = 0;
+  int           count;
   const char   *name;
   symbol_t     *sym;
 
+  base  = NULL;
+  count = 0;
   switch (Stage) {
     case 0:
       base  = op_0;
@@ -7664,7 +7665,7 @@ opcode_init(int Stage)
 
       if (IS_SX_CORE) {
         /* The page instruction conflicts with the page directive. */
-        sym_remove_symbol(state.stBuiltin, "page");
+        gp_sym_remove_symbol(state.stBuiltin, "page");
       }
       else if (IS_PIC16E_CORE) {
         state.device.bsr_boundary = gp_processor_bsr_boundary(state.processor);
@@ -7672,28 +7673,28 @@ opcode_init(int Stage)
         /* The 16_bit core special macros are encoded directly into the
          * symbol table like regular instructions. */
         for (i = 0; i < num_op_18cxx_sp; i++) {
-          sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_18cxx_sp[i].name),
-                              (void *)&op_18cxx_sp[i]);
+          gp_sym_annotate_symbol(gp_sym_add_symbol(state.stBuiltin, op_18cxx_sp[i].name),
+                                 (void *)&op_18cxx_sp[i]);
         }
 
         if (state.extended_pic16e) {
           /* Some 18xx devices have an extended instruction set. */
           for (i = 0; i < num_op_18cxx_ext; i++) {
-            sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_18cxx_ext[i].name),
-                                (void *)&op_18cxx_ext[i]);
+            gp_sym_annotate_symbol(gp_sym_add_symbol(state.stBuiltin, op_18cxx_ext[i].name),
+                                   (void *)&op_18cxx_ext[i]);
           }
         }
       }
       else if (IS_PIC14E_CORE) {
         for (i = 0; i < num_op_16cxx_enh; i++) {
-          sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16cxx_enh[i].name),
-                              (void *)&op_16cxx_enh[i]);
+          gp_sym_annotate_symbol(gp_sym_add_symbol(state.stBuiltin, op_16cxx_enh[i].name),
+                                 (void *)&op_16cxx_enh[i]);
         }
       }
       else if (IS_PIC14EX_CORE) {
         for (i = 0; i < num_op_16cxx_enhx; i++) {
-          sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16cxx_enhx[i].name),
-                              (void *)&op_16cxx_enhx[i]);
+          gp_sym_annotate_symbol(gp_sym_add_symbol(state.stBuiltin, op_16cxx_enhx[i].name),
+                                 (void *)&op_16cxx_enhx[i]);
         }
       }
 
@@ -7711,14 +7712,14 @@ opcode_init(int Stage)
   }
 
   for (i = 0; i < count; i++) {
-    sym_annotate_symbol(sym_add_symbol(state.stBuiltin, base[i].name), (void *)&base[i]);
+    gp_sym_annotate_symbol(gp_sym_add_symbol(state.stBuiltin, base[i].name), (void *)&base[i]);
   }
 
   switch (Stage) {
     case 1: {
       if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
         /* The pageselw directive not supported on pic14 enhanced devices. */
-        sym_remove_symbol(state.stBuiltin, "pageselw");
+        gp_sym_remove_symbol(state.stBuiltin, "pageselw");
       }
 
       break;
@@ -7730,35 +7731,35 @@ opcode_init(int Stage)
 
         /* Special case, some instructions not available on 17c42 devices. */
         if (strcmp(name, "pic17c42") == 0) {
-          sym_remove_symbol(state.stBuiltin, "mulwf");
-          sym_remove_symbol(state.stBuiltin, "movlr");
-          sym_remove_symbol(state.stBuiltin, "mullw");
+          gp_sym_remove_symbol(state.stBuiltin, "mulwf");
+          gp_sym_remove_symbol(state.stBuiltin, "movlr");
+          gp_sym_remove_symbol(state.stBuiltin, "mullw");
         }
         /* Special case, some instructions not available on 16f5x devices. */
         else if ((strcmp(name, "pic16f54") == 0) || (strcmp(name, "pic16f57") == 0) ||
                  (strcmp(name, "pic16f59") == 0)) {
-          sym_remove_symbol(state.stBuiltin, "addlw");
-          sym_remove_symbol(state.stBuiltin, "sublw");
-          sym_remove_symbol(state.stBuiltin, "return");
-          sym_remove_symbol(state.stBuiltin, "retfie");
+          gp_sym_remove_symbol(state.stBuiltin, "addlw");
+          gp_sym_remove_symbol(state.stBuiltin, "sublw");
+          gp_sym_remove_symbol(state.stBuiltin, "return");
+          gp_sym_remove_symbol(state.stBuiltin, "retfie");
         }
         else if ((strcmp(name, "sx48bd") == 0) || (strcmp(name, "sx52bd") == 0)) {
-          sym = sym_get_symbol(state.stBuiltin, "mode");
+          sym = gp_sym_get_symbol(state.stBuiltin, "mode");
 
           if (sym != NULL) {
-            sym_annotate_symbol(sym, (void *)&op_sx_mode);
+            gp_sym_annotate_symbol(sym, (void *)&op_sx_mode);
           }
         }
         else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
-          sym_remove_symbol(state.stBuiltin, "return");
+          gp_sym_remove_symbol(state.stBuiltin, "return");
           for (i = 0; i < num_op_16c5xx_enh; i++) {
-            sym_annotate_symbol(sym_add_symbol(state.stBuiltin, op_16c5xx_enh[i].name),
-                                (void *)&op_16c5xx_enh[i]);
+            gp_sym_annotate_symbol(gp_sym_add_symbol(state.stBuiltin, op_16c5xx_enh[i].name),
+                                   (void *)&op_16c5xx_enh[i]);
           }
 
           if ((strcmp(name, "pic12f529t39a") == 0) || (strcmp(name, "pic12f529t48a") == 0)) {
-            sym_remove_symbol(state.stBuiltin, "retfie");
-            sym_remove_symbol(state.stBuiltin, "return");
+            gp_sym_remove_symbol(state.stBuiltin, "retfie");
+            gp_sym_remove_symbol(state.stBuiltin, "return");
           }
         }
       }

@@ -495,19 +495,19 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_t *Archive)
     return NULL;
   }
 
-  sym_count = sym_get_symbol_count(Table);
+  sym_count = gp_sym_get_symbol_count(Table);
   if (sym_count == 0) {
     return Archive;
   }
 
   /* Get a sorted list. */
-  lst = sym_clone_symbol_array(Table, sym_compare_fn);
+  lst = gp_sym_clone_symbol_array(Table, gp_sym_compare_fn);
   assert(lst != NULL);
 
   /* determine the symbol index size */
   index_size = AR_INDEX_NUMBER_SIZ;
   for (i = 0; i < sym_count; i++) {
-    sym_name    = sym_get_symbol_name(lst[i]);
+    sym_name    = gp_sym_get_symbol_name(lst[i]);
     index_size += strlen(sym_name) + 1 + AR_INDEX_OFFSET_SIZ;
   }
 
@@ -539,7 +539,7 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_t *Archive)
 
   /* write the offsets to the member */
   for (i = 0; i < sym_count; i++) {
-    var    = sym_get_symbol_annotation(lst[i]);
+    var    = gp_sym_get_symbol_annotation(lst[i]);
     member = gp_archive_find_member(Archive, var->file->filename);
     gp_putl32(ptr, member->offset);
     ptr += 4;
@@ -547,7 +547,7 @@ gp_archive_add_index(symbol_table_t *Table, gp_archive_t *Archive)
 
   /* write the symbol names to the member */
   for (i = 0; i < sym_count; i++) {
-    sym_name     = sym_get_symbol_name(lst[i]);
+    sym_name     = gp_sym_get_symbol_name(lst[i]);
     sym_name_len = strlen(sym_name) + 1;
 
     memcpy(ptr, sym_name, sym_name_len);
@@ -568,13 +568,13 @@ gp_archive_add_symbol(symbol_table_t *Table, const char *Name, gp_archive_t *Mem
   symbol_t *sym;
 
   /* Search the for the symbol. If not found, then add it to the global symbol table. */
-  sym = sym_get_symbol(Table, Name);
+  sym = gp_sym_get_symbol(Table, Name);
   if (sym != NULL) {
     return true;
   }
 
-  sym = sym_add_symbol(Table, Name);
-  sym_annotate_symbol(sym, Member);
+  sym = gp_sym_add_symbol(Table, Name);
+  gp_sym_annotate_symbol(sym, Member);
   return false;
 }
 
@@ -647,13 +647,13 @@ gp_archive_print_table(const symbol_table_t *Table)
   assert(Table != NULL);
 
   /* Get a sorted list. */
-  lst = sym_clone_symbol_array(Table, sym_compare_fn);
+  lst = gp_sym_clone_symbol_array(Table, gp_sym_compare_fn);
   assert(lst != NULL);
 
-  sym_count = sym_get_symbol_count(Table);
+  sym_count = gp_sym_get_symbol_count(Table);
   for (i = 0; i < sym_count; i++) {
     /* determine the archive member the symbol is defined in */
-    member = sym_get_symbol_annotation(lst[i]);
+    member = gp_sym_get_symbol_annotation(lst[i]);
     assert(member != NULL);
     /* determine the archive member name (AR_MEM_NAME_SIZ - 1) */
     sscanf(member->header.ar_name, "%255s/", name);
@@ -662,7 +662,7 @@ gp_archive_print_table(const symbol_table_t *Table)
       *end = '\0';
     }
     /* print it */
-    printf("%-32s %s\n", sym_get_symbol_name(lst[i]), name);
+    printf("%-32s %s\n", gp_sym_get_symbol_name(lst[i]), name);
   }
 
   free(lst);

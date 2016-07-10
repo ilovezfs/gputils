@@ -115,7 +115,7 @@ eval_can_evaluate(const pnode_t *Pnode)
       }
 
       /* Otherwise look it up. */
-      sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
 
       if (sym == NULL) {
         var = NULL;
@@ -128,7 +128,7 @@ eval_can_evaluate(const pnode_t *Pnode)
         }
       }
       else {
-        var = sym_get_symbol_annotation(sym);
+        var = gp_sym_get_symbol_annotation(sym);
 
         if (var == NULL) {
           snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", PnSymbol(Pnode));
@@ -189,13 +189,13 @@ eval_can_evaluate_value(const pnode_t *Pnode)
       }
 
       /* Otherwise look it up */
-      sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
 
       if (sym == NULL) {
         return false;
       }
 
-      var = sym_get_symbol_annotation(sym);
+      var = gp_sym_get_symbol_annotation(sym);
 
       if (var == NULL) {
         return false;
@@ -245,10 +245,10 @@ _is_program_segment(const pnode_t *Pnode)
   const variable_t *var;
 
   if (PnIsSymbol(Pnode) && (strcmp(PnSymbol(Pnode), "$") != 0)) {
-    sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
+    sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
     assert(sym != NULL);
 
-    var = sym_get_symbol_annotation(sym);
+    var = gp_sym_get_symbol_annotation(sym);
     assert(var != NULL);
     return ((var->type == VAL_ADDRESS) ? true : false);
   }
@@ -282,10 +282,10 @@ eval_evaluate(const pnode_t *Pnode)
                              gp_processor_byte_to_real(state.processor, state.byte_addr));
       }
 
-      sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
       assert(sym != NULL);
 
-      var = sym_get_symbol_annotation(sym);
+      var = gp_sym_get_symbol_annotation(sym);
       assert(var != NULL);
 
       return var->value;
@@ -520,10 +520,10 @@ eval_count_reloc(const pnode_t *Pnode)
         return 1;
       }
 
-      sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
 
       if (sym != NULL) {
-        var = sym_get_symbol_annotation(sym);
+        var = gp_sym_get_symbol_annotation(sym);
 
         if (var != NULL) {
           switch (var->type) {
@@ -598,14 +598,14 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
           set_global(buffer, org, LFT_PERMANENT, life, false);
         }
 
-        sym = sym_get_symbol(state.stTop, buffer);
+        sym = gp_sym_get_symbol(state.stTop, buffer);
       }
       else {
-        sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
+        sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
       }
 
       if (sym != NULL) {
-        var = sym_get_symbol_annotation(sym);
+        var = gp_sym_get_symbol_annotation(sym);
 
         if (var != NULL) {
           switch (var->type) {
@@ -755,10 +755,10 @@ _same_section(const pnode_t *Pnode)
     return false;
   }
 
-  sym0 = sym_get_symbol(state.stTop, PnSymbol(p0));
-  sym1 = sym_get_symbol(state.stTop, PnSymbol(p1));
-  var0 = sym_get_symbol_annotation(sym0);
-  var1 = sym_get_symbol_annotation(sym1);
+  sym0 = gp_sym_get_symbol(state.stTop, PnSymbol(p0));
+  sym1 = gp_sym_get_symbol(state.stTop, PnSymbol(p1));
+  var0 = gp_sym_get_symbol_annotation(sym0);
+  var1 = gp_sym_get_symbol_annotation(sym1);
 
   /* They must come from the same section. Debug symbols are not placed
      in the global symbol table, so don't worry about symbol type.

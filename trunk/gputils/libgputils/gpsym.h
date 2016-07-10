@@ -32,28 +32,28 @@ typedef struct symbol_table symbol_table_t;
 
 typedef int (*symbol_compare_t)(const void *, const void *);
 
-extern size_t sym_get_symbol_count(const symbol_table_t *Table);
+extern size_t gp_sym_get_symbol_count(const symbol_table_t *Table);
 
-extern symbol_table_t *sym_push_table(symbol_table_t *Table, gp_boolean Case_insensitive);
-extern symbol_table_t *sym_pop_table(symbol_table_t *Table);
-extern void sym_set_guest_table(symbol_table_t *Table_host, symbol_table_t *Table_guest);
-extern symbol_table_t *sym_get_guest_table(symbol_table_t *Table);
+extern symbol_table_t *gp_sym_push_table(symbol_table_t *Table, gp_boolean Case_insensitive);
+extern symbol_table_t *gp_sym_pop_table(symbol_table_t *Table);
+extern void gp_sym_set_guest_table(symbol_table_t *Table_host, symbol_table_t *Table_guest);
+extern symbol_table_t *gp_sym_get_guest_table(symbol_table_t *Table);
 
-extern symbol_t *sym_add_symbol(symbol_table_t *Table, const char *Name);
-extern gp_boolean sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index);
-extern gp_boolean sym_remove_symbol(symbol_table_t *Table, const char *Name);
-extern symbol_t *sym_get_symbol(const symbol_table_t *Table, const char *Name);
-extern symbol_t *sym_get_symbol_len(const symbol_table_t *Table, const char *Name, size_t Len);
-extern symbol_t *sym_get_symbol_with_index(const symbol_table_t *Table, size_t Index);
+extern symbol_t *gp_sym_add_symbol(symbol_table_t *Table, const char *Name);
+extern gp_boolean gp_sym_remove_symbol_with_index(symbol_table_t *Table, size_t Index);
+extern gp_boolean gp_sym_remove_symbol(symbol_table_t *Table, const char *Name);
+extern symbol_t *gp_sym_get_symbol(const symbol_table_t *Table, const char *Name);
+extern symbol_t *gp_sym_get_symbol_len(const symbol_table_t *Table, const char *Name, size_t Len);
+extern symbol_t *gp_sym_get_symbol_with_index(const symbol_table_t *Table, size_t Index);
 
-extern const symbol_t **sym_clone_symbol_array(const symbol_table_t *Table, symbol_compare_t Cmp);
+extern const symbol_t **gp_sym_clone_symbol_array(const symbol_table_t *Table, symbol_compare_t Cmp);
 
-extern void sym_annotate_symbol(symbol_t *Sym, void *Value);
+extern void gp_sym_annotate_symbol(symbol_t *Sym, void *Value);
 
-extern const char *sym_get_symbol_name(const symbol_t *Sym);
-extern void *sym_get_symbol_annotation(const symbol_t *Sym);
+extern const char *gp_sym_get_symbol_name(const symbol_t *Sym);
+extern void *gp_sym_get_symbol_annotation(const symbol_t *Sym);
 
-extern int sym_compare_fn(const void *P0, const void *P1);
-extern int sym_version_compare_fn(const void *P0, const void *P1);
+extern int gp_sym_compare_fn(const void *P0, const void *P1);
+extern int gp_sym_version_compare_fn(const void *P0, const void *P1);
 
 #endif

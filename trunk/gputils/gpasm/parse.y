@@ -498,9 +498,9 @@ line:
               symbol_t     *mac;
               macro_head_t *h = NULL;
 
-              mac = sym_get_symbol(state.stMacros, $1);
+              mac = gp_sym_get_symbol(state.stMacros, $1);
               if (mac != NULL) {
-                h = sym_get_symbol_annotation(mac);
+                h = gp_sym_get_symbol_annotation(mac);
               }
 
               /* It's not an error if macro was defined on pass 1 and we're in pass 2. */
@@ -509,9 +509,9 @@ line:
               }
               else {
                 if (mac == NULL) {
-                  mac = sym_add_symbol(state.stMacros, $1);
+                  mac = gp_sym_add_symbol(state.stMacros, $1);
                 }
-                sym_annotate_symbol(mac, state.mac_head);
+                gp_sym_annotate_symbol(mac, state.mac_head);
                 h = state.mac_head;
                 h->line_number = state.src->line_number;
                 h->file_symbol = state.src->file_symbol;

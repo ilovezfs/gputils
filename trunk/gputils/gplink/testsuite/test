@@ -35,7 +35,7 @@ LKR="${HERE}/../../lkr"
 
 GPPATH="${HERE}/../.."
 GPASMBIN="${GPPATH}/gpasm/gpasm"
-GPASMFLAGS="-q -c"
+GPASMFLAGS="-q -c --mpasm-compatible"
 GPLIBBIN="${GPPATH}/gputils/gplib"
 GPLINKBIN="${GPPATH}/gplink/gplink"
 GPLINKFLAGS="-m --strict-options"

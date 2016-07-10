@@ -588,61 +588,62 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
   reloc_byte_length = 0;
 
   switch (Relocation->type) {
-  case RELOCT_ALL:
-    break;
+    case RELOCT_ALL:
+      break;
 
-  case RELOCT_CALL:
-    /* call function */
-    reloc_pipe[0].state = (reloc_page == target_page) ? COPT_CALL_CURR_PAGE : COPT_CALL_OTHER_PAGE;
-    reloc_byte_length   = 2;
-    break;
+    case RELOCT_CALL:
+      /* call function */
+      reloc_pipe[0].state = (reloc_page == target_page) ? COPT_CALL_CURR_PAGE : COPT_CALL_OTHER_PAGE;
+      reloc_byte_length   = 2;
+      break;
 
-  case RELOCT_GOTO:
-    /* goto label */
-    reloc_pipe[0].state = (reloc_page == target_page) ? COPT_GOTO_CURR_PAGE : COPT_GOTO_OTHER_PAGE;
-    reloc_byte_length   = 2;
-    break;
+    case RELOCT_GOTO:
+      /* goto label */
+      reloc_pipe[0].state = (reloc_page == target_page) ? COPT_GOTO_CURR_PAGE : COPT_GOTO_OTHER_PAGE;
+      reloc_byte_length   = 2;
+      break;
 
-  case RELOCT_LOW:
-    break;
+    case RELOCT_LOW:
+      break;
 
-  case RELOCT_HIGH:
-    /* high(value) */
-    if ((reloc_pipe[0].instruction != NULL) && (reloc_pipe[0].instruction->icode == ICODE_MOVLP)) {
-      /* movlp high(value) */
-      reloc_pipe[0].state = (reloc_page == target_page) ? COPT_PAGESEL_CURR_PAGE : COPT_PAGESEL_OTHER_PAGE;
+    case RELOCT_HIGH: {
+      /* high(value) */
+      if ((reloc_pipe[0].instruction != NULL) && (reloc_pipe[0].instruction->icode == ICODE_MOVLP)) {
+        /* movlp high(value) */
+        reloc_pipe[0].state = (reloc_page == target_page) ? COPT_PAGESEL_CURR_PAGE : COPT_PAGESEL_OTHER_PAGE;
+      }
+      reloc_byte_length = 2;
+      break;
     }
-    reloc_byte_length = 2;
-    break;
 
-  case RELOCT_UPPER:
-  case RELOCT_P:
-  case RELOCT_BANKSEL:
-  case RELOCT_IBANKSEL:
-  case RELOCT_F:
-  case RELOCT_TRIS:
-  case RELOCT_TRIS_3BIT:
-  case RELOCT_MOVLR:
-  case RELOCT_MOVLB:
-  case RELOCT_GOTO2:
-  case RELOCT_FF1:
-  case RELOCT_FF2:
-  case RELOCT_LFSR1:
-  case RELOCT_LFSR2:
-    break;
+    case RELOCT_UPPER:
+    case RELOCT_P:
+    case RELOCT_BANKSEL:
+    case RELOCT_IBANKSEL:
+    case RELOCT_F:
+    case RELOCT_TRIS:
+    case RELOCT_TRIS_3BIT:
+    case RELOCT_MOVLR:
+    case RELOCT_MOVLB:
+    case RELOCT_GOTO2:
+    case RELOCT_FF1:
+    case RELOCT_FF2:
+    case RELOCT_LFSR1:
+    case RELOCT_LFSR2:
+      break;
 
-  case RELOCT_BRA:
-    /* bra label */
-    reloc_pipe[0].state = (reloc_page == target_page) ? COPT_BRA14E_CURR_PAGE : COPT_BRA14E_OTHER_PAGE;
-    reloc_byte_length   = 2;
-    break;
+    case RELOCT_BRA:
+      /* bra label */
+      reloc_pipe[0].state = (reloc_page == target_page) ? COPT_BRA14E_CURR_PAGE : COPT_BRA14E_OTHER_PAGE;
+      reloc_byte_length   = 2;
+      break;
 
-  case RELOCT_CONDBRA:
-  case RELOCT_ACCESS:
-    break;
+    case RELOCT_CONDBRA:
+    case RELOCT_ACCESS:
+      break;
 
-  case RELOCT_PAGESEL_WREG:
-    /* PIC12, PIC12E, PIC12I
+    case RELOCT_PAGESEL_WREG:
+      /* PIC12, PIC12E, PIC12I
 
        movlw value
        movwf STATUS
@@ -653,12 +654,12 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
 
        movlw value
        movwf PCLATH */
-    reloc_pipe[0].state = (reloc_page == target_page) ? COPT_PAGESEL_CURR_PAGE : COPT_PAGESEL_OTHER_PAGE;
-    reloc_byte_length   = Class->pagesel_byte_length(Num_pages, true);
-    break;
+      reloc_pipe[0].state = (reloc_page == target_page) ? COPT_PAGESEL_CURR_PAGE : COPT_PAGESEL_OTHER_PAGE;
+      reloc_byte_length   = Class->pagesel_byte_length(Num_pages, true);
+      break;
 
-  case RELOCT_PAGESEL_BITS:
-    /* PIC12, PIC12E, PIC12I
+    case RELOCT_PAGESEL_BITS:
+      /* PIC12, PIC12E, PIC12I
 
        bcf STATUS, x
        bsf STATUS, x
@@ -669,37 +670,37 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
 
        bcf PCLATH, x
        bsf PCLATH, x */
-  case RELOCT_PAGESEL_MOVLP:
-    /* PIC14E, PIC14EX
+    case RELOCT_PAGESEL_MOVLP:
+      /* PIC14E, PIC14EX
 
        movlp value */
-    reloc_pipe[0].state = (reloc_page == target_page) ? COPT_PAGESEL_CURR_PAGE : COPT_PAGESEL_OTHER_PAGE;
-    reloc_byte_length   = Class->pagesel_byte_length(Num_pages, false);
-    break;
+      reloc_pipe[0].state = (reloc_page == target_page) ? COPT_PAGESEL_CURR_PAGE : COPT_PAGESEL_OTHER_PAGE;
+      reloc_byte_length   = Class->pagesel_byte_length(Num_pages, false);
+      break;
 
-  /* unimplemented relocations */
-  case RELOCT_PAGESEL:
-  case RELOCT_SCNSZ_LOW:
-  case RELOCT_SCNSZ_HIGH:
-  case RELOCT_SCNSZ_UPPER:
-  case RELOCT_SCNEND_LOW:
-  case RELOCT_SCNEND_HIGH:
-  case RELOCT_SCNEND_UPPER:
-  case RELOCT_SCNEND_LFSR1:
-  case RELOCT_SCNEND_LFSR2:
-  default: {
-      if (symbol->name != NULL) {
-        gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",
-                 gp_coffgen_reloc_type_to_str(Relocation->type),
-                 Relocation->type, Section->name, symbol->name);
+    /* unimplemented relocations */
+    case RELOCT_PAGESEL:
+    case RELOCT_SCNSZ_LOW:
+    case RELOCT_SCNSZ_HIGH:
+    case RELOCT_SCNSZ_UPPER:
+    case RELOCT_SCNEND_LOW:
+    case RELOCT_SCNEND_HIGH:
+    case RELOCT_SCNEND_UPPER:
+    case RELOCT_SCNEND_LFSR1:
+    case RELOCT_SCNEND_LFSR2:
+    default: {
+        if (symbol->name != NULL) {
+          gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",
+                   gp_coffgen_reloc_type_to_str(Relocation->type),
+                   Relocation->type, Section->name, symbol->name);
+        }
+        else {
+          gp_error("Unimplemented relocation = %s (%u) in section \"%s\".",
+                   gp_coffgen_reloc_type_to_str(Relocation->type),
+                   Relocation->type, Section->name);
+        }
+        assert(0);
       }
-      else {
-        gp_error("Unimplemented relocation = %s (%u) in section \"%s\".",
-                 gp_coffgen_reloc_type_to_str(Relocation->type),
-                 Relocation->type, Section->name);
-      }
-      assert(0);
-    }
   }
 
   reloc_pipe[0].reloc_byte_length = reloc_byte_length;
@@ -978,85 +979,85 @@ _banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section
   there_is_banksel  = false;
 
   switch (Relocation->type) {
-  case RELOCT_ALL:
-    break;
+    case RELOCT_ALL:
+      break;
 
-  case RELOCT_CALL:
-  case RELOCT_GOTO:
-    need_clear = true;
-    break;
+    case RELOCT_CALL:
+    case RELOCT_GOTO:
+      need_clear = true;
+      break;
 
-  case RELOCT_LOW:
-  case RELOCT_HIGH:
-  case RELOCT_UPPER:
-  case RELOCT_P:
-    break;
+    case RELOCT_LOW:
+    case RELOCT_HIGH:
+    case RELOCT_UPPER:
+    case RELOCT_P:
+      break;
 
-  case RELOCT_BANKSEL:
-    ram_bank          = gp_processor_bank_addr(Processor, value);
-    reloc_byte_length = Class->banksel_byte_length(Num_pages);
-    there_is_banksel  = true;
-    break;
+    case RELOCT_BANKSEL:
+      ram_bank          = gp_processor_bank_addr(Processor, value);
+      reloc_byte_length = Class->banksel_byte_length(Num_pages);
+      there_is_banksel  = true;
+      break;
 
-  case RELOCT_IBANKSEL:
-    break;
+    case RELOCT_IBANKSEL:
+      break;
 
-  case RELOCT_F:
-  case RELOCT_TRIS:
-  case RELOCT_TRIS_3BIT:
-  case RELOCT_MOVLR:
-    break;
+    case RELOCT_F:
+    case RELOCT_TRIS:
+    case RELOCT_TRIS_3BIT:
+    case RELOCT_MOVLR:
+      break;
 
-  case RELOCT_MOVLB:
-    ram_bank          = gp_processor_bank_addr(Processor, value);
-    reloc_byte_length = 2;
-    there_is_banksel  = true;
-    break;
+    case RELOCT_MOVLB:
+      ram_bank          = gp_processor_bank_addr(Processor, value);
+      reloc_byte_length = 2;
+      there_is_banksel  = true;
+      break;
 
-  case RELOCT_GOTO2:
-    need_clear = true;
-    break;
+    case RELOCT_GOTO2:
+      need_clear = true;
+      break;
 
-  case RELOCT_FF1:
-  case RELOCT_FF2:
-  case RELOCT_LFSR1:
-  case RELOCT_LFSR2:
-    break;
+    case RELOCT_FF1:
+    case RELOCT_FF2:
+    case RELOCT_LFSR1:
+    case RELOCT_LFSR2:
+      break;
 
-  case RELOCT_BRA:
-  case RELOCT_CONDBRA:
-    need_clear = true;
-    break;
+    case RELOCT_BRA:
+    case RELOCT_CONDBRA:
+      need_clear = true;
+      break;
 
-  case RELOCT_ACCESS:
-  case RELOCT_PAGESEL_WREG:
-  case RELOCT_PAGESEL_BITS:
-  case RELOCT_PAGESEL_MOVLP:
-    break;
+    case RELOCT_ACCESS:
+    case RELOCT_PAGESEL_WREG:
+    case RELOCT_PAGESEL_BITS:
+    case RELOCT_PAGESEL_MOVLP:
+      break;
 
-  /* unimplemented relocations */
-  case RELOCT_PAGESEL:
-  case RELOCT_SCNSZ_LOW:
-  case RELOCT_SCNSZ_HIGH:
-  case RELOCT_SCNSZ_UPPER:
-  case RELOCT_SCNEND_LOW:
-  case RELOCT_SCNEND_HIGH:
-  case RELOCT_SCNEND_UPPER:
-  case RELOCT_SCNEND_LFSR1:
-  case RELOCT_SCNEND_LFSR2:
-  default: {
-      if (symbol->name != NULL) {
-        gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",
-                 gp_coffgen_reloc_type_to_str(Relocation->type),
-                 Relocation->type, Section->name, symbol->name);
+    /* unimplemented relocations */
+    case RELOCT_PAGESEL:
+    case RELOCT_SCNSZ_LOW:
+    case RELOCT_SCNSZ_HIGH:
+    case RELOCT_SCNSZ_UPPER:
+    case RELOCT_SCNEND_LOW:
+    case RELOCT_SCNEND_HIGH:
+    case RELOCT_SCNEND_UPPER:
+    case RELOCT_SCNEND_LFSR1:
+    case RELOCT_SCNEND_LFSR2:
+    default: {
+        if (symbol->name != NULL) {
+          gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",
+                   gp_coffgen_reloc_type_to_str(Relocation->type),
+                   Relocation->type, Section->name, symbol->name);
+        }
+        else {
+          gp_error("Unimplemented relocation = %s (%u) in section \"%s\".",
+                   gp_coffgen_reloc_type_to_str(Relocation->type),
+                   Relocation->type, Section->name);
+        }
+        assert(0);
       }
-      else {
-        gp_error("Unimplemented relocation = %s (%u) in section \"%s\".",
-                 gp_coffgen_reloc_type_to_str(Relocation->type),
-                 Relocation->type, Section->name);
-      }
-      assert(0);
-    }
   }
 
   if (need_clear) {

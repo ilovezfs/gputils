@@ -77,25 +77,25 @@ _assign_file_id(void)
   int            *value;
 
   /* build a case sensitive file table */
-  file_table = sym_push_table(NULL, false);
+  file_table = gp_sym_push_table(NULL, false);
 
   symbol = state.object->symbol_list.first;
   while (symbol != NULL) {
     if (symbol->class == C_FILE) {
       aux = symbol->aux_list.first;
       assert(aux != NULL);
-      sym = sym_get_symbol(file_table, aux->_aux_symbol._aux_file.filename);
+      sym = gp_sym_get_symbol(file_table, aux->_aux_symbol._aux_file.filename);
 
       if (sym != NULL) {
         /* fetch the file number */
-        value = (int *)sym_get_symbol_annotation(sym);
+        value = (int *)gp_sym_get_symbol_annotation(sym);
       }
       else {
         /* the file hasn't been assigned a value */
         value  = (int *)GP_Malloc(sizeof(int));
         *value = file_id++;
-        sym = sym_add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
-        sym_annotate_symbol(sym, value);
+        sym = gp_sym_add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
+        gp_sym_annotate_symbol(sym, value);
       }
       symbol->number = *value;
     }
@@ -103,7 +103,7 @@ _assign_file_id(void)
   }
 
   /* destory the table */
-  file_table = sym_pop_table(file_table);
+  file_table = gp_sym_pop_table(file_table);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -294,8 +294,8 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 
   sb = NULL;
   for (i = 0; i < num_symbols; i++) {
-    name = sym_get_symbol_name(symbol_list[i]);
-    var  = sym_get_symbol_annotation(symbol_list[i]);
+    name = gp_sym_get_symbol_name(symbol_list[i]);
+    var  = gp_sym_get_symbol_annotation(symbol_list[i]);
     len  = strlen(name);
 
     /* If this symbol extends past the end of the cod block
@@ -494,13 +494,13 @@ _cod_symbol_table(const symbol_table_t *Table)
   const symbol_t **lst;
   size_t           sym_count;
 
-  sym_count = sym_get_symbol_count(Table);
+  sym_count = gp_sym_get_symbol_count(Table);
 
   if (sym_count == 0) {
     return;
   }
 
-  lst = sym_clone_symbol_array(Table, sym_compare_fn);
+  lst = gp_sym_clone_symbol_array(Table, gp_sym_compare_fn);
   cod_write_symbols(lst, sym_count);
   free(lst);
 }

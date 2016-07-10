@@ -337,8 +337,8 @@ processor                {
                              case ID_MACROS:
                                /* Macro invocation */
                                BEGIN(macpar);
-                               sym = sym_get_symbol(state.stMacros, yytext);
-                               h = sym_get_symbol_annotation(sym);
+                               sym = gp_sym_get_symbol(state.stMacros, yytext);
+                               h = gp_sym_get_symbol_annotation(sym);
                                /* TODO: this condition shoul be probably removed
                                 * since the symbol table is reinitialized before
                                 * the second pass */
@@ -369,7 +369,7 @@ processor                {
                            }
                          }
 {IDENT}                  {
-                           if (sym_get_symbol(state.stMacros, yytext) != NULL) {
+                           if (gp_sym_get_symbol(state.stMacros, yytext) != NULL) {
                              /* Macro invocation. */
                              BEGIN(macpar);
                            }
@@ -798,8 +798,8 @@ close_file(void)
   else if (state.src->type == SRC_MACRO) {
     state.src = state.src->prev;
 
-    state.stTop         = sym_pop_table(state.stTop);
-    state.stMacroParams = sym_pop_table(state.stMacroParams);
+    state.stTop         = gp_sym_pop_table(state.stTop);
+    state.stMacroParams = gp_sym_pop_table(state.stMacroParams);
 
     if (state.src->astack != state.astack) {
       gpmsg_verror(GPE_ILLEGAL_NESTING, NULL);
@@ -909,26 +909,26 @@ _identify(const char *text)
   enum identtype  type;
   symbol_t       *sym;
 
-  if ((sym = sym_get_symbol(state.stMacroParams, text)) != NULL) {
+  if ((sym = gp_sym_get_symbol(state.stMacroParams, text)) != NULL) {
     type = ID_MACRO_PARAMS;
   }
-  else if ((sym = sym_get_symbol(state.stDefines, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stDefines, text)) != NULL) {
     type = ID_DEFINES;
   }
-  else if ((sym = sym_get_symbol(state.stDirective, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stDirective, text)) != NULL) {
     type = ID_DIRECTIVES;
 
     if ((state.mpasm_compatible) && (strcasecmp(text, "idlocs") == 0)) {
       type = ID_UNKNOWN_TYPE;
     }
   }
-  else if ((sym = sym_get_symbol(state.stBuiltin, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stBuiltin, text)) != NULL) {
     type = ID_OPCODES;
   }
-  else if ((sym = sym_get_symbol(state.stGlobal, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stGlobal, text)) != NULL) {
     type = ID_GLOBALS;
   }
-  else if ((sym = sym_get_symbol(state.stMacros, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stMacros, text)) != NULL) {
     type = ID_MACROS;
   }
   else {

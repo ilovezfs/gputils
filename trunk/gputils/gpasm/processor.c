@@ -204,13 +204,13 @@ select_processor(const char *name)
             _make_page_constants(found, num_of_pages);
           }
           else if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
-            set_global("__14_BIT",        1,                         LFT_PERMANENT, VAL_CONSTANT, true);
-            set_global("__ENHANCED",      1,                         LFT_PERMANENT, VAL_CONSTANT, true);
-            set_global("__PAGE_BITS",     PIC14E_PAGE_BITS,          LFT_PERMANENT, VAL_CONSTANT, true);
-            set_global("__PAGE_MASK",     PIC14_PAGE_MASK,           LFT_PERMANENT, VAL_CONSTANT, true);
-            set_global("__PAGE_SIZE",     PIC14_PAGE_SIZE,           LFT_PERMANENT, VAL_CONSTANT, true);
-            set_global("__PAGE512_SHIFT", PIC14E_SHIFT_PAGE512_ADDR, LFT_PERMANENT, VAL_CONSTANT, true);
-            set_global("__PAGE_INV",      GLOBAL_ACT_PAGE_INV,       LFT_PERMANENT, VAL_CONSTANT, true);
+            set_global("__14_BIT",        1,                    LFT_PERMANENT, VAL_CONSTANT, true);
+            set_global("__ENHANCED",      1,                    LFT_PERMANENT, VAL_CONSTANT, true);
+            set_global("__PAGE_BITS",     PIC14E_PAGE_BITS,     LFT_PERMANENT, VAL_CONSTANT, true);
+            set_global("__PAGE_MASK",     PIC14_PAGE_MASK,      LFT_PERMANENT, VAL_CONSTANT, true);
+            set_global("__PAGE_SIZE",     PIC14_PAGE_SIZE,      LFT_PERMANENT, VAL_CONSTANT, true);
+            set_global("__PAGE512_SHIFT", PIC14E_PAGE512_SHIFT, LFT_PERMANENT, VAL_CONSTANT, true);
+            set_global("__PAGE_INV",      GLOBAL_ACT_PAGE_INV,  LFT_PERMANENT, VAL_CONSTANT, true);
 
             _make_bank_constants(found, num_of_banks);
             _make_page_constants(found, num_of_pages);
@@ -321,7 +321,7 @@ select_processor(const char *name)
     if ((!state.processor_chosen) && (state.processor != NULL)) {
       opcode_init(1);   /* General directives. */
       /* Separate the directives from the opcodes. */
-      state.stBuiltin = sym_push_table(state.stBuiltin, true);
+      state.stBuiltin = gp_sym_push_table(state.stBuiltin, true);
       opcode_init(2);   /* Processor-specific. */
 
       if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE)) {
