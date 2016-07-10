@@ -1327,8 +1327,8 @@ gp_processor_common_ram_exist(pic_processor_t processor)
     return NULL;
   }
 
-  if ((processor->common_ram_addrs[0] > 0) &&
-      (processor->common_ram_addrs[1] >= processor->common_ram_addrs[0])) {
+  if ((processor->common_ram_addrs[0] >= 0) &&
+      (processor->common_ram_addrs[0] <= processor->common_ram_addrs[1])) {
     return processor->common_ram_addrs;
   }
 
@@ -1363,15 +1363,71 @@ gp_processor_is_common_ram_addr(pic_processor_t processor, int address)
     return -1;
   }
 
-  address &= ~processor->class->bank_mask;
+  if (processor->class != PROC_CLASS_PIC16E) {
+    /* The Common RAM - except the PIC16E family - exists in the all RAM banks. */
+    address &= ~processor->class->bank_mask;
+  }
 
   if ((cram_addrs = gp_processor_common_ram_exist(processor)) != NULL) {
-    if ((cram_addrs[0] <= address) && (address <= cram_addrs[1])) {
+    if ((address >= cram_addrs[0]) && (address <= cram_addrs[1])) {
       return (address - cram_addrs[0]);
     }
   }
 
   return -1;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+gp_processor_is_p16e_access_low(pic_processor_t processor, int address)
+{
+  const int *cram_addrs;
+
+  if (processor->class != PROC_CLASS_PIC16E) {
+    return false;
+  }
+
+  if ((cram_addrs = gp_processor_common_ram_exist(processor)) != NULL) {
+    return (((address >= cram_addrs[0]) && (address <= cram_addrs[1])) ? true : false);
+  }
+
+  return false;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+gp_processor_is_p16e_access_high(pic_processor_t processor, int address, gp_boolean mpasm_compatible)
+{
+  const int    *cram_addrs;
+  unsigned int  bank_size;
+
+  if (processor->class != PROC_CLASS_PIC16E) {
+    return false;
+  }
+
+  if ((cram_addrs = gp_processor_common_ram_exist(processor)) != NULL) {
+    bank_size = processor->class->bank_size;
+    if (mpasm_compatible) {
+      /* The mpasmx not investigate the upper limit. */
+      return ((address > ((bank_size * 15) + cram_addrs[1])) ? true : false);
+    }
+    else {
+      return (((address > ((bank_size * 15) + cram_addrs[1])) && (address < (bank_size * 16))) ? true : false);
+    }
+  }
+
+  return false;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+gp_processor_is_p16e_access(pic_processor_t processor, int address, gp_boolean mpasm_compatible)
+{
+  return (gp_processor_is_p16e_access_low(processor, address) |
+          gp_processor_is_p16e_access_high(processor, address, mpasm_compatible));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2067,7 +2123,7 @@ _set_bank_pic12(unsigned int num_banks, unsigned int bank, MemBlock_t *m, unsign
 static unsigned int
 _check_page_pic12(unsigned int insn_address)
 {
-  return ((insn_address & PIC12_PAGE_BITS) >> PIC12_SHIFT_PAGE_ADDR);
+  return ((insn_address & PIC12_PAGE_BITS) >> PIC12_PAGE_SHIFT);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2083,7 +2139,7 @@ _page_addr_pic12(unsigned int insn_address)
 static unsigned int
 _page_bits_to_addr_pic12(unsigned int bits)
 {
-  return _page_addr_pic12(bits << PIC12_SHIFT_PAGE_ADDR);
+  return _page_addr_pic12(bits << PIC12_PAGE_SHIFT);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2210,7 +2266,7 @@ _find_insn_pic12e(proc_class_t cls, unsigned int opcode)
 static unsigned int
 _check_page_sx(unsigned int insn_address)
 {
-  return ((insn_address & PIC12_PAGE_BITS) >> PIC12_SHIFT_PAGE_ADDR);
+  return ((insn_address & PIC12_PAGE_BITS) >> PIC12_PAGE_SHIFT);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2226,7 +2282,7 @@ _page_addr_sx(unsigned int insn_address)
 static unsigned int
 _page_bits_to_addr_sx(unsigned int bits)
 {
-  return _page_addr_sx(bits << PIC12_SHIFT_PAGE_ADDR);
+  return _page_addr_sx(bits << PIC12_PAGE_SHIFT);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2310,7 +2366,7 @@ _set_ibank_pic14(unsigned int num_banks, unsigned int bank, MemBlock_t *m, unsig
 static unsigned int
 _check_page_pic14(unsigned int insn_address)
 {
-  return ((insn_address & PIC14_PAGE_BITS) >> PIC14_SHIFT_PAGE_ADDR);
+  return ((insn_address & PIC14_PAGE_BITS) >> PIC14_PAGE_SHIFT);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2326,7 +2382,7 @@ _page_addr_pic14(unsigned int insn_address)
 static unsigned int
 _page_bits_to_addr_pic14(unsigned int bits)
 {
-  return _page_addr_pic14(bits << PIC14_SHIFT_PAGE_ADDR);
+  return _page_addr_pic14(bits << PIC14_PAGE_SHIFT);
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -421,13 +421,13 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
 
   /* Search the entire stack (i.e. include macro's local symbol tables) for the symbol.
      If not found, then add it to the global symbol table.  */
-  sym = sym_get_symbol(state.stTop, name);
+  sym = gp_sym_get_symbol(state.stTop, name);
 
   if (sym == NULL) {
-    sym = sym_add_symbol(state.stGlobal, name);
+    sym = gp_sym_add_symbol(state.stGlobal, name);
   }
 
-  var = sym_get_symbol_annotation(sym);
+  var = gp_sym_get_symbol_annotation(sym);
 
   if (var == NULL) {
     /* new symbol */
@@ -440,7 +440,7 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
     var->previous_type      = type;  /* coff symbols can be changed to global */
     var->lifetime           = lifetime;
     var->isProcDependent    = procDependent;
-    sym_annotate_symbol(sym, var);
+    gp_sym_annotate_symbol(sym, var);
 
     /* increment the index into the coff symbol table for the relocations */
     switch (type) {
@@ -496,8 +496,8 @@ get_global_constant(const char *Name)
   const symbol_t *sym;
   variable_t     *var;
 
-  if (((sym = sym_get_symbol(state.stGlobal, Name)) != NULL) &&
-      ((var = sym_get_symbol_annotation(sym)) != NULL) &&
+  if (((sym = gp_sym_get_symbol(state.stGlobal, Name)) != NULL) &&
+      ((var = gp_sym_get_symbol_annotation(sym)) != NULL) &&
       (var->type == VAL_CONSTANT)) {
     return var;
   }
@@ -518,21 +518,21 @@ purge_temp_symbols(symbol_table_t *Table)
     return;
   }
 
-  for (i = 0; i < sym_get_symbol_count(Table); ) {
-    sym = sym_get_symbol_with_index(Table, i);
+  for (i = 0; i < gp_sym_get_symbol_count(Table); ) {
+    sym = gp_sym_get_symbol_with_index(Table, i);
     assert(sym != NULL);
 
-    var = (variable_t *)sym_get_symbol_annotation(sym);
+    var = (variable_t *)gp_sym_get_symbol_annotation(sym);
 
     if ((var != NULL) && (var->lifetime == LFT_TEMPORARY)) {
-      sym_remove_symbol_with_index(Table, i);
+      gp_sym_remove_symbol_with_index(Table, i);
     }
     else {
       ++i;
     }
   }
 
-  purge_temp_symbols(sym_get_guest_table(Table));
+  purge_temp_symbols(gp_sym_get_guest_table(Table));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -548,22 +548,22 @@ purge_processor_const_symbols(symbol_table_t *Table)
     return;
   }
 
-  for (i = 0; i < sym_get_symbol_count(Table); ) {
-    sym = sym_get_symbol_with_index(Table, i);
+  for (i = 0; i < gp_sym_get_symbol_count(Table); ) {
+    sym = gp_sym_get_symbol_with_index(Table, i);
     assert(sym != NULL);
 
-    var = (variable_t *)sym_get_symbol_annotation(sym);
+    var = (variable_t *)gp_sym_get_symbol_annotation(sym);
 
     if ((var != NULL) && (var->lifetime == LFT_PERMANENT) && (var->type == VAL_CONSTANT) &&
         var->isProcDependent) {
-      sym_remove_symbol_with_index(Table, i);
+      gp_sym_remove_symbol_with_index(Table, i);
     }
     else {
       ++i;
     }
   }
 
-  purge_processor_const_symbols(sym_get_guest_table(Table));
+  purge_processor_const_symbols(gp_sym_get_guest_table(Table));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -796,9 +796,9 @@ pnode_symbol_value(const pnode_t *Pnode)
       return addr;
     }
     else {
-      sym = sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
       assert(sym != NULL);
-      var = sym_get_symbol_annotation(sym);
+      var = gp_sym_get_symbol_annotation(sym);
       assert(var != NULL);
       return var->value;
     }

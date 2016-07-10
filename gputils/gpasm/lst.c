@@ -619,17 +619,17 @@ _cod_symbol_table(void)
   const symbol_t **lst;
   size_t           sym_count;
 
-  sym_count = sym_get_symbol_count(state.stGlobal);
+  sym_count = gp_sym_get_symbol_count(state.stGlobal);
 
   if (sym_count == 0) {
     return;
   }
 
   if (!state.mpasm_compatible) {
-    lst = sym_clone_symbol_array(state.stGlobal, sym_version_compare_fn);
+    lst = gp_sym_clone_symbol_array(state.stGlobal, gp_sym_version_compare_fn);
   }
   else {
-    lst = sym_clone_symbol_array(state.stGlobal, sym_compare_fn);
+    lst = gp_sym_clone_symbol_array(state.stGlobal, gp_sym_compare_fn);
   }
 
   assert(lst != NULL);
@@ -1118,8 +1118,8 @@ lst_data:
 static int
 _lst_symbol_verscmp(const void *p0, const void *p1)
 {
-  return strverscmp(sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
-                    sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
+  return strverscmp(gp_sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
+                    gp_sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1127,8 +1127,8 @@ _lst_symbol_verscmp(const void *p0, const void *p1)
 static int
 _lst_symbol_cmp(const void *p0, const void *p1)
 {
-  return strcmp(sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
-                sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
+  return strcmp(gp_sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
+                gp_sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1156,17 +1156,17 @@ lst_symbol_table(void)
 
   _cod_symbol_table();
 
-  count = sym_get_symbol_count(state.stGlobal) + sym_get_symbol_count(state.stDefines) +
-	  sym_get_symbol_count(state.stMacros);
+  count = gp_sym_get_symbol_count(state.stGlobal) + gp_sym_get_symbol_count(state.stDefines) +
+	  gp_sym_get_symbol_count(state.stMacros);
   if (count == 0) {
     return;
   }
 
   ps = lst = GP_Malloc(count * sizeof(lst_symbol_t));
 
-  clone = sym_clone_symbol_array(state.stGlobal, NULL);
+  clone = gp_sym_clone_symbol_array(state.stGlobal, NULL);
   if (clone != NULL) {
-    sym_count = sym_get_symbol_count(state.stGlobal);
+    sym_count = gp_sym_get_symbol_count(state.stGlobal);
     for (i = 0; i < sym_count; i++) {
       ps->sym  = clone[i];
       ps->type = LST_SYMBOL;
@@ -1176,9 +1176,9 @@ lst_symbol_table(void)
     free(clone);
   }
 
-  clone = sym_clone_symbol_array(state.stDefines, NULL);
+  clone = gp_sym_clone_symbol_array(state.stDefines, NULL);
   if (clone != NULL) {
-    sym_count = sym_get_symbol_count(state.stDefines);
+    sym_count = gp_sym_get_symbol_count(state.stDefines);
     for (i = 0; i < sym_count; i++) {
       ps->sym  = clone[i];
       ps->type = LST_DEFINE;
@@ -1188,9 +1188,9 @@ lst_symbol_table(void)
     free(clone);
   }
 
-  clone = sym_clone_symbol_array(state.stMacros, NULL);
+  clone = gp_sym_clone_symbol_array(state.stMacros, NULL);
   if (clone != NULL) {
-    sym_count = sym_get_symbol_count(state.stMacros);
+    sym_count = gp_sym_get_symbol_count(state.stMacros);
     for (i = 0; i < sym_count; i++) {
       ps->sym  = clone[i];
       ps->type = LST_MACRO;
@@ -1210,8 +1210,8 @@ lst_symbol_table(void)
   }
 
   for (i = 0; i < count; i++) {
-    name = sym_get_symbol_name(lst[i].sym);
-    ptr  = sym_get_symbol_annotation(lst[i].sym);
+    name = gp_sym_get_symbol_name(lst[i].sym);
+    ptr  = gp_sym_get_symbol_annotation(lst[i].sym);
 
     switch (lst[i].type) {
       case LST_SYMBOL:

@@ -134,7 +134,7 @@ _show_usage(void)
 static size_t
 _count_missing(void)
 {
-  return sym_get_symbol_count(state.symbol.missing);
+  return gp_sym_get_symbol_count(state.symbol.missing);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -225,17 +225,17 @@ _scan_index(symbol_table_t *table, gp_archive_t *archive)
   modified  = false;
   while (num_added != 0) {
     num_added = 0;
-    for (i = 0; i < sym_get_symbol_count(state.symbol.missing); ++i) {
-      sym_miss = sym_get_symbol_with_index(state.symbol.missing, i);
-      name     = sym_get_symbol_name(sym_miss);
+    for (i = 0; i < gp_sym_get_symbol_count(state.symbol.missing); ++i) {
+      sym_miss = gp_sym_get_symbol_with_index(state.symbol.missing, i);
+      name     = gp_sym_get_symbol_name(sym_miss);
       assert(name != NULL);
       /* Search for missing symbol name in archive symbol table. */
-      sym_arch = sym_get_symbol(table, name);
+      sym_arch = gp_sym_get_symbol(table, name);
 
       if (sym_arch != NULL) {
         /* Fetch the archive member, convert its binary data to an object
            file, and add the object to the object list. */
-        member      = sym_get_symbol_annotation(sym_arch);
+        member      = gp_sym_get_symbol_annotation(sym_arch);
         object_name = gp_archive_member_name(member);
         object      = gp_convert_file(object_name, &member->data);
         _object_append(object);
@@ -262,15 +262,15 @@ _scan_archive(gp_archive_t *archive, const char *name)
   gp_boolean      modified;
   symbol_table_t *archive_tbl;
 
-  state.symbol.archive = sym_push_table(NULL, false);
+  state.symbol.archive = gp_sym_push_table(NULL, false);
 
   /* If necessary, build a symbol index for the archive. */
   if (gp_archive_have_index(archive) == 0) {
-    archive_tbl = sym_push_table(NULL, true);
+    archive_tbl = gp_sym_push_table(NULL, true);
     gp_archive_make_index(archive, archive_tbl);
     archive = gp_archive_add_index(archive_tbl, archive);
     gp_warning("\"%s\" is missing symbol index.", name);
-    archive_tbl = sym_pop_table(archive_tbl);
+    archive_tbl = gp_sym_pop_table(archive_tbl);
   }
 
   /* Read the symbol index. */
@@ -280,7 +280,7 @@ _scan_archive(gp_archive_t *archive, const char *name)
      If found, add the object to state.objects. */
   modified = _scan_index(state.symbol.archive, archive);
 
-  state.symbol.archive = sym_pop_table(state.symbol.archive);
+  state.symbol.archive = gp_sym_pop_table(state.symbol.archive);
 
   return modified;
 }
@@ -294,7 +294,7 @@ _remove_linker_symbol(char *name)
 {
   const symbol_t *sym;
 
-  sym = sym_get_symbol(state.symbol.missing, name);
+  sym = gp_sym_get_symbol(state.symbol.missing, name);
   if (sym != NULL) {
     gp_cofflink_remove_symbol(state.symbol.missing, name);
   }
@@ -415,11 +415,11 @@ _build_tables(void)
   /* All of the archives have been scanned. If there are still missing
      references, it is an error. */
   if (_count_missing() > 0) {
-    for (i = 0; i < sym_get_symbol_count(state.symbol.missing); ++i) {
-      sym  = sym_get_symbol_with_index(state.symbol.missing, i);
-      name = sym_get_symbol_name(sym);
+    for (i = 0; i < gp_sym_get_symbol_count(state.symbol.missing); ++i) {
+      sym  = gp_sym_get_symbol_with_index(state.symbol.missing, i);
+      name = gp_sym_get_symbol_name(sym);
       assert(name != NULL);
-      var = sym_get_symbol_annotation(sym);
+      var = gp_sym_get_symbol_annotation(sym);
       assert(var != NULL);
       gp_error("Missing definition for symbol \"%s\", required by \"%s\".", name, var->file->filename);
     }
@@ -553,13 +553,13 @@ _init(void)
   strncpy(state.basefilename, "a", sizeof(state.basefilename));
 
   state.ifdef = NULL;
-  state.script_symbols     = sym_push_table(NULL, false);
+  state.script_symbols     = gp_sym_push_table(NULL, false);
 
   /* The symbols are case sensitive. */
-  state.symbol.definition  = sym_push_table(NULL, false);
-  state.symbol.missing     = sym_push_table(NULL, false);
-  state.section.definition = sym_push_table(NULL, false);
-  state.section.logical    = sym_push_table(NULL, false);
+  state.symbol.definition  = gp_sym_push_table(NULL, false);
+  state.symbol.missing     = gp_sym_push_table(NULL, false);
+  state.section.definition = gp_sym_push_table(NULL, false);
+  state.section.logical    = gp_sym_push_table(NULL, false);
 }
 
 /*------------------------------------------------------------------------------------------------*/

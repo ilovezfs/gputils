@@ -26,10 +26,10 @@ Boston, MA 02111-1307, USA.  */
 extern gp_hash_t *gp_symbol_make_hash_table(gp_object_t *Object);
 
 extern const gp_symbol_t *gp_symbol_find(const gp_object_t *Object, const char *Section_name,
-                                            gp_symvalue_t Symbol_value);
+                                         gp_symvalue_t Symbol_value);
 
 extern gp_symbol_t **gp_symbol_make_label_array(gp_section_t *Section, unsigned int Org_to_byte_shift,
-                                                   unsigned int *Num_labels);
+                                                unsigned int *Num_labels);
 
 extern gp_symbol_t **gp_symbol_make_register_array(gp_object_t *Object, unsigned int *Num_registers);
 

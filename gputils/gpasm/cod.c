@@ -380,8 +380,8 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 
   sb = NULL;
   for (i = 0; i < Num_symbols; i++) {
-    name = sym_get_symbol_name(Symbol_list[i]);
-    var  = sym_get_symbol_annotation(Symbol_list[i]);
+    name = gp_sym_get_symbol_name(Symbol_list[i]);
+    var  = gp_sym_get_symbol_annotation(Symbol_list[i]);
     len  = strlen(name);
 
     /* If this symbol extends past the end of the cod block then write this block out. */

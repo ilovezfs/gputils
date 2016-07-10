@@ -5,7 +5,6 @@ gputils
   * Grep the source for FIXME and fix.
   * Add a check for the version of flex.
   * Start migrating to the GNU coding style.
-  * Prefix all visible library functions with gp_. Add _ to all others.
   * Switch to xmalloc and obstacks.
   * Use dejagnu for testing.
 

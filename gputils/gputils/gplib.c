@@ -151,8 +151,8 @@ int main(int argc, char *argv[])
   gp_init();
 
   /* symbols are case sensitive */
-  definition_tbl = sym_push_table(NULL, false);
-  symbol_index   = sym_push_table(NULL, false);
+  definition_tbl = gp_sym_push_table(NULL, false);
+  symbol_index   = gp_sym_push_table(NULL, false);
 
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {

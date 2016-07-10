@@ -147,12 +147,12 @@ script_add_macro(const char *name, long value)
   symbol_t *sym;
   long     *val;
 
-  sym = sym_add_symbol(state.script_symbols, name);
-  val = sym_get_symbol_annotation(sym);
+  sym = gp_sym_add_symbol(state.script_symbols, name);
+  val = gp_sym_get_symbol_annotation(sym);
 
   if (val == NULL) {
     val = GP_Malloc(sizeof value);
-    sym_annotate_symbol(sym, val);
+    gp_sym_annotate_symbol(sym, val);
   }
 
   *val = value;
@@ -166,13 +166,13 @@ script_get_macro(const char *name)
   symbol_t *sym;
   long     *val;
 
-  sym = sym_get_symbol(state.script_symbols, name);
+  sym = gp_sym_get_symbol(state.script_symbols, name);
 
   if (sym == NULL) {
     return 0;
   }
 
-  val = sym_get_symbol_annotation(sym);
+  val = gp_sym_get_symbol_annotation(sym);
   return *val;
 }
 
@@ -272,13 +272,13 @@ _do_logsec(const char *name, enum section_type type, const pnode_t *parms)
     script_error("missing argument", "ram or rom");
   }
   else {
-    sym = sym_get_symbol(state.section.definition, section_name);
+    sym = gp_sym_get_symbol(state.section.definition, section_name);
 
     if (sym == NULL) {
       script_error("undefined section", section_name);
     }
     else {
-      section = sym_get_symbol_annotation(sym);
+      section = gp_sym_get_symbol_annotation(sym);
       assert(section != NULL);
 
       if (found_ram && (section->type == SECT_CODEPAGE)) {
@@ -288,8 +288,8 @@ _do_logsec(const char *name, enum section_type type, const pnode_t *parms)
         script_error("invalid argument", "rom");
       }
       else {
-        sym = sym_add_symbol(state.section.logical, logical_section_name);
-        sym_annotate_symbol(sym, section_name);
+        sym = gp_sym_add_symbol(state.section.logical, logical_section_name);
+        gp_sym_annotate_symbol(sym, section_name);
       }
     }
   }
@@ -431,12 +431,12 @@ _do_secdef(const char *name, enum section_type type, const pnode_t *parms)
     script_error("missing argument", "end");
   }
   else {
-    sym = sym_get_symbol(state.section.definition, section_name);
+    sym = gp_sym_get_symbol(state.section.definition, section_name);
 
     if (sym == NULL) {
-      sym = sym_add_symbol(state.section.definition, section_name);
+      sym = gp_sym_add_symbol(state.section.definition, section_name);
       section_def = (struct linker_section *)GP_Calloc(1, sizeof(struct linker_section));
-      sym_annotate_symbol(sym, section_def);
+      gp_sym_annotate_symbol(sym, section_def);
 
       switch (type) {
       case SECT_ACCESSBANK:
@@ -567,8 +567,8 @@ _do_stack(const char *name, enum section_type type, const pnode_t *parms)
     script_error("missing argument", "size");
   }
   else if (ram_name != NULL) {
-    sym = sym_add_symbol(state.section.logical, GP_Strdup(".stack"));
-    sym_annotate_symbol(sym, ram_name);
+    sym = gp_sym_add_symbol(state.section.logical, GP_Strdup(".stack"));
+    gp_sym_annotate_symbol(sym, ram_name);
   }
 
   return 0;

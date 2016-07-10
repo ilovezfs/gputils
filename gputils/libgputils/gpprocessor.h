@@ -28,14 +28,14 @@ Boston, MA 02111-1307, USA.  */
         PIC12 definitions
 ******************************************/
 
-#define PIC12_BANK_SIZE             32
 #define PIC12_BANK_SHIFT            5
+#define PIC12_BANK_SIZE             (1 << PIC12_BANK_SHIFT)             /* 32 */
 #define PIC12_RAM_ADDR_BITS         PIC12_BANK_SHIFT
 #define PIC12_BMSK_BANK             0x007
-#define PIC12_PAGE_SIZE             512
+#define PIC12_PAGE_SHIFT            9
+#define PIC12_PAGE_SIZE             (1 << PIC12_PAGE_SHIFT)             /* 512 */
 #define PIC12_PAGE_MASK             (PIC12_PAGE_SIZE - 1)
 #define PIC12_PAGE_BITS             (PIC12_PC_MASK ^ PIC12_PAGE_MASK)
-#define PIC12_SHIFT_PAGE_ADDR       9
 
 #define PIC12_REG_STATUS            0x03
 
@@ -68,13 +68,13 @@ Boston, MA 02111-1307, USA.  */
         PIC14 definitions
 ******************************************/
 
-#define PIC14_BANK_SIZE             128
 #define PIC14_BANK_SHIFT            7
+#define PIC14_BANK_SIZE             (1 << PIC14_BANK_SHIFT)             /* 128 */
 #define PIC14_RAM_ADDR_BITS         PIC14_BANK_SHIFT
-#define PIC14_PAGE_SIZE             2048
+#define PIC14_PAGE_SHIFT            11
+#define PIC14_PAGE_SIZE             (1 << PIC14_PAGE_SHIFT)             /* 2048 */
 #define PIC14_PAGE_MASK             (PIC14_PAGE_SIZE - 1)
 #define PIC14_PAGE_BITS             (PIC14_PC_MASK ^ PIC14_PAGE_MASK)
-#define PIC14_SHIFT_PAGE_ADDR       11
 
 #define PIC14_BMSK_BANK             0x0003
 #define PIC14_BMSK_PAGE             0x0003
@@ -99,7 +99,7 @@ Boston, MA 02111-1307, USA.  */
 #define PIC14E_BMSK_BANK            0x001F
 #define PIC14E_BMSK_PAGE512         0x007F
 #define PIC14E_PAGE_BITS            (PIC14E_PC_MASK ^ PIC14_PAGE_MASK)
-#define PIC14E_SHIFT_PAGE512_ADDR   8
+#define PIC14E_PAGE512_SHIFT        8
 
 #define PIC14E_REG_INDF0            0x00
 #define PIC14E_REG_FSR0             0x04
@@ -126,13 +126,13 @@ Boston, MA 02111-1307, USA.  */
         PIC16 definitions
 ******************************************/
 
-#define PIC16_BANK_SIZE             256
 #define PIC16_BANK_SHIFT            8
+#define PIC16_BANK_SIZE             (1 << PIC16_BANK_SHIFT)             /* 256 */
 #define PIC16_RAM_ADDR_BITS         PIC16_BANK_SHIFT
-#define PIC16_PAGE_SIZE             8192
+#define PIC16_PAGE_SHIFT            13
+#define PIC16_PAGE_SIZE             (1 << PIC16_PAGE_SHIFT)             /* 8192 */
 #define PIC16_PAGE_MASK             (PIC16_PAGE_SIZE - 1)
 #define PIC16_PAGE_BITS             (PIC16_PC_MASK ^ PIC16_PAGE_MASK)
-#define PIC16_SHIFT_PAGE_ADDR       13
 
 #define PIC16_BMSK_BANK             0x00FF
 #define PIC16_BMSK_PAGE             0x00FF
@@ -402,6 +402,10 @@ extern int gp_processor_bank_num_to_addr(pic_processor_t processor, int number);
 
 extern const int *gp_processor_common_ram_exist(pic_processor_t processor);
 extern int gp_processor_is_common_ram_addr(pic_processor_t processor, int address);
+
+extern gp_boolean gp_processor_is_p16e_access_low(pic_processor_t processor, int address);
+extern gp_boolean gp_processor_is_p16e_access_high(pic_processor_t processor, int address, gp_boolean mpasm_compatible);
+extern gp_boolean gp_processor_is_p16e_access(pic_processor_t processor, int address, gp_boolean mpasm_compatible);
 
 extern const int *gp_processor_linear_ram_exist(pic_processor_t processor);
 extern int gp_processor_is_linear_ram_addr(pic_processor_t processor, int address);

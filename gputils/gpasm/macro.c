@@ -82,7 +82,7 @@ void macro_setup(macro_head_t *Head, int Arity, const pnode_t *Parms)
 
   if (eval_enforce_arity(Arity, eval_list_length(Head->parms))) {
     /* push table for the marco parms */
-    state.stMacroParams = sym_push_table(state.stMacroParams, state.case_insensitive);
+    state.stMacroParams = gp_sym_push_table(state.stMacroParams, state.case_insensitive);
 
     /* Now add the macro's declared parameter list to the new defines table. */
     if (Arity > 0) {
@@ -94,8 +94,8 @@ void macro_setup(macro_head_t *Head, int Arity, const pnode_t *Parms)
         assert(PnIsSymbol(pFromH));
         assert(PnIsSymbol(pToH));
 
-        sym = sym_add_symbol(state.stMacroParams, PnSymbol(pFromH));
-        sym_annotate_symbol(sym, mk_list(mk_string(GP_Strdup(PnSymbol(pToH))), NULL));
+        sym = gp_sym_add_symbol(state.stMacroParams, PnSymbol(pFromH));
+        gp_sym_annotate_symbol(sym, mk_list(mk_string(GP_Strdup(PnSymbol(pToH))), NULL));
         pTo = PnListTail(pTo);
       }
     }
@@ -114,7 +114,7 @@ macro_push_symbol_table(symbol_table_t *Table)
   symbol_table_t *new = NULL;
 
   if (state.pass == 1) {
-    new = sym_push_table(Table, state.case_insensitive);
+    new = gp_sym_push_table(Table, state.case_insensitive);
     _add_macro_table(new);
   }
   else {
@@ -129,13 +129,13 @@ macro_push_symbol_table(symbol_table_t *Table)
        a macro wasn't executed on the first pass, but it was on the second.
        Probably errors will be generated. Forward references to local
        symbols probably won't be correct. */
-      new = sym_push_table(Table, state.case_insensitive);
+      new = gp_sym_push_table(Table, state.case_insensitive);
       gpmsg_warning(GPW_UNKNOWN, "Macro not executed on pass 1.");
     }
     else {
       assert(macro_table_ptr != NULL);
       new = macro_table_ptr->table;
-      sym_set_guest_table(new, Table);
+      gp_sym_set_guest_table(new, Table);
       macro_table_ptr = macro_table_ptr->next; /* setup for next macro */
     }
   }

@@ -86,7 +86,7 @@ _conditional_remove(gp_symbol_t *symbol)
 {
   const symbol_t *sym;
 
-  sym = sym_get_symbol(state.symbol_keep, symbol->name);
+  sym = gp_sym_get_symbol(state.symbol_keep, symbol->name);
   if (sym == NULL) {
     if (verbose) {
       gp_message("removing symbol \"%s\"", symbol->name);
@@ -106,12 +106,12 @@ _remove_sections(void)
 
   /* FIXME: Check for relocations from other sections. Error out if they exist. */
 
-  for (i = 0; i < sym_get_symbol_count(state.section_remove); ++i) {
-    sym     = sym_get_symbol_with_index(state.section_remove, i);
-    section = gp_coffgen_find_section(state.object, state.object->section_list.first, sym_get_symbol_name(sym));
+  for (i = 0; i < gp_sym_get_symbol_count(state.section_remove); ++i) {
+    sym     = gp_sym_get_symbol_with_index(state.section_remove, i);
+    section = gp_coffgen_find_section(state.object, state.object->section_list.first, gp_sym_get_symbol_name(sym));
     if (section != NULL) {
       if (verbose) {
-        gp_message("removing section \"%s\"", sym_get_symbol_name(sym));
+        gp_message("removing section \"%s\"", gp_sym_get_symbol_name(sym));
       }
 
       /* remove the sections symbols */
@@ -132,9 +132,9 @@ _remove_symbols(void)
   const symbol_t *sym;
   gp_symbol_t    *symbol;
 
-  for (i = 0; i < sym_get_symbol_count(state.symbol_remove); ++i) {
-    sym    = sym_get_symbol_with_index(state.symbol_remove, i);
-    symbol = gp_coffgen_find_symbol(state.object, sym_get_symbol_name(sym));
+  for (i = 0; i < gp_sym_get_symbol_count(state.symbol_remove); ++i) {
+    sym    = gp_sym_get_symbol_with_index(state.symbol_remove, i);
+    symbol = gp_coffgen_find_symbol(state.object, gp_sym_get_symbol_name(sym));
     if (symbol != NULL) {
       if (!gp_coffgen_symbol_has_reloc(symbol, COFF_SYM_RELOC_ALL)) {
         _conditional_remove(symbol);
@@ -244,9 +244,9 @@ _add_name(symbol_table_t *table, char *name)
 {
   const symbol_t *sym;
 
-  sym = sym_get_symbol(table, name);
+  sym = gp_sym_get_symbol(table, name);
   if (sym == NULL) {
-    sym_add_symbol(table, name);
+    gp_sym_add_symbol(table, name);
   }
 }
 
@@ -270,9 +270,9 @@ int main(int argc, char *argv[])
   state.strip_unneeded = false;
   state.discard_all    = false;
   state.output_file    = NULL;
-  state.symbol_keep    = sym_push_table(NULL, false);
-  state.symbol_remove  = sym_push_table(NULL, false);
-  state.section_remove = sym_push_table(NULL, false);
+  state.symbol_keep    = gp_sym_push_table(NULL, false);
+  state.symbol_remove  = gp_sym_push_table(NULL, false);
+  state.section_remove = gp_sym_push_table(NULL, false);
 
   /* Scan through the options for the --strict-options flag. */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {

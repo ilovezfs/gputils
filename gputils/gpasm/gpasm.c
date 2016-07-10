@@ -587,7 +587,7 @@ process_args(int argc, char *argv[])
   optind = 1;
 
   /* initalize the defines table for command line arguments */
-  state.stDefines = sym_push_table(NULL, state.case_insensitive);
+  state.stDefines = gp_sym_push_table(NULL, state.case_insensitive);
 
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
@@ -632,14 +632,14 @@ process_args(int argc, char *argv[])
           rhs++;        /* right-hand side begins after the '=' */
         }
 
-        sym = sym_get_symbol(state.stDefines, lhs);
+        sym = gp_sym_get_symbol(state.stDefines, lhs);
 
         if (sym == NULL) {
-          sym = sym_add_symbol(state.stDefines, lhs);
+          sym = gp_sym_add_symbol(state.stDefines, lhs);
         }
 
         if (rhs != NULL) {
-          sym_annotate_symbol(sym, mk_list(mk_string(rhs), NULL));
+          gp_sym_annotate_symbol(sym, mk_list(mk_string(rhs), NULL));
         }
       }
       break;
@@ -976,13 +976,13 @@ assemble(void)
   }
 
   /* Builtins are always case insensitive. */
-  state.stBuiltin     = sym_push_table(NULL, true);
+  state.stBuiltin     = gp_sym_push_table(NULL, true);
   state.stDirective   = state.stBuiltin;
-  state.stMacros      = sym_push_table(NULL, state.case_insensitive);
-  state.stTop         = sym_push_table(NULL, state.case_insensitive);
+  state.stMacros      = gp_sym_push_table(NULL, state.case_insensitive);
+  state.stTop         = gp_sym_push_table(NULL, state.case_insensitive);
   state.stGlobal      = state.stTop;
-  state.stDefines     = sym_push_table(cmd_defines, state.case_insensitive);
-  state.stMacroParams = sym_push_table(NULL, state.case_insensitive);
+  state.stDefines     = gp_sym_push_table(cmd_defines, state.case_insensitive);
+  state.stMacroParams = gp_sym_push_table(NULL, state.case_insensitive);
   opcode_init(0);
 
   /* The tables are built, select the processor if -p was used. */
@@ -1005,9 +1005,9 @@ assemble(void)
   state.cblock_defined     = false;
   state.preproc.do_emit    = true;
   /* clean out defines for second pass */
-  state.stMacros           = sym_push_table(NULL, state.case_insensitive);
-  state.stDefines          = sym_push_table(cmd_defines, state.case_insensitive);
-  state.stMacroParams      = sym_push_table(NULL, state.case_insensitive);
+  state.stMacros           = gp_sym_push_table(NULL, state.case_insensitive);
+  state.stDefines          = gp_sym_push_table(cmd_defines, state.case_insensitive);
+  state.stMacroParams      = gp_sym_push_table(NULL, state.case_insensitive);
   purge_temp_symbols(state.stTop);
   purge_processor_const_symbols(state.stTop);
 
@@ -1068,7 +1068,7 @@ assemble(void)
     }
   }
 
-  sym_pop_table(state.stBuiltin);
+  gp_sym_pop_table(state.stBuiltin);
 
   hex_init();
 

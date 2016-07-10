@@ -70,8 +70,8 @@ exp:
   {
     symbol_t *sym;
 
-    if ((sym = sym_get_symbol(state.stTop, $1)) != NULL) {
-      variable_t *var = sym_get_symbol_annotation(sym);
+    if ((sym = gp_sym_get_symbol(state.stTop, $1)) != NULL) {
+      variable_t *var = gp_sym_get_symbol_annotation(sym);
       assert(var != NULL);
       $$ = var->value;
     }
