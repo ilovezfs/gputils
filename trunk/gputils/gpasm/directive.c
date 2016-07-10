@@ -5199,15 +5199,11 @@ _msg_ram_bank(int Reg_address, const char *Reg_name, int Bank_number)
   int            code;
   int            word_digits;
 
-  if (state.strict_level <= 0) {
-    return;
-  }
-
   if (Bank_number < 0) {
     Bank_number = 0;
   }
 
-  if (state.mpasm_compatible) {
+  if ((state.mpasm_compatible) || (state.strict_level == 0)) {
     msg  = gpmsg_vmessage;
     code = GPM_BANK;
   }

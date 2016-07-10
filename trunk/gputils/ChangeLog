@@ -1,4 +1,8 @@
 2016-07-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
+    bugfix
+
+2016-07-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/directive.c, gpasm/gpmsg.c, gpasm/gpmsg.h:
     Use this new codes: GPW_BANK, GPE_BANK
 
