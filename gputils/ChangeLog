@@ -1,4 +1,10 @@
 2016-07-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpmsg.c, gpasm/gpmsg.h:
+    New "message" codes:
+	GPM_EXT_BANK
+	GPM_EXT_PAGE2
+
+2016-07-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/lst.c:
     In the gpasm mode shows more talkative symbol list.
 

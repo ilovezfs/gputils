@@ -333,7 +333,7 @@ _get_message(int Code)
       return "Macro expansion superseded by command line value.";
     case GPM_SUPRAM:
       return "Superseding current maximum RAM and RAM map.";
-    case GPM_EXTPAGE:
+    case GPM_EXT_PAGE:
       return "Page or Bank selection not needed for this device. No code generated.";
     case GPM_CBLOCK:
       return "CBLOCK constants will start with a value of 0.";
@@ -346,6 +346,10 @@ _get_message(int Code)
       return "Using default access of 0 (Access Bank):";
     case GPM_NOB:
       return "RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank %u from now on.";
+    case GPM_EXT_BANK:
+      return "Bank selection not needed for this device. No code generated.";
+    case GPM_EXT_PAGE2:
+      return "Page selection not needed for this device. No code generated.";
 
     case GPM_UNKNOWN:
     default:

@@ -106,7 +106,7 @@ enum GPE_codes {
 #define GMSG_ERR_LEVEL0_MAX     GPE_UNKNOWN
 
 #define GMSG_ERR_LEVEL1_MIN     GPE_IDLOCS_P16E
-#define GMSG_ERR_LEVEL1_MAX     GPE_NO_ACCRAM
+#define GMSG_ERR_LEVEL1_MAX     GPE_BANK
 
 /* Warning codes
  *
@@ -172,22 +172,24 @@ enum GPM_codes {
   GPM_SUPVAL           = 308,
   GPM_SUPLIN           = 309,
   GPM_SUPRAM           = 310,
-  GPM_EXTPAGE          = 312,
+  GPM_EXT_PAGE         = 312,
   GPM_CBLOCK           = 313,
   GPM_W_MODIFIED       = 316,
   GPM_SPECIAL_MNEMONIC = 318,
   GPM_UNKNOWN          = 319,
 
-  /* gputils special errors */
+  /* gputils special messages */
   GPM_ACC_DEF          = 1301,
-  GPM_NOB              = 1302
+  GPM_NOB              = 1302,
+  GPM_EXT_BANK         = 1303,
+  GPM_EXT_PAGE2        = 1304
 };
 
 #define GMSG_MSG_LEVEL0_MIN     GPM_USER
 #define GMSG_MSG_LEVEL0_MAX     GPM_UNKNOWN
 
 #define GMSG_MSG_LEVEL1_MIN     GPM_ACC_DEF
-#define GMSG_MSG_LEVEL1_MAX     GPM_NOB
+#define GMSG_MSG_LEVEL1_MAX     GPM_EXT_PAGE2
 
 extern void gpmsg_init(void);
 extern void gpmsg_close(void);
