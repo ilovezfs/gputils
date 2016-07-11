@@ -743,10 +743,11 @@ _symbol_table_header(void)
   lst_line("SYMBOL TABLE");
 
   if (!state.mpasm_compatible) {
-    lst_line("%-32s  %-8s  %-8s", "  LABEL", "  TYPE", "     VALUE");
+    lst_line("%-32s  %-10s  %-8s    %-11s", "  LABEL", "   TYPE", "   VALUE", "     VALUE");
+    lst_line("%-32s  %-10s  %-8s    %-11s", "",        "",        "   (hex)", "     (dec)");
   }
   else {
-    lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
+    lst_line("%-32s  %-8s", "  LABEL", " VALUE");
   }
 }
 
@@ -1238,7 +1239,7 @@ lst_symbol_table(void)
 
         if (!state.mpasm_compatible) {
           if (var != NULL) {
-            lst_line("%-32s  %-10s    %08X", name, value_type_to_str(var, false), var->value);
+            lst_line("%-32s  %-10s    %08X    %11d", name, value_type_to_str(var, false), var->value, var->value);
           }
           else {
             lst_line("%-32s", name);

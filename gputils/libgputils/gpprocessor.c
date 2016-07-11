@@ -3264,8 +3264,8 @@ const struct proc_class proc_class_generic = {
   PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC12_PC_MASK,                        /* pc_mask */
-  ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
-  ~(PIC12_BANK_SIZE - 1),               /* bank_mask */
+  PIC12_PAGE_MASK,                      /* page_mask */
+  PIC12_BANK_MASK,                      /* bank_mask */
   PIC12_CORE_MASK,                      /* core_mask */
   (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
@@ -3310,8 +3310,8 @@ const struct proc_class proc_class_pic12 = {
   PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC12_PC_MASK,                        /* pc_mask */
-  ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
-  ~(PIC12_BANK_SIZE - 1),               /* bank_mask */
+  PIC12_PAGE_MASK,                      /* page_mask */
+  PIC12_BANK_MASK,                      /* bank_mask */
   PIC12_CORE_MASK,                      /* core_mask */
   (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
@@ -3356,8 +3356,8 @@ const struct proc_class proc_class_pic12e = {
   PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC12_PC_MASK,                        /* pc_mask */
-  ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
-  ~(PIC12_BANK_SIZE - 1),               /* bank_mask */
+  PIC12_PAGE_MASK,                      /* page_mask */
+  PIC12_BANK_MASK,                      /* bank_mask */
   PIC12_CORE_MASK,                      /* core_mask */
   (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
@@ -3402,8 +3402,8 @@ const struct proc_class proc_class_pic12i = {
   PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC12_PC_MASK,                        /* pc_mask */
-  ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
-  ~(PIC12_BANK_SIZE - 1),               /* bank_mask */
+  PIC12_PAGE_MASK,                      /* page_mask */
+  PIC12_BANK_MASK,                      /* bank_mask */
   PIC12_CORE_MASK,                      /* core_mask */
   (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
@@ -3448,8 +3448,8 @@ const struct proc_class proc_class_sx = {
   PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   SX_PC_MASK,                           /* pc_mask */
-  ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
-  ~(PIC12_BANK_SIZE - 1),               /* bank_mask */
+  PIC12_PAGE_MASK,                      /* page_mask */
+  PIC12_BANK_MASK,                      /* bank_mask */
   PIC12_CORE_MASK,                      /* core_mask */
   (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
@@ -3494,8 +3494,8 @@ const struct proc_class proc_class_pic14 = {
   PIC14_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC14_PC_MASK,                        /* pc_mask */
-  ~(PIC14_PAGE_SIZE - 1),               /* page_mask */
-  ~(PIC14_BANK_SIZE - 1),               /* bank_mask */
+  PIC14_PAGE_MASK,                      /* page_mask */
+  PIC14_BANK_MASK,                      /* bank_mask */
   PIC14_CORE_MASK,                      /* core_mask */
   (1 << 14) - 1,                        /* config_mask */
   4,                                    /* addr_digits */
@@ -3540,8 +3540,8 @@ const struct proc_class proc_class_pic14e = {
   PIC14_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC14E_PC_MASK,                       /* pc_mask */
-  ~(PIC14_PAGE_SIZE - 1),               /* page_mask */
-  ~(PIC14_BANK_SIZE - 1),               /* bank_mask */
+  PIC14_PAGE_MASK,                      /* page_mask */
+  PIC14_BANK_MASK,                      /* bank_mask */
   PIC14_CORE_MASK,                      /* core_mask */
   (1 << 16) - 1,                        /* config_mask */
   4,                                    /* addr_digits */
@@ -3586,8 +3586,8 @@ const struct proc_class proc_class_pic14ex = {
   PIC14_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC14E_PC_MASK,                       /* pc_mask */
-  ~(PIC14_PAGE_SIZE - 1),               /* page_mask */
-  ~(PIC14_BANK_SIZE - 1),               /* bank_mask */
+  PIC14_PAGE_MASK,                      /* page_mask */
+  PIC14_BANK_MASK,                      /* bank_mask */
   PIC14_CORE_MASK,                      /* core_mask */
   (1 << 16) - 1,                        /* config_mask */
   4,                                    /* addr_digits */
@@ -3632,8 +3632,8 @@ const struct proc_class proc_class_pic16 = {
   PIC16_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   0,                                    /* pc_mask */
-  0,                                    /* page_mask */
-  ~(PIC16_BANK_SIZE - 1),               /* bank_mask */
+  PIC16_PAGE_MASK,                      /* page_mask */
+  PIC16_BANK_MASK,                      /* bank_mask */
   PIC16_CORE_MASK,                      /* core_mask */
   (1 << 8) - 1,                         /* config_mask */
   6,                                    /* addr_digits */
@@ -3679,7 +3679,7 @@ const struct proc_class proc_class_pic16e = {
   0,                                    /* org_to_byte_shift */
   0,                                    /* pc_mask */
   0,                                    /* page_mask */
-  ~(PIC16_BANK_SIZE - 1),               /* bank_mask */
+  PIC16_BANK_MASK,                      /* bank_mask */
   PIC16_CORE_MASK,                      /* core_mask */
   (1 << 8) - 1,                         /* config_mask */
   6,                                    /* addr_digits */
