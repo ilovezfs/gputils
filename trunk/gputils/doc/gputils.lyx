@@ -4692,12 +4692,21 @@ __BANK_MASK         -- These bits give the address of a register within
 \end_layout
 
 \begin_layout LyX-Code
+__BANK_SHIFT        -- This is shift value of bank number in full RAM address.
+\end_layout
+
+\begin_layout LyX-Code
+                       (e.g.
+ 12 bit core: 5; 14 bit core: 7; 16 bit core: 8)
+\end_layout
+
+\begin_layout LyX-Code
 __BANK_SIZE         -- This is a RAM Bank size.
 \end_layout
 
 \begin_layout LyX-Code
                        (e.g.
- 32 {0x20}, 128 {0x80}, 256 {0x100})
+ 32 {0x20}, 128 {0x80}, 256 {0x100}) -- (1 << __BANK_SHIFT)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4758,12 +4767,21 @@ __PAGE_MASK         -- These bits give the address of an instruction within
 \end_layout
 
 \begin_layout LyX-Code
+__PAGE_SHIFT        -- This is shift value of page number in full ROM address.
+\end_layout
+
+\begin_layout LyX-Code
+                       (e.g.
+ 12 bit core: 9; 14 bit core: 11; 16 bit old core: 13)
+\end_layout
+
+\begin_layout LyX-Code
 __PAGE_SIZE         -- This is a ROM Page size.
 \end_layout
 
 \begin_layout LyX-Code
                        (e.g.
- 512 {0x200}, 2048 {0x800})
+ 512 {0x200}, 2048 {0x800}) -- (1 << __PAGE_SHIFT)
 \end_layout
 
 \begin_layout LyX-Code

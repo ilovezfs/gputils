@@ -202,7 +202,7 @@ eval_can_evaluate_value(const pnode_t *Pnode)
       }
 
       switch (var->type) {
-        case VAL_EXTERN:
+        case VAL_EXTERNAL:
         case VAL_GLOBAL:
         case VAL_STATIC:
         case VAL_ABSOLUTE:
@@ -527,7 +527,7 @@ eval_count_reloc(const pnode_t *Pnode)
 
         if (var != NULL) {
           switch (var->type) {
-            case VAL_EXTERN:
+            case VAL_EXTERNAL:
             case VAL_GLOBAL:
             case VAL_STATIC:
             case VAL_ADDRESS:
@@ -567,12 +567,12 @@ eval_count_reloc(const pnode_t *Pnode)
 static gpasmVal
 _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
 {
-  const symbol_t   *sym;
-  const variable_t *var;
-  char              buffer[BUFSIZ];
-  int               digits;
-  unsigned int      org;
-  enum globalLife   life;
+  const symbol_t     *sym;
+  const variable_t   *var;
+  char                buffer[BUFSIZ];
+  int                 digits;
+  unsigned int        org;
+  enum gpasmValTypes  type;
 
   switch (Pnode->tag) {
     case PTAG_OFFSET:
@@ -584,18 +584,18 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
         if (IS_RAM_ORG) {
           digits = state.device.class->word_digits;
           org    = state.byte_addr;
-          life   = VAL_STATIC;
+          type   = VAL_STATIC;
         }
         else {
           digits = state.device.class->addr_digits;
           org    = gp_processor_byte_to_real(state.processor, state.byte_addr);
-          life   = VAL_ADDRESS;
+          type   = VAL_ADDRESS;
         }
 
         snprintf(buffer, sizeof(buffer), "_%s_%0*X", state.obj.new_sect_name, digits, org);
         /* RELOCT_ACCESS has always also RELOCT_F, which has already created this symbol. */
         if (Type != RELOCT_ACCESS) {
-          set_global(buffer, org, LFT_PERMANENT, life, false);
+          set_global(buffer, org, type, false);
         }
 
         sym = gp_sym_get_symbol(state.stTop, buffer);
@@ -609,7 +609,7 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
 
         if (var != NULL) {
           switch (var->type) {
-            case VAL_EXTERN:
+            case VAL_EXTERNAL:
             case VAL_GLOBAL:
             case VAL_STATIC:
             case VAL_ADDRESS:

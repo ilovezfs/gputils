@@ -413,8 +413,7 @@ coerce_str1(pnode_t *exp)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpasmValTypes type,
-           gp_boolean procDependent)
+set_global(const char *name, gpasmVal value, enum gpasmValTypes type, gp_boolean procDependent)
 {
   symbol_t   *sym;
   variable_t *var;
@@ -438,13 +437,12 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
     var->coff_section_flags = state.obj.new_sect_flags;
     var->type               = type;
     var->previous_type      = type;  /* coff symbols can be changed to global */
-    var->lifetime           = lifetime;
     var->isProcDependent    = procDependent;
     gp_sym_annotate_symbol(sym, var);
 
     /* increment the index into the coff symbol table for the relocations */
     switch (type) {
-      case VAL_EXTERN:
+      case VAL_EXTERNAL:
       case VAL_GLOBAL:
       case VAL_STATIC:
       case VAL_ADDRESS:
@@ -457,7 +455,7 @@ set_global(const char *name, gpasmVal value, enum globalLife lifetime, enum gpas
         break;
     }
   }
-  else if (lifetime == LFT_TEMPORARY) {
+  else if (type == VAL_VARIABLE) {
     /*
      * TSD - the following embarrassing piece of code is a hack
      *       to fix a problem when global variables are changed
@@ -498,7 +496,7 @@ get_global_constant(const char *Name)
 
   if (((sym = gp_sym_get_symbol(state.stGlobal, Name)) != NULL) &&
       ((var = gp_sym_get_symbol_annotation(sym)) != NULL) &&
-      (var->type == VAL_CONSTANT)) {
+      ((var->type == VAL_CONSTANT) || (var->type == VAL_VARIABLE))) {
     return var;
   }
 
@@ -524,7 +522,7 @@ purge_temp_symbols(symbol_table_t *Table)
 
     var = (variable_t *)gp_sym_get_symbol_annotation(sym);
 
-    if ((var != NULL) && (var->lifetime == LFT_TEMPORARY)) {
+    if ((var != NULL) && (var->type == VAL_VARIABLE)) {
       gp_sym_remove_symbol_with_index(Table, i);
     }
     else {
@@ -554,8 +552,7 @@ purge_processor_const_symbols(symbol_table_t *Table)
 
     var = (variable_t *)gp_sym_get_symbol_annotation(sym);
 
-    if ((var != NULL) && (var->lifetime == LFT_PERMANENT) && (var->type == VAL_CONSTANT) &&
-        var->isProcDependent) {
+    if ((var != NULL) && (var->type == VAL_VARIABLE) && var->isProcDependent) {
       gp_sym_remove_symbol_with_index(Table, i);
     }
     else {
@@ -771,6 +768,33 @@ do_or_append_insn(const char *op, pnode_t *parms)
   }
 }
 
+
+/*------------------------------------------------------------------------------------------------*/
+
+const char *
+value_type_to_str(const variable_t *Variable, gp_boolean Previous)
+{
+  enum gpasmValTypes type;
+
+  if (Variable == NULL) {
+    return NULL;
+  }
+
+  type = (Previous) ? Variable->previous_type : Variable->type;
+
+  switch (type) {
+    case VAL_CONSTANT: return "CONSTANT";
+    case VAL_VARIABLE: return "VARIABLE";
+    case VAL_ADDRESS:  return "ADDRESS";
+    case VAL_CBLOCK:   return "CBLOCK";
+    case VAL_EXTERNAL: return "EXTERNAL";
+    case VAL_GLOBAL:   return "GLOBAL";
+    case VAL_STATIC:   return "STATIC";
+    case VAL_ABSOLUTE: return "ABSOLUTE";
+    case VAL_DEBUG:    return "DEBUG";
+    default:           return "UNKNOWN";
+  }
+}
 
 /*------------------------------------------------------------------------------------------------*/
 

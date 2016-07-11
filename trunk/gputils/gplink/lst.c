@@ -84,8 +84,8 @@ _open_source(const char *name, gp_symbol_t *symbol)
   else {
     new->missing_source = true;
 
-    if (getenv("GPUTILS_WARN_MISSING_SRC")) {
-      gp_warning("Cannot find source file \"%s\".", name);
+    if (getenv("GPUTILS_WARN_MISSING_SRC") != NULL) {
+      gp_warning("Cannot find source file: \"%s\"", name);
     }
   }
 

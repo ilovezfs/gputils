@@ -1,3 +1,29 @@
+2016-07-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/processor.c:
+    New constants: __BANK_SHIFT, __PAGE_SHIFT
+
+  * gpasm/lst.c:
+    In the gpasm mode shows talkative symbol list.
+
+  * gpasm/cod.c, gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c,
+    gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/lst.c, gpasm/parse.y,
+    gpasm/processor.c, gpasm/util.c:
+    Deleted definitions:
+	LFT_TEMPORARY, LFT_PERMANENT
+    New definition:
+	VAL_VARIABLE
+    Changed this definition name:
+	VAL_EXTERN --> VAL_EXTERNAL
+
+  * gpasm/gpasm.h.in, gpasm/util.c:
+    New function: value_type_to_str
+
+  * gplink/lst.c:
+    Minor optimization.
+
+  * gputils/dump.c:
+    Code formatting.
+
 2016-07-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
     revert bugfix (This is no bug.)
@@ -11,7 +37,7 @@
     Use this new codes: GPW_BANK, GPE_BANK
 
 2016-07-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
-  * gpasm/cod.c, gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c
+  * gpasm/cod.c, gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c,
     gpasm/gpasm.c, gpasm/lst.c, gpasm/macro.c, gpasm/parse.y,
     gpasm/ppparse.y, gpasm/preprocess.c, gpasm/processor.c,
     gpasm/scan.l, gpasm/util.c, gplink/cod.c, gplink/gplink.c,

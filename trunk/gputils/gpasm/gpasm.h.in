@@ -50,9 +50,10 @@ Boston, MA 02111-1307, USA.  */
 
 enum gpasmValTypes {
   VAL_CONSTANT,
+  VAL_VARIABLE,
   VAL_ADDRESS,
   VAL_CBLOCK,
-  VAL_EXTERN,
+  VAL_EXTERNAL,
   VAL_GLOBAL,
   VAL_STATIC,
   VAL_ABSOLUTE,
@@ -300,11 +301,6 @@ extern struct gpasm_state {
   } next_buffer;
 } state;
 
-enum globalLife {
-  LFT_TEMPORARY,
-  LFT_PERMANENT
-};
-
 typedef struct variable {
   gpasmVal            value;
   unsigned int        coff_symbol_num;
@@ -312,8 +308,7 @@ typedef struct variable {
   unsigned int        coff_section_flags;
   enum gpasmValTypes  type;
   enum gpasmValTypes  previous_type;    /* Can change from static to global. */
-  enum globalLife     lifetime;
-  gp_boolean          isProcDependent;  /* True if this a processor constant. */
+  gp_boolean          isProcDependent;  /* True if this a processor value (VAL_CONSTANT or VAL_VARIABLE). */
 } variable_t;
 
 /************************************************************************/
@@ -425,8 +420,8 @@ extern char *convert_escaped_char(char *str, char c);
 extern void coerce_str1(pnode_t *exp);
 extern gpasmVal do_or_append_insn(const char *op, pnode_t *parms);
 
-extern void set_global(const char *name, gpasmVal value, enum globalLife lifetime,
-                       enum gpasmValTypes type, gp_boolean procDependent);
+extern void set_global(const char *name, gpasmVal value, enum gpasmValTypes type,
+                       gp_boolean procDependent);
 
 extern variable_t *get_global_constant(const char *Name);
 extern void purge_temp_symbols(symbol_table_t *Table);
@@ -441,6 +436,7 @@ extern void pnode_print(const pnode_t *Pnode, FILE *Out);
 extern void pnode_print_chain(const pnode_t *Pnode, unsigned int Level, FILE *Out);
 extern void variable_print(const variable_t *Variable, FILE *Out);
 /* END OF DEBUG CODE LINES */
+extern const char *value_type_to_str(const variable_t *Variable, gp_boolean Previous);
 extern const char *pnode_symbol_name(const pnode_t *Pnode);
 extern gpasmVal pnode_symbol_value(const pnode_t *Pnode);
 extern const char *pnode_string(const pnode_t *Pnode);

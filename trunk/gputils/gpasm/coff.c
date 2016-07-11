@@ -393,7 +393,7 @@ coff_add_sym(const char *Name, gp_symvalue_t Value, enum gpasmValTypes Type)
   }
 
   switch (Type) {
-    case VAL_EXTERN:
+    case VAL_EXTERNAL:
       section_number = N_UNDEF;
       class          = C_EXT;
       break;
@@ -430,7 +430,7 @@ coff_add_sym(const char *Name, gp_symvalue_t Value, enum gpasmValTypes Type)
   new = gp_coffgen_find_symbol(state.obj.object, Name);
 
   /* verify the duplicate extern has the same properties */
-  if ((new != NULL) && (Type == VAL_EXTERN))  {
+  if ((new != NULL) && (Type == VAL_EXTERNAL))  {
     if ((new->type != Type) || (new->class != class) || (new->section_number != section_number)) {
       snprintf(message, sizeof(message),
                "Duplicate label or redefining symbol that cannot be redefined. (%s)", Name);
@@ -438,7 +438,7 @@ coff_add_sym(const char *Name, gp_symvalue_t Value, enum gpasmValTypes Type)
     }
   }
 
-  if ((new != NULL) && (Type != VAL_EXTERN) && (Type != VAL_DEBUG))  {
+  if ((new != NULL) && (Type != VAL_EXTERNAL) && (Type != VAL_DEBUG))  {
     snprintf(message, sizeof(message),
              "Duplicate label or redefining symbol that cannot be redefined. (%s)", Name);
     gpmsg_error(GPE_DUPLAB, message);
