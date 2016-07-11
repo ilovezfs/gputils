@@ -654,7 +654,12 @@ _do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   if (((!IS_PIC14_CORE) && (!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE) && (!IS_PIC16_CORE)) ||
       (state.processor->num_banks == 1)) {
     state.lst.line.linetype = LTY_NONE;
-    gpmsg_vmessage(GPM_EXTPAGE, NULL);
+    if (!state.mpasm_compatible) {
+      gpmsg_vmessage(GPM_EXT_BANK, NULL);
+    }
+    else {
+      gpmsg_vmessage(GPM_EXT_PAGE, NULL);
+    }
     return Value;
   }
 
@@ -738,10 +743,13 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
   if (state.processor->num_banks == 1) {
     state.lst.line.linetype = LTY_NONE;
-    gpmsg_vmessage(GPM_EXTPAGE, NULL);
     /* do nothing */
     if (!state.mpasm_compatible) {
+      gpmsg_vmessage(GPM_EXT_BANK, NULL);
       set_global(GLOBAL_ACT_BANK_ADDR, 0, VAL_VARIABLE, true);
+    }
+    else {
+      gpmsg_vmessage(GPM_EXT_PAGE, NULL);
     }
 
     return Value;
@@ -4134,7 +4142,13 @@ _do_pagesel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms, uint16_
 
   if (IS_EEPROM8 || IS_EEPROM16 || IS_PIC16E_CORE || (state.processor->num_pages == 1)) {
     state.lst.line.linetype = LTY_NONE;
-    gpmsg_vmessage(GPM_EXTPAGE, NULL);
+    if (!state.mpasm_compatible) {
+      gpmsg_vmessage(GPM_EXT_PAGE2, NULL);
+    }
+    else {
+      gpmsg_vmessage(GPM_EXT_PAGE, NULL);
+    }
+
     return Value;
   }
 

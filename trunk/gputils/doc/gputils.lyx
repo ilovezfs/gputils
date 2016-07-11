@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 10
+2016 Jul 11
 \end_layout
 
 \begin_layout Standard
@@ -12739,6 +12739,22 @@ Using special instruction mnemonic which may map to one or several instructions.
 \begin_layout Description
 1302 RAM Bank undefined in this chunk of code.
  Ensure that bank bits are correct.
+\end_layout
+
+\begin_layout Description
+1303 Bank selection not needed for this device.
+\end_layout
+
+\begin_layout Standard
+This device does not use special bank selection code.
+\end_layout
+
+\begin_layout Description
+1304 Page selection not needed for this device.
+\end_layout
+
+\begin_layout Standard
+This device does not use special page selection code.
 \end_layout
 
 \begin_layout Chapter
