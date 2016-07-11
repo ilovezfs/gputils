@@ -402,6 +402,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
         break;
 
       case VAL_CONSTANT:
+      case VAL_VARIABLE:
       default:
         type = COD_ST_CONSTANT;
     }

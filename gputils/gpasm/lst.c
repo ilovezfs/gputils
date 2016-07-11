@@ -49,7 +49,7 @@ typedef struct {
   const symbol_t *sym;
   enum lst_sym_type_e {
     LST_SYMBOL,
-    LST_DEFINE,
+    LST_DEFINITION,
     LST_MACRO
   } type;
 } lst_symbol_t;
@@ -737,24 +737,38 @@ lst_throw(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
+static void
+_symbol_table_header(void)
+{
+  lst_line("SYMBOL TABLE");
+
+  if (!state.mpasm_compatible) {
+    lst_line("%-32s  %-8s  %-8s", "  LABEL", "  TYPE", "     VALUE");
+  }
+  else {
+    lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
 lst_page_start(void)
 {
   lst_throw();
   switch (state.lst.lst_state) {
-  case LST_IN_MEM:
-    lst_line("LOC    OBJECT CODE    LINE  SOURCE TEXT");
-    lst_line("  VALUE");
-    break;
+    case LST_IN_MEM:
+      lst_line("LOC    OBJECT CODE    LINE  SOURCE TEXT");
+      lst_line("  VALUE");
+      break;
 
-  case LST_IN_SYMTAB:
-    lst_line("SYMBOL TABLE");
-    lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
-    break;
+    case LST_IN_SYMTAB:
+      _symbol_table_header();
+      break;
 
-  default:
-    lst_line(NULL);
-    break;
+    default:
+      lst_line(NULL);
+      break;
   }
 
   lst_line(NULL);
@@ -1138,7 +1152,9 @@ _lst_symbol_cmp(const void *p0, const void *p1)
 void
 lst_symbol_table(void)
 {
-  const pnode_t   *p0;
+  const pnode_t   *list;
+  const pnode_t   *head;
+  const char      *string;
   const symbol_t **clone;
   size_t           sym_count;
   lst_symbol_t    *lst;
@@ -1150,8 +1166,8 @@ lst_symbol_table(void)
 
   state.lst.lst_state = LST_IN_SYMTAB;
 
-  lst_line("SYMBOL TABLE");
-  lst_line("  LABEL                             VALUE");
+  _symbol_table_header();
+
   lst_line(NULL);
 
   _cod_symbol_table();
@@ -1181,7 +1197,7 @@ lst_symbol_table(void)
     sym_count = gp_sym_get_symbol_count(state.stDefines);
     for (i = 0; i < sym_count; i++) {
       ps->sym  = clone[i];
-      ps->type = LST_DEFINE;
+      ps->type = LST_DEFINITION;
       ++ps;
     }
 
@@ -1214,28 +1230,65 @@ lst_symbol_table(void)
     ptr  = gp_sym_get_symbol_annotation(lst[i].sym);
 
     switch (lst[i].type) {
-      case LST_SYMBOL:
+      case LST_SYMBOL: {
         /* symbol */
-        lst_line("%-32s  %08X", name, (ptr != NULL) ? ((const variable_t *)ptr)->value : 0);
-        break;
+        const variable_t *var;
 
-      case LST_DEFINE: {
-        /* define */
-        p0 = (const pnode_t *)ptr;
+        var = (const variable_t *)ptr;
 
-        if (p0 != NULL) {
-          assert(PnIsList(p0));
-          assert(PnIsString(PnListHead(p0)));
+        if (!state.mpasm_compatible) {
+          if (var != NULL) {
+            lst_line("%-32s  %-10s    %08X", name, value_type_to_str(var, false), var->value);
+          }
+          else {
+            lst_line("%-32s", name);
+          }
         }
-
-        lst_line("%-32s  %s", name, (p0 != NULL) ? PnString(PnListHead(p0)) : "");
+        else {
+          lst_line("%-32s  %08X", name, (var != NULL) ? var->value : 0);
+        }
         break;
       }
 
-      case LST_MACRO:
+      case LST_DEFINITION: {
         /* define */
-        lst_line("%-32s  ", name);
+        list = (const pnode_t *)ptr;
+
+        if (list != NULL) {
+          assert(PnIsList(list));
+          head = PnListHead(list);
+
+          assert(PnIsString(head));
+          string = PnString(head);
+        }
+        else {
+          string = NULL;
+        }
+
+        if (!state.mpasm_compatible) {
+          if (string != NULL) {
+            lst_line("%-32s  %-10s    %s", name, "DEFINITION", string);
+          }
+          else {
+            lst_line("%-32s  %-10s", name, "DEFINITION");
+          }
+        }
+        else {
+          lst_line("%-32s  %s", name, (string != NULL) ? string : "");
+        }
         break;
+      }
+
+      case LST_MACRO: {
+        /* define */
+        if (!state.mpasm_compatible) {
+          lst_line("%-32s  %-10s", name, "MACRO");
+        }
+        else {
+          lst_line("%-32s", name);
+        }
+        break;
+      }
     }
   }
 

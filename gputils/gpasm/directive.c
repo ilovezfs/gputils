@@ -741,7 +741,7 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_vmessage(GPM_EXTPAGE, NULL);
     /* do nothing */
     if (!state.mpasm_compatible) {
-      set_global(GLOBAL_ACT_BANK_ADDR, 0, LFT_TEMPORARY, VAL_CONSTANT, true);
+      set_global(GLOBAL_ACT_BANK_ADDR, 0, VAL_VARIABLE, true);
     }
 
     return Value;
@@ -834,10 +834,10 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   if ((!state.mpasm_compatible) && bank_var) {
     if (bank >= 0) {
       address = gp_processor_bank_num_to_addr(state.processor, bank);
-      set_global(GLOBAL_ACT_BANK_ADDR, address, LFT_TEMPORARY, VAL_CONSTANT, true);
+      set_global(GLOBAL_ACT_BANK_ADDR, address, VAL_VARIABLE, true);
     }
     else {
-      set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, VAL_CONSTANT, true);
+      set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, VAL_VARIABLE, true);
     }
   }
 
@@ -963,7 +963,7 @@ _do_constant(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
         val = eval_maybe_evaluate(PnBinOpP1(p));
         /* put the symbol and value in the table*/
-        set_global(lhs, val, LFT_PERMANENT, VAL_CONSTANT, false);
+        set_global(lhs, val, VAL_CONSTANT, false);
 
         if (first) {
           Value = val;
@@ -1998,7 +1998,7 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
             value = 0;
           }
           else if (strcasecmp(str, "extern") == 0) {
-            type  = VAL_EXTERN;
+            type  = VAL_EXTERNAL;
             value = 0;
           }
           else if (strcasecmp(str, "global") == 0) {
@@ -2017,7 +2017,7 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     }
   }
 
-  set_global(symbol_name, value, LFT_PERMANENT, type, false);
+  set_global(symbol_name, value, type, false);
 
   /* update the symbol with the values */
   if ((state.pass == 2) && (new_class || new_type)) {
@@ -2878,7 +2878,7 @@ _do_extern(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       p = PnSymbol(PnListHead(Parms));
 
       if (p != NULL) {
-        set_global(p, 0, LFT_PERMANENT, VAL_EXTERN, false);
+        set_global(p, 0, VAL_EXTERNAL, false);
       }
     }
   }
@@ -2983,7 +2983,7 @@ _do_global(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
               /* make the symbol global */
               var->type = VAL_GLOBAL;
             }
-            else if (var->previous_type == VAL_EXTERN) {
+            else if (var->previous_type == VAL_EXTERNAL) {
               gpmsg_verror(GPE_DUPLAB, NULL, s);
             }
             else {
@@ -3875,7 +3875,7 @@ _do_local(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           val = eval_maybe_evaluate(PnBinOpP1(p));
           /* put the symbol and value in the TOP table*/
           gp_sym_add_symbol(state.stTop, lhs);
-          set_global(lhs, val, LFT_TEMPORARY, VAL_CONSTANT, false);
+          set_global(lhs, val, VAL_VARIABLE, false);
 
           if (first) {
             Value = val;
@@ -4152,7 +4152,7 @@ _do_pagesel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms, uint16_
                                                state.i_memory, state.byte_addr, use_wreg);
       if (!state.mpasm_compatible) {
         set_global(GLOBAL_ACT_PAGE_ADDR, gp_processor_page_bits_to_addr(class, page),
-                   LFT_TEMPORARY, VAL_CONSTANT, true);
+                   VAL_VARIABLE, true);
       }
     }
     else {
@@ -4715,7 +4715,7 @@ _do_variable(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         lhs = PnSymbol(PnBinOpP0(p));
         val = eval_maybe_evaluate(PnBinOpP1(p));
         /* put the symbol and value in the table */
-        set_global(lhs, val, LFT_TEMPORARY, VAL_CONSTANT, false);
+        set_global(lhs, val, VAL_VARIABLE, false);
 
         if (first) {
           Value = val;
@@ -4725,7 +4725,7 @@ _do_variable(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     }
     else if (PnIsSymbol(p)) {
       /* put the symbol with a 0 value in the table */
-      set_global(PnSymbol(p), 0, LFT_TEMPORARY, VAL_CONSTANT, false);
+      set_global(PnSymbol(p), 0, VAL_VARIABLE, false);
 
       if (first) {
         Value = 0;
@@ -5474,7 +5474,7 @@ _reg_addr_check(int Reg_address, const char *Reg_name, unsigned int Insn_flags, 
     }
 
     /* If no bank is explicitly selected, set bank to this register now. */
-    set_global(GLOBAL_ACT_BANK_ADDR, Reg_address, LFT_TEMPORARY, VAL_CONSTANT, true);
+    set_global(GLOBAL_ACT_BANK_ADDR, Reg_address, VAL_VARIABLE, true);
   }
 
   _reg_addr_check_reloc(Reg_address, Reg_name, Insn_flags, Reloc_value, need_bank_check);
@@ -5600,7 +5600,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             bank_num = r & (PIC12E_MASK_MOVLB ^ PIC12_CORE_MASK);
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, VAL_CONSTANT, true);
+                       VAL_VARIABLE, true);
           }
         }
         break;
@@ -5642,7 +5642,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             bank_num = r & (PIC16E_MASK_MOVLB ^ PIC16_CORE_MASK);
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, VAL_CONSTANT, true);
+                       VAL_VARIABLE, true);
           }
         }
         break;
@@ -5682,7 +5682,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             bank_num = r & PIC14E_BMSK_MOVLB;
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, VAL_CONSTANT, true);
+                       VAL_VARIABLE, true);
           }
         }
         break;
@@ -5706,7 +5706,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             bank_num = r & PIC14EX_BMSK_MOVLB;
             set_global(GLOBAL_ACT_BANK_ADDR,
                        gp_processor_bank_num_to_addr(state.processor, bank_num),
-                       LFT_TEMPORARY, VAL_CONSTANT, true);
+                       VAL_VARIABLE, true);
           }
         }
         break;
@@ -5747,7 +5747,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           if (!state.mpasm_compatible) {
             set_global(GLOBAL_ACT_PAGE_ADDR,
                        gp_processor_page_bits_to_addr(class, page),
-                       LFT_TEMPORARY, VAL_CONSTANT, true);
+                       VAL_VARIABLE, true);
           }
         }
         break;
@@ -7490,12 +7490,12 @@ do_insn(const char *Op_name, pnode_t *Parameters)
       if ((!state.mpasm_compatible) && (!state.skipped_inst)) {
         if (ins->inv_mask & INV_MASK_BANK) {
           /* Invalidates the selection of RAM Banks. */
-          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, LFT_TEMPORARY, VAL_CONSTANT, true);
+          set_global(GLOBAL_ACT_BANK_ADDR, GLOBAL_ACT_BANK_INV, VAL_VARIABLE, true);
         }
 
         if (ins->inv_mask & INV_MASK_PAGE) {
           /* Invalidates the selection of ROM Pages. */
-          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, LFT_TEMPORARY, VAL_CONSTANT, true);
+          set_global(GLOBAL_ACT_PAGE_ADDR, GLOBAL_ACT_PAGE_INV, VAL_VARIABLE, true);
         }
       }
 
@@ -7813,7 +7813,7 @@ void
 cblock_expr(const pnode_t *Expr)
 {
   if (asm_enabled()) {
-    set_global(PnSymbol(Expr), state.cblock, LFT_PERMANENT, VAL_CBLOCK, false);
+    set_global(PnSymbol(Expr), state.cblock, VAL_CBLOCK, false);
     state.cblock++;
   }
 }
@@ -7824,7 +7824,7 @@ void
 cblock_expr_incr(const pnode_t *Expr, const pnode_t *Incr)
 {
   if (asm_enabled()) {
-    set_global(PnSymbol(Expr), state.cblock, LFT_PERMANENT, VAL_CBLOCK, false);
+    set_global(PnSymbol(Expr), state.cblock, VAL_CBLOCK, false);
     state.cblock += eval_maybe_evaluate(Incr);
   }
 }

@@ -200,7 +200,7 @@ gpasmVal set_label(const char *label, pnode_t *parms)
 
     value = do_or_append_insn("set", parms);
     if (!IN_MACRO_WHILE_DEFINITION) {
-      set_global(label, value, LFT_TEMPORARY, VAL_CONSTANT, false);
+      set_global(label, value, VAL_VARIABLE, false);
     }
   }
 
@@ -533,12 +533,12 @@ line:
                 break;
 
               case LTY_SET:
-                set_global($1, $2, LFT_TEMPORARY, VAL_CONSTANT, false);
+                set_global($1, $2, VAL_VARIABLE, false);
                 break;
 
               case LTY_ORG:
               case LTY_EQU:
-                set_global($1, $2, LFT_PERMANENT, VAL_CONSTANT, false);
+                set_global($1, $2, VAL_CONSTANT, false);
                 break;
 
               case LTY_INSN:
@@ -550,10 +550,10 @@ line:
                 }
 
                 if (IS_RAM_ORG) {
-                  set_global($1, $2, LFT_PERMANENT, VAL_STATIC, false);
+                  set_global($1, $2, VAL_STATIC, false);
                 }
                 else {
-                  set_global($1, $2, LFT_PERMANENT, VAL_ADDRESS, false);
+                  set_global($1, $2, VAL_ADDRESS, false);
                 }
                 break;
 
