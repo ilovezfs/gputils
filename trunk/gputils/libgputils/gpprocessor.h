@@ -30,6 +30,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define PIC12_BANK_SHIFT            5
 #define PIC12_BANK_SIZE             (1 << PIC12_BANK_SHIFT)             /* 32 */
+#define PIC12_BANK_MASK             (PIC12_BANK_SIZE - 1)
 #define PIC12_RAM_ADDR_BITS         PIC12_BANK_SHIFT
 #define PIC12_BMSK_BANK             0x007
 #define PIC12_PAGE_SHIFT            9
@@ -70,6 +71,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define PIC14_BANK_SHIFT            7
 #define PIC14_BANK_SIZE             (1 << PIC14_BANK_SHIFT)             /* 128 */
+#define PIC14_BANK_MASK             (PIC14_BANK_SIZE - 1)
 #define PIC14_RAM_ADDR_BITS         PIC14_BANK_SHIFT
 #define PIC14_PAGE_SHIFT            11
 #define PIC14_PAGE_SIZE             (1 << PIC14_PAGE_SHIFT)             /* 2048 */
@@ -128,6 +130,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define PIC16_BANK_SHIFT            8
 #define PIC16_BANK_SIZE             (1 << PIC16_BANK_SHIFT)             /* 256 */
+#define PIC16_BANK_MASK             (PIC16_BANK_SIZE - 1)
 #define PIC16_RAM_ADDR_BITS         PIC16_BANK_SHIFT
 #define PIC16_PAGE_SHIFT            13
 #define PIC16_PAGE_SIZE             (1 << PIC16_PAGE_SHIFT)             /* 8192 */

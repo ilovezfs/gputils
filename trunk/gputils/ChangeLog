@@ -1,4 +1,15 @@
 2016-07-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/lst.c:
+    In the gpasm mode shows more talkative symbol list.
+
+  * gpasm/testsuite/test_all_processors:
+    A little longer test.
+
+  * libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    New constants:
+	PIC12_BANK_MASK, PIC14_BANK_MASK, PIC16_BANK_MASK
+
+2016-07-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/processor.c:
     New constants: __BANK_SHIFT, __PAGE_SHIFT
 

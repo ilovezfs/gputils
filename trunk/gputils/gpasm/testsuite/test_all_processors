@@ -37,8 +37,16 @@ function make_asm()
     echo \
 "	include \"$1\"
 	code
+    messg \"__BANK_BITS  = #v(__BANK_BITS)\"
+    messg \"__BANK_MASK  = #v(__BANK_MASK)\"
+    messg \"__BANK_SIZE  = #v(__BANK_SIZE)\"
+    messg \"__BANK_SHIFT = #v(__BANK_SHIFT)\"
 	banksel	 __BANK_LAST
 	bankisel __BANK_LAST
+    messg \"__PAGE_BITS  = #v(__PAGE_BITS)\"
+    messg \"__PAGE_MASK  = #v(__PAGE_MASK)\"
+    messg \"__PAGE_SIZE  = #v(__PAGE_SIZE)\"
+    messg \"__PAGE_SHIFT = #v(__PAGE_SHIFT)\"
 	pagesel	 __PAGE_LAST
 	pageselw __PAGE_LAST
 	end" > "$TEST_SRC"
@@ -46,6 +54,10 @@ function make_asm()
     echo \
 "	include \"$1\"
 	code
+    messg \"__BANK_BITS  = #v(__BANK_BITS)\"
+    messg \"__BANK_MASK  = #v(__BANK_MASK)\"
+    messg \"__BANK_SIZE  = #v(__BANK_SIZE)\"
+    messg \"__BANK_SHIFT = #v(__BANK_SHIFT)\"
 	banksel	__BANK_LAST
 	end" > "$TEST_SRC"
   fi
