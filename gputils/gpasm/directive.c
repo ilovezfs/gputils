@@ -103,6 +103,8 @@ _check_write(uint16_t Value)
   uint16_t     word;
   uint8_t      byte;
   int          org;
+  size_t       start;
+  size_t       end;
 
   if (state.mode == MODE_RELOCATABLE) {
     if (state.obj.section == NULL) {
@@ -174,20 +176,22 @@ _check_write(uint16_t Value)
   if (state.maxrom >= 0) {
     if (org > state.maxrom) {
       gpmsg_vwarning(GPW_EXCEED_ROM, "Address{0x%0*X} > MAXROM{0x%0*X}",
-                       addr_digits, org,
-                       addr_digits, state.maxrom);
+                     addr_digits, org,
+                     addr_digits, state.maxrom);
     }
     else {
       /* check if current org is within a bad address range */
-      range_pair_t *cur_badrom;
-
-      for (cur_badrom = state.badrom; cur_badrom != NULL; cur_badrom = cur_badrom->next) {
-        if ((org >= cur_badrom->start) && (org <= cur_badrom->end)) {
-          gpmsg_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*X} <= Address{0x%0*X} <= BADROM_END{0x%0*X}",
-                           addr_digits, cur_badrom->start,
-                           addr_digits, org,
-                           addr_digits, cur_badrom->end);
-          break;
+      if (gp_bitarray_read(&state.badrom, org)) {
+        start = 0;
+        end   = 0;
+        if (gp_bitarray_get_range_borders(&state.badrom, org, &start, &end)) {
+          gpmsg_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*lX} <= Address{0x%0*X} <= BADROM_END{0x%0*lX}",
+                         addr_digits, start,
+                         addr_digits, org,
+                         addr_digits, end);
+        }
+        else {
+          gpmsg_verror(GPE_INTERNAL, NULL, "Error during call of gp_bitarray_get_range_borders().");
         }
       }
     }
@@ -242,7 +246,8 @@ _emit_byte(uint16_t Value, const char *Name)
   uint8_t       byte;
   uint16_t      word;
   unsigned int  org;
-  range_pair_t *cur_badrom;
+  size_t        start;
+  size_t        end;
 
   if (state.pass == 2) {
     class       = state.device.class;
@@ -282,13 +287,17 @@ _emit_byte(uint16_t Value, const char *Name)
         }
         else {
           /* check if current org is within a bad address range */
-          for (cur_badrom = state.badrom; cur_badrom != NULL; cur_badrom = cur_badrom->next) {
-            if ((org >= cur_badrom->start) && (org <= cur_badrom->end)) {
-              gpmsg_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*X} <= Address{0x%0*X} <= BADROM_END{0x%0*X}",
-                             addr_digits, cur_badrom->start,
+          if (gp_bitarray_read(&state.badrom, org)) {
+            start = 0;
+            end   = 0;
+            if (gp_bitarray_get_range_borders(&state.badrom, org, &start, &end)) {
+              gpmsg_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*lX} <= Address{0x%0*X} <= BADROM_END{0x%0*lX}",
+                             addr_digits, start,
                              addr_digits, org,
-                             addr_digits, cur_badrom->end);
-              break;
+                             addr_digits, end);
+            }
+            else {
+              gpmsg_verror(GPE_INTERNAL, NULL, "Error during call of gp_bitarray_get_range_borders().");
             }
           }
         }
@@ -556,6 +565,8 @@ _do_badram(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   int            start;
   int            end;
   int            loc;
+  void         (*msg)(int, const char *, ...);
+  int            code;
 
   if (state.processor == NULL) {
     gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
@@ -566,50 +577,72 @@ _do_badram(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
   if (Parms == NULL) {
     gpmsg_verror(GPE_MISSING_ARGU, NULL);
+    return Value;
+  }
+
+  addr_digits = state.device.class->addr_digits;
+  maxram      = state.maxram;
+  if (maxram >= MAX_RAM) {
+    maxram = MAX_RAM - 1;
+  }
+
+  if ((!state.mpasm_compatible) && (state.strict_level == 2)) {
+    msg  = gpmsg_verror;
+    code = GPE_INVALID_RAM;
   }
   else {
-    addr_digits = state.device.class->addr_digits;
-    maxram      = state.maxram;
-    if (maxram >= MAX_RAM) {
-      maxram = MAX_RAM - 1;
-    }
+    msg  = gpmsg_vwarning;
+    code = GPW_INVALID_RAM;
+  }
 
-    for (; Parms != NULL; Parms = PnListTail(Parms)) {
-      p = PnListHead(Parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
-      if (PnIsBinOp(p) && (PnBinOpOp(p) == '-')) {
-        if (eval_can_evaluate(PnBinOpP0(p)) && eval_can_evaluate(PnBinOpP1(p))) {
-          start = eval_evaluate(PnBinOpP0(p));
-          end = eval_evaluate(PnBinOpP1(p));
+    if (PnIsBinOp(p) && (PnBinOpOp(p) == '-')) {
+      if (eval_can_evaluate(PnBinOpP0(p)) && eval_can_evaluate(PnBinOpP1(p))) {
+        start = eval_evaluate(PnBinOpP0(p));
+        end   = eval_evaluate(PnBinOpP1(p));
 
-          if (end < start) {
-            gpmsg_vwarning(GPW_INVALID_RAM, "Start{0x%0*X} > End{0x%0*X}",
-                           addr_digits, start, addr_digits, end);
-          }
-          else if (start < 0) {
-            gpmsg_vwarning(GPW_INVALID_RAM, "Start{%i} < 0", start);
-          }
-          else if (end > maxram) {
-            gpmsg_vwarning(GPW_INVALID_RAM, "End{0x%0*X} > MAXRAM{0x%0*X}",
-                           addr_digits, end, addr_digits, maxram);
+        if (start < 0) {
+          if (!state.mpasm_compatible) {
+            /* This is a ugly error, can not be disable the error message. */
+            gpmsg_verror(GPE_INVALID_RAM, "Start{%i} < 0", start);
           }
           else {
-            for (; start <= end; start++) {
-              state.badram[start] = 1;
-            }
+            gpmsg_vwarning(GPW_INVALID_RAM, "Start{%i} < 0", start);
+          }
+        }
+        else if (end < start) {
+          if (!state.mpasm_compatible) {
+            /* This is a ugly error, can not be disable the error message. */
+            gpmsg_verror(GPE_INVALID_RAM, "End{0x%0*X} < Start{0x%0*X}", addr_digits, end, addr_digits, start);
+          }
+          else {
+            gpmsg_vwarning(GPW_INVALID_RAM, "Start{0x%0*X} > End{0x%0*X}", addr_digits, start, addr_digits, end);
+          }
+        }
+        else if (start > maxram) {
+          (*msg)(code, "Start{0x%0*X} > MAXRAM{0x%0*X}", addr_digits, start, addr_digits, maxram);
+        }
+        else if (end > maxram) {
+          (*msg)(code, "End{0x%0*X} > MAXRAM{0x%0*X}", addr_digits, end, addr_digits, maxram);
+        }
+        else {
+          for (; start <= end; start++) {
+            state.badram[start] = 1;
           }
         }
       }
-      else {
-        if (eval_can_evaluate(p)) {
-          loc = eval_evaluate(p);
+    }
+    else {
+      if (eval_can_evaluate(p)) {
+        loc = eval_evaluate(p);
 
-          if ((loc < 0) || (loc > maxram)) {
-            gpmsg_vwarning(GPW_INVALID_RAM, "Address{%#x} > MAXRAM{%#x}", loc, maxram);
-          }
-          else {
-            state.badram[loc] = 1;
-          }
+        if ((loc < 0) || (loc > maxram)) {
+          (*msg)(code, "Address{%#x} > MAXRAM{%#x}", loc, maxram);
+        }
+        else {
+          state.badram[loc] = 1;
         }
       }
     }
@@ -623,6 +656,13 @@ _do_badram(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_badrom(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
+  int            addr_digits;
+  const pnode_t *p;
+  int            start;
+  int            end;
+  void         (*msg)(int, const char *, ...);
+  int            code;
+
   if (state.processor == NULL) {
     gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
     return Value;
@@ -630,9 +670,76 @@ _do_badrom(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
   state.lst.line.linetype = LTY_DIR;
 
-  /* FIXME: implement this directive */
-  gpmsg_warning(GPW_UNKNOWN, "gpasm doesn't support the badrom directive yet.");
+  if (Parms == NULL) {
+    gpmsg_verror(GPE_MISSING_ARGU, NULL);
+    return Value;
+  }
 
+  addr_digits = state.device.class->addr_digits;
+
+  if ((!state.mpasm_compatible) && (state.strict_level == 2)) {
+    msg  = gpmsg_verror;
+    code = GPE_INVALID_ROM;
+  }
+  else {
+    msg  = gpmsg_vwarning;
+    code = GPW_INVALID_ROM;
+  }
+
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
+
+    if (PnIsBinOp(p) && (PnBinOpOp(p) == '-')) {
+      if (eval_can_evaluate(PnBinOpP0(p)) && eval_can_evaluate(PnBinOpP1(p))) {
+        start = eval_evaluate(PnBinOpP0(p));
+        end   = eval_evaluate(PnBinOpP1(p));
+
+        if (start < 0) {
+          if (!state.mpasm_compatible) {
+            /* This is a ugly error, can not be disable the error message. */
+            gpmsg_verror(GPE_INVALID_ROM, "Start{%i} < 0", start);
+          }
+          else {
+            gpmsg_vwarning(GPW_INVALID_ROM, "Start{%i} < 0", start);
+          }
+        }
+        else if (end < start) {
+          if (!state.mpasm_compatible) {
+            /* This is a ugly error, can not be disable the error message. */
+            gpmsg_verror(GPE_INVALID_ROM, "End{0x%0*X} < Start{0x%0*X}", addr_digits, end, addr_digits, start);
+          }
+          else {
+            gpmsg_vwarning(GPW_INVALID_ROM, "Start{0x%0*X} > End{0x%0*X}", addr_digits, start, addr_digits, end);
+          }
+        }
+        else if (start > state.maxrom) {
+          (*msg)(code, "Start{0x%0*X} > MAXROM{0x%0*X}", addr_digits, start, addr_digits, state.maxrom);
+        }
+        else if (end > state.maxrom) {
+          (*msg)(code, "End{0x%0*X} > MAXROM{0x%0*X}", addr_digits, end, addr_digits, state.maxrom);
+        }
+        else {
+          if (!gp_bitarray_write_range(&state.badrom, start, end, true)) {
+            gpmsg_verror(GPE_INTERNAL, NULL, "Error during call of gp_bitarray_write_range().");
+          }
+        }
+      }
+    }
+    else {
+      if (eval_can_evaluate(p)) {
+        start = eval_evaluate(p);
+
+        if ((start < 0) || (start > state.maxrom)) {
+          (*msg)(code, "Address{%#x} > MAXROM{%#x}", start, state.maxrom);
+        }
+        else {
+          if (!gp_bitarray_write(&state.badrom, start, true)) {
+            gpmsg_verror(GPE_INTERNAL, NULL, "Error during call of gp_bitarray_write().");
+          }
+        }
+      }
+    }
+  }
   return Value;
 }
 
@@ -950,7 +1057,7 @@ _do_constant(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   gp_boolean     first;
-  const char    *lhs;
+  const char    *sym;
   gpasmVal       val;
 
   if (_check_processor_select(Name)) {
@@ -966,12 +1073,12 @@ _do_constant(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (eval_enforce_simple(PnBinOpP0(p))) {
         /* fetch the symbol */
-        lhs = PnSymbol(PnBinOpP0(p));
+        sym = PnSymbol(PnBinOpP0(p));
         /* constants must be assigned a value at declaration */
 
         val = eval_maybe_evaluate(PnBinOpP1(p));
         /* put the symbol and value in the table*/
-        set_global(lhs, val, VAL_CONSTANT, false);
+        set_global(sym, val, VAL_CONSTANT, false);
 
         if (first) {
           Value = val;
@@ -1902,20 +2009,18 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   const pnode_t      *p;
   const char         *symbol_name;
   gp_symbol_t        *coff_symbol;
-  int                 eval;
-  int                 value;
+  int                 val;
   gp_boolean          new_class;
   gp_boolean          new_type;
   int                 coff_class;
   int                 coff_type;
   enum gpasmValTypes  type;
-  const char         *lhs;
-  const char         *str;
+  const char         *sym;
 
   class       = state.device.class;
   symbol_name = NULL;
+  val         = 0;
   coff_symbol = NULL;
-  value       = 0;
   new_class   = false;
   coff_class  = C_NULL;
   new_type    = false;
@@ -1933,7 +2038,7 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       return Value;
     }
 
-    /* the first argument is the symbol Name */
+    /* the first argument is the symbol name */
     p = PnListHead(Parms);
 
     if (eval_enforce_simple(p)) {
@@ -1951,71 +2056,71 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
       if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
         if (eval_enforce_simple(PnBinOpP0(p))) {
-          lhs = PnSymbol(PnBinOpP0(p));
+          sym = PnSymbol(PnBinOpP0(p));
 
-          if (strcasecmp(lhs, "value") == 0) {
-            value = eval_maybe_evaluate(PnBinOpP1(p));
+          if (strcasecmp(sym, "value") == 0) {
+            val = eval_maybe_evaluate(PnBinOpP1(p));
           }
-          else if (strcasecmp(lhs, "size") == 0) {
-            eval = eval_maybe_evaluate(PnBinOpP1(p));
-            state.byte_addr += IS_RAM_ORG ? eval : gp_processor_org_to_byte(class, eval);
+          else if (strcasecmp(sym, "size") == 0) {
+            val = eval_maybe_evaluate(PnBinOpP1(p));
+            state.byte_addr += IS_RAM_ORG ? val : gp_processor_org_to_byte(class, val);
           }
-          else if (strcasecmp(lhs, "type") == 0) {
-            eval = eval_maybe_evaluate(PnBinOpP1(p));
+          else if (strcasecmp(sym, "type") == 0) {
+            val = eval_maybe_evaluate(PnBinOpP1(p));
 
-            if (eval < 0) {
-              gpmsg_verror(GPE_RANGE, "type{%i (%#x)} < 0", eval, eval);
+            if (val < 0) {
+              gpmsg_verror(GPE_RANGE, "type{%i (%#x)} < 0", val, val);
             }
-            else if (eval > 0xffff) {
-              gpmsg_verror(GPE_RANGE, "type{%i (%#x)} > 0xffff", eval, eval);
+            else if (val > 0xffff) {
+              gpmsg_verror(GPE_RANGE, "type{%i (%#x)} > 0xffff", val, val);
             }
             else {
               new_type  = true;
-              coff_type = eval;
+              coff_type = val;
             }
           }
-          else if (strcasecmp(lhs, "class") == 0) {
-            eval = eval_maybe_evaluate(PnBinOpP1(p));
+          else if (strcasecmp(sym, "class") == 0) {
+            val = eval_maybe_evaluate(PnBinOpP1(p));
 
-            if (eval < -128) {
-              gpmsg_verror(GPE_RANGE, "class{%i} < -128", eval, eval);
+            if (val < -128) {
+              gpmsg_verror(GPE_RANGE, "class{%i} < -128", val, val);
             }
-            else if (eval > 127) {
-              gpmsg_verror(GPE_RANGE, "class{%i} > 127", eval, eval);
+            else if (val > 127) {
+              gpmsg_verror(GPE_RANGE, "class{%i} > 127", val, val);
             }
             else {
               new_class  = true;
-              coff_class = eval;
+              coff_class = val;
             }
           }
           else {
-            gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, lhs);
+            gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, sym);
           }
         }
       }
       else {
         if (eval_enforce_simple(p)) {
-          str = PnSymbol(p);
+          sym = PnSymbol(p);
 
-          if (strcasecmp(str, "absolute") == 0) {
-            type  = VAL_ABSOLUTE;
-            value = 0;
+          if (strcasecmp(sym, "absolute") == 0) {
+            type = VAL_ABSOLUTE;
+            val  = 0;
           }
-          else if (strcasecmp(str, "debug") == 0) {
-            type  = VAL_DEBUG;
-            value = 0;
+          else if (strcasecmp(sym, "debug") == 0) {
+            type = VAL_DEBUG;
+            val  = 0;
           }
-          else if (strcasecmp(str, "extern") == 0) {
-            type  = VAL_EXTERNAL;
-            value = 0;
+          else if (strcasecmp(sym, "extern") == 0) {
+            type = VAL_EXTERNAL;
+            val  = 0;
           }
-          else if (strcasecmp(str, "global") == 0) {
-            type  = VAL_GLOBAL;
-            value = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(class, state.byte_addr);
+          else if (strcasecmp(sym, "global") == 0) {
+            type = VAL_GLOBAL;
+            val  = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(class, state.byte_addr);
           }
-          else if (strcasecmp(str, "static") == 0) {
-            type  = VAL_STATIC;
-            value = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(class, state.byte_addr);
+          else if (strcasecmp(sym, "static") == 0) {
+            type = VAL_STATIC;
+            val  = IS_RAM_ORG ? state.byte_addr : gp_processor_byte_to_org(class, state.byte_addr);
           }
           else {
             gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, PnSymbol(p));
@@ -2025,7 +2130,7 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     }
   }
 
-  set_global(symbol_name, value, type, false);
+  set_global(symbol_name, val, type, false);
 
   /* update the symbol with the values */
   if ((state.pass == 2) && (new_class || new_type)) {
@@ -2099,7 +2204,7 @@ _do_dim(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   int            number_symbols;
   gp_aux_t      *aux_list;
   int            i;
-  int            value;
+  int            val;
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -2128,6 +2233,7 @@ _do_dim(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     else {
       return Value;
     }
+
     Parms = PnListTail(Parms);
 
     /* the second argument must be the number of aux symbols */
@@ -2135,7 +2241,7 @@ _do_dim(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     number_symbols = eval_maybe_evaluate(p);
 
     if ((number_symbols < 0) || (number_symbols > 127)) {
-      gpmsg_error(GPE_UNKNOWN, "Number of auxiliary symbols must be less then 128 and positive.");
+      gpmsg_error(GPE_UNKNOWN, "Number of auxiliary symbols must be less than 128 and positive.");
       return Value;
     }
 
@@ -2148,25 +2254,25 @@ _do_dim(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     /* write the data to the auxiliary symbols */
     i = 0;
     while (Parms != NULL) {
-      p = PnListHead(Parms);
-      value = eval_maybe_evaluate(p);
+      p   = PnListHead(Parms);
+      val = eval_maybe_evaluate(p);
 
-      if (value & (~0xff)) {
-        gpmsg_verror(GPE_RANGE, "%i (%#x) > 0xff", value, value);
+      if (val & (~0xff)) {
+        gpmsg_verror(GPE_RANGE, "%i (%#x) > 0xff", val, val);
         return Value;
       }
 
       if (aux_list == NULL) {
-        gpmsg_error(GPE_UNKNOWN, "Insufficent number of auxiliary symbols.");
+        gpmsg_error(GPE_UNKNOWN, "Insufficient number of auxiliary symbols.");
         return Value;
       }
 
-      if (i == (state.obj.newcoff ? SYMBOL_SIZE_v2 : SYMBOL_SIZE_v1)) {
+      if (i == ((state.obj.newcoff) ? SYMBOL_SIZE_v2 : SYMBOL_SIZE_v1)) {
         i = 0;
         aux_list = gp_coffgen_add_aux(state.obj.object, coff_symbol);
       }
 
-      aux_list->_aux_symbol.data[i++] = value;
+      aux_list->_aux_symbol.data[i++] = val;
 
       Parms = PnListTail(Parms);
     }
@@ -2245,6 +2351,8 @@ _do_dt(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   const pnode_t *p;
   const char    *pc;
   int            retlw;
+  int            val;
+  uint16_t       v;
 
   if (state.processor == NULL) {
     gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
@@ -2260,15 +2368,11 @@ _do_dt(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       pc = PnString(p);
 
       while (*pc != '\0') {
-        int value;
-
-        pc = convert_escape_chars(pc, &value);
-        _emit((value & 0xff) | retlw, Name);
+        pc = convert_escape_chars(pc, &val);
+        _emit((val & 0xff) | retlw, Name);
       }
     }
     else {
-      uint16_t v;
-
       v = eval_reloc_evaluate(p, RELOCT_ALL, NULL, NULL);
       _emit((v & 0xff) | retlw, Name);
     }
@@ -2286,6 +2390,7 @@ _do_dtm(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   const symbol_t *s;
   const insn_t   *i;
   const char     *pc;
+  int             val;
   uint16_t        v;
 
   if (state.processor == NULL) {
@@ -2307,10 +2412,8 @@ _do_dtm(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       pc = PnString(p);
 
       while (*pc != '\0') {
-        int value;
-
-        pc = convert_escape_chars(pc, &value);
-        _emit(i->opcode | (value & 0xff), Name);
+        pc = convert_escape_chars(pc, &val);
+        _emit(i->opcode | (val & 0xff), Name);
       }
     }
     else {
@@ -2366,7 +2469,7 @@ _do_else(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
 
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   if (state.astack == NULL) {
     gpmsg_verror(GPE_ILLEGAL_COND, NULL);
@@ -2386,8 +2489,8 @@ _do_else(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_end(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  state.found_end = true;
   state.lst.line.linetype = LTY_DIR;
+  state.found_end         = true;
 
   return Value;
 }
@@ -2404,7 +2507,7 @@ _do_endif(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
 
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   if (state.astack == NULL) {
     gpmsg_error(GPE_ILLEGAL_COND, "Illegal condition: \"ENDIF\"");
@@ -2434,7 +2537,7 @@ _do_endm(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
   assert(state.mac_head == NULL);
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   if (!IN_MACRO_WHILE_DEFINITION) {
     gpmsg_verror(GPE_UNMATCHED_ENDM, NULL);
@@ -3762,7 +3865,7 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
             if (value < state.maxrom) {
               snprintf(message, sizeof(message),
-                       "Argument out of range, must be greater than or equal to %ld.", state.maxrom);
+                       "Argument out of range, must be greater than or equal to %d.", state.maxrom);
               gpmsg_error(GPE_RANGE, message);
             }
             else {
@@ -4710,7 +4813,7 @@ _do_variable(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
   gp_boolean     first;
-  const char    *lhs;
+  const char    *sym;
   gpasmVal       val;
 
   if (_check_processor_select(Name)) {
@@ -4726,10 +4829,10 @@ _do_variable(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (eval_enforce_simple(PnBinOpP0(p))) {
         /* fetch the symbol */
-        lhs = PnSymbol(PnBinOpP0(p));
+        sym = PnSymbol(PnBinOpP0(p));
         val = eval_maybe_evaluate(PnBinOpP1(p));
         /* put the symbol and value in the table */
-        set_global(lhs, val, VAL_VARIABLE, false);
+        set_global(sym, val, VAL_VARIABLE, false);
 
         if (first) {
           Value = val;

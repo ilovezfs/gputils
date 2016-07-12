@@ -60,6 +60,9 @@ extern void     gp_putb32(uint8_t *addr, uint32_t data);
 
 extern gp_boolean gp_num_range_is_overlapped(int Area_start, int Area_end, int Ref_start, int Ref_end);
 
+extern unsigned int gp_find_lowest_bit(uint64_t Bits);
+extern unsigned int gp_find_highest_bit(uint64_t Bits);
+
 extern void  gp_date_string(char *buffer, size_t sizeof_buffer);
 
 extern void *gp_malloc(size_t Size, const char *File, size_t Line, const char *Func);

@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 11
+2016 Jul 12
 \end_layout
 
 \begin_layout Standard
@@ -12411,6 +12411,24 @@ CONFIG and __CONFIG directives cannot both be used in the same project.
 \begin_layout Standard
 Accessing a register outside of bank 0.
  User must select the appropriate bank with banksel or similar directives.
+\end_layout
+
+\begin_layout Description
+1508 Invalid RAM location specified.
+\end_layout
+
+\begin_layout Standard
+gpasm encountered an invalid RAM location as specified by the __MAXRAM and
+ __BADRAM directives.
+\end_layout
+
+\begin_layout Description
+1509 Invalid ROM location specified.
+\end_layout
+
+\begin_layout Standard
+gpasm encountered an invalid ROM location as specified by the __MAXROM and
+ __BADROM directives.
 \end_layout
 
 \begin_layout Subsection

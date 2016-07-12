@@ -140,7 +140,7 @@ _create_config_sections(void)
     }
 
     if (state.debug_info && (state.obj.debug_file == NULL)) {
-      gpmsg_error(GPE_UNKNOWN, ".file directive required to generate debug info");
+      gpmsg_error(GPE_UNKNOWN, "The .file directive required to generate debug info.");
       return;
     }
 
@@ -228,7 +228,7 @@ coff_close_file(void)
   }
 
   if (!gp_writeobj_write_coff(state.obj.object, (state.num.errors + gp_num_errors))) {
-    gpmsg_error(GPE_UNKNOWN, "system error while writing object file");
+    gpmsg_error(GPE_UNKNOWN, "System error while writing object file.");
     exit(1);
   }
 
@@ -350,7 +350,7 @@ coff_linenum(unsigned int Emitted)
 
   if (state.debug_info && (state.obj.debug_file == NULL)) {
     if (show_bad_debug) {
-      gpmsg_error(GPE_UNKNOWN, ".file directive required to generate debug info");
+      gpmsg_error(GPE_UNKNOWN, "The .file directive required to generate debug info.");
       show_bad_debug = false;
     }
     return;

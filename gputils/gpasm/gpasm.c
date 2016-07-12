@@ -1098,5 +1098,6 @@ assemble(void)
   }
 
   free_files();
+  gp_bitarray_delete(&state.badrom);
   return (((state.num.errors > 0) || (gp_num_errors > 0)) ? EXIT_FAILURE : EXIT_SUCCESS);
 }

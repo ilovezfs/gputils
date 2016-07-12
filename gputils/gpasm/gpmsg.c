@@ -233,6 +233,10 @@ _get_error(int Code)
       return "This register is not located on the Access RAM:";
     case GPE_BANK:
       return "Register in operand not located in RAM Bank %i. Ensure that Bank bits are correct:";
+    case GPE_INVALID_RAM:
+      return "Invalid RAM location specified.";
+    case GPE_INVALID_ROM:
+      return "Invalid ROM location specified.";
 
     default:
       return "UNKNOWN ERROR";

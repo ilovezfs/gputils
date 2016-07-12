@@ -99,14 +99,16 @@ enum GPE_codes {
   GPE_TOO_LONG         = 1504,  /* A string too long. */
   GPE_IS_ACCRAM        = 1505,  /* A register is located on the Access RAM. */
   GPE_NO_ACCRAM        = 1506,  /* A register is not located on the Access RAM. */
-  GPE_BANK             = 1507
+  GPE_BANK             = 1507,
+  GPE_INVALID_RAM      = 1508,
+  GPE_INVALID_ROM      = 1509
 };
 
 #define GMSG_ERR_LEVEL0_MIN     GPE_USER
 #define GMSG_ERR_LEVEL0_MAX     GPE_UNKNOWN
 
 #define GMSG_ERR_LEVEL1_MIN     GPE_IDLOCS_P16E
-#define GMSG_ERR_LEVEL1_MAX     GPE_BANK
+#define GMSG_ERR_LEVEL1_MAX     GPE_INVALID_ROM
 
 /* Warning codes
  *

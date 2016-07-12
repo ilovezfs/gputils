@@ -11,6 +11,8 @@ noinst_LIBRARIES = libgputils.a
 libgputils_a_SOURCES =\
 	gparchive.c \
 	gparchive.h \
+	gpbitarray.c \
+	gpbitarray.h \
 	gpcfg.c \
 	gpcfg.h \
 	gpcfg-table.c \
