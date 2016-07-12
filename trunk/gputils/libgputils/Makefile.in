@@ -106,10 +106,10 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libgputils_a_AR = $(AR) $(ARFLAGS)
 libgputils_a_LIBADD =
-am_libgputils_a_OBJECTS = gparchive.$(OBJEXT) gpcfg.$(OBJEXT) \
-	gpcfg-table.$(OBJEXT) gpcod.$(OBJEXT) gpcoffgen.$(OBJEXT) \
-	gpcofflink.$(OBJEXT) gpcoffopt.$(OBJEXT) gpdis.$(OBJEXT) \
-	gphash.$(OBJEXT) gplist.$(OBJEXT) gpmemory.$(OBJEXT) \
+am_libgputils_a_OBJECTS = gparchive.$(OBJEXT) gpbitarray.$(OBJEXT) \
+	gpcfg.$(OBJEXT) gpcfg-table.$(OBJEXT) gpcod.$(OBJEXT) \
+	gpcoffgen.$(OBJEXT) gpcofflink.$(OBJEXT) gpcoffopt.$(OBJEXT) \
+	gpdis.$(OBJEXT) gphash.$(OBJEXT) gplist.$(OBJEXT) gpmemory.$(OBJEXT) \
 	gpmessage.$(OBJEXT) gpopcode.$(OBJEXT) gpprocessor.$(OBJEXT) \
 	gpreadhex.$(OBJEXT) gpreadobj.$(OBJEXT) gpreg-table.$(OBJEXT) \
 	gpregister.$(OBJEXT) gpsym.$(OBJEXT) gpsymbol.$(OBJEXT) \
@@ -299,6 +299,8 @@ noinst_LIBRARIES = libgputils.a
 libgputils_a_SOURCES = \
 	gparchive.c \
 	gparchive.h \
+	gpbitarray.c \
+	gpbitarray.h \
 	gpcfg.c \
 	gpcfg.h \
 	gpcfg-table.c \
@@ -394,6 +396,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gparchive.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpbitarray.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpcfg-table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpcfg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpcod.Po@am__quote@

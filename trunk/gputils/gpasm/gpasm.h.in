@@ -86,12 +86,6 @@ enum gpasm_modes {
   MODE_RELOCATABLE
 };
 
-typedef struct range_pair {
-  long               start;
-  long               end;
-  struct range_pair *next;
-} range_pair_t;
-
 typedef struct src_line {
   char   *line;                         /* Source line. */
   size_t  size;                         /* Source line allocated size. */
@@ -133,16 +127,16 @@ extern struct gpasm_state {
   } cmd_line;
 
   int pass;                             /* 1 or 2 */
-  unsigned int  byte_addr;              /* Current code-generation point. */
-  gp_boolean    dos_newlines;           /* Use DOS newlines in hex file. */
-  gp_boolean    memory_dump;            /* Dump instruction memory to standard output. */
-  gp_boolean    found_config;           /* Config directive in source code. */
-  gp_boolean    found_devid;            /* Config directive in source code. */
-  gp_boolean    found_idlocs;           /* Idlocs directive in source code. */
-  gp_boolean    found_end;              /* End directive in source code. */
-  unsigned int  maxram;                 /* Highest legal data memory location. */
-  long          maxrom;                 /* Highest legal program memory location. */
-  range_pair_t *badrom;
+  unsigned int   byte_addr;             /* Current code-generation point. */
+  gp_boolean     dos_newlines;          /* Use DOS newlines in hex file. */
+  gp_boolean     memory_dump;           /* Dump instruction memory to standard output. */
+  gp_boolean     found_config;          /* Config directive in source code. */
+  gp_boolean     found_devid;           /* Config directive in source code. */
+  gp_boolean     found_idlocs;          /* Idlocs directive in source code. */
+  gp_boolean     found_end;             /* End directive in source code. */
+  int            maxram;                /* Highest legal data memory location. */
+  int            maxrom;                /* Highest legal program memory location. */
+  gp_bit_array_t badrom;                /* Nonzero indicates illegal memory. */
 
   enum out_file
        cod_file,                        /* Symbol output file control. */
@@ -169,7 +163,7 @@ extern struct gpasm_state {
     int          bsr_boundary;          /* 18xx bsr boundary location */
   } device;
 
-  char badram[MAX_RAM];                 /* nonzero indicates illegal memory */
+  uint8_t badram[MAX_RAM];              /* Nonzero indicates illegal memory. */
   symbol_table_t
     *stBuiltin,                         /* Built-ins: instructions, pseudo-ops */
     *stDirective,                       /* bottom half of Builtin with directives */

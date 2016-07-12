@@ -203,7 +203,7 @@ gp_putb32(uint8_t *addr, uint32_t data)
 
 gp_boolean
 gp_num_range_is_overlapped(int Area_start, int Area_end, int Ref_start, int Ref_end)
-  {
+{
   int min;
   int max;
   int w0;
@@ -248,6 +248,96 @@ gp_num_range_is_overlapped(int Area_start, int Area_end, int Ref_start, int Ref_
   width1 = w0 + w1;
 
   return ((width0 < width1) ? true : false);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+unsigned int
+gp_find_lowest_bit(uint64_t Bits)
+{
+  unsigned int idx;
+
+  if (Bits == 0) {
+    return 0;
+  }
+
+  idx = 1;
+
+  if ((Bits & 0x00000000FFFFFFFFul) == 0) {
+    idx += 32;
+    Bits >>= 32;
+  }
+
+  if ((Bits & 0x000000000000FFFFul) == 0) {
+    idx += 16;
+    Bits >>= 16;
+  }
+
+  if ((Bits & 0x00000000000000FFul) == 0) {
+    idx += 8;
+    Bits >>= 8;
+  }
+
+  if ((Bits & 0x000000000000000Ful) == 0) {
+    idx += 4;
+    Bits >>= 4;
+  }
+
+  if ((Bits & 0x0000000000000003ul) == 0) {
+    idx += 2;
+    Bits >>= 2;
+  }
+
+  if ((Bits & 0x0000000000000001ul) == 0) {
+    idx += 1;
+  }
+
+  return idx;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+unsigned int
+gp_find_highest_bit(uint64_t Bits)
+  {
+  unsigned int idx;
+
+  if (Bits == 0) {
+    return 0;
+  }
+
+  idx = 64;
+
+  if ((Bits & 0xFFFFFFFF00000000ul) == 0) {
+    idx -= 32;
+    Bits <<= 32;
+  }
+
+  if ((Bits & 0xFFFF000000000000ul) == 0) {
+    idx -= 16;
+    Bits <<= 16;
+  }
+
+  if ((Bits & 0xFF00000000000000ul) == 0) {
+    idx -= 8;
+    Bits <<= 8;
+  }
+
+  if ((Bits & 0xF000000000000000ul) == 0) {
+    idx -= 4;
+    Bits <<= 4;
+  }
+
+  if ((Bits & 0xC000000000000000ul) == 0) {
+    idx -= 2;
+    Bits <<= 2;
+  }
+
+  if ((Bits & 0x8000000000000000ul) == 0) {
+    idx -= 1;
+  }
+
+  return idx;
 }
 
 /*------------------------------------------------------------------------------------------------*/

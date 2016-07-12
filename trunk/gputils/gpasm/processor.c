@@ -123,7 +123,6 @@ select_processor(const char *name)
   int              badrom_idx;
   long             start;
   long             end;
-  range_pair_t    *new_pair;
 
   if (state.cmd_line.processor) {
     gpmsg_vwarning(GPW_CMDLINE_PROC, NULL);
@@ -141,20 +140,18 @@ select_processor(const char *name)
         state.processor = found;
         state.maxram    = found->maxram;
         state.maxrom    = found->maxrom;
-        /* Initialize badrom from internal processor info. */
-        state.badrom    = NULL;
 
-        for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx += 2) {
-          start = found->badrom[badrom_idx];
-          end   = found->badrom[badrom_idx + 1];
+        if (state.maxrom > 0) {
+          /* Initialize badrom from internal processor info. */
+          gp_bitarray_create(&state.badrom, state.maxrom);
 
-          if ((start >= 0) && (end >= 0)) {
-            new_pair = GP_Malloc(sizeof(range_pair_t));
+          for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx += 2) {
+            start = found->badrom[badrom_idx];
+            end   = found->badrom[badrom_idx + 1];
 
-            new_pair->start = start;
-            new_pair->end   = end;
-            new_pair->next  = state.badrom;
-            state.badrom    = new_pair;
+            if ((start >= 0) && (end >= start)) {
+              gp_bitarray_write_range(&state.badrom, start, end, true);
+            }
           }
         }
 
