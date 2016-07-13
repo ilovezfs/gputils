@@ -48,8 +48,9 @@ Boston, MA 02111-1307, USA.  */
 
 int ppcol_begin;
 int ppcol_end;
-static int brack_depth;
-static int found_hv;
+
+static int        brack_depth;
+static gp_boolean found_hv;
 %}
 
 IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
@@ -68,7 +69,7 @@ NUMCHAR [0-9a-z]
                            BEGIN(hv);
                            brack_depth = 1;
                            ppcol_begin = ppcol_end - yyleng;
-                           found_hv = 1;
+                           found_hv = true;
                            return HV;
                          }
 <hv>#v                   /* ignore inner #v-s */
@@ -86,6 +87,7 @@ NUMCHAR [0-9a-z]
                          }
 <hv>{IDENT}#v\(          {
                            int i = yyleng - 3;
+
                            pplval.s = GP_Strndup(yytext, i);
                            unput('(');
                            ++brack_depth;
@@ -178,6 +180,7 @@ NUMCHAR [0-9a-z]
                          }
 <hv>a'{STR_QCHAR}'       {
                            const char *pc = convert_escape_chars(yytext + 2, &pplval.i);
+
                            assert(pc == &yytext[yyleng - 1]);
                            return NUMBER;
                          }
@@ -219,57 +222,58 @@ NUMCHAR [0-9a-z]
 
 #if 0
 static void
-yyprint(FILE *file, int type, YYSTYPE value)
+yyprint(FILE *File, int Type, YYSTYPE Value)
 {
   printf("@%d:", ppcol_end);
 
-  switch (type) {
-  case IDENTIFIER:
-    fprintf (file, "'%s' ", value.s);
-    break;
-
-  case NUMBER:
-  case UPPER:
-  case HIGH:
-  case LOW:
-  case LSH:
-  case RSH:
-  case GREATER_EQUAL:
-  case LESS_EQUAL:
-  case EQUAL:
-  case NOT_EQUAL:
-  case '<':
-  case '>':
-  case '&':
-  case '|':
-  case '^':
-  case LOGICAL_AND:
-  case LOGICAL_OR:
-  case '=':
-    fprintf (file, "'%d' ", value.i);
-    break;
-
-  case HV:
-      fprintf (file, "'%d' ", type);
+  switch (Type) {
+    case IDENTIFIER:
+      fprintf(File, "'%s' ", Value.s);
       break;
 
-  default:
-    if (type < 256) {
-      fprintf (file, "'%c' ", type);
+    case NUMBER:
+    case UPPER:
+    case HIGH:
+    case LOW:
+    case LSH:
+    case RSH:
+    case GREATER_EQUAL:
+    case LESS_EQUAL:
+    case EQUAL:
+    case NOT_EQUAL:
+    case '<':
+    case '>':
+    case '&':
+    case '|':
+    case '^':
+    case LOGICAL_AND:
+    case LOGICAL_OR:
+    case '=':
+      fprintf(File, "'%d' ", Value.i);
+      break;
+
+    case HV:
+      fprintf(File, "'%d' ", Type);
+      break;
+
+    default: {
+      if (Type < 256) {
+        fprintf(File, "'%c' ", Type);
+      }
+      else {
+        fprintf(File, "'?%d?' ", Type);
+      }
+      break;
     }
-    else {
-      fprintf (file, "'?%d?' ", type);
-    }
-    break;
   }
 }
 
 void
-lex_line(char *line)
+lex_line(char *Line)
 {
   int type;
 
-  yy_scan_string(line);
+  yy_scan_string(Line);
 
   while ((type = pplex()) != 0) {
     yyprint(stdout, type, pplval);
@@ -281,21 +285,22 @@ lex_line(char *line)
 #endif
 
 int
-ppparse_chunk(char *buf, int begin, int end)
+ppparse_chunk(char *Buf, int Begin, int End)
 {
   int res;
 
-  yy_scan_bytes(&buf[begin], end - begin);
+  yy_scan_bytes(&Buf[Begin], End - Begin);
 
-  ppcol_end = ppcol_begin = 0;
-  found_hv = 0;
+  ppcol_begin = 0;
+  ppcol_end   = 0;
+  found_hv    = false;
   BEGIN(INITIAL);
   brack_depth = 0;
 
-  res = !ppparse() && found_hv;
+  res = ((ppparse() == 0) && found_hv);
 
-  ppcol_begin += begin;
-  ppcol_end += begin;
+  ppcol_begin += Begin;
+  ppcol_end   += Begin;
 
   yy_delete_buffer(YY_CURRENT_BUFFER);
 

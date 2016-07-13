@@ -74,7 +74,7 @@
 \begin_body
 
 \begin_layout Title
-gputils 1.4.5
+gputils 1.4.6
 \end_layout
 
 \begin_layout Author
@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 12
+2016 Jul 13
 \end_layout
 
 \begin_layout Standard
@@ -12429,6 +12429,14 @@ gpasm encountered an invalid RAM location as specified by the __MAXRAM and
 \begin_layout Standard
 gpasm encountered an invalid ROM location as specified by the __MAXROM and
  __BADROM directives.
+\end_layout
+
+\begin_layout Description
+1510 Address exceeds maximum range for this processor.
+\end_layout
+
+\begin_layout Standard
+Data emitted past maximum ROM address.
 \end_layout
 
 \begin_layout Subsection

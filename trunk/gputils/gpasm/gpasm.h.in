@@ -295,6 +295,8 @@ extern struct gpasm_state {
   } next_buffer;
 } state;
 
+#define VATRR_PROC_DEPENDENT    (1 << 0)  /* Depend on the type of processor. */
+
 typedef struct variable {
   gpasmVal            value;
   unsigned int        coff_symbol_num;
@@ -302,7 +304,7 @@ typedef struct variable {
   unsigned int        coff_section_flags;
   enum gpasmValTypes  type;
   enum gpasmValTypes  previous_type;    /* Can change from static to global. */
-  gp_boolean          isProcDependent;  /* True if this a processor value (VAL_CONSTANT or VAL_VARIABLE). */
+  unsigned int        flags;            /* VATRR_... */
 } variable_t;
 
 /************************************************************************/
@@ -418,8 +420,8 @@ extern void set_global(const char *name, gpasmVal value, enum gpasmValTypes type
                        gp_boolean procDependent);
 
 extern variable_t *get_global_constant(const char *Name);
-extern void purge_temp_symbols(symbol_table_t *Table);
-extern void purge_processor_const_symbols(symbol_table_t *Table);
+extern void purge_variable_symbols(symbol_table_t *Table);
+extern void purge_processor_variable_symbols(symbol_table_t *Table);
 extern void select_errorlevel(int level);
 extern void select_strictlevel(int level);
 extern void select_expand(const char *expand);

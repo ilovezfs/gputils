@@ -30,40 +30,6 @@ static DirBlockInfo *main_dir;
 
 /*------------------------------------------------------------------------------------------------*/
 
-static DirBlockInfo *
-_new_dir_block(void)
-{
-  /* initialize eveything to zero */
-  DirBlockInfo *dir = GP_Calloc(1, sizeof(DirBlockInfo));
-
-  gp_putl16(&dir->dir[COD_DIR_CODTYPE], 1);
-  return dir;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-static DirBlockInfo *
-_init_dir_block(void)
-{
-  DirBlockInfo *dir = _new_dir_block();
-
-  /* Initialize the directory block with known data. It'll be written
-   * to the .cod file after everything else. */
-  gp_cod_strncpy(&dir->dir[COD_DIR_SOURCE], state.codfilename, COD_DIR_DATE - COD_DIR_SOURCE);
-  gp_cod_date(&dir->dir[COD_DIR_DATE], COD_DIR_TIME - COD_DIR_DATE);
-  gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_VERSION - COD_DIR_TIME);
-  gp_cod_strncpy(&dir->dir[COD_DIR_VERSION], VERSION, COD_DIR_COMPILER - COD_DIR_VERSION);
-  gp_cod_strncpy(&dir->dir[COD_DIR_COMPILER], "gplink", COD_DIR_NOTICE - COD_DIR_COMPILER);
-  gp_cod_strncpy(&dir->dir[COD_DIR_NOTICE], GPUTILS_COPYRIGHT_STRING, COD_DIR_SYMTAB - COD_DIR_NOTICE);
-
-  /* The address is always two shorts or 4 bytes long. */
-  dir->dir[COD_DIR_ADDRSIZE] = 0;
-
-  return dir;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 /* Assign each file name unique file number. A file may appear in the symbol table more than once. */
 
 static void
@@ -108,41 +74,6 @@ _assign_file_id(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* init_cod - initialize the cod file */
-
-void
-cod_init(void)
-{
-  if (state.codfile != OUT_NAMED) {
-    snprintf(state.codfilename, sizeof(state.codfilename), "%s.cod", state.basefilename);
-  }
-
-  if ((gp_num_errors > 0) || (state.codfile == OUT_SUPPRESS)) {
-    state.cod.f       = NULL;
-    state.cod.enabled = false;
-    unlink(state.codfilename);
-  }
-  else {
-    state.cod.f = fopen(state.codfilename, "wb");
-
-    if (state.cod.f == NULL) {
-      perror(state.codfilename);
-      exit(1);
-    }
-    state.cod.enabled = true;
-  }
-
-  if (!state.cod.enabled) {
-    return;
-  }
-
-  main_dir = _init_dir_block();
-
-  _assign_file_id();
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 /* _write_file_block - Write a code block that contains a list of the source files. */
 
 static void
@@ -181,89 +112,6 @@ _write_file_block(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static DirBlockInfo *
-_find_dir_block_by_high_addr(int high_addr)
-{
-  DirBlockInfo *dbi = main_dir;
-
-  /* find the directory containing high_addr 64k segment */
-  while (gp_getl16(&dbi->dir[COD_DIR_HIGHADDR]) != high_addr) {
-    /* If the next directory block (in the linked list of directory
-       blocks) is NULL, then this is the first time to encounter this
-       _64k segment. So we need to create a new segment. */
-    if (dbi->next == NULL) {
-      dbi->next = _new_dir_block();
-      gp_putl16(&dbi->next->dir[COD_DIR_HIGHADDR], high_addr);
-      dbi = dbi->next;
-      break;
-    }
-    else {
-      dbi = dbi->next;
-    }
-  }
-  return dbi;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* cod_lst_line - Add a line of information that cross references the
- *                the opcode's address, the source file, and the list file.
- */
-
-void
-cod_lst_line(int line_type)
-{
-  static DirBlockInfo *dbi = NULL;
-  static int           _64k_base = 0;
-
-  uint8_t              smod_flag;
-  BlockList           *lb;
-  gp_boolean           first_time;
-  int                  address;
-  int                  high_address;
-
-  if (!state.cod.enabled) {
-    return;
-  }
-
-  address      = gp_processor_byte_to_org(state.class, state.lst.was_org);
-  high_address = IMemBaseFromAddr(address);
-
-  if ((dbi == NULL) || (high_address != _64k_base)) {
-    _64k_base = high_address;
-    dbi       = _find_dir_block_by_high_addr(_64k_base);
-  }
-
-  first_time = (gp_blocks_get_last(&dbi->lst) == NULL) ? true : false;
-
-  lb = gp_blocks_get_last_or_new(&dbi->lst);
-
-  if (dbi->lst.offset >= (COD_MAX_LINE_SYM * COD_LINE_SYM_SIZE)) {
-    lb = gp_blocks_append(&dbi->lst, gp_blocks_new());
-  }
-
-  assert(state.lst.src != NULL);
-  assert(state.lst.src->symbol != NULL);
-  lb->block[dbi->lst.offset + COD_LS_SFILE] = state.lst.src->symbol->number;
-
-  smod_flag = (first_time) ? COD_LS_SMOD_FLAG_ALL :
-                             ((state.cod.emitting) ? COD_LS_SMOD_FLAG_C1 :
-                                                     (COD_LS_SMOD_FLAG_C1 | COD_LS_SMOD_FLAG_D));
-
-  lb->block[dbi->lst.offset + COD_LS_SMOD] = smod_flag;
-
-  /* Write the source file line number corresponding to the list file line number. */
-  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLINE], state.lst.src->line_number);
-
-  /* Write the address of the opcode. */
-  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLOC],
-            gp_processor_byte_to_org(state.class, state.lst.was_org));
-
-  dbi->lst.offset += COD_LINE_SYM_SIZE;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 /* cod_write_symbols - write the symbol table to the .cod file
  *
  * This routine will read the symbol table that gplink has created
@@ -272,8 +120,8 @@ cod_lst_line(int line_type)
  *
  */
 
-void
-cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
+static void
+_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 {
   size_t                 i;
   int                    len;
@@ -285,10 +133,6 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
   BlockList             *sb;
 
   if ((symbol_list == NULL) || (num_symbols == 0)) {
-    return;
-  }
-
-  if (!state.cod.enabled) {
     return;
   }
 
@@ -333,108 +177,21 @@ cod_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* _emit_opcode - write one opcode to a cod_image_block */
-
 static void
-_emit_opcode(DirBlockInfo *dbi, int address, int opcode)
+_write_symbol_table(const symbol_table_t *Table)
 {
-  int block_index;
+  const symbol_t **lst;
+  size_t           sym_count;
 
-  if (!state.cod.enabled) {
+  sym_count = gp_sym_get_symbol_count(Table);
+
+  if (sym_count == 0) {
     return;
   }
 
-  /* The code image blocks are handled in a different manner than the
-   * other cod blocks. In theory, it's possible to emit opcodes in a
-   * non-sequential manner. Furthermore, it's possible that there may
-   * be gaps in the program memory. These cases are handled by an array
-   * of code blocks. The lower 8 bits of the opcode's address form an
-   * index into the code block, while bits 9-15 are an index into the
-   * array of code blocks. The code image blocks are not written until
-   * all of the opcodes have been emitted.
-   */
-
-  block_index = (address >> COD_BLOCK_BITS) & (COD_CODE_IMAGE_BLOCKS - 1);
-
-  if (dbi->cod_image_blocks[block_index].block == NULL) {
-    gp_cod_create(&dbi->cod_image_blocks[block_index]);
-  }
-
-  gp_putl16(&dbi->cod_image_blocks[block_index].block[address & (COD_BLOCK_SIZE - 1)], opcode);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* _write_code - write all of the assembled pic code to the .cod file */
-
-static void
-_write_code(void)
-{
-  static DirBlockInfo *dbi = NULL;
-
-  const MemBlock_t    *m;
-  int                  i;
-  int                  mem_base;
-  int                  high_addr;
-  int                  start_address;
-  gp_boolean           used_flag;
-  BlockList           *rb;
-  int                  _64k_base;
-  uint16_t             insn;
-
-  start_address = 0;
-  used_flag     = false;
-  _64k_base     = 0;
-  m             = state.i_memory;
-
-  while (m != NULL) {
-    mem_base  = IMemAddrFromBase(m->base);
-    high_addr = IMemBaseFromAddr(mem_base);
-
-    if ((dbi == NULL) || (high_addr != _64k_base)) {
-      _64k_base = high_addr;
-      dbi       = _find_dir_block_by_high_addr(_64k_base);
-    }
-
-    for (i = mem_base; (i - mem_base) <= I_MEM_MAX; i += 2) {
-      if (((i - mem_base) < I_MEM_MAX) &&
-          state.class->i_memory_get(state.i_memory, i, &insn, NULL, NULL)) {
-        _emit_opcode(dbi, i, insn);
-
-        if (!used_flag) {
-          /* Save the start address in a range of opcodes */
-          start_address = i;
-          used_flag     = true;
-        }
-      }
-      else {
-        /* No code at address i, but we need to check if this is the
-           first empty address after a range of address. */
-        if (used_flag) {
-          rb = gp_blocks_get_last_or_new(&dbi->rng);
-
-          if ((rb == NULL) || ((dbi->rng.offset + COD_MAPENTRY_SIZE) >= COD_BLOCK_SIZE)) {
-            /* If there are a whole bunch of non-contiguous pieces of
-               code then we'll get here. But most pic apps will only need
-               one directory block (that will give you 64 ranges or non-
-               contiguous chunks of pic code). */
-            rb = gp_blocks_append(&dbi->rng, gp_blocks_new());
-          }
-          /* We need to update dir map indicating a range of memory that
-             is needed. This is done by writing the start and end address to
-             the directory map. */
-          gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_START], start_address);
-          gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_LAST], i - 1);
-
-          used_flag = false;
-
-          dbi->rng.offset += COD_MAPENTRY_SIZE;
-        }
-      }
-    }
-
-    m = m->next;
-  }
+  lst = gp_sym_clone_symbol_array(Table, gp_sym_compare_fn);
+  _write_symbols(lst, sym_count);
+  free(lst);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -450,10 +207,6 @@ _write_debug(void)
   BlockList         *db;
   char               command;
   const char        *string;
-
-  if (!state.cod.enabled) {
-    return;
-  }
 
   db     = NULL;
   symbol = state.object->symbol_list.first;
@@ -488,21 +241,94 @@ _write_debug(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static void
-_cod_symbol_table(const symbol_table_t *Table)
+/* init_cod - initialize the cod file */
+
+void
+cod_init(void)
 {
-  const symbol_t **lst;
-  size_t           sym_count;
+  if (state.cod_file != OUT_NAMED) {
+    snprintf(state.cod_file_name, sizeof(state.cod_file_name), "%s.cod", state.base_file_name);
+  }
 
-  sym_count = gp_sym_get_symbol_count(Table);
+  if ((gp_num_errors > 0) || (state.cod_file == OUT_SUPPRESS)) {
+    state.cod.f       = NULL;
+    state.cod.enabled = false;
+    unlink(state.cod_file_name);
+  }
+  else {
+    state.cod.f = fopen(state.cod_file_name, "wb");
 
-  if (sym_count == 0) {
+    if (state.cod.f == NULL) {
+      perror(state.cod_file_name);
+      exit(1);
+    }
+    state.cod.enabled = true;
+  }
+
+  if (!state.cod.enabled) {
     return;
   }
 
-  lst = gp_sym_clone_symbol_array(Table, gp_sym_compare_fn);
-  cod_write_symbols(lst, sym_count);
-  free(lst);
+  main_dir = gp_cod_init_dir_block(state.cod_file_name, "gplink");
+
+  _assign_file_id();
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* cod_lst_line - Add a line of information that cross references the
+ *                the opcode's address, the source file, and the list file.
+ */
+
+void
+cod_lst_line(int line_type)
+{
+  static DirBlockInfo *dbi = NULL;
+  static int           _64k_base = 0;
+
+  uint8_t              smod_flag;
+  BlockList           *lb;
+  gp_boolean           first_time;
+  int                  address;
+  int                  high_address;
+
+  if (!state.cod.enabled) {
+    return;
+  }
+
+  address      = gp_processor_byte_to_org(state.class, state.lst.was_byte_addr);
+  high_address = IMemBaseFromAddr(address);
+
+  if ((dbi == NULL) || (high_address != _64k_base)) {
+    _64k_base = high_address;
+    dbi       = gp_cod_find_dir_block_by_high_addr(main_dir, _64k_base);
+  }
+
+  first_time = (gp_blocks_get_last(&dbi->lst) == NULL) ? true : false;
+
+  lb = gp_blocks_get_last_or_new(&dbi->lst);
+
+  if (dbi->lst.offset >= (COD_MAX_LINE_SYM * COD_LINE_SYM_SIZE)) {
+    lb = gp_blocks_append(&dbi->lst, gp_blocks_new());
+  }
+
+  assert(state.lst.src != NULL);
+  assert(state.lst.src->symbol != NULL);
+  lb->block[dbi->lst.offset + COD_LS_SFILE] = state.lst.src->symbol->number;
+
+  smod_flag = (first_time) ? COD_LS_SMOD_FLAG_ALL :
+                             ((state.cod.emitting) ? COD_LS_SMOD_FLAG_C1 :
+                                                     (COD_LS_SMOD_FLAG_C1 | COD_LS_SMOD_FLAG_D));
+
+  lb->block[dbi->lst.offset + COD_LS_SMOD] = smod_flag;
+
+  /* Write the source file line number corresponding to the list file line number. */
+  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLINE], state.lst.src->line_number);
+
+  /* Write the address of the opcode. */
+  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLOC], address);
+
+  dbi->lst.offset += COD_LINE_SYM_SIZE;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -520,9 +346,9 @@ cod_close_file(void)
                  COD_DIR_LSYMTAB - COD_DIR_PROCESSOR);
 
   /* All the global symbols are written.  Need to figure out what to do about the local symbols. */
-  _cod_symbol_table(state.symbol.definition);
+  _write_symbol_table(state.symbol.definition);
   _write_file_block();
-  _write_code();
+  gp_cod_write_code(state.class, state.i_memory, main_dir);
   _write_debug();
   gp_blocks_enumerate_directory(main_dir);
   gp_blocks_write_directory(state.cod.f, main_dir);

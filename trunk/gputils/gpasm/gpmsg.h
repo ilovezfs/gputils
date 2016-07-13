@@ -45,7 +45,7 @@ enum GPE_codes {
   GPE_CLOSEPAR         = 110,  /* Mis-matched closed parenthesis */
   GPE_MISSYM           = 111,  /* No symbol in an EQU or SET */
   GPE_NOOP             = 112,  /* Missing an arithmetic operator */
-  GPE_NOSYM            = 113,  /* Symbol has not been defined */
+  GPE_SYM_NOT_DEFINED  = 113,  /* Symbol has not been defined */
   GPE_DIVBY0           = 114,
   GPE_DUPLAB           = 115,
   GPE_DIFFLAB          = 116,
@@ -56,7 +56,7 @@ enum GPE_codes {
   GPE_ILLEGAL_DIR      = 123,
   GPE_ILLEGAL_ARGU     = 124,
   GPE_ILLEGAL_COND     = 125,
-  GPE_RANGE            = 126,  /* Argument out of range */
+  GPE_OUT_OF_RANGE     = 126,  /* Argument out of range */
   GPE_TOO_MANY_ARGU    = 127,
   GPE_MISSING_ARGU     = 128,
   GPE_EXPECTED         = 129,
@@ -94,14 +94,15 @@ enum GPE_codes {
   GPE_SCANNER          = 1103,  /* Scanner error */
 
   GPE_IDLOCS_P16E      = 1501,  /* IDLOCS directive use solely to the PIC16E family. */
-  GPE_NOF              = 1502,  /* The destination of the storage is not selected. */
-  GPE_ACC_NOSEL        = 1503,  /* The access of RAM is not selected. */
+  GPE_NO_DEST          = 1502,  /* The destination of the storage is not selected. */
+  GPE_NO_ACC           = 1503,  /* The access of RAM is not selected. */
   GPE_TOO_LONG         = 1504,  /* A string too long. */
-  GPE_IS_ACCRAM        = 1505,  /* A register is located on the Access RAM. */
-  GPE_NO_ACCRAM        = 1506,  /* A register is not located on the Access RAM. */
-  GPE_BANK             = 1507,
+  GPE_IN_OF_ACCRAM     = 1505,  /* A register is located on the Access RAM. */
+  GPE_OUT_OF_ACCRAM    = 1506,  /* A register is not located on the Access RAM. */
+  GPE_OUT_OF_BANK      = 1507,
   GPE_INVALID_RAM      = 1508,
-  GPE_INVALID_ROM      = 1509
+  GPE_INVALID_ROM      = 1509,
+  GPE_EXCEED_ROM       = 1510
 };
 
 #define GMSG_ERR_LEVEL0_MIN     GPE_USER
@@ -118,8 +119,8 @@ enum GPE_codes {
  *
  */
 enum GPW_codes {
-  GPW_NOT_DEFINED      = 201,
-  GPW_RANGE            = 202,  /* Argument out of range */
+  GPW_SYM_NOT_DEFINED  = 201,
+  GPW_OUT_OF_RANGE     = 202,  /* Argument out of range */
   GPW_OP_COLUMN_ONE    = 203,
   GPW_DIR_COLUMN_ONE   = 205,
   GPW_MACRO_COLUMN_ONE = 206,
@@ -143,10 +144,10 @@ enum GPW_codes {
   /* gputils special warnings */
   GPW_BANK_PAGE_SEL_AFTER_SKIP = 1201, /* %s after skip instruction. I this really what you intended? */
   GPW_UNDEF_PROC       = 1202,
-  GPW_IS_ACCRAM        = 1203, /* A register is located on the Access RAM. */
-  GPW_NO_ACCRAM        = 1204, /* A register is not located on the Access RAM. */
-  GPW_NOF              = 1205, /* The destination of the storage is not selected. */
-  GPW_BANK             = 1206,
+  GPW_IN_OF_ACCRAM     = 1203, /* A register is located on the Access RAM. */
+  GPW_OUT_OF_ACCRAM    = 1204, /* A register is not located on the Access RAM. */
+  GPW_NO_DEST          = 1205, /* The destination of the storage is not selected. */
+  GPW_OUT_OF_BANK      = 1206,
   GPW_USER             = 1299
 };
 
@@ -165,16 +166,16 @@ enum GPW_codes {
  */
 enum GPM_codes {
   GPM_USER             = 301,  /* User supplied message */
-  GPM_BANK             = 302,
-  GPM_RANGE            = 303,
+  GPM_OUT_OF_BANK      = 302,
+  GPM_OUT_OF_RANGE     = 303,
   GPM_IDLOC            = 304,
-  GPM_NOF              = 305,
-  GPM_PAGE             = 306,
+  GPM_NO_DEST          = 305,
+  GPM_PAGE_BOUNDARY    = 306,
   GPM_PAGEBITS         = 307,
   GPM_SUPVAL           = 308,
   GPM_SUPLIN           = 309,
   GPM_SUPRAM           = 310,
-  GPM_EXT_PAGE         = 312,
+  GPM_EXT_BANK_OR_PAGE = 312,
   GPM_CBLOCK           = 313,
   GPM_W_MODIFIED       = 316,
   GPM_SPECIAL_MNEMONIC = 318,
@@ -182,9 +183,9 @@ enum GPM_codes {
 
   /* gputils special messages */
   GPM_ACC_DEF          = 1301,
-  GPM_NOB              = 1302,
+  GPM_NO_BANK          = 1302,
   GPM_EXT_BANK         = 1303,
-  GPM_EXT_PAGE2        = 1304
+  GPM_EXT_PAGE         = 1304
 };
 
 #define GMSG_MSG_LEVEL0_MIN     GPM_USER

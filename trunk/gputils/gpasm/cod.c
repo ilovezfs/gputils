@@ -33,40 +33,6 @@ static DirBlockInfo *main_dir;
 
 /*------------------------------------------------------------------------------------------------*/
 
-static DirBlockInfo *
-_new_dir_block(void)
-{
-  /* initialize eveything to zero */
-  DirBlockInfo *dir = GP_Calloc(1, sizeof(DirBlockInfo));
-
-  gp_putl16(&dir->dir[COD_DIR_CODTYPE], 1);
-  return dir;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-static DirBlockInfo *
-_init_dir_block(void)
-{
-  DirBlockInfo *dir = _new_dir_block();
-
-  /* Initialize the directory block with known data. It'll be written
-   * to the .cod file after everything else. */
-  gp_cod_strncpy(&dir->dir[COD_DIR_SOURCE], state.cod_file_name, COD_DIR_DATE - COD_DIR_SOURCE);
-  gp_cod_date(&dir->dir[COD_DIR_DATE], COD_DIR_TIME - COD_DIR_DATE);
-  gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_VERSION - COD_DIR_TIME);
-  gp_cod_strncpy(&dir->dir[COD_DIR_VERSION], VERSION, COD_DIR_COMPILER - COD_DIR_VERSION);
-  gp_cod_strncpy(&dir->dir[COD_DIR_COMPILER], "gpasm", COD_DIR_NOTICE - COD_DIR_COMPILER);
-  gp_cod_strncpy(&dir->dir[COD_DIR_NOTICE], GPUTILS_COPYRIGHT_STRING, COD_DIR_SYMTAB - COD_DIR_NOTICE);
-
-  /* The address is always two shorts or 4 bytes long. */
-  dir->dir[COD_DIR_ADDRSIZE] = 0;
-
-  return dir;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 /*
  * _write_file_block - Write a code block that contains a list of the source files.
  */
@@ -120,137 +86,6 @@ _write_file_block(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static DirBlockInfo *
-_find_dir_block_by_high_addr(int High_addr)
-{
-  DirBlockInfo *dbi = main_dir;
-
-  /* find the directory containing high_addr 64k segment */
-  while (gp_getl16(&dbi->dir[COD_DIR_HIGHADDR]) != High_addr) {
-    /* If the next directory block (in the linked list of directory
-       blocks) is NULL, then this is the first time to encounter this
-       _64k segment. So we need to create a new segment. */
-    if (dbi->next == NULL) {
-      dbi->next = _new_dir_block();
-      gp_putl16(&dbi->next->dir[COD_DIR_HIGHADDR], High_addr);
-      dbi = dbi->next;
-      break;
-    }
-    else {
-      dbi = dbi->next;
-    }
-  }
-
-  return dbi;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* _emit_opcode - write one opcode to a cod_image_block */
-
-static void
-_emit_opcode(DirBlockInfo *Dbi, int Address, int Opcode)
-{
-  int block_index;
-
-  if (!state.cod.enabled) {
-    return;
-  }
-
-  /* The code image blocks are handled in a different manner than the
-   * other cod blocks. In theory, it's possible to emit opcodes in a
-   * non-sequential manner. Furthermore, it's possible that there may
-   * be gaps in the program memory. These cases are handled by an array
-   * of code blocks. The lower 8 bits of the opcode's address form an
-   * index into the code block, while bits 9-15 are an index into the
-   * array of code blocks. The code image blocks are not written until
-   * all of the opcodes have been emitted.
-   */
-
-  block_index = (Address >> COD_BLOCK_BITS) & (COD_CODE_IMAGE_BLOCKS - 1);
-
-  if (Dbi->cod_image_blocks[block_index].block == NULL) {
-    gp_cod_create(&Dbi->cod_image_blocks[block_index]);
-  }
-
-  gp_putl16(&Dbi->cod_image_blocks[block_index].block[Address & (COD_BLOCK_SIZE - 1)], Opcode);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* _write_code - write all of the assembled pic code to the .cod file */
-
-static void
-_write_code(void)
-{
-  static DirBlockInfo *dbi = NULL;
-  static int           _64k_base = 0;
-
-  const MemBlock_t *m;
-  int               i;
-  int               mem_base;
-  int               start_address;
-  gp_boolean        used_flag;
-  BlockList        *rb;
-  int               high_addr;
-  uint16_t          insn;
-
-  m             = state.i_memory;
-  start_address = 0;
-  used_flag     = false;
-  rb            = NULL;
-  while (m != NULL) {
-    mem_base  = IMemAddrFromBase(m->base);
-    high_addr = IMemBaseFromAddr(mem_base);
-
-    if ((dbi == NULL) || (high_addr != _64k_base)) {
-      _64k_base = high_addr;
-      dbi       = _find_dir_block_by_high_addr(_64k_base);
-    }
-
-    for (i = mem_base; (i - mem_base) <= I_MEM_MAX; i += 2) {
-      if (((i - mem_base) < I_MEM_MAX) &&
-          state.device.class->i_memory_get(state.i_memory, i, &insn, NULL, NULL)) {
-        _emit_opcode(dbi, i, insn);
-
-        if (!used_flag) {
-          /* Save the start address in a range of opcodes. */
-          start_address = i;
-          used_flag = true;
-        }
-      }
-      else {
-        /* No code at address i, but we need to check if this is the
-           first empty address after a range of address. */
-        if (used_flag) {
-          rb = gp_blocks_get_last_or_new(&dbi->rng);
-
-          if ((rb == NULL) || ((dbi->rng.offset + COD_MAPENTRY_SIZE) >= COD_BLOCK_SIZE)) {
-            /* If there are a whole bunch of non-contiguous pieces of
-               code then we'll get here. But most pic apps will only need
-               one directory block (that will give you 64 ranges or non-
-               contiguous chunks of pic code). */
-            rb = gp_blocks_append(&dbi->rng, gp_blocks_new());
-          }
-          /* We need to update dir map indicating a range of memory that
-             is needed. This is done by writing the start and end address to
-             the directory map. */
-          gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_START], start_address);
-          gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_LAST], i - 1);
-
-          used_flag = false;
-
-          dbi->rng.offset += COD_MAPENTRY_SIZE;
-        }
-      }
-    }
-
-    m = m->next;
-  }
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 /* cod_init - initialize the cod file */
 
 void
@@ -278,7 +113,7 @@ cod_init(void)
     return;
   }
 
-  main_dir = _init_dir_block();
+  main_dir = gp_cod_init_dir_block(state.cod_file_name, "gpasm");
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -321,7 +156,7 @@ cod_lst_line(unsigned int List_line)
 
   if ((dbi == NULL) || (high_address != _64k_base)) {
     _64k_base = high_address;
-    dbi       = _find_dir_block_by_high_addr(_64k_base);
+    dbi       = gp_cod_find_dir_block_by_high_addr(main_dir, _64k_base);
   }
 
   first_time = (gp_blocks_get_last(&dbi->lst) == NULL) ? true : false;
@@ -430,7 +265,7 @@ cod_close_file(void)
   gp_cod_strncpy(&main_dir->dir[COD_DIR_PROCESSOR], gp_processor_name(state.processor, 2),
                  COD_DIR_LSYMTAB - COD_DIR_PROCESSOR);
   _write_file_block();
-  _write_code();
+  gp_cod_write_code(state.device.class, state.i_memory, main_dir);
   gp_blocks_enumerate_directory(main_dir);
   gp_blocks_write_directory(state.cod.f, main_dir);
   gp_blocks_free_directory(main_dir);

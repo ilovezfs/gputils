@@ -98,13 +98,16 @@ static gp_boolean prev_btfsx = false;
 static uint16_t
 _check_write(uint16_t Value)
 {
-  proc_class_t class;
-  int          addr_digits;
-  uint16_t     word;
-  uint8_t      byte;
-  int          org;
-  size_t       start;
-  size_t       end;
+  proc_class_t  class;
+  int           addr_digits;
+  uint16_t      word;
+  uint8_t       byte;
+  int           org;
+  size_t        start;
+  size_t        end;
+  void        (*msg)(int, const char *, ...);
+  int           code;
+  gp_boolean    is_config;
 
   if (state.mode == MODE_RELOCATABLE) {
     if (state.obj.section == NULL) {
@@ -134,7 +137,7 @@ _check_write(uint16_t Value)
   if (state.mpasm_compatible) {
     /* MPASM(X) compatible mode. */
     if (Value > class->core_mask) {
-      gpmsg_vmessage(GPM_RANGE, NULL, Value);
+      gpmsg_vmessage(GPM_OUT_OF_RANGE, NULL, Value);
       Value &= class->core_mask;
     }
 
@@ -145,17 +148,19 @@ _check_write(uint16_t Value)
   }
   else {
     /* GPASM compatible mode. */
-    gp_boolean is_config = (gp_processor_is_config_org(state.processor, org) >= 0) ? true : false;
+    is_config = (gp_processor_is_config_org(state.processor, org) >= 0) ? true : false;
 
-    if (Value > class->core_mask) {
-    /* The size of the config words may be differ the size of the program words. */
-      if (!is_config) {
-        gpmsg_vmessage(GPM_RANGE, NULL, Value);
-        Value &= class->core_mask;
-      }
-      else if (Value > state.device.class->config_mask) {
-        gpmsg_vmessage(GPM_RANGE, NULL, Value);
+    if (is_config) {
+      /* The size of the config words may be differ the size of the program words. */
+      if (Value > class->config_mask) {
+        gpmsg_vmessage(GPM_OUT_OF_RANGE, NULL, Value);
         Value &= class->config_mask;
+      }
+    }
+    else {
+      if (Value > class->core_mask) {
+        gpmsg_vmessage(GPM_OUT_OF_RANGE, NULL, Value);
+        Value &= class->core_mask;
       }
     }
 
@@ -174,10 +179,17 @@ _check_write(uint16_t Value)
   }
 
   if (state.maxrom >= 0) {
+    if ((!state.mpasm_compatible) && (state.strict_level == 2)) {
+      msg  = gpmsg_verror;
+      code = GPE_EXCEED_ROM;
+    }
+    else {
+      msg  = gpmsg_vwarning;
+      code = GPW_EXCEED_ROM;
+    }
+
     if (org > state.maxrom) {
-      gpmsg_vwarning(GPW_EXCEED_ROM, "Address{0x%0*X} > MAXROM{0x%0*X}",
-                     addr_digits, org,
-                     addr_digits, state.maxrom);
+      (*msg)(code, "Address{0x%0*X} > MAXROM{0x%0*X}", addr_digits, org, addr_digits, state.maxrom);
     }
     else {
       /* check if current org is within a bad address range */
@@ -185,10 +197,8 @@ _check_write(uint16_t Value)
         start = 0;
         end   = 0;
         if (gp_bitarray_get_range_borders(&state.badrom, org, &start, &end)) {
-          gpmsg_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*lX} <= Address{0x%0*X} <= BADROM_END{0x%0*lX}",
-                         addr_digits, start,
-                         addr_digits, org,
-                         addr_digits, end);
+          (*msg)(code, "BADROM_START{0x%0*lX} <= Address{0x%0*X} <= BADROM_END{0x%0*lX}",
+                 addr_digits, start, addr_digits, org, addr_digits, end);
         }
         else {
           gpmsg_verror(GPE_INTERNAL, NULL, "Error during call of gp_bitarray_get_range_borders().");
@@ -248,6 +258,8 @@ _emit_byte(uint16_t Value, const char *Name)
   unsigned int  org;
   size_t        start;
   size_t        end;
+  void        (*msg)(int, const char *, ...);
+  int           code;
 
   if (state.pass == 2) {
     class       = state.device.class;
@@ -268,7 +280,7 @@ _emit_byte(uint16_t Value, const char *Name)
       if (Value > class->core_mask) {
         word = Value & class->core_mask;
 
-        gpmsg_vwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", Value, Value, word, word);
+        gpmsg_vwarning(GPW_OUT_OF_RANGE, "%i (%#x) --> %i (%#x)", Value, Value, word, word);
         Value = word;
       }
 
@@ -280,10 +292,17 @@ _emit_byte(uint16_t Value, const char *Name)
       }
 
       if (state.maxrom >= 0) {
+        if ((!state.mpasm_compatible) && (state.strict_level == 2)) {
+          msg  = gpmsg_verror;
+          code = GPE_EXCEED_ROM;
+        }
+        else {
+          msg  = gpmsg_vwarning;
+          code = GPW_EXCEED_ROM;
+        }
+
         if (org > state.maxrom) {
-          gpmsg_vwarning(GPW_EXCEED_ROM, "Address{0x%0*X} > MAXROM{0x%0*X}",
-                         addr_digits, org,
-                         addr_digits, state.maxrom);
+          (*msg)(code, "Address{0x%0*X} > MAXROM{0x%0*X}", addr_digits, org, addr_digits, state.maxrom);
         }
         else {
           /* check if current org is within a bad address range */
@@ -291,10 +310,8 @@ _emit_byte(uint16_t Value, const char *Name)
             start = 0;
             end   = 0;
             if (gp_bitarray_get_range_borders(&state.badrom, org, &start, &end)) {
-              gpmsg_vwarning(GPW_EXCEED_ROM, "BADROM_START{0x%0*lX} <= Address{0x%0*X} <= BADROM_END{0x%0*lX}",
-                             addr_digits, start,
-                             addr_digits, org,
-                             addr_digits, end);
+              (*msg)(code, "BADROM_START{0x%0*lX} <= Address{0x%0*X} <= BADROM_END{0x%0*lX}",
+                     addr_digits, start, addr_digits, org, addr_digits, end);
             }
             else {
               gpmsg_verror(GPE_INTERNAL, NULL, "Error during call of gp_bitarray_get_range_borders().");
@@ -530,24 +547,25 @@ _do_access_ovr(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
+    /* (state.mode == MODE_RELOCATABLE) */
     switch (Arity) {
-    case 0:
-      /* new relocatable section */
-      gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = 0;
-      state.obj.new_sect_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY;
-      break;
+      case 0:
+        /* new relocatable section */
+        gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = 0;
+        state.obj.new_sect_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY;
+        break;
 
-    case 1:
-      /* new absolute section */
-      p = PnListHead(Parms);
-      gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = eval_maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY | STYP_ABS;
-      break;
+      case 1:
+        /* new absolute section */
+        p = PnListHead(Parms);
+        gp_strncpy(state.obj.new_sect_name, ".access_ovr", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = eval_maybe_evaluate(p);
+        state.obj.new_sect_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY | STYP_ABS;
+        break;
 
-    default:
-      eval_enforce_arity(Arity, 1);
+      default:
+        eval_enforce_arity(Arity, 1);
     }
   }
 
@@ -752,6 +770,7 @@ _do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   const pnode_t *p;
   int            num_reloc;
   unsigned int   mask;
+  unsigned int   mask_end;
 
   if (state.processor == NULL) {
     gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Name);
@@ -765,7 +784,7 @@ _do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       gpmsg_vmessage(GPM_EXT_BANK, NULL);
     }
     else {
-      gpmsg_vmessage(GPM_EXT_PAGE, NULL);
+      gpmsg_vmessage(GPM_EXT_BANK_OR_PAGE, NULL);
     }
     return Value;
   }
@@ -784,6 +803,7 @@ _do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
                                                 state.i_memory, state.byte_addr);
     }
     else {
+      /* (state.mode == MODE_RELOCATABLE) */
       num_reloc = eval_count_reloc(p);
 
       if (num_reloc == 0) {
@@ -799,7 +819,8 @@ _do_bankisel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         eval_reloc_evaluate(p, RELOCT_IBANKSEL, NULL, NULL);
 
         if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
-          for (mask = 0x100; mask < (state.processor->num_banks << PIC14_BANK_SHIFT); mask <<= 1) {
+          mask_end = state.processor->num_banks << PIC14_BANK_SHIFT;
+          for (mask = 0x100; mask < mask_end; mask <<= 1) {
             _emit(0, Name);
           }
         }
@@ -856,7 +877,7 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       set_global(GLOBAL_ACT_BANK_ADDR, 0, VAL_VARIABLE, true);
     }
     else {
-      gpmsg_vmessage(GPM_EXT_PAGE, NULL);
+      gpmsg_vmessage(GPM_EXT_BANK_OR_PAGE, NULL);
     }
 
     return Value;
@@ -978,24 +999,25 @@ _do_code(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
+    /* (state.mode == MODE_RELOCATABLE) */
     switch (Arity) {
-    case 0:
-      /* new relocatable section */
-      gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = 0;
-      state.obj.new_sect_flags = STYP_TEXT;
-      break;
+      case 0:
+        /* new relocatable section */
+        gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = 0;
+        state.obj.new_sect_flags = STYP_TEXT;
+        break;
 
-    case 1:
-      /* new absolute section */
-      p = PnListHead(Parms);
-      gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = gp_processor_org_to_byte(state.device.class, eval_maybe_evaluate(p));
-      state.obj.new_sect_flags = STYP_TEXT | STYP_ABS;
-      break;
+      case 1:
+        /* new absolute section */
+        p = PnListHead(Parms);
+        gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = gp_processor_org_to_byte(state.device.class, eval_maybe_evaluate(p));
+        state.obj.new_sect_flags = STYP_TEXT | STYP_ABS;
+        break;
 
-    default:
-      eval_enforce_arity(Arity, 1);
+      default:
+        eval_enforce_arity(Arity, 1);
     }
   }
 
@@ -1016,35 +1038,36 @@ _do_code_pack(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
   if (!IS_PIC16E_CORE) {
     gpmsg_error(GPE_UNKNOWN, "code_pack is only supported on 16bit cores.");
+    return Value;
   }
-  else {
-    state.lst.line.linetype = LTY_SEC;
-    state.next_state = STATE_SECTION;
 
-    if (state.mode == MODE_ABSOLUTE) {
-      gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
-    }
-    else {
-      switch (Arity) {
-      case 0:
-        /* new relocatable section */
-        gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
-        state.obj.new_sect_addr  = 0;
-        state.obj.new_sect_flags = STYP_TEXT | STYP_BPACK;
-        break;
+  state.lst.line.linetype = LTY_SEC;
+  state.next_state        = STATE_SECTION;
 
-      case 1:
-        /* new absolute section */
-        p = PnListHead(Parms);
-        gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
-        state.obj.new_sect_addr  = gp_processor_org_to_byte(state.device.class, eval_maybe_evaluate(p));
-        state.obj.new_sect_flags = STYP_TEXT | STYP_BPACK | STYP_ABS;
-        break;
+  if (state.mode == MODE_ABSOLUTE) {
+    gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
+    return Value;
+  }
 
-      default:
-        eval_enforce_arity(Arity, 1);
-      }
-    }
+  /* (state.mode == MODE_RELOCATABLE) */
+  switch (Arity) {
+    case 0:
+      /* new relocatable section */
+      gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr  = 0;
+      state.obj.new_sect_flags = STYP_TEXT | STYP_BPACK;
+      break;
+
+    case 1:
+      /* new absolute section */
+      p = PnListHead(Parms);
+      gp_strncpy(state.obj.new_sect_name, ".code", sizeof(state.obj.new_sect_name));
+      state.obj.new_sect_addr  = gp_processor_org_to_byte(state.device.class, eval_maybe_evaluate(p));
+      state.obj.new_sect_flags = STYP_TEXT | STYP_BPACK | STYP_ABS;
+      break;
+
+    default:
+      eval_enforce_arity(Arity, 1);
   }
 
   return Value;
@@ -1258,43 +1281,44 @@ _do_config(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   class                   = state.device.class;
   state.lst.line.linetype = LTY_CONFIG;
 
-  switch(Arity) {
-  case 1:
-    /* FIXME: Whenever there are more than one configuration address, the
-       address must be specified in MPASM. MPASM fails with error:
-       "Argument out of range (not a valid config register address)" */
-    if (IS_PIC16E_CORE) {
-      gpmsg_warning(GPW_EXPECTED, "18cxxx devices should specify __CONFIG address.");
+  switch (Arity) {
+    case 1: {
+      /* FIXME: Whenever there are more than one configuration address,
+         the address must be specified in MPASM. MPASM fails with error:
+         "Argument out of range (not a valid config register address)" */
+      if (IS_PIC16E_CORE) {
+        gpmsg_warning(GPW_EXPECTED, "18cxxx devices should specify __CONFIG address.");
+      }
+
+      if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
+        gpmsg_warning(GPW_EXPECTED, "Enhanced 16cxxx devices should specify __CONFIG address.");
+      }
+
+      ca = state.processor->config_addrs[0];
+      p = PnListHead(Parms);
+      break;
     }
 
-    if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
-      gpmsg_warning(GPW_EXPECTED, "Enhanced 16cxxx devices should specify __CONFIG address.");
-    }
+    case 2:
+      ca = eval_maybe_evaluate(PnListHead(Parms));
+      p = PnListHead(PnListTail(Parms));
+      break;
 
-    ca = state.processor->config_addrs[0];
-    p = PnListHead(Parms);
-    break;
-
-  case 2:
-    ca = eval_maybe_evaluate(PnListHead(Parms));
-    p = PnListHead(PnListTail(Parms));
-    break;
-
-  default:
-    eval_enforce_arity(Arity, 2);
-    return Value;
+    default:
+      eval_enforce_arity(Arity, 2);
+      return Value;
   }
 
   ca = gp_processor_org_to_byte(class, ca);
   state.lst.config_address = ca;
 
-  if ((eval_can_evaluate(p)) && (state.pass == 2)) {
+  if ((state.pass == 2) && (eval_can_evaluate(p))) {
     config_mem = _get_config_mem(ca, false);
     value = eval_evaluate(p);
 
     if (IS_PIC16E_CORE) {
       if (value > 0xff) {
-        gpmsg_vwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
+        gpmsg_vwarning(GPW_OUT_OF_RANGE, "%i (%#x) > 0xff", value, value);
       }
 
       p_dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
@@ -1313,7 +1337,7 @@ _do_config(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
          Why are the config words 16 bits long in headers?? */
       if ((!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE)) {
         if (value > class->core_mask) {
-          gpmsg_vmessage(GPM_RANGE, NULL, value);
+          gpmsg_vmessage(GPM_OUT_OF_RANGE, NULL, value);
           value &= class->core_mask;
         }
       }
@@ -1380,6 +1404,7 @@ _do_16_config(gpasmVal Value, const char *Name, int Arity, const pnode_t *Parms)
   char                      buf[BUFSIZ];
   unsigned int              dm_addr;
   MemBlock_t               *config_mem;
+  int                       val;
 
   state.lst.line.linetype = LTY_DIR;
   config_mpasm_used = true;
@@ -1399,7 +1424,7 @@ _do_16_config(gpasmVal Value, const char *Name, int Arity, const pnode_t *Parms)
 
   /* validate argument format */
   if ((Parms == NULL) || !PnIsBinOp(Parms) || (PnBinOpOp(Parms) != '=')) {
-    gpmsg_error(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use `CONFIG KEY = VALUE'");
+    gpmsg_error(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use 'CONFIG KEY = VALUE'");
     return Value;
   }
 
@@ -1419,11 +1444,11 @@ _do_16_config(gpasmVal Value, const char *Name, int Arity, const pnode_t *Parms)
     v_str = PnSymbol(v);
   }
   else {
-    int value = PnConstant(v);
+    val = PnConstant(v);
 
     if (state.radix != 10) {
       if (state.radix == 16) {
-        snprintf(v_buff, sizeof(v_buff), "%x", value);
+        snprintf(v_buff, sizeof(v_buff), "%x", val);
       }
       else {
         gpmsg_error(GPE_CONFIG_UNKNOWN,
@@ -1431,7 +1456,7 @@ _do_16_config(gpasmVal Value, const char *Name, int Arity, const pnode_t *Parms)
       }
     }
     else {
-      snprintf(v_buff, sizeof(v_buff), "%d", value);
+      snprintf(v_buff, sizeof(v_buff), "%d", val);
     }
 
     v_str = v_buff;
@@ -1560,6 +1585,7 @@ _do_12_14_config(gpasmVal Value, const char *Name, int Arity, const pnode_t *Par
   char                      buf[BUFSIZ];
   unsigned int              dm_addr;
   MemBlock_t               *config_mem;
+  int                       val;
 
   state.lst.line.linetype = LTY_DIR;
   config_mpasm_used = true;
@@ -1600,11 +1626,11 @@ _do_12_14_config(gpasmVal Value, const char *Name, int Arity, const pnode_t *Par
     v_str = PnSymbol(v);
   }
   else {
-    int value = PnConstant(v);
+    val = PnConstant(v);
 
     if (state.radix != 10) {
       if (state.radix == 16) {
-        snprintf(v_buff, sizeof(v_buff), "%x", value);
+        snprintf(v_buff, sizeof(v_buff), "%x", val);
       }
       else {
         gpmsg_error(GPE_CONFIG_UNKNOWN,
@@ -1612,7 +1638,7 @@ _do_12_14_config(gpasmVal Value, const char *Name, int Arity, const pnode_t *Par
       }
     }
     else {
-      snprintf(v_buff, sizeof(v_buff), "%d", value);
+      snprintf(v_buff, sizeof(v_buff), "%d", val);
     }
 
     v_str = v_buff;
@@ -1848,10 +1874,10 @@ _do_db(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         value = eval_reloc_evaluate(p, RELOCT_LOW, NULL, NULL);
 
         if (value < 0) {
-          gpmsg_vwarning(GPW_RANGE, "%i (%#x) < 0", value, value);
+          gpmsg_vwarning(GPW_OUT_OF_RANGE, "%i (%#x) < 0", value, value);
         }
         else if (value > 0xFF) {
-          gpmsg_vwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
+          gpmsg_vwarning(GPW_OUT_OF_RANGE, "%i (%#x) > 0xff", value, value);
         }
 
         _emit_byte(value, Name);
@@ -1900,10 +1926,10 @@ _do_db(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         }
 
         if (value < -128) {
-          gpmsg_vwarning(GPW_RANGE, "%i (%#x) < -128", value, value);
+          gpmsg_vwarning(GPW_OUT_OF_RANGE, "%i (%#x) < -128", value, value);
         }
         else if (value > 0xFF) {
-          gpmsg_vwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
+          gpmsg_vwarning(GPW_OUT_OF_RANGE, "%i (%#x) > 0xff", value, value);
         }
 
         value &= 0xFF;
@@ -2033,6 +2059,7 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
+    /* (state.mode == MODE_RELOCATABLE) */
     if (Arity < 2) {
       eval_enforce_arity(Arity, 2);
       return Value;
@@ -2069,10 +2096,10 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
             val = eval_maybe_evaluate(PnBinOpP1(p));
 
             if (val < 0) {
-              gpmsg_verror(GPE_RANGE, "type{%i (%#x)} < 0", val, val);
+              gpmsg_verror(GPE_OUT_OF_RANGE, "type{%i (%#x)} < 0", val, val);
             }
             else if (val > 0xffff) {
-              gpmsg_verror(GPE_RANGE, "type{%i (%#x)} > 0xffff", val, val);
+              gpmsg_verror(GPE_OUT_OF_RANGE, "type{%i (%#x)} > 0xffff", val, val);
             }
             else {
               new_type  = true;
@@ -2083,10 +2110,10 @@ _do_def(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
             val = eval_maybe_evaluate(PnBinOpP1(p));
 
             if (val < -128) {
-              gpmsg_verror(GPE_RANGE, "class{%i} < -128", val, val);
+              gpmsg_verror(GPE_OUT_OF_RANGE, "class{%i} < -128", val, val);
             }
             else if (val > 127) {
-              gpmsg_verror(GPE_RANGE, "class{%i} > 127", val, val);
+              gpmsg_verror(GPE_OUT_OF_RANGE, "class{%i} > 127", val, val);
             }
             else {
               new_class  = true;
@@ -2212,6 +2239,7 @@ _do_dim(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
+    /* (state.mode == MODE_RELOCATABLE) */
     if (Arity < 3) {
       eval_enforce_arity(Arity, 1);
       return Value;
@@ -2226,7 +2254,7 @@ _do_dim(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       coff_symbol = gp_coffgen_find_symbol(state.obj.object, symbol_name);
 
       if (coff_symbol == NULL) {
-        gpmsg_verror(GPE_NOSYM, NULL, symbol_name);
+        gpmsg_verror(GPE_SYM_NOT_DEFINED, NULL, symbol_name);
         return Value;
       }
     }
@@ -2258,7 +2286,7 @@ _do_dim(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       val = eval_maybe_evaluate(p);
 
       if (val & (~0xff)) {
-        gpmsg_verror(GPE_RANGE, "%i (%#x) > 0xff", val, val);
+        gpmsg_verror(GPE_OUT_OF_RANGE, "%i (%#x) > 0xff", val, val);
         return Value;
       }
 
@@ -2298,6 +2326,7 @@ _do_direct(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     return Value;
   }
 
+  /* (state.mode == MODE_RELOCATABLE) */
   if (eval_enforce_arity(Arity, 2)) {
     direct_command = 0;
     p = PnListHead(Parms);
@@ -2305,10 +2334,10 @@ _do_direct(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     val = eval_maybe_evaluate(p);
 
     if (val < 0) {
-      gpmsg_verror(GPE_RANGE, "%i (%#x) < 0", val, val);
+      gpmsg_verror(GPE_OUT_OF_RANGE, "%i (%#x) < 0", val, val);
     }
     else if (val > WHILE_LOOP_COUNT_MAX) {
-      gpmsg_verror(GPE_RANGE, "%i (%#x) > %u", val, val, WHILE_LOOP_COUNT_MAX);
+      gpmsg_verror(GPE_OUT_OF_RANGE, "%i (%#x) > %u", val, val, WHILE_LOOP_COUNT_MAX);
     }
     else {
       direct_command = val;
@@ -2983,14 +3012,15 @@ _do_extern(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
   if (state.mode == MODE_ABSOLUTE) {
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
+    return 0;
   }
-  else {
-    for (; Parms != NULL; Parms = PnListTail(Parms)) {
-      p = PnSymbol(PnListHead(Parms));
 
-      if (p != NULL) {
-        set_global(p, 0, VAL_EXTERNAL, false);
-      }
+  /* (state.mode == MODE_RELOCATABLE) */
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnSymbol(PnListHead(Parms));
+
+    if (p != NULL) {
+      set_global(p, 0, VAL_EXTERNAL, false);
     }
   }
 
@@ -3060,8 +3090,8 @@ _do_fill(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_global(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  const char     *p;
-  const symbol_t *s;
+  const char     *name;
+  const symbol_t *sym;
   variable_t     *var;
   char            buf[BUFSIZ];
 
@@ -3069,44 +3099,45 @@ _do_global(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
   if (state.mode == MODE_ABSOLUTE) {
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
+    return 0;
   }
-  else {
-    for (; Parms != NULL; Parms = PnListTail(Parms)) {
-      p = PnSymbol(PnListHead(Parms));
 
-      if (p != NULL) {
-        s = gp_sym_get_symbol(state.stTop, p);
+  /* (state.mode == MODE_RELOCATABLE) */
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    name = PnSymbol(PnListHead(Parms));
 
-        if (s == NULL) {
-          gpmsg_verror(GPE_NOSYM, NULL, p);
-        }
-        else {
-          var = gp_sym_get_symbol_annotation(s);
+    if (name != NULL) {
+      sym = gp_sym_get_symbol(state.stTop, name);
 
-          if (var == NULL) {
-            snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", p);
-            gpmsg_warning(GPW_UNKNOWN, buf);
-          }
-          else {
-            if ((var->previous_type == VAL_ADDRESS) ||
-                (var->previous_type == VAL_GLOBAL)  ||
-                (var->previous_type == VAL_STATIC)) {
-              /* make the symbol global */
-              var->type = VAL_GLOBAL;
-            }
-            else if (var->previous_type == VAL_EXTERNAL) {
-              gpmsg_verror(GPE_DUPLAB, NULL, s);
-            }
-            else {
-              snprintf(buf, sizeof(buf), "Operand must be an address label: \"%s\"", p);
-              gpmsg_error(GPE_MUST_BE_LABEL, buf);
-            }
-          }
-        }
+      if (sym == NULL) {
+        gpmsg_verror(GPE_SYM_NOT_DEFINED, NULL, name);
       }
       else {
-        gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
+        var = gp_sym_get_symbol_annotation(sym);
+
+        if (var == NULL) {
+          snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", name);
+          gpmsg_warning(GPW_UNKNOWN, buf);
+        }
+        else {
+          if ((var->previous_type == VAL_ADDRESS) ||
+              (var->previous_type == VAL_GLOBAL)  ||
+              (var->previous_type == VAL_STATIC)) {
+            /* make the symbol global */
+            var->type = VAL_GLOBAL;
+          }
+          else if (var->previous_type == VAL_EXTERNAL) {
+            gpmsg_verror(GPE_DUPLAB, NULL, name);
+          }
+          else {
+            snprintf(buf, sizeof(buf), "Operand must be an address label: \"%s\"", name);
+            gpmsg_error(GPE_MUST_BE_LABEL, buf);
+          }
+        }
       }
+    }
+    else {
+      gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
     }
   }
 
@@ -3136,23 +3167,23 @@ _do_idata(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
   else {
     switch (Arity) {
-    case 0:
-      /* new relocatable section */
-      gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = 0;
-      state.obj.new_sect_flags = STYP_DATA;
-      break;
+      case 0:
+        /* new relocatable section */
+        gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = 0;
+        state.obj.new_sect_flags = STYP_DATA;
+        break;
 
-    case 1:
-      /* new absolute section */
-      p = PnListHead(Parms);
-      gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = eval_maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_DATA | STYP_ABS;
-      break;
+      case 1:
+        /* new absolute section */
+        p = PnListHead(Parms);
+        gp_strncpy(state.obj.new_sect_name, ".idata", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = eval_maybe_evaluate(p);
+        state.obj.new_sect_flags = STYP_DATA | STYP_ABS;
+        break;
 
-    default:
-     eval_enforce_arity(Arity, 1);
+      default:
+       eval_enforce_arity(Arity, 1);
     }
   }
 
@@ -3182,23 +3213,23 @@ _do_idata_acs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
   else {
     switch (Arity) {
-    case 0:
-      /* new relocatable section */
-      gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = 0;
-      state.obj.new_sect_flags = STYP_DATA | STYP_ACCESS;
-      break;
+      case 0:
+        /* new relocatable section */
+        gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = 0;
+        state.obj.new_sect_flags = STYP_DATA | STYP_ACCESS;
+        break;
 
-    case 1:
-      /* new absolute section */
-      p = PnListHead(Parms);
-      gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = eval_maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_DATA | STYP_ACCESS | STYP_ABS;
-      break;
+      case 1:
+        /* new absolute section */
+        p = PnListHead(Parms);
+        gp_strncpy(state.obj.new_sect_name, ".idata_acs", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = eval_maybe_evaluate(p);
+        state.obj.new_sect_flags = STYP_DATA | STYP_ACCESS | STYP_ABS;
+        break;
 
-    default:
-      eval_enforce_arity(Arity, 1);
+      default:
+        eval_enforce_arity(Arity, 1);
     }
   }
 
@@ -3238,7 +3269,7 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   proc_class_t  class;
   int           addr_digits;
-  int           value;
+  int           val;
   int           v;
   unsigned int  id_location;
   unsigned int  idreg;
@@ -3264,7 +3295,7 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   if (IS_PIC16E_CORE) {
     if (eval_enforce_arity(Arity, 2)) {
       idreg = gp_processor_org_to_byte(class, eval_maybe_evaluate(PnListHead(Parms)));
-      value = eval_maybe_evaluate(PnListHead(PnListTail(Parms)));
+      val   = eval_maybe_evaluate(PnListHead(PnListTail(Parms)));
     }
     else {
       gpmsg_error(GPW_EXPECTED, "18cxxx devices should specify __IDLOC address.");
@@ -3274,7 +3305,7 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   else {
     if (eval_enforce_arity(Arity, 1)) {
       idreg = id_location;
-      value = eval_maybe_evaluate(PnListHead(Parms));
+      val   = eval_maybe_evaluate(PnListHead(Parms));
     }
     else {
       return Value;
@@ -3291,12 +3322,12 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
     if (IS_PIC16E_CORE) {
       if (idreg < state.processor->idlocs_addrs[0]) {
-        gpmsg_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} < IDLOCS_MIN{0x%0*X}",
+        gpmsg_verror(GPE_OUT_OF_RANGE, "Not a valid ID location. Address{0x%0*X} < IDLOCS_MIN{0x%0*X}",
                      addr_digits, idreg,
                      addr_digits, state.processor->idlocs_addrs[0]);
       }
       else if (idreg > state.processor->idlocs_addrs[1]) {
-        gpmsg_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} > IDLOCS_MAX{0x%0*X}",
+        gpmsg_verror(GPE_OUT_OF_RANGE, "Not a valid ID location. Address{0x%0*X} > IDLOCS_MAX{0x%0*X}",
                      addr_digits, idreg,
                      addr_digits, state.processor->idlocs_addrs[1]);
       }
@@ -3304,10 +3335,10 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         state.lst.line.linetype = LTY_CONFIG;
         state.lst.config_address = idreg;
 
-        if (value & ~0xff) {
-          v      = value;
-          value &= 0xff;
-          snprintf(buf, sizeof(buf), "An ID Locations value too large. Last two hex digits used: 0x%X ==> 0x%02X", v, value);
+        if (val & ~0xff) {
+          v    = val;
+          val &= 0xff;
+          snprintf(buf, sizeof(buf), "An ID Locations value too large. Last two hex digits used: 0x%X ==> 0x%02X", v, val);
           gpmsg_message(GPM_IDLOC, buf);
         }
 
@@ -3320,7 +3351,7 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         }
 
         snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg);
-        gp_mem_b_put(m, idreg, value, buf, NULL);
+        gp_mem_b_put(m, idreg, val, buf, NULL);
         state.lst.line.was_byte_addr = idreg;
         coff_linenum(1);
 
@@ -3332,10 +3363,10 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     else {
       state.lst.line.linetype = LTY_IDLOCS;
 
-      if (value & ~0xffff) {
-        v      = value;
-        value &= 0xffff;
-        gpmsg_vmessage(GPM_IDLOC, NULL, v, value);
+      if (val & ~0xffff) {
+        v    = val;
+        val &= 0xffff;
+        gpmsg_vmessage(GPM_IDLOC, NULL, v, val);
       }
 
       if (class->i_memory_get(m, idreg, &word, NULL, NULL)) {
@@ -3343,13 +3374,13 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       }
 
       snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg);
-      class->i_memory_put(m, idreg,     (value & 0xf000) >> 12, buf, NULL);
+      class->i_memory_put(m, idreg,     (val & 0xf000) >> 12, buf, NULL);
       snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg + 2);
-      class->i_memory_put(m, idreg + 2, (value & 0x0f00) >> 8,  buf, NULL);
+      class->i_memory_put(m, idreg + 2, (val & 0x0f00) >> 8,  buf, NULL);
       snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg + 4);
-      class->i_memory_put(m, idreg + 4, (value & 0x00f0) >> 4,  buf, NULL);
+      class->i_memory_put(m, idreg + 4, (val & 0x00f0) >> 4,  buf, NULL);
       snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg + 6);
-      class->i_memory_put(m, idreg + 6, (value & 0x000f),       buf, NULL);
+      class->i_memory_put(m, idreg + 6, (val & 0x000f),       buf, NULL);
       state.lst.line.was_byte_addr = idreg;
       coff_linenum(8);
 
@@ -3358,6 +3389,7 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       }
     }
   }
+
   state.device.id_location = idreg;
 
   return Value;
@@ -3378,7 +3410,7 @@ _do_16_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   unsigned int   idreg;
   uint8_t        curvalue;
   const char    *pc;
-  int            value;
+  int            val;
   int            v;
   int            max_bytes;
   int            n;
@@ -3422,13 +3454,13 @@ _do_16_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     m = (state.mode == MODE_RELOCATABLE) ? state.obj.section->data : state.c_memory;
 
     if (idreg < state.processor->idlocs_addrs[0]) {
-      gpmsg_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} < IDLOCS_MIN{0x%0*X}",
+      gpmsg_verror(GPE_OUT_OF_RANGE, "Not a valid ID location. Address{0x%0*X} < IDLOCS_MIN{0x%0*X}",
                    addr_digits, idreg,
                    addr_digits, state.processor->idlocs_addrs[0]);
       return Value;
     }
     else if (idreg > state.processor->idlocs_addrs[1]) {
-      gpmsg_verror(GPE_RANGE, "Not a valid ID location. Address{0x%0*X} > IDLOCS_MAX{0x%0*X}",
+      gpmsg_verror(GPE_OUT_OF_RANGE, "Not a valid ID location. Address{0x%0*X} > IDLOCS_MAX{0x%0*X}",
                    addr_digits, idreg,
                    addr_digits, state.processor->idlocs_addrs[1]);
       return Value;
@@ -3447,12 +3479,12 @@ _do_16_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
       switch (p->tag) {
       case PTAG_SYMBOL:
-        value = eval_maybe_evaluate(p);
+        val = eval_maybe_evaluate(p);
         goto constant;
         break;
 
       case PTAG_CONSTANT:
-        value = PnConstant(p);
+        val = PnConstant(p);
 constant:
 
         if (n >= max_bytes) {
@@ -3460,10 +3492,10 @@ constant:
           goto warning;
         }
 
-        if (value & ~0xff) {
-          v = value;
-          value &= 0xff;
-          snprintf(buf, sizeof(buf), "An ID Locations value too large. Last two hex digits used: 0x%X ==> 0x%02X", v, value);
+        if (val & ~0xff) {
+          v    = val;
+          val &= 0xff;
+          snprintf(buf, sizeof(buf), "An ID Locations value too large. Last two hex digits used: 0x%X ==> 0x%02X", v, val);
           gpmsg_message(GPM_IDLOC, buf);
         }
 
@@ -3473,7 +3505,7 @@ constant:
         }
 
         snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg);
-        gp_mem_b_put(m, idreg, value, buf, NULL);
+        gp_mem_b_put(m, idreg, val, buf, NULL);
         state.lst.line.was_byte_addr = idreg;
 
         if (state.mode == MODE_RELOCATABLE) {
@@ -3493,7 +3525,7 @@ constant:
             goto warning;
           }
 
-          pc = convert_escape_chars(pc, &value);
+          pc = convert_escape_chars(pc, &val);
 
           if (gp_mem_b_get(m, idreg, &curvalue, NULL, NULL)) {
             gpmsg_verror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(class, idreg));
@@ -3501,7 +3533,7 @@ constant:
           }
 
           snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg);
-          gp_mem_b_put(m, idreg, value, buf, NULL);
+          gp_mem_b_put(m, idreg, val, buf, NULL);
           state.lst.line.was_byte_addr = idreg;
 
           if (state.mode == MODE_RELOCATABLE) {
@@ -3847,7 +3879,7 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           else {
             snprintf(message, sizeof(message),
                      "Argument out of range: Column_width{%i} <= LST_SRC_POS{%i}", value, LST_SRC_POS);
-            gpmsg_error(GPE_RANGE, message);
+            gpmsg_error(GPE_OUT_OF_RANGE, message);
           }
         }
         else if (strcasecmp(lhs, "f") == 0) {
@@ -3866,7 +3898,7 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
             if (value < state.maxrom) {
               snprintf(message, sizeof(message),
                        "Argument out of range, must be greater than or equal to %d.", state.maxrom);
-              gpmsg_error(GPE_RANGE, message);
+              gpmsg_error(GPE_OUT_OF_RANGE, message);
             }
             else {
               state.maxrom = value;
@@ -3884,7 +3916,7 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
               state.lst.lines_per_page = number;
             }
             else {
-              gpmsg_verror(GPE_RANGE, "0 < n{%i} <= 6", number);
+              gpmsg_verror(GPE_OUT_OF_RANGE, "0 < n{%i} <= 6", number);
             }
           }
         }
@@ -4246,10 +4278,10 @@ _do_pagesel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms, uint16_
   if (IS_EEPROM8 || IS_EEPROM16 || IS_PIC16E_CORE || (state.processor->num_pages == 1)) {
     state.lst.line.linetype = LTY_NONE;
     if (!state.mpasm_compatible) {
-      gpmsg_vmessage(GPM_EXT_PAGE2, NULL);
+      gpmsg_vmessage(GPM_EXT_PAGE, NULL);
     }
     else {
-      gpmsg_vmessage(GPM_EXT_PAGE, NULL);
+      gpmsg_vmessage(GPM_EXT_BANK_OR_PAGE, NULL);
     }
 
     return Value;
@@ -4273,6 +4305,7 @@ _do_pagesel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms, uint16_
       }
     }
     else {
+      /* (state.mode == MODE_RELOCATABLE) */
       num_reloc = eval_count_reloc(p);
 
       if (num_reloc == 0) {
@@ -4427,6 +4460,7 @@ _do_res(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         }
       }
       else {
+        /* (state.mode == MODE_RELOCATABLE) */
         if (SECTION_FLAGS & STYP_TEXT) {
           count = gp_processor_org_to_byte(class, count);
 
@@ -4582,17 +4616,17 @@ _do_type(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       coff_symbol = gp_coffgen_find_symbol(state.obj.object, symbol_name);
 
       if (coff_symbol == NULL) {
-        gpmsg_verror(GPE_NOSYM, NULL, symbol_name);
+        gpmsg_verror(GPE_SYM_NOT_DEFINED, NULL, symbol_name);
       }
       else {
         p = PnListHead(PnListTail(Parms));
         value = eval_maybe_evaluate(p);
 
         if (value < 0) {
-          gpmsg_verror(GPE_RANGE, "type{%i (%#x)} < 0", value, value);
+          gpmsg_verror(GPE_OUT_OF_RANGE, "type{%i (%#x)} < 0", value, value);
         }
         else if (value > 0xffff) {
-          gpmsg_verror(GPE_RANGE, "type{%i (%#x)} > 0xffff", value, value);
+          gpmsg_verror(GPE_OUT_OF_RANGE, "type{%i (%#x)} > 0xffff", value, value);
         }
         else {
           coff_symbol->type = value;
@@ -4624,23 +4658,23 @@ _do_udata(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
   else {
     switch (Arity) {
-    case 0:
-      /* new relocatable section */
-      gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = 0;
-      state.obj.new_sect_flags = STYP_BSS;
-      break;
+      case 0:
+        /* new relocatable section */
+        gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = 0;
+        state.obj.new_sect_flags = STYP_BSS;
+        break;
 
-    case 1:
-      /* new absolute section */
-      p = PnListHead(Parms);
-      gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = eval_maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_BSS | STYP_ABS;
-      break;
+      case 1:
+        /* new absolute section */
+        p = PnListHead(Parms);
+        gp_strncpy(state.obj.new_sect_name, ".udata", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = eval_maybe_evaluate(p);
+        state.obj.new_sect_flags = STYP_BSS | STYP_ABS;
+        break;
 
-    default:
-      eval_enforce_arity(Arity, 1);
+      default:
+        eval_enforce_arity(Arity, 1);
     }
   }
 
@@ -4666,24 +4700,25 @@ _do_udata_acs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
+    /* (state.mode == MODE_RELOCATABLE) */
     switch (Arity) {
-    case 0:
-      /* new relocatable section */
-      gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = 0;
-      state.obj.new_sect_flags = STYP_BSS | STYP_ACCESS;
-      break;
+      case 0:
+        /* new relocatable section */
+        gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = 0;
+        state.obj.new_sect_flags = STYP_BSS | STYP_ACCESS;
+        break;
 
-    case 1:
-      /* new absolute section */
-      p = PnListHead(Parms);
-      gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = eval_maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_BSS | STYP_ACCESS | STYP_ABS;
-      break;
+      case 1:
+        /* new absolute section */
+        p = PnListHead(Parms);
+        gp_strncpy(state.obj.new_sect_name, ".udata_acs", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = eval_maybe_evaluate(p);
+        state.obj.new_sect_flags = STYP_BSS | STYP_ACCESS | STYP_ABS;
+        break;
 
-    default:
-      eval_enforce_arity(Arity, 1);
+      default:
+        eval_enforce_arity(Arity, 1);
     }
   }
 
@@ -4709,24 +4744,25 @@ _do_udata_ovr(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
+    /* (state.mode == MODE_RELOCATABLE) */
     switch (Arity) {
-    case 0:
-      /* new relocatable section */
-      gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = 0;
-      state.obj.new_sect_flags = STYP_BSS | STYP_OVERLAY;
-      break;
+      case 0:
+        /* new relocatable section */
+        gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = 0;
+        state.obj.new_sect_flags = STYP_BSS | STYP_OVERLAY;
+        break;
 
-    case 1:
-      /* new absolute section */
-      p = PnListHead(Parms);
-      gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = eval_maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_BSS | STYP_OVERLAY | STYP_ABS;
-      break;
+      case 1:
+        /* new absolute section */
+        p = PnListHead(Parms);
+        gp_strncpy(state.obj.new_sect_name, ".udata_ovr", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = eval_maybe_evaluate(p);
+        state.obj.new_sect_flags = STYP_BSS | STYP_OVERLAY | STYP_ABS;
+        break;
 
-    default:
-      eval_enforce_arity(Arity, 1);
+      default:
+        eval_enforce_arity(Arity, 1);
     }
   }
 
@@ -4752,24 +4788,25 @@ _do_udata_shr(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     gpmsg_verror(GPE_OBJECT_ONLY, NULL, Name);
   }
   else {
+    /* (state.mode == MODE_RELOCATABLE) */
     switch (Arity) {
-    case 0:
-      /* new relocatable section */
-      gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = 0;
-      state.obj.new_sect_flags = STYP_BSS | STYP_SHARED;
-      break;
+      case 0:
+        /* new relocatable section */
+        gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = 0;
+        state.obj.new_sect_flags = STYP_BSS | STYP_SHARED;
+        break;
 
-    case 1:
-      /* new absolute section */
-      p = PnListHead(Parms);
-      gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
-      state.obj.new_sect_addr  = eval_maybe_evaluate(p);
-      state.obj.new_sect_flags = STYP_BSS | STYP_SHARED | STYP_ABS;
-      break;
+      case 1:
+        /* new absolute section */
+        p = PnListHead(Parms);
+        gp_strncpy(state.obj.new_sect_name, ".udata_shr", sizeof(state.obj.new_sect_name));
+        state.obj.new_sect_addr  = eval_maybe_evaluate(p);
+        state.obj.new_sect_flags = STYP_BSS | STYP_SHARED | STYP_ABS;
+        break;
 
-    default:
-      eval_enforce_arity(Arity, 1);
+      default:
+        eval_enforce_arity(Arity, 1);
     }
   }
 
@@ -4781,21 +4818,29 @@ _do_udata_shr(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 static gpasmVal
 _do_undefine(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  const pnode_t *p;
+  const pnode_t    *p;
+  const char       *sname;
 
   if (_check_processor_select(Name)) {
     return Value;
   }
 
   state.lst.line.linetype = LTY_DIR;
-  state.preproc.do_emit = false;
+  state.preproc.do_emit   = false;
 
   if (eval_enforce_arity(Arity, 1)) {
     p = PnListHead(Parms);
 
     if (PnIsSymbol(p)) {
-      if (!gp_sym_remove_symbol(state.stDefines, PnSymbol(p))) {
-        gpmsg_vwarning(GPW_NOT_DEFINED, NULL, PnSymbol(p));
+      sname = PnSymbol(p);
+
+      if (!gp_sym_remove_symbol(state.stDefines, sname)) {
+        if ((!state.mpasm_compatible) && (state.strict_level == 2)) {
+          gpmsg_verror(GPE_SYM_NOT_DEFINED, NULL, sname);
+        }
+        else {
+          gpmsg_vwarning(GPW_SYM_NOT_DEFINED, NULL, sname);
+        }
       }
     }
     else {
@@ -4932,7 +4977,7 @@ _emit_check(unsigned int Insn, int Argument, int Mask, const char *Name)
 
   /* If there are bits that shouldn't be set then issue a warning. */
   if (test & (~Mask)) {
-    gpmsg_vwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", Argument, Argument, v, v);
+    gpmsg_vwarning(GPW_OUT_OF_RANGE, "%i (%#x) => %i (%#x)", Argument, Argument, v, v);
   }
 
   _emit(Insn | v, Name);
@@ -4954,7 +4999,7 @@ _emit_check_relative(unsigned int Insn, int Argument, int Mask, int Range, const
   if ((Argument > Range) || (Argument < -(Range + 1))) {
     snprintf(full_message, sizeof(full_message),
              "Argument out of range (%d not between %d and %d).", Argument, -(Range + 1), Range);
-    gpmsg_error(GPE_RANGE, full_message);
+    gpmsg_error(GPE_OUT_OF_RANGE, full_message);
   }
 
   _emit(Insn | (Argument & Mask), Name);
@@ -4966,7 +5011,7 @@ static int
 _check_flag(int Flag)
 {
   if ((Flag != 0) && (Flag != 1)) {
-    gpmsg_vwarning(GPW_RANGE, "%i (%#x)", Flag, Flag);
+    gpmsg_vwarning(GPW_OUT_OF_RANGE, "%i (%#x)", Flag, Flag);
   }
 
   return (Flag & 0x1);
@@ -5013,7 +5058,7 @@ _check_16e_arg_types(const pnode_t *Parms, int Arity, unsigned int Types)
 
             if ((val < 0) || (val > 0x5f)) {
               snprintf(buf, sizeof(buf), "Argument out of range (%i (%#x) not between 0 and 95).", val, val);
-              gpmsg_error(GPE_RANGE, buf);
+              gpmsg_error(GPE_OUT_OF_RANGE, buf);
               ret = false;
             }
           }
@@ -5216,11 +5261,11 @@ _msg_this_access_ram(unsigned int Reg_address, const char *Reg_name, gp_boolean 
 
   if (state.strict_level == 2) {
     msg  = gpmsg_verror;
-    code = (Is_access) ? GPE_IS_ACCRAM : GPE_NO_ACCRAM;
+    code = (Is_access) ? GPE_IN_OF_ACCRAM : GPE_OUT_OF_ACCRAM;
   }
   else {
     msg  = gpmsg_vwarning;
-    code = (Is_access) ? GPW_IS_ACCRAM : GPW_NO_ACCRAM;
+    code = (Is_access) ? GPW_IN_OF_ACCRAM : GPW_OUT_OF_ACCRAM;
   }
 
   if (Reg_name != NULL) {
@@ -5260,7 +5305,7 @@ _msg_access_nosel_def(int Reg_address, const char *Reg_name)
 
   if (state.strict_level == 2) {
     msg  = gpmsg_verror;
-    code = GPE_ACC_NOSEL;
+    code = GPE_NO_ACC;
   }
   else {
     msg  = gpmsg_vmessage;
@@ -5326,16 +5371,16 @@ _msg_ram_bank(int Reg_address, const char *Reg_name, int Bank_number)
 
   if (state.mpasm_compatible) {
     msg  = gpmsg_vmessage;
-    code = GPM_BANK;
+    code = GPM_OUT_OF_BANK;
   }
   else {
     if (state.strict_level == 2) {
       msg  = gpmsg_verror;
-      code = GPE_BANK;
+      code = GPE_OUT_OF_BANK;
     }
     else {
       msg  = gpmsg_vwarning;
-      code = GPW_BANK;
+      code = GPW_OUT_OF_BANK;
     }
   }
 
@@ -5399,10 +5444,10 @@ _reg_addr_check_reloc(int Reg_address, const char *Reg_name, unsigned int Insn_f
       if (i_flags.dest == IFLAG_DEST_DEF_FILE) {
         /* Default selected a file register. */
         if (state.strict_level == 2) {
-          gpmsg_verror(GPE_NOF, NULL);
+          gpmsg_verror(GPE_NO_DEST, NULL);
         }
         else {
-          gpmsg_vmessage(GPM_NOF, NULL);
+          gpmsg_vmessage(GPM_NO_DEST, NULL);
         }
       }
       break;
@@ -5541,7 +5586,7 @@ _reg_addr_check(int Reg_address, const char *Reg_name, unsigned int Insn_flags, 
     /* Only so much can be done compatibility reasons. */
     if (bank_addr > 0) {
       if (Reg_name != NULL) {
-        gpmsg_vmessage(GPM_BANK,
+        gpmsg_vmessage(GPM_OUT_OF_BANK,
                        "'%s' -- (Bank_%u: 0x%0*X; Offs: 0x%0*X)", 0,
                        Reg_name,
                        bank_num,
@@ -5549,7 +5594,7 @@ _reg_addr_check(int Reg_address, const char *Reg_name, unsigned int Insn_flags, 
                        word_digits, reg_offs);
       }
       else {
-        gpmsg_vmessage(GPM_BANK,
+        gpmsg_vmessage(GPM_OUT_OF_BANK,
                        "Bank_%u: 0x%0*X; Offs: 0x%0*X", 0,
                        bank_num,
                        word_digits, bank_addr,
@@ -5587,7 +5632,7 @@ _reg_addr_check(int Reg_address, const char *Reg_name, unsigned int Insn_flags, 
   }
   else if (!i_flags.isAccess) {
     if (gp_processor_num_banks(state.processor) > 1) {
-      gpmsg_vmessage(GPM_NOB, NULL, bank_num);
+      gpmsg_vmessage(GPM_NO_BANK, NULL, bank_num);
     }
 
     /* If no bank is explicitly selected, set bank to this register now. */
@@ -5640,7 +5685,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
       icode = ins->icode;
 
       switch (ins->class) {
-      case INSN_CLASS_LIT3_BANK:
+      case INSN_CLASS_LIT3_BANK: {
         /* SX bank */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5653,10 +5698,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
                       SX_BMSK_BANK, sym_name);
         }
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT3_PAGE:
+      case INSN_CLASS_LIT3_PAGE: {
         /* SX page */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5668,24 +5714,25 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(ins->opcode, (eval_reloc_evaluate(p, RELOCT_F, NULL, NULL) >> PIC12_PAGE_SHIFT),
                       SX_BMSK_PAGE, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT1:
+      case INSN_CLASS_LIT1: {
         /* PIC16E (retfie, return) */
-        {
-          int flag;
+        int flag;
 
-          if (state.processor == NULL) {
-            gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
-            return 0;
-          }
+        if (state.processor == NULL) {
+          gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
 
-          flag = 0;
-          _check_16e_arg_types(Parameters, arity, 0);
+        flag = 0;
+        _check_16e_arg_types(Parameters, arity, 0);
 
-          switch (arity) {
+        switch (arity) {
           case 1:
             flag = _check_flag(eval_reloc_evaluate(PnListHead(Parameters), RELOCT_F, NULL, NULL));
           case 0:
@@ -5694,13 +5741,14 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           default:
             eval_enforce_arity(arity, 1);
-          }
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT3:
+      case INSN_CLASS_LIT3: {
         /* PIC12E, PIC12I movlb */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5720,11 +5768,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
                        VAL_VARIABLE, true);
           }
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT4:
+      case INSN_CLASS_LIT4: {
         /* SX mode */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5736,11 +5786,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(ins->opcode, eval_reloc_evaluate(p, RELOCT_F, NULL, NULL),
                       SX_BMSK_MODE, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT4L:
+      case INSN_CLASS_LIT4L: {
 	/* PIC16E movlb */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5762,11 +5814,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
                        VAL_VARIABLE, true);
           }
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT4H:
+      case INSN_CLASS_LIT4H: {
         /* PIC16 movlr */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5778,11 +5832,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(ins->opcode, (eval_reloc_evaluate(p, RELOCT_MOVLR, NULL, NULL) << 4),
                       PIC16_BMSK_MOVLR, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT5:
+      case INSN_CLASS_LIT5: {
         /* PIC14E movlb */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5802,11 +5858,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
                        VAL_VARIABLE, true);
           }
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LITBSR_6:
+      case INSN_CLASS_LITBSR_6: {
         /* PIC14EX movlb */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5826,11 +5884,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
                        VAL_VARIABLE, true);
           }
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT6:
+      case INSN_CLASS_LIT6: {
         /* PIC16E (addulnk, subulnk) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5843,11 +5903,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           /* The literal cannot be a relocatable address. */
           _emit_check(ins->opcode, eval_maybe_evaluate(p), PIC16EX_BMSK_xxxULNK, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT7:
+      case INSN_CLASS_LIT7: {
         /* PIC14E movlp */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5867,11 +5929,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
                        VAL_VARIABLE, true);
           }
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT8:
+      case INSN_CLASS_LIT8: {
         /* PIC1xx (addlw, andlw, iorlw, movlw, retlw, sublw, xorlw),
 	   PIC16  movlb,
 	   PIC16x mullw,
@@ -5895,11 +5959,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             _emit_check(ins->opcode, eval_reloc_evaluate(p, RELOCT_LOW, NULL, NULL), 0xff, sym_name);
           }
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT8C12:
+      case INSN_CLASS_LIT8C12: {
         /* PIC12x call, SX call */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5914,11 +5980,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
             /* PC is 11 bits. Mpasm checks the maximum device address. */
             if (value & (~PIC12_PC_MASK)) {
-              gpmsg_verror(GPE_RANGE, "Address{%#x} > %#x.", value, PIC12_PC_MASK);
+              gpmsg_verror(GPE_OUT_OF_RANGE, "Address{%#x} > %#x.", value, PIC12_PC_MASK);
             }
 
             if ((value & PIC12_PAGE_BITS) != (r & PIC12_PAGE_BITS)) {
-              gpmsg_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+              gpmsg_vmessage(GPM_PAGE_BOUNDARY, "0x%0*X != 0x%0*X",
                              addr_digits, (value & PIC12_PAGE_BITS),
                              addr_digits, (r & PIC12_PAGE_BITS));
             }
@@ -5931,11 +5997,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           _emit(ins->opcode | (eval_reloc_evaluate(p, RELOCT_CALL, NULL, NULL) & PIC12_BMSK_CALL), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT8C16:
+      case INSN_CLASS_LIT8C16: {
         /* PIC16 lcall */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5950,16 +6018,18 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           /* PC is 16 bits. Mpasm checks the maximum device address. */
           if (value & (~0xffff)) {
-            gpmsg_verror(GPE_RANGE, "Address{0x%0*X} > 0xffff.", addr_digits, value);
+            gpmsg_verror(GPE_OUT_OF_RANGE, "Address{0x%0*X} > 0xffff.", addr_digits, value);
           }
 
           _emit(ins->opcode | (value & 0xff), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT9:
+      case INSN_CLASS_LIT9: {
         /* PIC12 goto, SX goto */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -5974,12 +6044,12 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
             /* PC is 11 bits. Mpasm checks the maximum device address. */
             if (value & (~PIC12_PC_MASK)) {
-              gpmsg_verror(GPE_RANGE, "Address{0x%0*X} > 0x%0*X.",
+              gpmsg_verror(GPE_OUT_OF_RANGE, "Address{0x%0*X} > 0x%0*X.",
                            addr_digits, value, addr_digits, PIC12_PC_MASK);
             }
 
             if ((value & PIC12_PAGE_BITS) != (r & PIC12_PAGE_BITS)) {
-              gpmsg_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+              gpmsg_vmessage(GPM_PAGE_BOUNDARY, "0x%0*X != 0x%0*X",
                              addr_digits, (value & PIC12_PAGE_BITS),
                              addr_digits, (r & PIC12_PAGE_BITS));
             }
@@ -5987,11 +6057,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           _emit(ins->opcode | (eval_reloc_evaluate(p, RELOCT_GOTO, NULL, NULL) & PIC12_BMSK_GOTO), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT11:
+      case INSN_CLASS_LIT11: {
         /* PIC14x (call, goto) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6007,12 +6079,12 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
               /* PC is 15 bits. Mpasm checks the maximum device address. */
               if (value & (~PIC14E_PC_MASK)) {
-                gpmsg_verror(GPE_RANGE, "Address{0x%0*X} > 0x%0*X.",
+                gpmsg_verror(GPE_OUT_OF_RANGE, "Address{0x%0*X} > 0x%0*X.",
                              addr_digits, value, addr_digits, PIC14E_PC_MASK);
               }
 
               if ((value & PIC14E_PAGE_BITS) != (r & PIC14E_PAGE_BITS)) {
-                gpmsg_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+                gpmsg_vmessage(GPM_PAGE_BOUNDARY, "0x%0*X != 0x%0*X",
                                addr_digits, (value & PIC14E_PAGE_BITS),
                                addr_digits, (r & PIC14E_PAGE_BITS));
               }
@@ -6020,12 +6092,12 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             else {
               /* PC is 13 bits.  mpasm checks the maximum device address. */
               if (value & (~PIC14_PC_MASK)) {
-                gpmsg_verror(GPE_RANGE, "Address{0x%0*X} > 0x%0*X.",
+                gpmsg_verror(GPE_OUT_OF_RANGE, "Address{0x%0*X} > 0x%0*X.",
                              addr_digits, value, addr_digits, PIC14_PC_MASK);
               }
 
               if ((value & PIC14_PAGE_BITS) != (r & PIC14_PAGE_BITS)) {
-                gpmsg_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+                gpmsg_vmessage(GPM_PAGE_BOUNDARY, "0x%0*X != 0x%0*X",
                                addr_digits, (value & PIC14_PAGE_BITS),
                                addr_digits, (r & PIC14_PAGE_BITS));
               }
@@ -6037,11 +6109,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 	                      PIC14_BMSK_BRANCH),
 	        sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT13:
+      case INSN_CLASS_LIT13: {
         /* PIC16 (call, goto) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6056,12 +6130,12 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
             /* PC is 16 bits.  mpasm checks the maximum device address. */
             if (value & (~PIC16_PC_MASK)) {
-              gpmsg_verror(GPE_RANGE, "Address{0x%0*X} > 0x%0*X.",
+              gpmsg_verror(GPE_OUT_OF_RANGE, "Address{0x%0*X} > 0x%0*X.",
                            addr_digits, value, addr_digits, PIC16_PC_MASK);
             }
 
             if ((value & PIC16_PAGE_BITS) != (r & PIC16_PAGE_BITS)) {
-              gpmsg_vmessage(GPM_PAGE, "0x%0*X != 0x%0*X",
+              gpmsg_vmessage(GPM_PAGE_BOUNDARY, "0x%0*X != 0x%0*X",
                              addr_digits, (value & PIC16_PAGE_BITS),
                              addr_digits, (r & PIC16_PAGE_BITS));
             }
@@ -6072,11 +6146,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 		              PIC16_BMSK_BRANCH),
 	        sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LITFSR_14:
+      case INSN_CLASS_LITFSR_14: {
         /* PIC14E addfsr */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6097,23 +6173,25 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             value = eval_maybe_evaluate(p);
 
             if (value < -32) {
-              gpmsg_verror(GPE_RANGE, "%ins < -32", value);
+              gpmsg_verror(GPE_OUT_OF_RANGE, "%ins < -32", value);
             }
             else if (value > 31) {
-              gpmsg_verror(GPE_RANGE, "%ins > 31", value);
+              gpmsg_verror(GPE_OUT_OF_RANGE, "%ins > 31", value);
             }
 
             _emit(ins->opcode | fsr | (value & 0x3f), sym_name);
           }
           else {
-            gpmsg_verror(GPE_RANGE, "FSR = %ins.", fsr);
+            gpmsg_verror(GPE_OUT_OF_RANGE, "FSR = %ins.", fsr);
           }
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LITFSR_16:
+      case INSN_CLASS_LITFSR_16: {
         /* PIC16E (addfsr, subfsr) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6130,10 +6208,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           fsr = eval_maybe_evaluate(p);
 
           if (fsr < 0) {
-            gpmsg_verror(GPE_RANGE, "FSR{%ins} < 0.", fsr);
+            gpmsg_verror(GPE_OUT_OF_RANGE, "FSR{%ins} < 0.", fsr);
           }
           else if (fsr > 2) {
-            gpmsg_verror(GPE_RANGE, "FSR{%ins} > 2.", fsr);
+            gpmsg_verror(GPE_OUT_OF_RANGE, "FSR{%ins} > 2.", fsr);
           }
 
           p     = PnListHead(PnListTail(Parameters));
@@ -6141,16 +6219,18 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           value = eval_maybe_evaluate(p);
 
           if (value & (~0x3f)) {
-            gpmsg_verror(GPE_RANGE, "%ins (%#x) > 0x3f", value, value);
+            gpmsg_verror(GPE_OUT_OF_RANGE, "%ins (%#x) > 0x3f", value, value);
           }
 
           _emit(ins->opcode | ((fsr & 0x3) << 6) | (value & 0x3f), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_RBRA8:
+      case INSN_CLASS_RBRA8: {
         /* PIC16E (bc, bn, bnc, bnn, bnov, bnz, bov, bz) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6181,11 +6261,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
              between -127 <= offset <= 127. */
           _emit_check_relative(ins->opcode, offset, PIC16E_BMSK_RBRA8, 127, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_RBRA9:
+      case INSN_CLASS_RBRA9: {
         /* PIC14E bra */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6210,11 +6292,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
              between -256 <= offset <= 255. */
           _emit_check_relative(ins->opcode, offset, PIC14E_BMSK_RBRA9, 255, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_RBRA11:
+      case INSN_CLASS_RBRA11: {
         /* PIC16E (bra, rcall) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6245,11 +6329,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
              between -1024 <= offset <= 1023. */
           _emit_check_relative(ins->opcode, offset, PIC16E_BMSK_RBRA11, 1023, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_LIT20:
+      case INSN_CLASS_LIT20: {
         /* PIC16E goto */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6268,33 +6354,34 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           eval_reloc_evaluate(p, RELOCT_GOTO2, NULL, NULL);     /* add the second relocation */
           _emit_check(0xf000, dest >> 8, PIC16E_BMSK_BRANCH_HIGHER, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_CALL20:
+      case INSN_CLASS_CALL20: {
         /* PIC16E call */
-        {
-          int            dest;
-          int            flag;
-          const pnode_t *p2; /* second parameter */
+        int            dest;
+        int            flag;
+        const pnode_t *p2; /* second parameter */
 
-          if (state.processor == NULL) {
-            gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
-            return 0;
-          }
+        if (state.processor == NULL) {
+          gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
 
-          flag = 0; /* By default, fast push is not used. */
+        flag = 0; /* By default, fast push is not used. */
 
-          if (arity < 1) {
-            eval_enforce_arity(arity, 2);
-          }
-          else {
-            _check_16e_arg_types(Parameters, arity, 0);
+        if (arity < 1) {
+          eval_enforce_arity(arity, 2);
+        }
+        else {
+          _check_16e_arg_types(Parameters, arity, 0);
 
-            p = PnListHead(Parameters);
+          p = PnListHead(Parameters);
 
-            switch (arity) {
+          switch (arity) {
             case 2:
               p2 = PnListHead(PnListTail(Parameters));
               /* Allow "s" for fast push */
@@ -6312,20 +6399,21 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
             default:
               eval_enforce_arity(arity, 2);
-            }
-
-            dest = eval_reloc_evaluate(p, RELOCT_CALL, NULL, NULL);
-            dest = gp_processor_org_to_byte(class, dest) >> 1;
-            _emit(ins->opcode | (flag << 8) | (dest & PIC16E_BMSK_BRANCH_LOWER), sym_name);
-            eval_reloc_evaluate(p, RELOCT_CALL2, NULL, NULL);     /* add the second relocation */
-            _emit_check(0xf000, (dest >> 8), PIC16E_BMSK_BRANCH_HIGHER, sym_name);
           }
-        }
+
+          dest = eval_reloc_evaluate(p, RELOCT_CALL, NULL, NULL);
+          dest = gp_processor_org_to_byte(class, dest) >> 1;
+          _emit(ins->opcode | (flag << 8) | (dest & PIC16E_BMSK_BRANCH_LOWER), sym_name);
+          eval_reloc_evaluate(p, RELOCT_CALL2, NULL, NULL);     /* add the second relocation */
+          _emit_check(0xf000, (dest >> 8), PIC16E_BMSK_BRANCH_HIGHER, sym_name);
+          }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_FLIT12:
+      case INSN_CLASS_FLIT12: {
         /* PIC16E lfsr */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6350,11 +6438,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           eval_reloc_evaluate(p, RELOCT_LFSR2, NULL, NULL); /* add the second relocation */
           _emit(0xf000 | (k & 0xff), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_FF:
+      case INSN_CLASS_FF: {
         /* PIC16E movff */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6385,11 +6475,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(ins->opcode, eval_reloc_evaluate(PnListHead(Parameters), RELOCT_FF1, NULL, NULL), 0xfff, sym_name);
           _emit_check(0xf000, eval_reloc_evaluate(PnListHead(PnListTail(Parameters)), RELOCT_FF2, NULL, NULL), 0xfff, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_FP:
+      case INSN_CLASS_FP: {
         /* PIC16 movfp */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6405,17 +6497,19 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           reg  = eval_reloc_evaluate(PnListHead(PnListTail(Parameters)), RELOCT_P, NULL, NULL);
 
           if (reg & ~0xf1f) {
-            gpmsg_vwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
+            gpmsg_vwarning(GPW_OUT_OF_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
           }
 
           _reg_addr_check(file, str, IFLAG_NONE, -1);
           _emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_PF:
+      case INSN_CLASS_PF: {
         /* PIC16 movpf */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6431,17 +6525,19 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           reg  = eval_reloc_evaluate(PnListHead(Parameters), RELOCT_P, NULL, NULL);
 
           if (reg & ~0xf1f) {
-            gpmsg_vwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
+            gpmsg_vwarning(GPW_OUT_OF_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
           }
 
           _reg_addr_check(file, str, IFLAG_NONE, -1);
           _emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_SF:
+      case INSN_CLASS_SF: {
         /* PIC16E movsf */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6477,11 +6573,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(ins->opcode, source, 0x7f, sym_name);
           _emit_check(0xf000, eval_reloc_evaluate(PnListHead(PnListTail(Parameters)), RELOCT_FF2, NULL, NULL), 0xfff, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_SS:
+      case INSN_CLASS_SS: {
         /* PIC16E movss */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6503,11 +6601,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit_check(ins->opcode, source, 0x7f, sym_name);
           _emit_check(0xf000, dest, 0x7f, sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_OPF3:
+      case INSN_CLASS_OPF3: {
         /* PIC12 tris */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6520,11 +6620,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _reg_addr_check(file, NULL, IFLAG_NONE, -1);
           _emit(ins->opcode | (file & PIC12_BMSK_TRIS), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_OPF5:
+      case INSN_CLASS_OPF5: {
         /* {PIC12x, SX} (clrf, movwf), SX tris */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6554,40 +6656,41 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _reg_addr_check(file, str, insn_flags.u, reloc_val);
           _emit(ins->opcode | (file & PIC12_BMSK_FILE), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_OPWF5:
+      case INSN_CLASS_OPWF5: {
         /* {PIC12x, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
                          iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
-        {
-          int          d;
-          insn_flags_t insn_flags;
-          gp_boolean   is_reloc;
-          gpasmVal     reloc_val;
+        int          d;
+        insn_flags_t insn_flags;
+        gp_boolean   is_reloc;
+        gpasmVal     reloc_val;
 
-          if (state.processor == NULL) {
-            gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
-            return 0;
-          }
+        if (state.processor == NULL) {
+          gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
 
-          if (arity == 0) {
-            eval_enforce_arity(arity, 2);
-            break;
-          }
+        if (arity == 0) {
+          eval_enforce_arity(arity, 2);
+          break;
+        }
 
-          insn_flags.u    = IFLAG_NONE;
-          d               = F;      /* Default destination of 1 (file). */
-          insn_flags.dest = IFLAG_DEST_DEF_FILE;
-          p    = PnListHead(Parameters);
-          str  = pnode_symbol_name(p);
-          file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
-          if (is_reloc) {
-            insn_flags.isReloc = true;
-          }
+        insn_flags.u    = IFLAG_NONE;
+        d               = F;      /* Default destination of 1 (file). */
+        insn_flags.dest = IFLAG_DEST_DEF_FILE;
+        p    = PnListHead(Parameters);
+        str  = pnode_symbol_name(p);
+        file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
+        if (is_reloc) {
+          insn_flags.isReloc = true;
+        }
 
-          switch (arity) {
+        switch (arity) {
           case 2:
             p = PnListHead(PnListTail(Parameters));
             /* Allow "w" and "f" as destinations. */
@@ -6610,83 +6713,17 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           default:
             eval_enforce_arity(arity, 2);
-          }
-
-          _reg_addr_check(file, str, insn_flags.u, reloc_val);
-          _emit(ins->opcode | (d << 5) | (file & PIC12_BMSK_FILE), sym_name);
         }
+
+        _reg_addr_check(file, str, insn_flags.u, reloc_val);
+        _emit(ins->opcode | (d << 5) | (file & PIC12_BMSK_FILE), sym_name);
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_B5:
+      case INSN_CLASS_B5: {
         /* {PIC12x, SX} (bcf, bsf, btfsc, btfss) */
-        {
-          int          bit;
-          insn_flags_t insn_flags;
-          gp_boolean   is_reloc;
-          gpasmVal     reloc_val;
-
-          if (state.processor == NULL) {
-            gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
-            return 0;
-          }
-
-          if (eval_enforce_arity(arity, 2)) {
-            insn_flags.u = IFLAG_NONE;
-            p    = PnListHead(Parameters);
-            str  = pnode_symbol_name(p);
-            file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
-            if (is_reloc) {
-              insn_flags.isReloc = true;
-            }
-
-            p    = PnListHead(PnListTail(Parameters));
-            bit  = eval_maybe_evaluate(p);
-
-            if (bit < 0) {
-              gpmsg_vwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
-            }
-            else if (bit > 7) {
-              gpmsg_vwarning(GPW_RANGE, "Bit{%ins} > 7.", bit);
-            }
-
-            bit &= 7;
-
-            if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
-              is_btfsx = true;
-            }
-
-            _reg_addr_check(file, str, insn_flags.u, reloc_val);
-            _emit(ins->opcode | (bit << 5) | (file & PIC12_BMSK_FILE), sym_name);
-
-            if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
-              if (IS_PIC12_CORE) {
-                int reg = file & PIC12_BMSK_FILE;
-
-                if (reg == PIC12_REG_STATUS) {
-                  /* This code monitors the change of ROM Pages. */
-                  if (!_check_and_set_page_bit(icode, bit, PIC12_BIT_STATUS_PA0, PIC12_BIT_STATUS_PA1, PIC12_BIT_STATUS_PA2)) {
-                    return 0;
-                  }
-                }
-                else if (reg == PIC12_REG_FSR) {
-                  /* This code monitors the change of RAM Banks. */
-                  if (!_check_and_set_bank_bit(icode, bit, PIC12_BIT_FSR_RP0, PIC12_BIT_FSR_RP1, PIC12_BIT_FSR_RP2)) {
-                    return 0;
-                  }
-                }
-              }
-            }
-          }
-        }
-        break;
-
-      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-      case INSN_CLASS_B8:
-        /* PIC16 (bcf, bsf, btfsc, btfss, btg) */
-      {
         int          bit;
         insn_flags_t insn_flags;
         gp_boolean   is_reloc;
@@ -6710,10 +6747,75 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           bit  = eval_maybe_evaluate(p);
 
           if (bit < 0) {
-            gpmsg_vwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
+            gpmsg_vwarning(GPW_OUT_OF_RANGE, "Bit{%ins} < 0.", bit);
           }
           else if (bit > 7) {
-            gpmsg_vwarning(GPW_RANGE, "Bit{%ins} > 7.", bit);
+            gpmsg_vwarning(GPW_OUT_OF_RANGE, "Bit{%ins} > 7.", bit);
+          }
+
+          bit &= 7;
+
+          if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
+            is_btfsx = true;
+          }
+
+          _reg_addr_check(file, str, insn_flags.u, reloc_val);
+          _emit(ins->opcode | (bit << 5) | (file & PIC12_BMSK_FILE), sym_name);
+
+          if ((!state.mpasm_compatible) && (state.mode == MODE_ABSOLUTE)) {
+            if (IS_PIC12_CORE) {
+              int reg = file & PIC12_BMSK_FILE;
+
+              if (reg == PIC12_REG_STATUS) {
+                /* This code monitors the change of ROM Pages. */
+                if (!_check_and_set_page_bit(icode, bit, PIC12_BIT_STATUS_PA0, PIC12_BIT_STATUS_PA1, PIC12_BIT_STATUS_PA2)) {
+                  return 0;
+                }
+              }
+              else if (reg == PIC12_REG_FSR) {
+                /* This code monitors the change of RAM Banks. */
+                if (!_check_and_set_bank_bit(icode, bit, PIC12_BIT_FSR_RP0, PIC12_BIT_FSR_RP1, PIC12_BIT_FSR_RP2)) {
+                  return 0;
+                }
+              }
+            }
+          }
+        }
+
+        break;
+      }
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+      case INSN_CLASS_B8: {
+        /* PIC16 (bcf, bsf, btfsc, btfss, btg) */
+        int          bit;
+        insn_flags_t insn_flags;
+        gp_boolean   is_reloc;
+        gpasmVal     reloc_val;
+
+        if (state.processor == NULL) {
+          gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
+
+        if (eval_enforce_arity(arity, 2)) {
+          insn_flags.u = IFLAG_NONE;
+          p    = PnListHead(Parameters);
+          str  = pnode_symbol_name(p);
+          file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
+          if (is_reloc) {
+            insn_flags.isReloc = true;
+          }
+
+          p    = PnListHead(PnListTail(Parameters));
+          bit  = eval_maybe_evaluate(p);
+
+          if (bit < 0) {
+            gpmsg_vwarning(GPW_OUT_OF_RANGE, "Bit{%ins} < 0.", bit);
+          }
+          else if (bit > 7) {
+            gpmsg_vwarning(GPW_OUT_OF_RANGE, "Bit{%ins} > 7.", bit);
           }
 
           if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
@@ -6728,7 +6830,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_OPF7:
+      case INSN_CLASS_OPF7: {
         /* PIC14x (clrf, movwf, tris) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6759,11 +6861,13 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _reg_addr_check(file, str, insn_flags.u, reloc_val);
           _emit(ins->opcode | (file & PIC14_BMSK_FILE), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_OPF8:
+      case INSN_CLASS_OPF8: {
         /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6786,41 +6890,42 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _reg_addr_check(file, str, insn_flags.u, reloc_val);
           _emit(ins->opcode | (file & PIC16_BMSK_FILE), sym_name);
         }
+
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_OPWF7:
+      case INSN_CLASS_OPWF7: {
         /* PIC14x (addwf, andwf, comf, decf, decfsz, incf, incfsz, iorwf, movf,
                    rlf, rrf, subwf, swapf, xorwf)
            PIC14E (addwfc, asrf, lslf, lsrf, subwfb) */
-        {
-          int          d;
-          insn_flags_t insn_flags;
-          gp_boolean   is_reloc;
-          gpasmVal     reloc_val;
+        int          d;
+        insn_flags_t insn_flags;
+        gp_boolean   is_reloc;
+        gpasmVal     reloc_val;
 
-          if (state.processor == NULL) {
-            gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
-            return 0;
-          }
+        if (state.processor == NULL) {
+          gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
 
-          if (arity == 0) {
-            eval_enforce_arity(arity, 2);
-            break;
-          }
+        if (arity == 0) {
+          eval_enforce_arity(arity, 2);
+          break;
+        }
 
-          insn_flags.u    = IFLAG_NONE;
-          d               = F;      /* Default destination of 1 (file). */
-          insn_flags.dest = IFLAG_DEST_DEF_FILE;
-          p    = PnListHead(Parameters);
-          str  = pnode_symbol_name(p);
-          file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
-          if (is_reloc) {
-            insn_flags.isReloc = true;
-          }
+        insn_flags.u    = IFLAG_NONE;
+        d               = F;      /* Default destination of 1 (file). */
+        insn_flags.dest = IFLAG_DEST_DEF_FILE;
+        p    = PnListHead(Parameters);
+        str  = pnode_symbol_name(p);
+        file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
+        if (is_reloc) {
+          insn_flags.isReloc = true;
+        }
 
-          switch (arity) {
+        switch (arity) {
           case 2:
             p = PnListHead(PnListTail(Parameters));
             /* Allow "w" and "f" as destinations. */
@@ -6843,46 +6948,45 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           default:
             eval_enforce_arity(arity, 2);
-          }
-
-          _reg_addr_check(file, str, insn_flags.u, reloc_val);
-          _emit(ins->opcode | (d << 7) | (file & PIC14_BMSK_FILE), sym_name);
         }
+
+        _reg_addr_check(file, str, insn_flags.u, reloc_val);
+        _emit(ins->opcode | (d << 7) | (file & PIC14_BMSK_FILE), sym_name);
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_OPWF8:
+      case INSN_CLASS_OPWF8: {
         /* PIC16 (addwf, addwfc, andwf, clrf, comf, daw, decf, decfsz, dcfsnz, incf,
                   incfsz, infsnz, iorwf, rlcf, rlncf, rrcf, rrncf, setf, subwf, subwfb,
                   swapf, xorwf) */
-        {
-          int          d;
-          insn_flags_t insn_flags;
-          gp_boolean   is_reloc;
-          gpasmVal     reloc_val;
+        int          d;
+        insn_flags_t insn_flags;
+        gp_boolean   is_reloc;
+        gpasmVal     reloc_val;
 
-          if (state.processor == NULL) {
-            gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
-            return 0;
-          }
+        if (state.processor == NULL) {
+          gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
 
-          if (arity == 0) {
-            eval_enforce_arity(arity, 2);
-            break;
-          }
+        if (arity == 0) {
+          eval_enforce_arity(arity, 2);
+          break;
+        }
 
-          insn_flags.u    = IFLAG_NONE;
-          d               = F;      /* Default destination of 1 (file). */
-          insn_flags.dest = IFLAG_DEST_DEF_FILE;
-          p    = PnListHead(Parameters);
-          str  = pnode_symbol_name(p);
-          file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
-          if (is_reloc) {
-            insn_flags.isReloc = true;
-          }
+        insn_flags.u    = IFLAG_NONE;
+        d               = F;      /* Default destination of 1 (file). */
+        insn_flags.dest = IFLAG_DEST_DEF_FILE;
+        p    = PnListHead(Parameters);
+        str  = pnode_symbol_name(p);
+        file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
+        if (is_reloc) {
+          insn_flags.isReloc = true;
+        }
 
-          switch (arity) {
+        switch (arity) {
           case 2:
             p = PnListHead(PnListTail(Parameters));
             /* Allow "w" and "f" as destinations. */
@@ -6905,16 +7009,16 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           default:
             eval_enforce_arity(arity, 2);
-          }
-
-          _reg_addr_check(file, str, insn_flags.u, reloc_val);
-          _emit(ins->opcode | (d << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
+
+        _reg_addr_check(file, str, insn_flags.u, reloc_val);
+        _emit(ins->opcode | (d << 8) | (file & PIC16_BMSK_FILE), sym_name);
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_B7:
+      case INSN_CLASS_B7: {
         /* PIC14x (bcf, bsf, btfsc, btfss) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -6939,10 +7043,10 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           bit  = eval_maybe_evaluate(p);
 
           if (bit < 0) {
-            gpmsg_vwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
+            gpmsg_vwarning(GPW_OUT_OF_RANGE, "Bit{%ins} < 0.", bit);
           }
           else if (bit > 7) {
-            gpmsg_vwarning(GPW_RANGE, "Bit{%ins} > 7.", bit);
+            gpmsg_vwarning(GPW_OUT_OF_RANGE, "Bit{%ins} > 7.", bit);
           }
 
           bit &= 7;
@@ -6974,45 +7078,170 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
         }
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_OPFA8:
+      case INSN_CLASS_OPFA8: {
         /* PIC16E (clrf, cpfseq, cpfsgt, cpfslt, movwf, mulwf, negf, setf, tstfsz) */
-        {
-          const pnode_t *par; /* second parameter */
-          int            a;
-          insn_flags_t   insn_flags;
-          gp_boolean     is_reloc;
-          gpasmVal       reloc_val;
+        const pnode_t *par; /* second parameter */
+        int            a;
+        insn_flags_t   insn_flags;
+        gp_boolean     is_reloc;
+        gpasmVal       reloc_val;
 
-          if (state.processor == NULL) {
-            gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
-            return 0;
+        if (state.processor == NULL) {
+          gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
+
+        if (arity == 0) {
+          eval_enforce_arity(arity, 2);
+          break;
+        }
+
+        a = ACCESS;       /* Default destination of 0 (access). */
+        insn_flags.u    = IFLAG_NONE;
+        insn_flags.bank = IFLAG_BANK_DEF_ACCESS;
+        _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
+
+        p    = PnListHead(Parameters);
+        str  = pnode_symbol_name(p);
+        file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
+        if (is_reloc) {
+          insn_flags.isReloc = true;
+        }
+
+        /* Add relocation for the access bit, if necessary. */
+        if (arity < 2) {
+          eval_reloc_evaluate(p, RELOCT_ACCESS, NULL, NULL);
+        }
+
+        /* Default access (use the BSR unless access is to special registers). */
+        /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
+         * so I commented it out:
+         *
+         * If extended instructions are enabled, access bit should default to 1 for low-end *
+         * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
+        if ((state.extended_pic16e == true) && (file <= 0x5f)) {
+          if (PnIsOffset(p)) {
+            a = ACCESS;
           }
+          else {
+            a = BANKED;
+          }
+        }
+        else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
+          a = ACCESS;
+        }
+        else {
+          a = BANKED;
+        }
+         * and replaced it with the following, according to the Data Sheet:
+         *
+         * "If the index argument is properly bracketed for Indexed
+         * Literal Offset Addressing mode, the Access RAM
+         * argument is never specified; it will automatically be
+         * assumed to be ‘0’. This is in contrast to standard
+         * operation (extended instruction set disabled) when ‘a’
+         * is set on the basis of the target address. Declaring the
+         * Access RAM bit in this mode will also generate an error
+         * in the MPASM Assembler.": */
+        insn_flags.isAccessGPR = gp_processor_is_p16e_access_low(state.processor, file);
+        insn_flags.isAccessSFR = gp_processor_is_p16e_access_high(state.processor, file, state.mpasm_compatible);
+        insn_flags.isAccess    = insn_flags.isAccessGPR | insn_flags.isAccessSFR;
 
-          if (arity == 0) {
-            eval_enforce_arity(arity, 2);
+        a = ((!state.extended_pic16e) && (!insn_flags.isAccess)) ? BANKED : ACCESS;
+        insn_flags.bank = (a == ACCESS) ? IFLAG_BANK_DEF_ACCESS : IFLAG_BANK_DEF_BANK;
+
+        switch (arity) {
+          case 2:
+            par = PnListHead(PnListTail(Parameters));
+            if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "a") == 0)) {
+              /* Prohibit "a" for BSR to select RAM bank. */
+              a = ACCESS;
+              insn_flags.bank = IFLAG_BANK_SEL_ACCESS;
+            }
+            else if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "b") == 0)) {
+              /* Allow "b" for BSR to select RAM bank. */
+              a = BANKED;
+              insn_flags.bank = IFLAG_BANK_SEL_BANK;
+            }
+            else {
+              a = _check_flag(eval_maybe_evaluate(par));
+              insn_flags.bank = (a == ACCESS) ? IFLAG_BANK_SEL_ACCESS : IFLAG_BANK_SEL_BANK;
+            }
             break;
+
+          case 1:
+            /* use default a */
+            break;
+
+          default:
+            eval_enforce_arity(arity, 2);
+        }
+
+        _reg_addr_check(file, str, insn_flags.u, reloc_val);
+        _emit(ins->opcode | (a << 8) | (file & PIC16_BMSK_FILE), sym_name);
+        break;
+      }
+
+      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+      case INSN_CLASS_BA8: {
+        /* PIC16E (bcf, bsf, btfsc, btfss, btg) */
+        const pnode_t *par;
+        int            bit;
+        int            a;
+        insn_flags_t   insn_flags;
+        gp_boolean     is_reloc;
+        gpasmVal       reloc_val;
+
+        if (state.processor == NULL) {
+          gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
+
+        if ((arity != 2) && (arity != 3)) {
+          eval_enforce_arity(arity, 3);
+          break;
+        }
+
+        a = ACCESS;
+        insn_flags.u    = IFLAG_NONE;
+        insn_flags.bank = IFLAG_BANK_DEF_ACCESS;
+        _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
+
+        p    = PnListHead(Parameters);
+        str  = pnode_symbol_name(p);
+        file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
+        if (is_reloc) {
+          insn_flags.isReloc = true;
+        }
+
+        insn_flags.isAccessGPR = gp_processor_is_p16e_access_low(state.processor, file);
+        insn_flags.isAccessSFR = gp_processor_is_p16e_access_high(state.processor, file, state.mpasm_compatible);
+        insn_flags.isAccess    = insn_flags.isAccessGPR | insn_flags.isAccessSFR;
+
+        if (arity == 3) {
+          par = PnListHead(PnListTail(PnListTail(Parameters)));
+
+          if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "a") == 0)) {
+            /* Prohibit "a" for BSR to select RAM bank. */
+            a = ACCESS;
+            insn_flags.bank = IFLAG_BANK_SEL_ACCESS;
           }
-
-          a = ACCESS;       /* Default destination of 0 (access). */
-          insn_flags.u    = IFLAG_NONE;
-          insn_flags.bank = IFLAG_BANK_DEF_ACCESS;
-          _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
-
-          p    = PnListHead(Parameters);
-          str  = pnode_symbol_name(p);
-          file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
-          if (is_reloc) {
-            insn_flags.isReloc = true;
+          else if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "b") == 0)) {
+            /* Allow "b" for BSR to select RAM bank. */
+            a = BANKED;
+            insn_flags.bank = IFLAG_BANK_SEL_BANK;
           }
-
-          /* Add relocation for the access bit, if necessary. */
-          if (arity < 2) {
-            eval_reloc_evaluate(p, RELOCT_ACCESS, NULL, NULL);
+          else {
+            a = _check_flag(eval_maybe_evaluate(par));
+            insn_flags.bank = (a == ACCESS) ? IFLAG_BANK_SEL_ACCESS : IFLAG_BANK_SEL_BANK;
           }
-
+        }
+        else {
           /* Default access (use the BSR unless access is to special registers). */
           /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
            * so I commented it out:
@@ -7043,242 +7272,115 @@ do_insn(const char *Op_name, pnode_t *Parameters)
            * is set on the basis of the target address. Declaring the
            * Access RAM bit in this mode will also generate an error
            * in the MPASM Assembler.": */
-          insn_flags.isAccessGPR = gp_processor_is_p16e_access_low(state.processor, file);
-          insn_flags.isAccessSFR = gp_processor_is_p16e_access_high(state.processor, file, state.mpasm_compatible);
-          insn_flags.isAccess    = insn_flags.isAccessGPR | insn_flags.isAccessSFR;
-
           a = ((!state.extended_pic16e) && (!insn_flags.isAccess)) ? BANKED : ACCESS;
           insn_flags.bank = (a == ACCESS) ? IFLAG_BANK_DEF_ACCESS : IFLAG_BANK_DEF_BANK;
-
-          switch (arity) {
-          case 2:
-            par = PnListHead(PnListTail(Parameters));
-            if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "a") == 0)) {
-              /* Prohibit "a" for BSR to select RAM bank. */
-              a = ACCESS;
-              insn_flags.bank = IFLAG_BANK_SEL_ACCESS;
-            }
-            else if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "b") == 0)) {
-              /* Allow "b" for BSR to select RAM bank. */
-              a = BANKED;
-              insn_flags.bank = IFLAG_BANK_SEL_BANK;
-            }
-            else {
-              a = _check_flag(eval_maybe_evaluate(par));
-              insn_flags.bank = (a == ACCESS) ? IFLAG_BANK_SEL_ACCESS : IFLAG_BANK_SEL_BANK;
-            }
-            break;
-
-          case 1:
-            /* use default a */
-            break;
-
-          default:
-            eval_enforce_arity(arity, 2);
-          }
-
-          _reg_addr_check(file, str, insn_flags.u, reloc_val);
-          _emit(ins->opcode | (a << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
+
+        /* add relocation for the access bit, if necessary */
+        if (arity < 3) {
+          eval_reloc_evaluate(p, RELOCT_ACCESS, NULL, NULL);
+        }
+
+        p   = PnListHead(PnListTail(Parameters));
+        bit = eval_maybe_evaluate(p);
+
+        if (bit < 0) {
+          gpmsg_vwarning(GPW_OUT_OF_RANGE, "Bit{%ins} < 0.", bit);
+        }
+        else if (bit > 7) {
+          gpmsg_vwarning(GPW_OUT_OF_RANGE, "Bit{%ins} > 7.", bit);
+        }
+
+        if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
+          is_btfsx = true;
+        }
+
+        _reg_addr_check(file, str, insn_flags.u, reloc_val);
+        _emit(ins->opcode | (a << 8) | ((bit & 7) << 9) | (file & PIC16_BMSK_FILE), sym_name);
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_BA8:
-        /* PIC16E (bcf, bsf, btfsc, btfss, btg) */
-        {
-          const pnode_t *par;
-          int            bit;
-          int            a;
-          insn_flags_t   insn_flags;
-          gp_boolean     is_reloc;
-          gpasmVal       reloc_val;
-
-          if (state.processor == NULL) {
-            gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
-            return 0;
-          }
-
-          if ((arity != 2) && (arity != 3)) {
-            eval_enforce_arity(arity, 3);
-            break;
-          }
-
-          a = ACCESS;
-          insn_flags.u    = IFLAG_NONE;
-          insn_flags.bank = IFLAG_BANK_DEF_ACCESS;
-          _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
-
-          p    = PnListHead(Parameters);
-          str  = pnode_symbol_name(p);
-          file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
-          if (is_reloc) {
-            insn_flags.isReloc = true;
-          }
-
-          insn_flags.isAccessGPR = gp_processor_is_p16e_access_low(state.processor, file);
-          insn_flags.isAccessSFR = gp_processor_is_p16e_access_high(state.processor, file, state.mpasm_compatible);
-          insn_flags.isAccess    = insn_flags.isAccessGPR | insn_flags.isAccessSFR;
-
-          if (arity == 3) {
-            par = PnListHead(PnListTail(PnListTail(Parameters)));
-
-            if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "a") == 0)) {
-              /* Prohibit "a" for BSR to select RAM bank. */
-              a = ACCESS;
-              insn_flags.bank = IFLAG_BANK_SEL_ACCESS;
-            }
-            else if (PnIsSymbol(par) && (strcasecmp(PnSymbol(par), "b") == 0)) {
-              /* Allow "b" for BSR to select RAM bank. */
-              a = BANKED;
-              insn_flags.bank = IFLAG_BANK_SEL_BANK;
-            }
-            else {
-              a = _check_flag(eval_maybe_evaluate(par));
-              insn_flags.bank = (a == ACCESS) ? IFLAG_BANK_SEL_ACCESS : IFLAG_BANK_SEL_BANK;
-            }
-          }
-          else {
-            /* Default access (use the BSR unless access is to special registers). */
-            /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
-             * so I commented it out:
-             *
-             * If extended instructions are enabled, access bit should default to 1 for low-end *
-             * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
-            if ((state.extended_pic16e == true) && (file <= 0x5f)) {
-              if (PnIsOffset(p)) {
-                a = ACCESS;
-              }
-              else {
-                a = BANKED;
-              }
-            }
-            else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
-              a = ACCESS;
-            }
-            else {
-              a = BANKED;
-            }
-             * and replaced it with the following, according to the Data Sheet:
-             *
-             * "If the index argument is properly bracketed for Indexed
-             * Literal Offset Addressing mode, the Access RAM
-             * argument is never specified; it will automatically be
-             * assumed to be ‘0’. This is in contrast to standard
-             * operation (extended instruction set disabled) when ‘a’
-             * is set on the basis of the target address. Declaring the
-             * Access RAM bit in this mode will also generate an error
-             * in the MPASM Assembler.": */
-            a = ((!state.extended_pic16e) && (!insn_flags.isAccess)) ? BANKED : ACCESS;
-            insn_flags.bank = (a == ACCESS) ? IFLAG_BANK_DEF_ACCESS : IFLAG_BANK_DEF_BANK;
-          }
-
-          /* add relocation for the access bit, if necessary */
-          if (arity < 3) {
-            eval_reloc_evaluate(p, RELOCT_ACCESS, NULL, NULL);
-          }
-
-          p   = PnListHead(PnListTail(Parameters));
-          bit = eval_maybe_evaluate(p);
-
-          if (bit < 0) {
-            gpmsg_vwarning(GPW_RANGE, "Bit{%ins} < 0.", bit);
-          }
-          else if (bit > 7) {
-            gpmsg_vwarning(GPW_RANGE, "Bit{%ins} > 7.", bit);
-          }
-
-          if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
-            is_btfsx = true;
-          }
-
-          _reg_addr_check(file, str, insn_flags.u, reloc_val);
-          _emit(ins->opcode | (a << 8) | ((bit & 7) << 9) | (file & PIC16_BMSK_FILE), sym_name);
-        }
-        break;
-
-      /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-      case INSN_CLASS_OPWFA8:
+      case INSN_CLASS_OPWFA8: {
         /* PIC16E (addwf, addwfc, andwf, comf, decf, decfsz, dcfsnz, incf, incfsz,
                    infsnz, iorwf, movf, rlcf, rlncf, rrcf, rrncf, subfwb, subwf,
                    subwfb, swapf, xorwf) */
-        {
-          const pnode_t *par; /* second parameter */
-          int            d;
-          int            a;
-          insn_flags_t   insn_flags;
-          gp_boolean     is_reloc;
-          gpasmVal       reloc_val;
+        const pnode_t *par; /* second parameter */
+        int            d;
+        int            a;
+        insn_flags_t   insn_flags;
+        gp_boolean     is_reloc;
+        gpasmVal       reloc_val;
 
-          if (state.processor == NULL) {
-            gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
-            return 0;
-          }
+        if (state.processor == NULL) {
+          gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
+          return 0;
+        }
 
-          if (arity == 0) {
-            eval_enforce_arity(arity, 2);
-            break;
-          }
+        if (arity == 0) {
+          eval_enforce_arity(arity, 2);
+          break;
+        }
 
-          insn_flags.u    = IFLAG_NONE;
-          d               = F;      /* Default destination of 1 (file). */
-          insn_flags.dest = IFLAG_DEST_DEF_FILE;
-          a               = ACCESS;
-          insn_flags.bank = IFLAG_BANK_DEF_ACCESS;
+        insn_flags.u    = IFLAG_NONE;
+        d               = F;      /* Default destination of 1 (file). */
+        insn_flags.dest = IFLAG_DEST_DEF_FILE;
+        a               = ACCESS;
+        insn_flags.bank = IFLAG_BANK_DEF_ACCESS;
 
-          _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
+        _check_16e_arg_types(Parameters, arity, AR_BIT_BYTE | AR_INDEX);
 
-          p    = PnListHead(Parameters);
-          str  = pnode_symbol_name(p);
-          file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
-          if (is_reloc) {
-            insn_flags.isReloc = true;
-          }
+        p    = PnListHead(Parameters);
+        str  = pnode_symbol_name(p);
+        file = eval_reloc_evaluate(p, RELOCT_F, &is_reloc, &reloc_val);
+        if (is_reloc) {
+          insn_flags.isReloc = true;
+        }
 
-          /* Add relocation for the access bit, if necessary. */
-          if (arity < 3) {
-            eval_reloc_evaluate(p, RELOCT_ACCESS, NULL, NULL);
-          }
+        /* Add relocation for the access bit, if necessary. */
+        if (arity < 3) {
+          eval_reloc_evaluate(p, RELOCT_ACCESS, NULL, NULL);
+        }
 
-          /* Default access (use the BSR unless access is to special registers) */
-          /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
-           * so I commented it out:
-           *
-           * If extended instructions are enabled, access bit should default to 1 for low-end *
-           * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
-          if ((state.extended_pic16e == true) && (file <= 0x5f)) {
-            if (PnIsOffset(p)) {
-              a = ACCESS;
-            }
-            else {
-              a = BANKED;
-            }
-          }
-          else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
+        /* Default access (use the BSR unless access is to special registers) */
+        /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
+         * so I commented it out:
+         *
+         * If extended instructions are enabled, access bit should default to 1 for low-end *
+         * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
+        if ((state.extended_pic16e == true) && (file <= 0x5f)) {
+          if (PnIsOffset(p)) {
             a = ACCESS;
           }
           else {
             a = BANKED;
           }
-           * and replaced it with the following, according to the Data Sheet:
-           *
-           * "If the index argument is properly bracketed for Indexed
-           * Literal Offset Addressing mode, the Access RAM
-           * argument is never specified; it will automatically be
-           * assumed to be ‘0’. This is in contrast to standard
-           * operation (extended instruction set disabled) when ‘a’
-           * is set on the basis of the target address. Declaring the
-           * Access RAM bit in this mode will also generate an error
-           * in the MPASM Assembler.": */
-          insn_flags.isAccessGPR = gp_processor_is_p16e_access_low(state.processor, file);
-          insn_flags.isAccessSFR = gp_processor_is_p16e_access_high(state.processor, file, state.mpasm_compatible);
-          insn_flags.isAccess    = insn_flags.isAccessGPR | insn_flags.isAccessSFR;
+        }
+        else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
+          a = ACCESS;
+        }
+        else {
+          a = BANKED;
+        }
+         * and replaced it with the following, according to the Data Sheet:
+         *
+         * "If the index argument is properly bracketed for Indexed
+         * Literal Offset Addressing mode, the Access RAM
+         * argument is never specified; it will automatically be
+         * assumed to be ‘0’. This is in contrast to standard
+         * operation (extended instruction set disabled) when ‘a’
+         * is set on the basis of the target address. Declaring the
+         * Access RAM bit in this mode will also generate an error
+         * in the MPASM Assembler.": */
+        insn_flags.isAccessGPR = gp_processor_is_p16e_access_low(state.processor, file);
+        insn_flags.isAccessSFR = gp_processor_is_p16e_access_high(state.processor, file, state.mpasm_compatible);
+        insn_flags.isAccess    = insn_flags.isAccessGPR | insn_flags.isAccessSFR;
 
-          a = ((!state.extended_pic16e) && (!insn_flags.isAccess)) ? BANKED : ACCESS;
-          insn_flags.bank = (a == ACCESS) ? IFLAG_BANK_DEF_ACCESS : IFLAG_BANK_DEF_BANK;
+        a = ((!state.extended_pic16e) && (!insn_flags.isAccess)) ? BANKED : ACCESS;
+        insn_flags.bank = (a == ACCESS) ? IFLAG_BANK_DEF_ACCESS : IFLAG_BANK_DEF_BANK;
 
-          switch (arity) {
+        switch (arity) {
           case 3:
             par = PnListHead(PnListTail(PnListTail(Parameters)));
 
@@ -7321,16 +7423,16 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           default:
             eval_enforce_arity(arity, 3);
-          }
-
-          _reg_addr_check(file, str, insn_flags.u, reloc_val);
-          _emit(ins->opcode | (d << 9) | (a << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
+
+        _reg_addr_check(file, str, insn_flags.u, reloc_val);
+        _emit(ins->opcode | (d << 9) | (a << 8) | (file & PIC16_BMSK_FILE), sym_name);
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_IMPLICIT:
+      case INSN_CLASS_IMPLICIT: {
         /* PIC12x  (clrw, clrwdt, nop, option, return, sleep)
            PIC12E  return
            PIC12I  (retfie, return)
@@ -7355,10 +7457,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         _emit(ins->opcode, sym_name);
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_TBL:
+      case INSN_CLASS_TBL: {
         /* PIC16E (tblrd, tblwt) */
         if (eval_enforce_arity(arity, 1)) {
           _check_16e_arg_types(Parameters, arity, 0);
@@ -7386,10 +7489,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
         }
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_TBL2:
+      case INSN_CLASS_TBL2: {
         /* PIC16 (tlrd, tlwt) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -7418,10 +7522,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit(ins->opcode | (t << 9) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_TBL3:
+      case INSN_CLASS_TBL3: {
         /* PIC16 (tablrd, tablwt) */
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
@@ -7455,11 +7560,18 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           _emit(ins->opcode | (t << 9) | (inc << 8) | (file & PIC16_BMSK_FILE), sym_name);
         }
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      case INSN_CLASS_MOVINDF:
+      case INSN_CLASS_MOVINDF: {
         /* PIC14E (moviw, movwi) */
+        int      fsr;
+        int      opcode;
+        int      k;
+        pnode_t *p2;
+        pnode_t *p3;
+
         if (state.processor == NULL) {
           gpmsg_verror(GPE_UNDEF_PROC, "\"%s\"", Op_name);
           return 0;
@@ -7472,124 +7584,125 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
         p = PnListHead(Parameters);
         switch (arity) {
-          int      fsr;
-          int      opcode;
-          int      k;
-          pnode_t *p2;
-          pnode_t *p3;
+          case 1: {
+            fsr = eval_maybe_evaluate(p);
+            /* New opcode for indexed indirect,
+               moviw/movwi INDFn handled as moviw/movwi 0[FSRn]. */
+            file = -1;
 
-        case 1:
-          fsr = eval_maybe_evaluate(p);
-          /* New opcode for indexed indirect,
-             moviw/movwi INDFn handled as moviw/movwi 0[FSRn]. */
-          file = -1;
-
-          if ((fsr == PIC14E_REG_INDF0) || (fsr == PIC14E_REG_INDF1)) {
-            file = (fsr == PIC14E_REG_INDF1) ? 0x40 : 0x00;
-          }
-
-          if (file < 0) {
-            if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
-              file = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
-            }
-          }
-
-          if (file >= 0) {
-            opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | file;
-            _emit(opcode, sym_name);
-          }
-          else {
-            gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
-          }
-          break;
-
-        case 2:
-          p2  = PnListHead(PnListTail(Parameters));
-          fsr = eval_maybe_evaluate(p2);
-
-          file = -1;
-
-          if ((fsr == PIC14E_REG_INDF0) || (fsr == PIC14E_REG_INDF1)) {
-            file = (fsr == PIC14E_REG_INDF1) ? 0x04 : 0x00;
-          }
-
-          if (file < 0) {
-            if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
-              file = (fsr == PIC14E_REG_FSR1) ? 0x04 : 0x00;
-            }
-          }
-
-          if (file >= 0) {
-            k = -1;
-
-            switch (eval_maybe_evaluate(p)) {
-              /* ++INDFn, ++FSRn */
-            case INCREMENT:     k = 0; break;
-              /* --INDFn, --FSRn */
-            case DECREMENT:     k = 1; break;
-              /* INDFn++, FSRn++ */
-            case POSTINCREMENT: k = 2; break;
-              /* INDFn--, FSRn-- */
-            case POSTDECREMENT: k = 3; break;
+            if ((fsr == PIC14E_REG_INDF0) || (fsr == PIC14E_REG_INDF1)) {
+              file = (fsr == PIC14E_REG_INDF1) ? 0x40 : 0x00;
             }
 
-            if (k >= 0) {
-              _emit(ins->opcode | file | k, sym_name);
+            if (file < 0) {
+              if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
+                file = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
+              }
+            }
+
+            if (file >= 0) {
+              opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | file;
+              _emit(opcode, sym_name);
             }
             else {
               gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
             }
-          }
-          else {
-            gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
-          }
-          break;
-
-        case 3:
-        case 4:
-          p2  = PnListHead(PnListTail(Parameters));
-          fsr = eval_maybe_evaluate(p2);
-
-          file = -1;
-
-          if ((fsr == PIC14E_REG_INDF0) || (fsr == PIC14E_REG_INDF1)) {
-            file = (fsr == PIC14E_REG_INDF1) ? 0x40 : 0x00;
+            break;
           }
 
-          if (file < 0) {
-            if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
-              file = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
+          case 2: {
+            p2  = PnListHead(PnListTail(Parameters));
+            fsr = eval_maybe_evaluate(p2);
+
+            file = -1;
+
+            if ((fsr == PIC14E_REG_INDF0) || (fsr == PIC14E_REG_INDF1)) {
+              file = (fsr == PIC14E_REG_INDF1) ? 0x04 : 0x00;
             }
-          }
 
-          if (file >= 0) {
-            switch (eval_maybe_evaluate(p)) {
-            case INDFOFFSET:
-              p3 = PnListTail(PnListTail(Parameters));
-              k  = eval_maybe_evaluate(p3); /* Index */
-
-              if (k < -32) {
-                gpmsg_verror(GPE_RANGE, "Index{%ins} < -32.", k);
+            if (file < 0) {
+              if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
+                file = (fsr == PIC14E_REG_FSR1) ? 0x04 : 0x00;
               }
-              else if (k > 31) {
-                gpmsg_verror(GPE_RANGE, "Index{%ins} > 31.", k);
+            }
+
+            if (file >= 0) {
+              k = -1;
+
+              switch (eval_maybe_evaluate(p)) {
+                /* ++INDFn, ++FSRn */
+                case INCREMENT:     k = 0; break;
+                /* --INDFn, --FSRn */
+                case DECREMENT:     k = 1; break;
+                /* INDFn++, FSRn++ */
+                case POSTINCREMENT: k = 2; break;
+                /* INDFn--, FSRn-- */
+                case POSTDECREMENT: k = 3; break;
+              }
+
+              if (k >= 0) {
+                _emit(ins->opcode | file | k, sym_name);
               }
               else {
-                /* New opcode for indexed indirect. */
-                opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | file;
-                _emit(opcode | (k & 0x3f), sym_name);
+                gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
               }
-              break;
-
-            default:
+            }
+            else {
               gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
             }
+            break;
           }
-          else {
-            gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
+
+          case 3:
+          case 4: {
+            p2  = PnListHead(PnListTail(Parameters));
+            fsr = eval_maybe_evaluate(p2);
+
+            file = -1;
+
+            if ((fsr == PIC14E_REG_INDF0) || (fsr == PIC14E_REG_INDF1)) {
+              file = (fsr == PIC14E_REG_INDF1) ? 0x40 : 0x00;
+            }
+
+            if (file < 0) {
+              if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
+                file = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
+              }
+            }
+
+            if (file >= 0) {
+              switch (eval_maybe_evaluate(p)) {
+                case INDFOFFSET: {
+                  p3 = PnListTail(PnListTail(Parameters));
+                  k  = eval_maybe_evaluate(p3); /* Index */
+
+                  if (k < -32) {
+                    gpmsg_verror(GPE_OUT_OF_RANGE, "Index{%ins} < -32.", k);
+                  }
+                  else if (k > 31) {
+                    gpmsg_verror(GPE_OUT_OF_RANGE, "Index{%ins} > 31.", k);
+                  }
+                  else {
+                    /* New opcode for indexed indirect. */
+                    opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | file;
+                    _emit(opcode | (k & 0x3f), sym_name);
+                  }
+                  break;
+                }
+
+                default:
+                  gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
+              }
+            }
+            else {
+              gpmsg_error(GPE_ILLEGAL_ARGU, "Illegal argument.");
+            }
+
+            break;
           }
         } /* switch (arity) */
         break;
+      }
 
       /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -7662,10 +7775,10 @@ leave:
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* There are several groups of operations that we handle here.  First
-   is op_0: the instructions that can happen before the processor type
-   is known.  Second is op_1, the set of instructions that are common
-   to all processors, third is processor-family specific: op_XXX */
+/* There are several groups of operations that we handle here.
+   First is op_0:  The instructions that can happen before the processor type is known.
+   Second is op_1: The set of instructions that are common to all processors.
+   Third is processor-family specific: op_XXX */
 
 /* Note that instructions within each group are sorted alphabetically. */
 

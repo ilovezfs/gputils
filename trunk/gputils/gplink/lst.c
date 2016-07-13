@@ -52,7 +52,7 @@ _open_source(const char *name, gp_symbol_t *symbol)
   new->f = fopen(name, "rt");
   if (new->f == NULL) {
     /* Try searching include pathes. */
-    for (i = 0; i < state.numpaths; i++) {
+    for (i = 0; i < state.num_paths; i++) {
       snprintf(file_name, sizeof(file_name), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
       new->f = fopen(file_name, "rb");
       if (new->f != NULL) {
@@ -65,7 +65,7 @@ _open_source(const char *name, gp_symbol_t *symbol)
       p = strrchr(name, PATH_SEPARATOR_CHAR);
 
       if (p != NULL) {
-        for (i = 0; i < state.numpaths; i++) {
+        for (i = 0; i < state.num_paths; i++) {
           snprintf(file_name, sizeof(file_name), "%s%s", state.paths[i], p);
           new->f = fopen(file_name, "rb");
           if (new->f != NULL) {
@@ -140,8 +140,8 @@ _find_line_number(const gp_symbol_t *symbol, unsigned int line_number)
     if (linenum != NULL) {
       if (section != line_section) {
         /* Switching sections, so update was_org with the new address. */
-        state.lst.was_org = linenum->address;
-        line_section      = section;
+        state.lst.was_byte_addr = linenum->address;
+        line_section            = section;
       }
 
       return linenum;
@@ -215,7 +215,7 @@ _write_source(int last_line)
       break;
     }
 
-    state.lst.was_org = org;
+    state.lst.was_byte_addr = org;
 
     if (list_enabled) {
       /* Eat the trailing newline. */
@@ -262,7 +262,7 @@ _write_source(int last_line)
               _lst_line("%06lx   %02x       %-24s %s", gp_processor_byte_to_org(state.class, org),
                         (unsigned int)byte, _expand_tabs(dasmbuf), linebuf);
               gp_mem_b_set_listed(line_section->data, org, 1);
-              state.lst.was_org = org;
+              state.lst.was_byte_addr = org;
               cod_lst_line(COD_NORMAL_LST_LINE);
               ++org;
             }
@@ -276,12 +276,12 @@ _write_source(int last_line)
             _lst_line("%06lx   %04x     %-24s %s", gp_processor_byte_to_org(state.class, org),
                       word, _expand_tabs(dasmbuf), linebuf);
             gp_mem_b_set_listed(line_section->data, org, num_bytes);
-            state.lst.was_org = org;
+            state.lst.was_byte_addr = org;
             cod_lst_line(COD_NORMAL_LST_LINE);
             org += 2;
 
             if (num_bytes > 2) {
-              state.lst.was_org = org;
+              state.lst.was_byte_addr = org;
               state.class->i_memory_get(line_section->data, org, &word, NULL, NULL);
               _lst_line("%06lx   %04x", gp_processor_byte_to_org(state.class, org), word);
               cod_lst_line(COD_NORMAL_LST_LINE);
@@ -325,20 +325,20 @@ _write_source(int last_line)
 static void
 _lst_init(void)
 {
-  if (state.lstfile != OUT_NAMED) {
-    snprintf(state.lstfilename, sizeof(state.lstfilename), "%s.lst", state.basefilename);
+  if (state.lst_file != OUT_NAMED) {
+    snprintf(state.lst_file_name, sizeof(state.lst_file_name), "%s.lst", state.base_file_name);
   }
 
-  if ((gp_num_errors > 0) || (state.lstfile == OUT_SUPPRESS)) {
+  if ((gp_num_errors > 0) || (state.lst_file == OUT_SUPPRESS)) {
     state.lst.f       = NULL;
     state.lst.enabled = false;
-    unlink(state.lstfilename);
+    unlink(state.lst_file_name);
   }
   else {
-    state.lst.f = fopen(state.lstfilename, "wt");
+    state.lst.f = fopen(state.lst_file_name, "wt");
 
     if (state.lst.f == NULL) {
-      perror(state.lstfilename);
+      perror(state.lst_file_name);
       exit(1);
     }
     state.lst.enabled = true;
@@ -348,12 +348,12 @@ _lst_init(void)
     return;
   }
 
-  state.lst.was_org  = 0;
-  state.cod.emitting = false;
+  state.lst.was_byte_addr = 0;
+  state.cod.emitting      = false;
 
   _lst_line("%s", GPLINK_VERSION_STRING);
   _lst_line("%s", GPUTILS_COPYRIGHT_STRING);
-  _lst_line("Listing File Generated: %s", state.startdate);
+  _lst_line("Listing File Generated: %s", state.start_date);
   _lst_line("");
   _lst_line("");
   _lst_line("Address  Value    Disassembly              Source");

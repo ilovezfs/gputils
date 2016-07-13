@@ -124,7 +124,7 @@ eval_can_evaluate(const pnode_t *Pnode)
           gpmsg_verror(GPE_MISSING_ARGU, NULL);
         }
         else {
-          gpmsg_verror(GPE_NOSYM, NULL, PnSymbol(Pnode));
+          gpmsg_verror(GPE_SYM_NOT_DEFINED, NULL, PnSymbol(Pnode));
         }
       }
       else {

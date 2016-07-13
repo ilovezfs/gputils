@@ -33,462 +33,462 @@ Boston, MA 02111-1307, USA.  */
 /*------------------------------------------------------------------------------------------------*/
 
 static pnode_t *
-_make_constant_list(int value1, int value2)
+_make_constant_list(int Value1, int Value2)
 {
-  return mk_list(mk_constant(value1), mk_list(mk_constant(value2), NULL));
+  return mk_list(mk_constant(Value1), mk_list(mk_constant(Value2), NULL));
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static pnode_t *
-_add_symbol_constant(pnode_t *parms, int value)
+_add_symbol_constant(pnode_t *Parms, int Value)
 {
-  return mk_list(PnListHead(parms), mk_list(mk_constant(value), NULL));
+  return mk_list(PnListHead(Parms), mk_list(mk_constant(Value), NULL));
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_addcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_addcf(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   gpmsg_vmessage(GPM_SPECIAL_MNEMONIC, NULL);
 
   do_insn("btfsc", _make_constant_list(3, 0));
-  do_insn("incf", parms);
+  do_insn("incf", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_adddcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_adddcf(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   do_insn("btfsc", _make_constant_list(3, 1));
-  do_insn("incf", parms);
+  do_insn("incf", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_b(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_b(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
-  do_insn("goto", parms);
+  do_insn("goto", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_bc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_bc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   do_insn("btfsc", _make_constant_list(3, 0));
-  do_insn("goto", parms);
+  do_insn("goto", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_bdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_bdc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   do_insn("btfsc", _make_constant_list(3, 1));
-  do_insn("goto", parms);
+  do_insn("goto", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_bz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_bz(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   do_insn("btfsc", _make_constant_list(3, 2));
-  do_insn("goto", parms);
+  do_insn("goto", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_bnc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_bnc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   do_insn("btfss", _make_constant_list(3, 0));
-  do_insn("goto", parms);
+  do_insn("goto", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_bndc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_bndc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   do_insn("btfss", _make_constant_list(3, 1));
-  do_insn("goto", parms);
+  do_insn("goto", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_bnz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_bnz(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   do_insn("btfss", _make_constant_list(3, 2));
-  do_insn("goto", parms);
+  do_insn("goto", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_clrc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_clrc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bcf", _make_constant_list(3, 0));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_clrdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_clrdc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bcf", _make_constant_list(3, 1));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_clrz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_clrz(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bcf", _make_constant_list(3, 2));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_lcall(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_lcall(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
-  do_insn("pagesel", parms);
-  do_insn("call", parms);
+  do_insn("pagesel", Parms);
+  do_insn("call", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_lgoto(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_lgoto(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
-  do_insn("pagesel", parms);
-  do_insn("goto", parms);
+  do_insn("pagesel", Parms);
+  do_insn("goto", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_movfw(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_movfw(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (eval_enforce_arity(arity, 1)) {
-    do_insn("movf", _add_symbol_constant(parms, 0));
+  if (eval_enforce_arity(Arity, 1)) {
+    do_insn("movf", _add_symbol_constant(Parms, 0));
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_negf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_negf(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if ((arity == 1) || (arity == 2)) {
-    do_insn("comf", _add_symbol_constant(parms, 1));
-    do_insn("incf", parms);
+  if ((Arity == 1) || (Arity == 2)) {
+    do_insn("comf", _add_symbol_constant(Parms, 1));
+    do_insn("incf", Parms);
   }
   else {
-    eval_enforce_arity(arity, 2);
+    eval_enforce_arity(Arity, 2);
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_setc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_setc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bsf", _make_constant_list(3, 0));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_setdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_setdc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bsf", _make_constant_list(3, 1));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_setz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_setz(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("bsf", _make_constant_list(3, 2));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_skpc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_skpc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfss", _make_constant_list(3, 0));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_skpdc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_skpdc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfss", _make_constant_list(3, 1));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_skpz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_skpz(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfss", _make_constant_list(3, 2));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_skpnc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_skpnc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfsc", _make_constant_list(3, 0));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_skpndc(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_skpndc(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfsc", _make_constant_list(3, 1));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_skpnz(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_skpnz(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (arity != 0) {
+  if (Arity != 0) {
     gpmsg_verror(GPE_TOO_MANY_ARGU, NULL);
   }
 
   do_insn("btfsc", _make_constant_list(3, 2));
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_subcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_subcf(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   do_insn("btfsc", _make_constant_list(3, 0));
-  do_insn("decf", parms);
+  do_insn("decf", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_subdcf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_subdcf(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
-  (void)arity;
+  (void)Name;
+  (void)Arity;
 
   do_insn("btfsc", _make_constant_list(3, 1));
-  do_insn("decf", parms);
+  do_insn("decf", Parms);
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_tstf(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_tstf(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
-  (void)name;
+  (void)Name;
 
-  if (eval_enforce_arity(arity, 1)) {
-    do_insn("movf", _add_symbol_constant(parms, 1));
+  if (eval_enforce_arity(Arity, 1)) {
+    do_insn("movf", _add_symbol_constant(Parms, 1));
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static gpasmVal
-_do_mode(gpasmVal r, const char *name, int arity, pnode_t *parms)
+_do_mode(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   pnode_t *val;
 
-  (void)name;
+  (void)Name;
 
-  if (eval_enforce_arity(arity, 1)) {
-    val = PnListHead(parms);
+  if (eval_enforce_arity(Arity, 1)) {
+    val = PnListHead(Parms);
 
     if (PnIsConstant(val) && (PnConstant(val) > 0x1f)) {
-      gpmsg_vwarning(GPW_RANGE, NULL);
+      gpmsg_vwarning(GPW_OUT_OF_RANGE, NULL);
       PnConstant(val) &= 0x1f;
     }
 
-    do_insn("movlw", parms);
+    do_insn("movlw", Parms);
     do_insn("movwm", NULL);
   }
 
-  return r;
+  return Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/

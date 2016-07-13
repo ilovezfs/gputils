@@ -144,175 +144,184 @@ static pnode_t *mk_1op(int op, pnode_t *p0)
 /* Grammar rules */
 
 program:
-	line
-	| error
-	| program '\n' {
-	  ++state.src->line_number;
-	} line
-	;
+        line
+        | error
+        | program '\n' {
+          ++state.src->line_number;
+        } line
+        ;
 
 line:
-	/* empty */
-	|
-	LIBPATH path_list
-	{
-	  if (state.ifdef == NULL || state.ifdef->istrue)
-	    script_add_path($2);
-	}
-	|
-	LKRPATH path_list
-	{
-	  if (state.ifdef == NULL || state.ifdef->istrue)
-	    script_add_path($2);
-	}
-	|
-	SYMBOL parameter_list
-	{
-	  if (state.ifdef == NULL || state.ifdef->istrue)
-	    script_execute_command($1, $2);
-	}
-	|
-	STRING parameter_list
-	{
-	  if (state.ifdef == NULL || state.ifdef->istrue)
-	    script_execute_command($1, $2);
-	}
-	|
-	ERROR
-	{
-	  if (state.ifdef == NULL || state.ifdef->istrue)
-	    yyerror($1);
-	}
-	|
-	DEFINE SYMBOL macroval aop macroval
-	{
-	  /* Contrary to documentation, the mplink 4.38 does not seem
-	     to care if the macro has already been defined or if the
-	     parameters to the operation are undefined. */
-	  if (state.ifdef == NULL || state.ifdef->istrue) {
-	    long newval = 0, lh = $3, rh = $5;
+        /* empty */
+        |
+        LIBPATH path_list
+        {
+          if ((state.ifdef == NULL) || (state.ifdef->is_true)) {
+            script_add_path($2);
+          }
+        }
+        |
+        LKRPATH path_list
+        {
+          if ((state.ifdef == NULL) || (state.ifdef->is_true)) {
+            script_add_path($2);
+          }
+        }
+        |
+        SYMBOL parameter_list
+        {
+          if ((state.ifdef == NULL) || (state.ifdef->is_true)) {
+            script_execute_command($1, $2);
+          }
+        }
+        |
+        STRING parameter_list
+        {
+          if ((state.ifdef == NULL) || (state.ifdef->is_true)) {
+            script_execute_command($1, $2);
+          }
+        }
+        |
+        ERROR
+        {
+          if ((state.ifdef == NULL) || (state.ifdef->is_true)) {
+            yyerror($1);
+          }
+        }
+        |
+        DEFINE SYMBOL macroval aop macroval
+        {
+          /* Contrary to documentation, the mplink 4.38 does not seem
+             to care if the macro has already been defined or if the
+             parameters to the operation are undefined. */
+          if ((state.ifdef == NULL) || (state.ifdef->is_true)) {
+            long newval = 0, lh = $3, rh = $5;
 
-	    switch($4) {
-	    case '+': newval = lh + rh; break;
-	    case '-': newval = lh - rh; break;
-	    case '*': newval = lh * rh; break;
-	    case '/':
-	      if (rh == 0)
-		yyerror("Division by zero.");
-	      else
-		newval = lh / rh;
-	      break;
-	    }
-	    script_add_macro($2, newval);
-	  }
-	}
-	|
-	IFDEF SYMBOL
-	{
-	  struct ifdef *ifdef = GP_Malloc(sizeof *ifdef);
+            switch ($4) {
+              case '+': newval = lh + rh; break;
+              case '-': newval = lh - rh; break;
+              case '*': newval = lh * rh; break;
+              case '/': {
+                if (rh == 0) {
+                  yyerror("Division by zero.");
+                }
+                else {
+                  newval = lh / rh;
+                }
+                break;
+              }
+            }
+            script_add_macro($2, newval);
+          }
+        }
+        |
+        IFDEF SYMBOL
+        {
+          struct ifdef *ifdef = GP_Malloc(sizeof *ifdef);
 
-	  ifdef->istrue = (((state.ifdef == NULL) || state.ifdef->istrue) &&
-			   gp_sym_get_symbol(state.script_symbols, $2));
-	  ifdef->inelse = false;
-	  ifdef->prev = state.ifdef;
-	  state.ifdef = ifdef;
-	}
-	|
-	ELSE
-	{
-	  if (state.ifdef == NULL || state.ifdef->inelse)
-	    yyerror("#ELSE without #IFDEF in linker script.");
-	  else {
-	    state.ifdef->istrue = (!state.ifdef->istrue &&
-				   (state.ifdef->prev == NULL ||
-				    state.ifdef->prev->istrue));
-	    state.ifdef->inelse = true;
-	  }
-	}
-	|
-	FI
-	{
-	  if (state.ifdef == NULL)
-	    yyerror("#FI without #IFDEF in linker script.");
-	  else {
-	    struct ifdef *ifdef = state.ifdef;
-	    state.ifdef = state.ifdef->prev;
-	    free(ifdef);
-	  }
-	}
-	;
+          ifdef->is_true = (((state.ifdef == NULL) || state.ifdef->is_true) &&
+                            gp_sym_get_symbol(state.script_symbols, $2));
+          ifdef->in_else = false;
+          ifdef->prev = state.ifdef;
+          state.ifdef = ifdef;
+        }
+        |
+        ELSE
+        {
+          if ((state.ifdef == NULL) || (state.ifdef->in_else)) {
+            yyerror("#ELSE without #IFDEF in linker script.");
+          }
+          else {
+            state.ifdef->is_true = ((!state.ifdef->is_true) &&
+                                    (state.ifdef->prev == NULL || state.ifdef->prev->is_true));
+            state.ifdef->in_else = true;
+          }
+        }
+        |
+        FI
+        {
+          if (state.ifdef == NULL)
+            yyerror("#FI without #IFDEF in linker script.");
+          else {
+            struct ifdef *ifdef = state.ifdef;
+
+            state.ifdef = state.ifdef->prev;
+            free(ifdef);
+          }
+        }
+        ;
 
 path_list:
-	SYMBOL
-	{
-	  $$ = mk_list(mk_symbol($1), NULL);
-	}
-	|
-	SYMBOL ';' path_list
-	{
-	  $$ = mk_list(mk_symbol($1), $3);
-	}
-	|
-	STRING
-	{
-	  $$ = mk_list(mk_symbol($1), NULL);
-	}
-	|
-	STRING ';' path_list
-	{
-	  $$ = mk_list(mk_symbol($1), $3);
-	}
-	;
+        SYMBOL
+        {
+          $$ = mk_list(mk_symbol($1), NULL);
+        }
+        |
+        SYMBOL ';' path_list
+        {
+          $$ = mk_list(mk_symbol($1), $3);
+        }
+        |
+        STRING
+        {
+          $$ = mk_list(mk_symbol($1), NULL);
+        }
+        |
+        STRING ';' path_list
+        {
+          $$ = mk_list(mk_symbol($1), $3);
+        }
+        ;
 
 parameter_list:
-	e1
-	{
-	  $$ = mk_list($1, NULL);
-	}
-	|
-	e1  parameter_list
-	{
-	  $$ = mk_list($1, $2);
-	}
-	;
+        e1
+        {
+          $$ = mk_list($1, NULL);
+        }
+        |
+        e1  parameter_list
+        {
+          $$ = mk_list($1, $2);
+        }
+        ;
 
 e1:
-	e0
-	|
-	e1 e1op e0
-	{
-	  $$ = mk_2op($2, $1, $3);
-	}
-	;
+        e0
+        |
+        e1 e1op e0
+        {
+          $$ = mk_2op($2, $1, $3);
+        }
+        ;
 
-e1op:	'=' ;
+e1op:   '=' ;
 
 e0:
-	SYMBOL
+        SYMBOL
         {
-	  $$ = mk_symbol($1);
+          $$ = mk_symbol($1);
         }
-	|
-	STRING
+        |
+        STRING
         {
-	  $$ = mk_symbol($1);
+          $$ = mk_symbol($1);
         }
-	|
-	NUMBER
-	{
-	  $$ = mk_constant($1);
-	}
-	;
+        |
+        NUMBER
+        {
+          $$ = mk_constant($1);
+        }
+        ;
 
 macroval:
-	SYMBOL
-	{
-	  $$ = script_get_macro($1);
-	}
-	|
-	NUMBER
-	;
+        SYMBOL
+        {
+          $$ = script_get_macro($1);
+        }
+        |
+        NUMBER
+        ;
 
-aop:	'+' | '-' | '/' | '*' ;
+aop:    '+' | '-' | '/' | '*' ;
 
 %%
