@@ -43,71 +43,71 @@ int yydebug = 1;
 #define YYPRINT(file, type, value)   yyprint (file, type, value)
 
 static void
-yyprint (FILE *file, int type, YYSTYPE value)
+yyprint(FILE *File, int Type, YYSTYPE Value)
 {
-  switch (type) {
-  case LABEL:
-  case IDENTIFIER:
-  case IDENT_BRACKET:
-  case DEBUG_LINE:
-  case ERRORLEVEL:
-  case FILL:
-  case LIST:
-  case PROCESSOR:
-  case DEFINE:
-    fprintf (file, "%s", value.s);
-    break;
+  switch (Type) {
+    case LABEL:
+    case IDENTIFIER:
+    case IDENT_BRACKET:
+    case DEBUG_LINE:
+    case ERRORLEVEL:
+    case FILL:
+    case LIST:
+    case PROCESSOR:
+    case DEFINE:
+      fprintf(File, "%s", Value.s);
+      break;
 
-  case STRING:
-    fprintf (file, "\"%s\"", value.s);
-    break;
+    case STRING:
+      fprintf(File, "\"%s\"", Value.s);
+      break;
 
-  case NUMBER:
-  case UPPER:
-  case HIGH:
-  case LOW:
-  case LSH:
-  case RSH:
-  case GREATER_EQUAL:
-  case LESS_EQUAL:
-  case EQUAL:
-  case NOT_EQUAL:
-  case '<':
-  case '>':
-  case '&':
-  case '|':
-  case '^':
-  case LOGICAL_AND:
-  case LOGICAL_OR:
-  case '=':
-  case ASSIGN_PLUS:
-  case ASSIGN_MINUS:
-  case ASSIGN_MULTIPLY:
-  case ASSIGN_DIVIDE:
-  case ASSIGN_MODULUS:
-  case ASSIGN_LSH:
-  case ASSIGN_RSH:
-  case ASSIGN_AND:
-  case ASSIGN_OR:
-  case ASSIGN_XOR:
-  case INCREMENT:
-  case DECREMENT:
-  case POSTINCREMENT:
-  case POSTDECREMENT:
-  case INDFOFFSET:
-  case TBL_NO_CHANGE:
-  case TBL_POST_INC:
-  case TBL_POST_DEC:
-  case TBL_PRE_INC:
-  case '[':
-  case ']':
-    fprintf (file, "%d", value.i);
-    break;
+    case NUMBER:
+    case UPPER:
+    case HIGH:
+    case LOW:
+    case LSH:
+    case RSH:
+    case GREATER_EQUAL:
+    case LESS_EQUAL:
+    case EQUAL:
+    case NOT_EQUAL:
+    case '<':
+    case '>':
+    case '&':
+    case '|':
+    case '^':
+    case LOGICAL_AND:
+    case LOGICAL_OR:
+    case '=':
+    case ASSIGN_PLUS:
+    case ASSIGN_MINUS:
+    case ASSIGN_MULTIPLY:
+    case ASSIGN_DIVIDE:
+    case ASSIGN_MODULUS:
+    case ASSIGN_LSH:
+    case ASSIGN_RSH:
+    case ASSIGN_AND:
+    case ASSIGN_OR:
+    case ASSIGN_XOR:
+    case INCREMENT:
+    case DECREMENT:
+    case POSTINCREMENT:
+    case POSTDECREMENT:
+    case INDFOFFSET:
+    case TBL_NO_CHANGE:
+    case TBL_POST_INC:
+    case TBL_POST_DEC:
+    case TBL_PRE_INC:
+    case '[':
+    case ']':
+      fprintf(File, "%d", Value.i);
+      break;
 
-  case CBLOCK:
-  case ENDC:
-  default:
-    break;
+    case CBLOCK:
+    case ENDC:
+    default:
+      break;
   }
 }
 #endif
@@ -118,78 +118,87 @@ int yylex(void);
 
 /* Some simple functions for building parse trees */
 
-static pnode_t *mk_pnode(enum pnode_tag tag)
+static pnode_t *
+mk_pnode(enum pnode_tag Tag)
 {
   pnode_t *new = (pnode_t *)GP_Calloc(1, sizeof(pnode_t));
 
-  new->tag = tag;
+  new->tag = Tag;
   return new;
 }
 
-pnode_t *mk_constant(int value)
+pnode_t *
+mk_constant(int Value)
 {
   pnode_t *new = mk_pnode(PTAG_CONSTANT);
 
-  PnConstant(new) = value;
+  PnConstant(new) = Value;
   return new;
 }
 
-pnode_t *mk_offset(pnode_t *p)
+pnode_t *
+mk_offset(pnode_t *Pnode)
 {
   pnode_t *new = mk_pnode(PTAG_OFFSET);
 
-  PnOffset(new) = p;
+  PnOffset(new) = Pnode;
   return new;
 }
 
-pnode_t *mk_symbol(const char *value)
+pnode_t *
+mk_symbol(const char *String)
 {
   pnode_t *new = mk_pnode(PTAG_SYMBOL);
 
-  PnSymbol(new) = value;
+  PnSymbol(new) = String;
   return new;
 }
 
-pnode_t *mk_string(char *value)
+pnode_t *
+mk_string(char *String)
 {
   pnode_t *new = mk_pnode(PTAG_STRING);
 
-  PnString(new) = value;
+  PnString(new) = String;
   return new;
 }
 
-pnode_t *mk_list(pnode_t *head, pnode_t *tail)
+pnode_t *
+mk_list(pnode_t *Head, pnode_t *Tail)
 {
   pnode_t *new = mk_pnode(PTAG_LIST);
 
-  PnListHead(new) = head;
-  PnListTail(new) = tail;
+  PnListHead(new) = Head;
+  PnListTail(new) = Tail;
   return new;
 }
 
-pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1)
+pnode_t *
+mk_2op(int Op, pnode_t *Pnode0, pnode_t *Pnode1)
 {
   pnode_t *new = mk_pnode(PTAG_BINOP);
 
-  PnBinOpOp(new) = op;
-  PnBinOpP0(new) = p0;
-  PnBinOpP1(new) = p1;
+  PnBinOpOp(new) = Op;
+  PnBinOpP0(new) = Pnode0;
+  PnBinOpP1(new) = Pnode1;
   return new;
 }
 
-pnode_t *mk_1op(int op, pnode_t *p0)
+pnode_t *
+mk_1op(int Op, pnode_t *Pnode)
 {
   pnode_t *new = mk_pnode(PTAG_UNOP);
 
-  PnUnOpOp(new) = op;
-  PnUnOpP0(new) = p0;
+  PnUnOpOp(new) = Op;
+  PnUnOpP0(new) = Pnode;
   return new;
 }
 
 /************************************************************************/
 /* shared functions */
 
-gpasmVal set_label(const char *label, pnode_t *parms)
+gpasmVal
+set_label(const char *Label, pnode_t *Parms)
 {
   gpasmVal value = 0;
 
@@ -198,22 +207,23 @@ gpasmVal set_label(const char *label, pnode_t *parms)
         !(SECTION_FLAGS & (STYP_TEXT | STYP_RAM_AREA | STYP_BPACK)))
       gpmsg_verror(GPE_LABEL_IN_SECTION, NULL);
 
-    value = do_or_append_insn("set", parms);
+    value = do_or_append_insn("set", Parms);
     if (!IN_MACRO_WHILE_DEFINITION) {
-      set_global(label, value, VAL_VARIABLE, false);
+      set_global(Label, value, VAL_VARIABLE, false);
     }
   }
 
   return value;
 }
 
-int return_op(int operation);
+int return_op(int Operation);
 
-void next_line(int value)
+void
+next_line(int Value)
 {
   if ((state.pass == 2) && (state.lst.line.linetype == LTY_DOLIST_DIR)) {
     state.lst.line.linetype = LTY_NONE;
-    lst_format_line(state.src->curr_src_line.line, value);
+    lst_format_line(state.src->curr_src_line.line, Value);
   }
 
   if (IN_WHILE_EXPANSION || IN_MACRO_EXPANSION) {
@@ -224,7 +234,7 @@ void next_line(int value)
 
       if (state.src->curr_src_line.line != NULL) {
         /* Empty macro. */
-        lst_format_line(state.src->curr_src_line.line, value);
+        lst_format_line(state.src->curr_src_line.line, Value);
       }
       preproc_emit();
     }
@@ -247,7 +257,7 @@ void next_line(int value)
     if (!IN_WHILE_DEFINITION && (state.pass == 2) &&
         (state.lst.line.linetype != LTY_DOLIST_DIR) &&
         (state.lst.line.linetype != LTY_NOLIST_DIR)) {
-      lst_format_line(state.src->curr_src_line.line, value);
+      lst_format_line(state.src->curr_src_line.line, Value);
 
       if (!IN_MACRO_WHILE_DEFINITION) {
         preproc_emit();
@@ -307,11 +317,12 @@ void next_line(int value)
   }
 }
 
-void yyerror(const char *message)
+void
+yyerror(const char *Message)
 {
   if (!IN_MACRO_WHILE_DEFINITION) {
     /* throw error if not in macro definition */
-    gpmsg_verror(GPE_PARSER, NULL, message);
+    gpmsg_verror(GPE_PARSER, NULL, Message);
   }
 }
 
@@ -322,9 +333,9 @@ void yyerror(const char *message)
 /* Bison declarations */
 
 %union {
-  gpasmVal i;
-  char *s;
-  pnode_t *p;
+  gpasmVal  i;
+  char     *s;
+  pnode_t  *p;
 }
 
 %token <s> LABEL
@@ -424,14 +435,14 @@ program:
         program
         {
           state.lst.line.was_byte_addr = state.byte_addr;
-          state.lst.line.linetype = LTY_NONE;
-          state.next_state = STATE_NOCHANGE;
+          state.lst.line.linetype      = LTY_NONE;
+          state.next_state             = STATE_NOCHANGE;
         } line
         | program error '\n'
         {
           state.lst.line.was_byte_addr = state.byte_addr;
-          state.lst.line.linetype = LTY_NONE;
-          state.next_state = STATE_NOCHANGE;
+          state.lst.line.linetype      = LTY_NONE;
+          state.next_state             = STATE_NOCHANGE;
 
           yyerrok;  /* generate multiple errors */
           if (IN_MACRO_WHILE_DEFINITION) {
@@ -446,7 +457,7 @@ line:
         LABEL assign_equal_ops expr '\n'
         {
           pnode_t *parms;
-          int exp_result;
+          int      exp_result;
 
           exp_result = do_insn("set", mk_list($3, NULL));
           parms = mk_list(mk_2op(return_op($2), mk_symbol($1), mk_constant(exp_result)), NULL);
@@ -496,31 +507,31 @@ line:
             if (state.mac_head != NULL) {
               /* This is a macro definition. Set it up. */
               symbol_t     *mac;
-              macro_head_t *h = NULL;
+              macro_head_t *head;
 
-              mac = gp_sym_get_symbol(state.stMacros, $1);
-              if (mac != NULL) {
-                h = gp_sym_get_symbol_annotation(mac);
-              }
+              mac  = gp_sym_get_symbol(state.stMacros, $1);
+              head = (mac != NULL) ? gp_sym_get_symbol_annotation(mac) : NULL;
 
               /* It's not an error if macro was defined on pass 1 and we're in pass 2. */
-              if ((h != NULL) && !((h->pass == 1) && (state.pass == 2))) {
+              if ((head != NULL) && !((head->pass == 1) && (state.pass == 2))) {
                 gpmsg_verror(GPE_DUPLICATE_MACRO, NULL);
               }
               else {
                 if (mac == NULL) {
                   mac = gp_sym_add_symbol(state.stMacros, $1);
                 }
+
                 gp_sym_annotate_symbol(mac, state.mac_head);
-                h = state.mac_head;
-                h->line_number = state.src->line_number;
-                h->file_symbol = state.src->file_symbol;
+                head = state.mac_head;
+                head->line_number = state.src->line_number;
+                head->file_symbol = state.src->file_symbol;
               }
-              h->pass = state.pass;
+
+              head->pass = state.pass;
 
               /* The macro is defined so allow calls. */
               if (state.pass == 2) {
-                h->defined = true;
+                head->defined = true;
               }
 
               state.mac_head = NULL;
@@ -528,41 +539,42 @@ line:
             else if (!IN_MACRO_WHILE_DEFINITION) {
               /* Outside a macro definition, just define the label. */
               switch (state.lst.line.linetype) {
-              case LTY_SEC:
-                gp_strncpy(state.obj.new_sect_name, $1, sizeof(state.obj.new_sect_name));
-                break;
+                case LTY_SEC:
+                  gp_strncpy(state.obj.new_sect_name, $1, sizeof(state.obj.new_sect_name));
+                  break;
 
-              case LTY_SET:
-                set_global($1, $2, VAL_VARIABLE, false);
-                break;
+                case LTY_SET:
+                  set_global($1, $2, VAL_VARIABLE, false);
+                  break;
 
-              case LTY_ORG:
-              case LTY_EQU:
-                set_global($1, $2, VAL_CONSTANT, false);
-                break;
+                case LTY_ORG:
+                case LTY_EQU:
+                  set_global($1, $2, VAL_CONSTANT, false);
+                  break;
 
-              case LTY_INSN:
-              case LTY_DATA:
-              case LTY_RES:
-                if ((state.mode == MODE_RELOCATABLE) && !IN_MACRO_WHILE_DEFINITION &&
-                    !(SECTION_FLAGS & (STYP_TEXT | STYP_RAM_AREA | STYP_BPACK))) {
-                  gpmsg_verror(GPE_LABEL_IN_SECTION, NULL);
+                case LTY_INSN:
+                case LTY_DATA:
+                case LTY_RES: {
+                  if ((state.mode == MODE_RELOCATABLE) && !IN_MACRO_WHILE_DEFINITION &&
+                      !(SECTION_FLAGS & (STYP_TEXT | STYP_RAM_AREA | STYP_BPACK))) {
+                    gpmsg_verror(GPE_LABEL_IN_SECTION, NULL);
+                  }
+
+                  if (IS_RAM_ORG) {
+                    set_global($1, $2, VAL_STATIC, false);
+                  }
+                  else {
+                    set_global($1, $2, VAL_ADDRESS, false);
+                  }
+                  break;
                 }
 
-                if (IS_RAM_ORG) {
-                  set_global($1, $2, VAL_STATIC, false);
-                }
-                else {
-                  set_global($1, $2, VAL_ADDRESS, false);
-                }
-                break;
+                case LTY_DIR:
+                  gpmsg_verror(GPE_ILLEGAL_LABEL, NULL, $1);
+                  break;
 
-              case LTY_DIR:
-                gpmsg_verror(GPE_ILLEGAL_LABEL, NULL, $1);
-                break;
-
-              default:
-                break;
+                default:
+                  break;
               }
             }
           }
@@ -579,16 +591,16 @@ line:
           else {
             if (state.found_end) {
               switch (state.src->type) {
-              case SRC_WHILE:
-                gpmsg_error(GPE_EXPECTED, "Expected (ENDW)");
-                break;
+                case SRC_WHILE:
+                  gpmsg_error(GPE_EXPECTED, "Expected (ENDW)");
+                  break;
 
-              case SRC_MACRO:
-                gpmsg_error(GPW_EXPECTED, "Expected (ENDM)");
-                /* fall through */
+                case SRC_MACRO:
+                  gpmsg_error(GPW_EXPECTED, "Expected (ENDM)");
+                  /* fall through */
 
-              default:
-                break;
+                default:
+                  break;
               }
 
               if (state.astack != NULL) {
@@ -1122,22 +1134,23 @@ list_args:
         ;
 %%
 
-int return_op(int operation)
+int
+return_op(int Operation)
 {
   /* returns an operator for the replacement of i+=1 with i=i+1*/
-  switch(operation) {
-  case ASSIGN_PLUS:     return '+';
-  case ASSIGN_MINUS:    return '-';
-  case ASSIGN_MULTIPLY: return '*';
-  case ASSIGN_DIVIDE:   return '/';
-  case ASSIGN_MODULUS:  return '%';
-  case ASSIGN_LSH:      return LSH;
-  case ASSIGN_RSH:      return RSH;
-  case ASSIGN_AND:      return '&';
-  case ASSIGN_OR:       return '|';
-  case ASSIGN_XOR:      return '^';
-  default:
-    assert(0); /* Unhandled operator */
+  switch (Operation) {
+    case ASSIGN_PLUS:     return '+';
+    case ASSIGN_MINUS:    return '-';
+    case ASSIGN_MULTIPLY: return '*';
+    case ASSIGN_DIVIDE:   return '/';
+    case ASSIGN_MODULUS:  return '%';
+    case ASSIGN_LSH:      return LSH;
+    case ASSIGN_RSH:      return RSH;
+    case ASSIGN_AND:      return '&';
+    case ASSIGN_OR:       return '|';
+    case ASSIGN_XOR:      return '^';
+    default:
+      assert(0); /* Unhandled operator */
   }
 
   return 0;

@@ -24,10 +24,10 @@ Boston, MA 02111-1307, USA.  */
 
 int yylex_destroy(void);
 
-void open_src(const char *name, gp_boolean is_include_file);
+void open_src(const char *Name, gp_boolean Is_include);
 void close_file(void);
 void execute_exitm(void);
-void execute_macro(struct macro_head *h, gp_boolean is_while);
+void execute_macro(struct macro_head *Head, gp_boolean Is_while);
 gp_boolean found_end(void);
 
 extern gp_boolean force_ident;

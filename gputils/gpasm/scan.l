@@ -72,81 +72,77 @@ gp_boolean force_ident;   /* Used to force numbers to identifiers for processor 
 static enum identtype _identify(const char *);
 static gp_boolean _found_eof(void);
 
-static inline size_t
-gp_input(char *buf, size_t max_size)
+static inline int
+gp_input(char *Buf, int Max_size)
 {
-  if (IN_FILE_EXPANSION)
-    {
-      /* not in macro expansion */
-      if (YY_CURRENT_BUFFER_LVALUE->yy_is_interactive)
-        {
-          int c = '*';
-          size_t n;
+  int c;
+  int n;
 
-          for (n = 0; (n < max_size) && ((c = getc(yyin)) != EOF) && (c != '\n'); ++n) {
-            buf[n] = (char)c;
-          }
+  if (IN_FILE_EXPANSION) {
+    c = '*';
+    /* not in macro expansion */
+    if (YY_CURRENT_BUFFER_LVALUE->yy_is_interactive) {
+      for (n = 0; (n < Max_size) && ((c = getc(yyin)) != EOF) && (c != '\n'); ++n) {
+        Buf[n] = (char)c;
+      }
 
-          if (c == '\n') {
-            /* skip CR followed by LF */
-            if ((n > 0) && (buf[n - 1] == '\r')) {
-              --n;
-            }
-            buf[n++] = (char)c;
-          }
-
-          if ((c == EOF) && ferror(yyin)) {
-            gpmsg_verror(GPE_SCANNER, NULL, "Input in flex scanner failed.");
-          }
-          return n;
+      if (c == '\n') {
+        /* skip CR followed by LF */
+        if ((n > 0) && (Buf[n - 1] == '\r')) {
+          --n;
         }
-      else
-        {
-          gpmsg_verror(GPE_SCANNER, NULL, "Interactive scanner should be used.");
-          return 0;
-        }
+
+        Buf[n++] = (char)c;
+      }
+
+      if ((c == EOF) && ferror(yyin)) {
+        gpmsg_verror(GPE_SCANNER, NULL, "Input in flex scanner failed.");
+      }
+
+      return n;
     }
-  else
-    {
-      /* in macro expansion */
-      if (state.src->mac_body != NULL)
-        {
-          size_t n = strlen(state.src->mac_body->src_line);
-
-          if (n > (max_size - 1)) {
-            n = max_size - 2;
-          }
-
-          strncpy(buf, state.src->mac_body->src_line, n);
-          buf[n++] = '\n'; /* add newline */
-          return n;
-        }
-      else
-        {
-          buf[0] = buf[1] = YY_END_OF_BUFFER_CHAR;
-          return 0;
-        }
+    else {
+      gpmsg_verror(GPE_SCANNER, NULL, "Interactive scanner should be used.");
+      return 0;
     }
+  }
+  else {
+    /* in macro expansion */
+    if (state.src->mac_body != NULL) {
+      n = strlen(state.src->mac_body->src_line);
+
+      if (n > (Max_size - 1)) {
+        n = Max_size - 2;
+      }
+
+      strncpy(Buf, state.src->mac_body->src_line, n);
+      Buf[n++] = '\n'; /* add newline */
+      return n;
+    }
+    else {
+      Buf[0] = Buf[1] = YY_END_OF_BUFFER_CHAR;
+      return 0;
+    }
+  }
 }
 
-static inline size_t
-gp_yyinput(char *buf, size_t max_size)
+static inline int
+gp_yyinput(char *Buf, size_t Max_size)
 {
-  int result = gp_input(buf, max_size);
+  int result = gp_input(Buf, Max_size);
 
-  if (result)
-    {
-      /* preprocess line */
-      preprocess_line(buf, &result, max_size);
+  if (result != 0) {
+    /* preprocess line */
+    preprocess_line(Buf, &result, Max_size);
 
-      state.src->last_char_is_nl = (buf[result - 1] == '\n');
-    }
-  else if (!state.src->last_char_is_nl)
-    {
-      *buf = '\n';
-      result = 1;
-      state.src->last_char_is_nl = true;
-    }
+    state.src->last_char_is_nl = (Buf[result - 1] == '\n');
+  }
+  else if (!state.src->last_char_is_nl) {
+    *Buf = '\n';
+    result = 1;
+    state.src->last_char_is_nl = true;
+  }
+
   return result;
 }
 
@@ -316,56 +312,60 @@ processor                {
                            return DEBUG_LINE;
                          }
 ^{IDENT}:?               {
-                           int has_collon = 0;
-                           symbol_t *sym;
-                           macro_head_t *h;
+                           gp_boolean          has_colon;
+                           const symbol_t     *sym;
+                           const macro_head_t *head;
 
+                           has_colon = false;
                            if (yytext[strlen(yytext) - 1] == ':') {
                              yytext[strlen(yytext) - 1] = '\0';
-                             has_collon = 1;
+                             has_colon = true;
                            }
                            yylval.s = GP_Strdup(yytext);
                            switch (_identify(yytext)) {
-                             case ID_DIRECTIVES:
+                             case ID_DIRECTIVES: {
                                gpmsg_vwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
-                               if (has_collon) {
+                               if (has_colon) {
                                  gpmsg_verror(GPE_BADCHAR, NULL, ':');
                                }
                                return IDENTIFIER;
                                break;
+                             }
 
-                             case ID_MACROS:
+                             case ID_MACROS: {
                                /* Macro invocation */
                                BEGIN(macpar);
-                               sym = gp_sym_get_symbol(state.stMacros, yytext);
-                               h = gp_sym_get_symbol_annotation(sym);
-                               /* TODO: this condition shoul be probably removed
+                               sym  = gp_sym_get_symbol(state.stMacros, yytext);
+                               head = gp_sym_get_symbol_annotation(sym);
+                               /* TODO: This condition shoul be probably removed
                                 * since the symbol table is reinitialized before
-                                * the second pass */
-                               if (h->line_number == state.src->line_number) {
+                                * the second pass. */
+                               if (head->line_number == state.src->line_number) {
                                  return LABEL;
                                }
                                else {
                                  gpmsg_vwarning(GPW_MACRO_COLUMN_ONE, NULL, yytext);
-                                 if (has_collon) {
+                                 if (has_colon) {
                                    gpmsg_verror(GPE_BADCHAR, NULL, ':');
                                  }
                                  return IDENTIFIER;
                                }
                                break;
+                             }
 
-                             case ID_OPCODES:
+                             case ID_OPCODES: {
                                gpmsg_vwarning(GPW_OP_COLUMN_ONE, NULL, yytext);
-                               if (has_collon)
+                               if (has_colon) {
                                  gpmsg_verror(GPE_BADCHAR, NULL, ':');
+                               }
                                return IDENTIFIER;
                                break;
+                             }
 
                              case ID_UNKNOWN_TYPE:
-                               return LABEL;
-
                              default:
                                return LABEL;
+                               break;
                            }
                          }
 {IDENT}                  {
@@ -641,24 +641,24 @@ a'{STR_QCHAR}'           {
 %%
 
 static void
-_search_paths(source_context_t *new, const char *name)
+_search_paths(source_context_t *Context, const char *Name)
 {
   char tryname[PATH_MAX + 1];
   int  i;
 
   for (i = 0; i < state.path_num; i++) {
-    snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
-    new->f = fopen(tryname, "rt");
+    snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], Name);
+    Context->f = fopen(tryname, "rt");
 
-    if (new->f != NULL) {
-      new->name = GP_Strdup(tryname);
+    if (Context->f != NULL) {
+      Context->name = GP_Strdup(tryname);
       break;
     }
   }
 }
 
 void
-open_src(const char *name, gp_boolean isinclude)
+open_src(const char *Name, gp_boolean Is_include)
 {
   extern FILE      *yyin;
   source_context_t *new = GP_Calloc(1, sizeof(source_context_t));
@@ -667,20 +667,20 @@ open_src(const char *name, gp_boolean isinclude)
     state.src->yybuf = YY_CURRENT_BUFFER;
   }
 
-  new->f = fopen(name, "rt");
+  new->f = fopen(Name, "rt");
 
   if (new->f != NULL) {
-    new->name = GP_Strdup(name);
+    new->name = GP_Strdup(Name);
   }
-  else if (isinclude && (strchr(name, PATH_SEPARATOR_CHAR) == 0)) {
+  else if (Is_include && (strchr(Name, PATH_SEPARATOR_CHAR) == 0)) {
     /* If include file and no PATH_SEPARATOR_CHAR in name, try searching include path. */
-    _search_paths(new, name);
+    _search_paths(new, Name);
 
     if (new->f == NULL) {
       /* We didn't find a match so check for lower case. This is mainly for
          Microchip examples and some includes in which filenames were written
          without regard to case. */
-      char *lower_case_name = gp_strdup_lower_case(name);
+      char *lower_case_name = gp_strdup_lower_case(Name);
 
       _search_paths(new, lower_case_name);
       free(lower_case_name);
@@ -693,10 +693,10 @@ open_src(const char *name, gp_boolean isinclude)
 
   if (new->f == NULL) {
     if (state.src != NULL) {
-      gpmsg_verror(GPE_NOENT, NULL, name);
+      gpmsg_verror(GPE_NOENT, NULL, Name);
     }
     else {
-      perror(name);
+      perror(Name);
       exit(1);
     }
   }
@@ -711,18 +711,18 @@ open_src(const char *name, gp_boolean isinclude)
       new->name = gp_absolute_path(new->name);
     }
 
-    new->type = SRC_FILE;
-    new->mac_head = NULL;
+    new->type        = SRC_FILE;
+    new->mac_head    = NULL;
     new->line_number = 1;
     new->loop_number = 1;
-    new->file_symbol = (state.debug_info) ? NULL : coff_add_file_sym(new->name, isinclude);
-    new->prev = state.src;
+    new->file_symbol = (state.debug_info) ? NULL : coff_add_file_sym(new->name, Is_include);
+    new->prev        = state.src;
 
     state.src = new;
     state.src->fc = add_file(FT_SRC, new->name);
     deps_add(new->name);
 
-    if (!isinclude) {
+    if (!Is_include) {
       /* it is the top level file so initialize the lexer */
       force_decimal = false;
       force_ident   = false;
@@ -733,7 +733,7 @@ open_src(const char *name, gp_boolean isinclude)
 }
 
 void
-execute_macro(macro_head_t *h, gp_boolean is_while)
+execute_macro(macro_head_t *Head, gp_boolean Is_while)
 {
   source_context_t *new = GP_Calloc(1, sizeof(source_context_t));
 
@@ -743,15 +743,15 @@ execute_macro(macro_head_t *h, gp_boolean is_while)
   state.src->astack = state.astack;
 
   /* create new source_context */
-  new->name = GP_Strdup(h->src_name);
-  new->type = (is_while) ? SRC_WHILE : SRC_MACRO;
+  new->name = GP_Strdup(Head->src_name);
+  new->type = (Is_while) ? SRC_WHILE : SRC_MACRO;
 
-  new->line_number = h->line_number + 1;
+  new->line_number = Head->line_number + 1;
   new->loop_number = 1;
-  new->file_symbol = h->file_symbol;
-  new->f = NULL;
-  new->mac_head = h;
-  new->mac_body = h->body;
+  new->file_symbol = Head->file_symbol;
+  new->f           = NULL;
+  new->mac_head    = Head;
+  new->mac_body    = Head->body;
 
   new->prev = state.src;
   state.src = new;
@@ -763,13 +763,13 @@ execute_macro(macro_head_t *h, gp_boolean is_while)
 void
 repeat_while(void)
 {
-  macro_head_t *h;
+  macro_head_t *head;
 
-  h = state.src->mac_head;
+  head = state.src->mac_head;
 
-  state.src->line_number = h->line_number + 1;
+  state.src->mac_body    = head->body;
+  state.src->line_number = head->line_number + 1;
   state.src->loop_number++;
-  state.src->mac_body = h->body;
 
   yy_delete_buffer(YY_CURRENT_BUFFER);
   yy_switch_to_buffer(yy_create_buffer(NULL, YY_BUF_SIZE));
@@ -813,14 +813,15 @@ close_file(void)
     free(state.src->name);
     state.src = state.src->prev;
   }
+
   free(old);
 }
 
 void
 execute_exitm(void)
 {
-  amode_t *upper;
-  amode_t *old;
+  const amode_t *upper;
+  amode_t       *old;
 
   /* The macro is ended early, so return the stack to its previous state. */
   upper = state.src->prev->astack;
@@ -904,31 +905,31 @@ _found_eof(void)
 }
 
 static enum identtype
-_identify(const char *text)
+_identify(const char *Text)
 {
   enum identtype  type;
-  symbol_t       *sym;
+  const symbol_t *sym;
 
-  if ((sym = gp_sym_get_symbol(state.stMacroParams, text)) != NULL) {
+  if ((sym = gp_sym_get_symbol(state.stMacroParams, Text)) != NULL) {
     type = ID_MACRO_PARAMS;
   }
-  else if ((sym = gp_sym_get_symbol(state.stDefines, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stDefines, Text)) != NULL) {
     type = ID_DEFINES;
   }
-  else if ((sym = gp_sym_get_symbol(state.stDirective, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stDirective, Text)) != NULL) {
     type = ID_DIRECTIVES;
 
-    if ((state.mpasm_compatible) && (strcasecmp(text, "idlocs") == 0)) {
+    if ((state.mpasm_compatible) && (strcasecmp(Text, "idlocs") == 0)) {
       type = ID_UNKNOWN_TYPE;
     }
   }
-  else if ((sym = gp_sym_get_symbol(state.stBuiltin, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stBuiltin, Text)) != NULL) {
     type = ID_OPCODES;
   }
-  else if ((sym = gp_sym_get_symbol(state.stGlobal, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stGlobal, Text)) != NULL) {
     type = ID_GLOBALS;
   }
-  else if ((sym = gp_sym_get_symbol(state.stMacros, text)) != NULL) {
+  else if ((sym = gp_sym_get_symbol(state.stMacros, Text)) != NULL) {
     type = ID_MACROS;
   }
   else {

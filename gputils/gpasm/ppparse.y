@@ -28,7 +28,7 @@ Boston, MA 02111-1307, USA.  */
 int ppresult = 0;
 
 void
-pperror(const char *message)
+pperror(const char *Message)
 {
   /* do nothing */
 }
@@ -36,8 +36,8 @@ pperror(const char *message)
 
 /* Bison declarations.  */
 %union {
-  gpasmVal i;
-  char *s;
+  gpasmVal  i;
+  char     *s;
 }
 
 %token HV
@@ -68,16 +68,16 @@ exp:
   |
   IDENTIFIER
   {
-    symbol_t *sym;
+    const symbol_t   *sym;
+    const variable_t *var;
+    char              buf[BUFSIZ];
 
     if ((sym = gp_sym_get_symbol(state.stTop, $1)) != NULL) {
-      variable_t *var = gp_sym_get_symbol_annotation(sym);
+      var = gp_sym_get_symbol_annotation(sym);
       assert(var != NULL);
       $$ = var->value;
     }
     else {
-      char buf[BUFSIZ];
-
       if ((!state.mpasm_compatible) && (state.strict_level > 0)) {
         snprintf(buf, sizeof(buf), "Symbol %s not assigned a value.", $1);
 

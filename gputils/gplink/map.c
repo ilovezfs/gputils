@@ -363,19 +363,19 @@ _write_symbols(void)
 void
 make_map(void)
 {
-  if ((gp_num_errors > 0) || (state.mapfile == OUT_SUPPRESS)) {
-    unlink(state.mapfilename);
+  if ((gp_num_errors > 0) || (state.map_file == OUT_SUPPRESS)) {
+    unlink(state.map_file_name);
     return;
   }
 
-  state.map.f = fopen(state.mapfilename, "wt");
+  state.map.f = fopen(state.map_file_name, "wt");
   if (state.map.f == NULL) {
-    perror(state.mapfilename);
+    perror(state.map_file_name);
     exit(1);
   }
 
   _map_line("%s", GPLINK_VERSION_STRING);
-  _map_line("Map File - Created %s", state.startdate);
+  _map_line("Map File - Created %s", state.start_date);
   _map_line(NULL);
 
   /* write sections */

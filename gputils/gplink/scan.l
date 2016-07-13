@@ -202,7 +202,7 @@ void open_src(const char *name, gp_boolean isinclude)
     char tryname[BUFSIZ];
     int i;
 
-    for (i = 0; i < state.numpaths; i++) {
+    for (i = 0; i < state.num_paths; i++) {
       snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
       new->f = fopen(tryname, "rt");
 

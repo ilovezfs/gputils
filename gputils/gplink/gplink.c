@@ -447,7 +447,7 @@ gplink_open_coff(const char *name)
     /* If no PATH_SEPARATOR_CHAR in name, try searching include pathes. */
     int i;
 
-    for (i = 0; i < state.numpaths; i++) {
+    for (i = 0; i < state.num_paths; i++) {
       snprintf(file_name, sizeof(file_name), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
       coff = fopen(file_name, "rb");
 
@@ -464,7 +464,7 @@ gplink_open_coff(const char *name)
 
   /* FIXME: Three files are opened, surely one is sufficent. */
 
-  switch(gp_identify_coff_file(file_name)) {
+  switch (gp_identify_coff_file(file_name)) {
     case GP_COFF_OBJECT_V2:
     case GP_COFF_OBJECT:
       /* read the object */
@@ -527,30 +527,30 @@ _init(void)
   gp_init();
 
   /* initialize */
-  gp_date_string(state.startdate, sizeof(state.startdate));
-  state.hex_format        = INHX32;
-  state.numpaths          = 0;
-  state.processor         = NULL;
-  state.optimize.level    = OPTIMIZE_LEVEL_DEFAULT;
-  state.optimize.pagesel  = 0;
-  state.optimize.banksel  = 0;
-  state.codfile           = OUT_NORMAL;
-  state.hexfile           = OUT_NORMAL;
-  state.lstfile           = OUT_NORMAL;
-  state.mapfile           = OUT_SUPPRESS;
-  state.objfile           = OUT_SUPPRESS;
-  state.fill_enable       = false;
-  state.fill_value        = 0;
-  state.has_stack         = false;
-  state.stack_size        = 0;
-  state.has_idata         = false;
-  state.srcfilenames      = NULL;
-  state.srcfilenames_tail = NULL;
-  state.object            = NULL;
-  state.archives          = NULL;
+  gp_date_string(state.start_date, sizeof(state.start_date));
+  state.hex_format          = INHX32;
+  state.num_paths           = 0;
+  state.processor           = NULL;
+  state.optimize.level      = OPTIMIZE_LEVEL_DEFAULT;
+  state.optimize.pagesel    = 0;
+  state.optimize.banksel    = 0;
+  state.cod_file            = OUT_NORMAL;
+  state.hex_file            = OUT_NORMAL;
+  state.lst_file            = OUT_NORMAL;
+  state.map_file            = OUT_SUPPRESS;
+  state.obj_file            = OUT_SUPPRESS;
+  state.fill_enable         = false;
+  state.fill_value          = 0;
+  state.has_stack           = false;
+  state.stack_size          = 0;
+  state.has_idata           = false;
+  state.src_file_names      = NULL;
+  state.src_file_names_tail = NULL;
+  state.object              = NULL;
+  state.archives            = NULL;
 
   /* set default output filename to be a.o, a.hex, a.cod, a.map */
-  strncpy(state.basefilename, "a", sizeof(state.basefilename));
+  strncpy(state.base_file_name, "a", sizeof(state.base_file_name));
 
   state.ifdef = NULL;
   state.script_symbols     = gp_sym_push_table(NULL, false);
@@ -567,8 +567,8 @@ _init(void)
 void
 gplink_add_path(const char *path)
 {
-  if (state.numpaths < MAX_PATHS) {
-    state.paths[state.numpaths++] = GP_Strdup(path);
+  if (state.num_paths < MAX_PATHS) {
+    state.paths[state.num_paths++] = GP_Strdup(path);
   }
   else {
     gp_error("Too many -I paths.");
@@ -673,7 +673,7 @@ _process_args(int argc, char *argv[])
       break;
 
     case 'c':
-      state.objfile = OUT_NORMAL;
+      state.obj_file = OUT_NORMAL;
       break;
 
     case 'C':
@@ -708,16 +708,16 @@ _process_args(int argc, char *argv[])
       break;
 
     case 'l':
-      state.lstfile = OUT_SUPPRESS;
+      state.lst_file = OUT_SUPPRESS;
       break;
 
     case 'm':
-      state.mapfile = OUT_NORMAL;
+      state.map_file = OUT_NORMAL;
       break;
 
     case 'o':
-      strncpy(state.basefilename, optarg, sizeof(state.basefilename));
-      pc = strrchr(state.basefilename, '.');
+      strncpy(state.base_file_name, optarg, sizeof(state.base_file_name));
+      pc = strrchr(state.base_file_name, '.');
 
       if (pc != NULL) {
         *pc = '\0';
@@ -749,17 +749,17 @@ _process_args(int argc, char *argv[])
         srcfns_t *fn;
 
         fn = GP_Malloc(sizeof(srcfns_t));
-        fn->filename = GP_Strdup(optarg);
-        fn->next     = NULL;
+        fn->file_name = GP_Strdup(optarg);
+        fn->next      = NULL;
 
-        if (state.srcfilenames == NULL) {
-          state.srcfilenames = fn;
+        if (state.src_file_names == NULL) {
+          state.src_file_names = fn;
         }
         else {
-          state.srcfilenames_tail->next = fn;
+          state.src_file_names_tail->next = fn;
         }
 
-        state.srcfilenames_tail = fn;
+        state.src_file_names_tail = fn;
       }
       break;
 
@@ -810,21 +810,21 @@ _process_args(int argc, char *argv[])
       srcfns_t *fn;
 
       fn = GP_Malloc(sizeof(srcfns_t));
-      fn->filename = GP_Strdup(argv[optind++]);
-      fn->next     = NULL;
+      fn->file_name = GP_Strdup(argv[optind++]);
+      fn->next      = NULL;
 
-      if (state.srcfilenames == NULL) {
-        state.srcfilenames = fn;
+      if (state.src_file_names == NULL) {
+        state.src_file_names = fn;
       }
       else {
-        state.srcfilenames_tail->next = fn;
+        state.src_file_names_tail->next = fn;
       }
 
-      state.srcfilenames_tail = fn;
+      state.src_file_names_tail = fn;
     }
   }
 
-  if ((state.srcfilenames == NULL) && (optind >= argc)) {
+  if ((state.src_file_names == NULL) && (optind >= argc)) {
     /* No linker script was specified and no object filenames were provided,
        so print the usage. */
     usage = true;
@@ -860,16 +860,16 @@ _linker(void)
   srcfns_t   *p;
 
   /* setup output filenames */
-  snprintf(state.hexfilename, sizeof(state.hexfilename), "%s.hex", state.basefilename);
-  snprintf(state.mapfilename, sizeof(state.mapfilename), "%s.map", state.basefilename);
-  snprintf(state.objfilename, sizeof(state.objfilename), "%s.cof", state.basefilename);
+  snprintf(state.hex_file_name, sizeof(state.hex_file_name), "%s.hex", state.base_file_name);
+  snprintf(state.map_file_name, sizeof(state.map_file_name), "%s.map", state.base_file_name);
+  snprintf(state.obj_file_name, sizeof(state.obj_file_name), "%s.cof", state.base_file_name);
 
   /* Read the script. */
-  if (state.srcfilenames != NULL) {
-    p = state.srcfilenames;
+  if (state.src_file_names != NULL) {
+    p = state.src_file_names;
 
     do {
-      open_src(p->filename, false);
+      open_src(p->file_name, false);
       yyparse();
       p = p->next;
     } while (p != NULL);
@@ -1024,10 +1024,10 @@ _linker(void)
     free(state.object->filename);
   }
 
-  state.object->filename  = GP_Strdup(state.objfilename);
+  state.object->filename  = GP_Strdup(state.obj_file_name);
   state.object->flags    |= F_EXEC;
 
-  if (state.objfile == OUT_NORMAL) {
+  if (state.obj_file == OUT_NORMAL) {
     /* write the executable object in memory */
     if (!gp_writeobj_write_coff(state.object, gp_num_errors)) {
       gp_error("Error while writing object file.");
@@ -1042,7 +1042,7 @@ _linker(void)
   state.i_memory = gp_cofflink_make_memory(state.object);
 
   /* write hex file */
-  if (!gp_writehex(state.basefilename, state.i_memory, state.hex_format, gp_num_errors,
+  if (!gp_writehex(state.base_file_name, state.i_memory, state.hex_format, gp_num_errors,
                    0, state.class->core_mask)) {
     gp_error("Error while writing hex file.");
     exit(1);

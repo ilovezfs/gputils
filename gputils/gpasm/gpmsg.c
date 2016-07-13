@@ -113,7 +113,7 @@ _free_message_codes(void)
 static const char *
 _get_error(int Code)
 {
-  switch(Code) {
+  switch (Code) {
     case GPE_USER:
       return "ERROR: (%s)";
     case GPE_NOENT:
@@ -126,7 +126,7 @@ _get_error(int Code)
       return "Unmatched (";
     case GPE_CLOSEPAR:
       return "Unmatched )";
-    case GPE_NOSYM:
+    case GPE_SYM_NOT_DEFINED:
       return "Symbol not previously defined: \"%s\"";
     case GPE_DIVBY0:
       return "Divide by zero.";
@@ -148,7 +148,7 @@ _get_error(int Code)
       return "Illegal argument: \"%s\"";
     case GPE_ILLEGAL_COND:
       return "Illegal condition.";
-    case GPE_RANGE:
+    case GPE_OUT_OF_RANGE:
       return "Argument out of range.";
     case GPE_TOO_MANY_ARGU:
       return "Too many arguments.";
@@ -203,7 +203,7 @@ _get_error(int Code)
     case GPE_IDLOCS_ORDER:
       return "__IDLOCS directives must be listed in ascending order.";
     case GPE_CONFIG_UNKNOWN:
-    return "An error with the CONFIG directive occured.";
+      return "An error with the CONFIG directive occured.";
     case GPE_CONFIG_usCONFIG:
       return "You cannot mix CONFIG and __CONFIG directives.";
     case GPE_RES_ODD_PIC16EA:
@@ -221,22 +221,24 @@ _get_error(int Code)
 
     case GPE_IDLOCS_P16E:
       return "IDLOCS directive use solely to the pic18 family.";
-    case GPE_NOF:
+    case GPE_NO_DEST:
       return "The destination of the storage is not selected, use W or F.";
-    case GPE_ACC_NOSEL:
+    case GPE_NO_ACC:
       return "The access of RAM is not selected, use A or B:";
     case GPE_TOO_LONG:
       return "The string (\"%s\") too length (%zu bytes). It cannot be more than %zu bytes.";
-    case GPE_IS_ACCRAM:
+    case GPE_IN_OF_ACCRAM:
       return "This register is located on the Access RAM:";
-    case GPE_NO_ACCRAM:
+    case GPE_OUT_OF_ACCRAM:
       return "This register is not located on the Access RAM:";
-    case GPE_BANK:
-      return "Register in operand not located in RAM Bank %i. Ensure that Bank bits are correct:";
+    case GPE_OUT_OF_BANK:
+      return "Register in operand not located in RAM Bank %d. Ensure that Bank bits are correct:";
     case GPE_INVALID_RAM:
       return "Invalid RAM location specified.";
     case GPE_INVALID_ROM:
       return "Invalid ROM location specified.";
+    case GPE_EXCEED_ROM:
+      return "Address exceeds maximum range for this processor.";
 
     default:
       return "UNKNOWN ERROR";
@@ -248,10 +250,10 @@ _get_error(int Code)
 static const char *
 _get_warning(int Code)
 {
-  switch(Code) {
-    case GPW_NOT_DEFINED:
+  switch (Code) {
+    case GPW_SYM_NOT_DEFINED:
       return "Symbol not previously defined: \"%s\"";
-    case GPW_RANGE:
+    case GPW_OUT_OF_RANGE:
       return "Argument out of range. Least significant bits used.";
     case GPW_OP_COLUMN_ONE:
       return "Found opcode in column 1: \"%s\"";
@@ -295,14 +297,14 @@ _get_warning(int Code)
       return "%s after skip instruction. I this really what you intended?";
     case GPW_UNDEF_PROC:
       return "Processor type is undefined.";
-    case GPW_IS_ACCRAM:
+    case GPW_IN_OF_ACCRAM:
       return "This register is located on the Access RAM:";
-    case GPW_NO_ACCRAM:
+    case GPW_OUT_OF_ACCRAM:
       return "This register is not located on the Access RAM:";
-    case GPW_NOF:
+    case GPW_NO_DEST:
       return "The destination of the storage is not selected, use W or F.";
-    case GPW_BANK:
-      return "Register in operand not located in RAM Bank %i. Ensure that Bank bits are correct:";
+    case GPW_OUT_OF_BANK:
+      return "Register in operand not located in RAM Bank %d. Ensure that Bank bits are correct:";
     case GPW_USER:
       return "WARNING: (%s)";
 
@@ -316,18 +318,18 @@ _get_warning(int Code)
 static const char *
 _get_message(int Code)
 {
-  switch(Code) {
+  switch (Code) {
     case GPM_USER:
       return "MESSAGE: \"%s\"";
-    case GPM_BANK:
-      return "Register in operand not located in RAM Bank %i. Ensure that Bank bits are correct:";
-    case GPM_RANGE:
+    case GPM_OUT_OF_BANK:
+      return "Register in operand not located in RAM Bank %d. Ensure that Bank bits are correct:";
+    case GPM_OUT_OF_RANGE:
       return "Program word too large. Truncated to core size: 0x%04X";
     case GPM_IDLOC:
       return "An ID Locations value too large. Last four hex digits used: 0x%X ==> 0x%04X";
-    case GPM_NOF:
+    case GPM_NO_DEST:
       return "Using default destination of 1 (file).";
-    case GPM_PAGE:
+    case GPM_PAGE_BOUNDARY:
       return "Crossing page boundary -- ensure page bits are set.";
     case GPM_PAGEBITS:
       return "Setting page bits.";
@@ -337,7 +339,7 @@ _get_message(int Code)
       return "Macro expansion superseded by command line value.";
     case GPM_SUPRAM:
       return "Superseding current maximum RAM and RAM map.";
-    case GPM_EXT_PAGE:
+    case GPM_EXT_BANK_OR_PAGE:
       return "Page or Bank selection not needed for this device. No code generated.";
     case GPM_CBLOCK:
       return "CBLOCK constants will start with a value of 0.";
@@ -348,11 +350,11 @@ _get_message(int Code)
 
     case GPM_ACC_DEF:
       return "Using default access of 0 (Access Bank):";
-    case GPM_NOB:
+    case GPM_NO_BANK:
       return "RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank %u from now on.";
     case GPM_EXT_BANK:
       return "Bank selection not needed for this device. No code generated.";
-    case GPM_EXT_PAGE2:
+    case GPM_EXT_PAGE:
       return "Page selection not needed for this device. No code generated.";
 
     case GPM_UNKNOWN:

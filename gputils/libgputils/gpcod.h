@@ -202,6 +202,13 @@ extern void gp_cod_strncpy(uint8_t *Dest, const char *Src, int Max_len);
 extern void gp_cod_date(uint8_t *Buffer, size_t Sizeof_buffer);
 extern void gp_cod_time(uint8_t *Buffer, size_t Sizeof_buffer);
 extern void gp_cod_create(Block *B);
+
+extern DirBlockInfo *gp_cod_new_dir_block(void);
+extern DirBlockInfo *gp_cod_init_dir_block(const char *File_name, const char *Compiler);
+extern DirBlockInfo *gp_cod_find_dir_block_by_high_addr(DirBlockInfo *Main, unsigned int High_addr);
+extern void gp_cod_emit_opcode(DirBlockInfo *Dbi, unsigned int Address, unsigned int Opcode);
+extern void gp_cod_write_code(proc_class_t Class, const MemBlock_t *Mem, DirBlockInfo *Main);
+
 extern BlockList *gp_blocks_new(void);
 extern BlockList *gp_blocks_append(Blocks *Bl, BlockList *B);
 extern BlockList *gp_blocks_get_last(Blocks *Bl);

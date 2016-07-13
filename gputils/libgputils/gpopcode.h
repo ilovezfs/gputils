@@ -1607,14 +1607,13 @@ enum invalidate_mask {
                                    (Only in "gpasm" and "absolute" mode.) */
   INV_MASK_PAGE = (1 << 1),     /* An instruction invalidates the selection of ROM Pages.
                                    (Only in "gpasm" and "absolute" mode.) */
-  INV_MASK_SKIP = (1 << 2)	/* An instruction following this may be skipped. Will not invalidates Banks nor Pages.
+  INV_MASK_SKIP = (1 << 2)	/* An instruction following this may be skipped. Will not invalidates Banks or Pages.
                                    (Only in "gpasm" and "absolute" mode.) */
 };
 
 typedef int gpasmVal;   /* The type that internal arithmetic uses. */
 
-struct pnode;           /* forward declaration; defined in
-                         * gpasm.h for assembler and in
+struct pnode;           /* forward declaration; defined in gpasm.h for assembler and in
                          * script.h for linker */
 
 typedef struct insn {

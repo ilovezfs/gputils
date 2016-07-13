@@ -331,7 +331,7 @@ convert_escape_chars(const char *ps, int *value)
       case '4':
       case '5':
       case '6':
-      case '7':
+      case '7': {
         /* octal number */
         count = 0;
         *value = 0;
@@ -347,8 +347,9 @@ convert_escape_chars(const char *ps, int *value)
           count++;
         }
         break;
+      }
 
-      case 'x':
+      case 'x': {
         /* hex number */
         if ((ps[2] == '\0') || (ps[3] == '\0')) {
           gpmsg_error(GPE_UNKNOWN, "Missing hex value in \\x escape character.");
@@ -368,8 +369,9 @@ convert_escape_chars(const char *ps, int *value)
           ps += 4;
         }
         break;
+      }
 
-      default:
+      default: {
         if (ps[1] == '\0') {
           gpmsg_error(GPE_UNKNOWN, "Missing value in \\ escape character.");
           *value = 0;
@@ -380,6 +382,9 @@ convert_escape_chars(const char *ps, int *value)
           *value = gpasm_magic(ps);
           ps += 2;
         }
+
+        break;
+      }
     }
   }
 
@@ -417,6 +422,7 @@ set_global(const char *name, gpasmVal value, enum gpasmValTypes type, gp_boolean
 {
   symbol_t   *sym;
   variable_t *var;
+  char       *coff_name;
 
   /* Search the entire stack (i.e. include macro's local symbol tables) for the symbol.
      If not found, then add it to the global symbol table.  */
@@ -436,8 +442,8 @@ set_global(const char *name, gpasmVal value, enum gpasmValTypes type, gp_boolean
     var->coff_section_num   = state.obj.section_num;
     var->coff_section_flags = state.obj.new_sect_flags;
     var->type               = type;
-    var->previous_type      = type;  /* coff symbols can be changed to global */
-    var->isProcDependent    = procDependent;
+    var->previous_type      = type;     /* coff symbols can be changed to global */
+    var->flags              = (procDependent) ? VATRR_PROC_DEPENDENT : 0;
     gp_sym_annotate_symbol(sym, var);
 
     /* increment the index into the coff symbol table for the relocations */
@@ -471,8 +477,6 @@ set_global(const char *name, gpasmVal value, enum gpasmValTypes type, gp_boolean
 
   }
   else if (state.pass == 2) {
-    char *coff_name;
-
     if (var->value != value) {
       gpmsg_verror(GPE_DIFFLAB, NULL, name);
     }
@@ -506,7 +510,7 @@ get_global_constant(const char *Name)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-purge_temp_symbols(symbol_table_t *Table)
+purge_variable_symbols(symbol_table_t *Table)
 {
   size_t      i;
   symbol_t   *sym;
@@ -530,13 +534,13 @@ purge_temp_symbols(symbol_table_t *Table)
     }
   }
 
-  purge_temp_symbols(gp_sym_get_guest_table(Table));
+  purge_variable_symbols(gp_sym_get_guest_table(Table));
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-purge_processor_const_symbols(symbol_table_t *Table)
+purge_processor_variable_symbols(symbol_table_t *Table)
 {
   size_t      i;
   symbol_t   *sym;
@@ -552,7 +556,7 @@ purge_processor_const_symbols(symbol_table_t *Table)
 
     var = (variable_t *)gp_sym_get_symbol_annotation(sym);
 
-    if ((var != NULL) && (var->type == VAL_VARIABLE) && var->isProcDependent) {
+    if ((var != NULL) && (var->type == VAL_VARIABLE) && FlagIsSet(var->flags, VATRR_PROC_DEPENDENT)) {
       gp_sym_remove_symbol_with_index(Table, i);
     }
     else {
@@ -560,7 +564,7 @@ purge_processor_const_symbols(symbol_table_t *Table)
     }
   }
 
-  purge_processor_const_symbols(gp_sym_get_guest_table(Table));
+  purge_processor_variable_symbols(gp_sym_get_guest_table(Table));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -760,6 +764,7 @@ do_or_append_insn(const char *op, pnode_t *parms)
         }
       }
     }
+
     macro_append();
     return 0;
   }

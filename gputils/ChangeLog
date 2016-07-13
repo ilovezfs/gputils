@@ -1,3 +1,37 @@
+2016-07-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, configure, configure.ac:
+    Changed the gputils version from 1.4.5 to 1.4.6.
+    Add some message code.
+
+  * libgputils/gpcod.c, libgputils/gpcod.h:
+    New functions:
+	gp_cod_new_dir_block
+	gp_cod_init_dir_block
+	gp_cod_find_dir_block_by_high_addr
+	gp_cod_emit_opcode
+	gp_cod_write_code
+
+  * gpasm/cod.c, gplink/cod.c:
+    Some functions moved to libgputils/gpcod.c.
+
+  * gpasm/directive.c, gpasm/evaluate.c, gpasm/gpmsg.c, gpasm/gpmsg.h:
+    Renamed and add some message constants.
+
+  * gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/util.c:
+    Renamed some functions.
+
+  * gplink/cod.h:
+    Deleted the declaration of cod_write_symbols function.
+
+  * gplink/gplink.c, gplink/gplink.h.in, gplink/lst.c, gplink/map.c,
+    gplink/scan.l:
+    Renamed some variables.
+
+  * gpasm/parse.y, gpasm/ppparse.y, gpasm/ppscan.l, gpasm/scan.h,
+    gpasm/scan.l, gpasm/special.c, gplink/parse.y,
+    libgputils/gpopcode.h:
+    Code formatting.
+
 2016-07-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/directive.c, gpasm/gpasm.c,
     gpasm/gpasm.h.in, gpasm/gpmsg.c, gpasm/gpmsg.h,
