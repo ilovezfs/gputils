@@ -161,7 +161,7 @@ _write_scnhdr(const gp_section_t *Section, unsigned int Org_to_byte_shift, uint8
     Org_to_byte_shift = 0;
   }
 
-  section_address = gp_byte_to_org(Org_to_byte_shift, Section->address);
+  section_address = gp_insn_from_byte(Org_to_byte_shift, Section->address);
   _add_name(Section->name, Table, Fp);
   /* 's_paddr'   -- physical address */
   gp_fputl32(section_address, Fp);
@@ -252,7 +252,7 @@ _write_linenum(const gp_section_t *Section, unsigned int Org_to_byte_shift, FILE
     /* 'l_lnno'   -- line number */
     gp_fputl16(current->line_number, Fp);
     /* 'l_paddr'  -- address of code for this lineno */
-    gp_fputl32(gp_byte_to_org(Org_to_byte_shift, current->address), Fp);
+    gp_fputl32(gp_insn_from_byte(Org_to_byte_shift, current->address), Fp);
     /* 'l_flags'  -- bit flags for the line number */
     gp_fputl16(0, Fp);
     /* 'l_fcnndx' -- symbol table index of associated function, if there is one */

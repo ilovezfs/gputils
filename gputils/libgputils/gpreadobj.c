@@ -249,7 +249,7 @@ _read_section_header(gp_object_t *Object, gp_section_t *Section, const uint8_t *
   Section->data                       = (Section->data_ptr != 0) ? gp_mem_i_create() : NULL;
 
   if (FlagsIsNotAllClr(Section->flags, STYP_ROM_AREA)) {
-    Section->address = gp_processor_org_to_byte(Object->class, Section->address);
+    Section->address = gp_processor_byte_from_insn_c(Object->class, Section->address);
   }
 
   if ((FlagsIsAllSet(Section->flags, STYP_TEXT | STYP_ABS)) && (Section->address & 1)) {
@@ -450,7 +450,7 @@ _read_lineno(gp_object_t *Object, const gp_section_t *Section, unsigned int Org_
   Line_number->line_number = _check_getl16(&File[4], Data);
   /* 'l_paddr'  -- address of code for this lineno */
   insn_address             = _check_getl32(&File[6], Data);
-  Line_number->address     = gp_org_to_byte(Org_to_byte_shift, insn_address);
+  Line_number->address     = gp_byte_from_insn(Org_to_byte_shift, insn_address);
 
   /* FIXME: function index and flags are unused, so far.
      'l_flags'  -- bit flags for the line number

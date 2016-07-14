@@ -296,7 +296,7 @@ cod_lst_line(int line_type)
     return;
   }
 
-  address      = gp_processor_byte_to_org(state.class, state.lst.was_byte_addr);
+  address      = gp_processor_insn_from_byte_c(state.class, state.lst.was_byte_addr);
   high_address = IMemBaseFromAddr(address);
 
   if ((dbi == NULL) || (high_address != _64k_base)) {

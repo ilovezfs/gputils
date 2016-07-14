@@ -185,7 +185,7 @@ _write_sections(void)
 
     if (section->size != 0) {
       _map_line("%25s %10s   0x%06x %10s   0x%06x", section->name, type,
-                gp_byte_to_org(org_to_byte_shift, section->address), location, section->size);
+                gp_insn_from_byte(org_to_byte_shift, section->address), location, section->size);
     }
   }
 
@@ -212,17 +212,17 @@ _write_program_memory(void)
   while (section != NULL) {
     if ((section->flags & STYP_ROM_AREA) && (section->size > 0)) {
       _map_line("                            0x%06x    0x%06x",
-                gp_processor_byte_to_org(state.class, section->address),
-                gp_processor_byte_to_org(state.class, section->address + section->size - 1));
+                gp_processor_insn_from_byte_c(state.class, section->address),
+                gp_processor_insn_from_byte_c(state.class, section->address + section->size - 1));
       prog_size += section->size;
     }
     section = section->next;
   }
   _map_line("                            %d program addresses used",
-            gp_processor_byte_to_org(state.class, prog_size));
+            gp_processor_insn_from_byte_c(state.class, prog_size));
 /*
   _map_line("                            %d out of %d program addresses used, program memory utilization is %d%%",
-            gp_processor_byte_to_org(state.class, prog_size),
+            gp_processor_insn_from_byte_c(state.class, prog_size),
             state.processor->prog_mem_size, state.processor->prog_mem_size * 100 / prog_size);
 */
   _map_line(NULL);

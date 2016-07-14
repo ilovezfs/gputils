@@ -884,9 +884,10 @@ lst_memory_map(MemBlock_t *M)
     lst_line("Memory Bytes Used: %5i", gp_mem_b_used(state.i_memory));
   }
   else {
-    unsigned int used = gp_processor_byte_to_real(state.processor, ((!IS_PIC16) && (state.processor != NULL)) ?
+    unsigned int used = gp_processor_insn_from_byte_p(state.processor, ((!IS_PIC16) && (state.processor != NULL)) ?
                                 b_range_memory_used(state.i_memory, 0,
-                                                    gp_processor_org_to_byte(state.device.class, state.processor->prog_mem_size)) :
+                                                    gp_processor_byte_from_insn_c(state.device.class,
+                                                                                  state.processor->prog_mem_size)) :
                                 gp_mem_b_used(state.i_memory));
 
     lst_line("Program Memory %s Used: %5i", IS_BYTE ? "Bytes" : "Words", used);
@@ -1000,14 +1001,14 @@ lst_format_line(const char *Src_line, unsigned int Value)
       break;
 
     case LTY_ORG:
-      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.byte_addr));
+      pos += _lst_printf(addr_fmt, gp_processor_insn_from_byte_p(state.processor, state.byte_addr));
       _lst_spaces(LST_LINENUM_POS - pos);
       break;
 
     case LTY_IDLOCS:
       /* not used for 16 bit devices, config is used */
       m = state.c_memory;
-      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.device.id_location));
+      pos += _lst_printf(addr_fmt, gp_processor_insn_from_byte_p(state.processor, state.device.id_location));
       lst_bytes = _lst_data(pos, m, state.device.id_location, emitted, reloc_type);
       byte_addr = state.device.id_location + lst_bytes;
       bytes_emitted = emitted - lst_bytes;
@@ -1019,7 +1020,7 @@ lst_format_line(const char *Src_line, unsigned int Value)
       goto lst_data;
 
     case LTY_INSN:
-      pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.line.was_byte_addr));
+      pos += _lst_printf(addr_fmt, gp_processor_insn_from_byte_p(state.processor, state.lst.line.was_byte_addr));
 
 lst_data:
 
@@ -1051,7 +1052,7 @@ lst_data:
       }
       else {
         state.device.class->i_memory_get(state.c_memory, state.lst.config_address, &word, NULL, NULL);
-        pos += _lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.config_address));
+        pos += _lst_printf(addr_fmt, gp_processor_insn_from_byte_p(state.processor, state.lst.config_address));
         pos += _lst_printf("%04X", word);
         _lst_spaces(LST_LINENUM_POS - pos);
       }

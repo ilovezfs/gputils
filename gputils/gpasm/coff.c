@@ -96,7 +96,7 @@ _new_config_section(const char *Name, unsigned int Address, unsigned int Flags, 
 
   /* add a section symbol */
   new = gp_coffgen_add_symbol(state.obj.object, Name);
-  new->value          = IS_RAM_ORG ? Address : gp_processor_byte_to_org(state.device.class, Address);
+  new->value          = IS_RAM_ORG ? Address : gp_processor_insn_from_byte_c(state.device.class, Address);
   new->section_number = state.obj.section_num;  /* Modified later. */
   new->section        = state.obj.section;
 //  new->type           = T_NULL;
@@ -121,7 +121,7 @@ _create_config_sections(void)
   for (conf_sec_mem = state.conf_sec_mem; conf_sec_mem != NULL; conf_sec_mem = conf_sec_mem->next) {
     upper = gp_strdup_upper_case(state.obj_file_name);
     snprintf(section_name, sizeof(section_name), ".config_%0*X_%s", state.device.class->addr_digits,
-             gp_processor_byte_to_org(state.device.class, conf_sec_mem->addr), upper);
+             gp_processor_insn_from_byte_c(state.device.class, conf_sec_mem->addr), upper);
     free(upper);
 
     _new_config_section(section_name, conf_sec_mem->addr,
@@ -132,7 +132,7 @@ _create_config_sections(void)
       return;
     }
 
-    state.obj.section->size      = (conf_sec_mem->new_config) ? gp_processor_org_to_byte(state.device.class, 1) : 2;
+    state.obj.section->size      = (conf_sec_mem->new_config) ? gp_processor_byte_from_insn_c(state.device.class, 1) : 2;
     state.lst.line.was_byte_addr = conf_sec_mem->addr;
 
     if ((!state.obj.enabled) || (state.obj.section == NULL)) {
@@ -285,7 +285,7 @@ coff_new_section(const char *Name, unsigned int Address, unsigned int Flags)
 
   /* add a section symbol */
   new = gp_coffgen_add_symbol(state.obj.object, Name);
-  new->value          = IS_RAM_ORG ? Address : gp_processor_byte_to_org(state.device.class, Address);
+  new->value          = IS_RAM_ORG ? Address : gp_processor_insn_from_byte_c(state.device.class, Address);
   new->section_number = state.obj.section_num;  /* Modified later. */
   new->section        = state.obj.section;
 //  new->type           = T_NULL;
@@ -588,7 +588,7 @@ coff_add_direct_sym(uint8_t Command, const char *String)
 
   /* add .direct symbol */
   new = gp_coffgen_add_symbol(state.obj.object, ".direct");
-  new->value          = gp_processor_byte_to_org(state.device.class, state.byte_addr);
+  new->value          = gp_processor_insn_from_byte_c(state.device.class, state.byte_addr);
   new->section_number = state.obj.section_num;
   new->section        = state.obj.section;
 /*  new->type           = T_NULL;

@@ -646,7 +646,7 @@ _search_paths(source_context_t *Context, const char *Name)
   char tryname[PATH_MAX + 1];
   int  i;
 
-  for (i = 0; i < state.path_num; i++) {
+  for (i = 0; i < state.num_paths; i++) {
     snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], Name);
     Context->f = fopen(tryname, "rt");
 

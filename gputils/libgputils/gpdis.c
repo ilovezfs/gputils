@@ -248,7 +248,7 @@ gp_disassemble_find_labels(MemBlock_t *M, unsigned int Byte_address, pic_process
   pclath_valid = Fstate->pclath_valid;
   page_mask    = (class->page_size > 0) ? ~(class->page_size - 1) : 0;
   prog_max_org = (Processor->prog_mem_size > 0) ? (Processor->prog_mem_size - 1) : 0;
-  src_page     = gp_processor_byte_to_org(class, Byte_address) & page_mask;
+  src_page     = gp_processor_insn_from_byte_c(class, Byte_address) & page_mask;
 
 GPUTILS_GCC_DIAG_OFF(switch)
 
@@ -277,7 +277,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
 _class_lit8c12:
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
-          dest_byte_addr = gp_processor_org_to_byte(class, dst_org);
+          dest_byte_addr = gp_processor_byte_from_insn_c(class, dst_org);
           gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
           gp_mem_b_set_addr_type(M, dest_byte_addr, W_ADDR_T_FUNC, 0);
           wreg = -1;
@@ -301,7 +301,7 @@ _class_lit8c12:
         dst_org |= (pclath & 0xff) << 8;
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
-          dest_byte_addr = gp_processor_org_to_byte(class, dst_org);
+          dest_byte_addr = gp_processor_byte_from_insn_c(class, dst_org);
           gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
           gp_mem_b_set_addr_type(M, dest_byte_addr, W_ADDR_T_FUNC, 0);
           wreg = -1;
@@ -365,7 +365,7 @@ _class_lit8c12:
 _class_lit9:
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
-          dest_byte_addr = gp_processor_org_to_byte(class, dst_org);
+          dest_byte_addr = gp_processor_byte_from_insn_c(class, dst_org);
           gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
           gp_mem_b_set_addr_type(M, dest_byte_addr, W_ADDR_T_FUNC, 0);
         }
@@ -391,7 +391,7 @@ _class_lit9:
 _class_lit11:
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
-          dest_byte_addr = gp_processor_org_to_byte(class, dst_org);
+          dest_byte_addr = gp_processor_byte_from_insn_c(class, dst_org);
           type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
           gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
           gp_mem_b_set_addr_type(M, dest_byte_addr, type, 0);
@@ -420,7 +420,7 @@ _class_lit11:
       dest_byte_addr = Byte_address + value * 2 + 2;
 
       if ((gp_mem_b_get_type(M, dest_byte_addr) & W_SECOND_WORD) == 0) {
-        dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
+        dst_org = gp_processor_insn_from_byte_c(class, dest_byte_addr);
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
           gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
@@ -440,7 +440,7 @@ _class_lit11:
       }
 
       dest_byte_addr = Byte_address + value * 2 + 2;
-      dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
+      dst_org = gp_processor_insn_from_byte_c(class, dest_byte_addr);
 
       if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
         gp_mem_b_set_addr_type(M, Byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
@@ -461,7 +461,7 @@ _class_lit11:
       dest_byte_addr = Byte_address + value * 2 + 2;
 
       if ((gp_mem_b_get_type(M, dest_byte_addr) & W_SECOND_WORD) == 0) {
-        dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
+        dst_org = gp_processor_insn_from_byte_c(class, dest_byte_addr);
 
         if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
           type = (icode == ICODE_RCALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
@@ -487,7 +487,7 @@ _class_lit11:
           dest_byte_addr = dest * 2;
 
           if ((gp_mem_b_get_type(M, dest_byte_addr) & W_SECOND_WORD) == 0) {
-            dst_org = gp_processor_org_to_byte(class, dest_byte_addr);
+            dst_org = gp_processor_byte_from_insn_c(class, dest_byte_addr);
 
             if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
               type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
@@ -1872,7 +1872,7 @@ gp_disassemble(MemBlock_t *M, unsigned int Byte_address, proc_class_t Class, uns
   args.second.arg = NULL;
 
   if (Class->i_memory_get(M, Byte_address, &opcode, NULL, NULL) == W_USED_ALL) {
-    org  = gp_processor_byte_to_org(Class, Byte_address);
+    org  = gp_processor_insn_from_byte_c(Class, Byte_address);
     type = gp_mem_b_get_addr_type(M, Byte_address, NULL, &dest_byte_addr);
 
     if (Behavior & GPDIS_SHOW_NAMES) {
@@ -2170,7 +2170,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
         value = -((value ^ PIC16E_BMSK_RBRA8) + 1);
       }
 
-      org = gp_processor_byte_to_org(Class, Byte_address + value * 2 + 2);
+      org = gp_processor_insn_from_byte_c(Class, Byte_address + value * 2 + 2);
 
       if (Behavior & GPDIS_SHOW_ALL_BRANCH) {
         PRINT_ARG1_N(addr_digits, org);
@@ -2200,7 +2200,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
         value = -((value ^ PIC14E_BMSK_RBRA9) + 1);
       }
 
-      org = gp_processor_byte_to_org(Class, Byte_address + value * 2 + 2);
+      org = gp_processor_insn_from_byte_c(Class, Byte_address + value * 2 + 2);
 
       if (Behavior & GPDIS_SHOW_ALL_BRANCH) {
         PRINT_ARG1_N(addr_digits, org);
@@ -2225,7 +2225,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
         value = -((value ^ PIC16E_BMSK_RBRA11) + 1);
       }
 
-      org = gp_processor_byte_to_org(Class, Byte_address + value * 2 + 2);
+      org = gp_processor_insn_from_byte_c(Class, Byte_address + value * 2 + 2);
 
       if (Behavior & GPDIS_SHOW_ALL_BRANCH) {
         PRINT_ARG1_N(addr_digits, org);
@@ -2261,7 +2261,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
           dest  = (dest & PIC16E_BMSK_BRANCH_HIGHER) << 8;
           dest |= opcode & PIC16E_BMSK_BRANCH_LOWER;
 
-          org = gp_processor_byte_to_org(Class, dest * 2);
+          org = gp_processor_insn_from_byte_c(Class, dest * 2);
 
           if (Behavior & GPDIS_SHOW_ALL_BRANCH) {
             PRINT_ARG1_N(addr_digits, org);
@@ -2305,7 +2305,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
           dest |= opcode & PIC16E_BMSK_BRANCH_LOWER;
           tmp   = (opcode >> 8) & 1;
 
-          org = gp_processor_byte_to_org(Class, dest * 2);
+          org = gp_processor_insn_from_byte_c(Class, dest * 2);
 
           if (Behavior & GPDIS_SHOW_ALL_BRANCH) {
             PRINT_ARG2_N_N(addr_digits, org, 1, tmp);

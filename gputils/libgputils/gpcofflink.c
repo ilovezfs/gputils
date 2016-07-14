@@ -408,7 +408,7 @@ gp_cofflink_merge_sections(gp_object_t *Object)
       _update_line_numbers(second->line_number_list.first, first->size);
 
       if (first->flags & STYP_ROM_AREA) {
-        section_org = gp_processor_byte_to_org(Object->class, first->size);
+        section_org = gp_processor_insn_from_byte_c(Object->class, first->size);
       }
       else {
         section_org = first->size;
@@ -719,7 +719,7 @@ gp_cofflink_add_cinit_section(gp_object_t *Object)
           /* PIC16E */
           /* Write program memory address (from: source address of data in CODE space). */
           _write_table_u32(class, new, base_address,
-                           gp_processor_byte_to_org(class, prog_section->address), "prog_mem_addr");
+                           gp_processor_insn_from_byte_c(class, prog_section->address), "prog_mem_addr");
 
           /* Write data memory address (to: destination address of values in DATA space). */
           _write_table_u32(class, new, base_address + 4, section->address, "data_mem_addr");
@@ -731,7 +731,7 @@ gp_cofflink_add_cinit_section(gp_object_t *Object)
           /* PIC12, PIC12E, PIC12I, SX, PIC14, PIC14E, PIC14EX, PIC16 */
           /* Write program memory address (from: source address of data in CODE space). */
           _write_table_u16(class, new, base_address, insn_retlw,
-                           gp_processor_byte_to_org(class, prog_section->address), "prog_mem_addr");
+                           gp_processor_insn_from_byte_c(class, prog_section->address), "prog_mem_addr");
 
           /* Write data memory address (to: destination address of values in DATA space). */
           _write_table_u16(class, new, base_address + 4, insn_retlw, section->address, "data_mem_addr");
@@ -784,8 +784,8 @@ _set_used(const gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shi
 
   addr_digits = Object->class->addr_digits;
   gp_debug("      marking %#x (%u) words from 0x%0*X to 0x%0*X as used", Size, Size,
-           addr_digits, gp_byte_to_org(Org_to_byte_shift, Byte_address),
-           addr_digits, gp_byte_to_org(Org_to_byte_shift, Byte_address + Size - 1));
+           addr_digits, gp_insn_from_byte(Org_to_byte_shift, Byte_address),
+           addr_digits, gp_insn_from_byte(Org_to_byte_shift, Byte_address + Size - 1));
 
   for ( ; Size > 0; Byte_address++, Size--) {
     if (gp_mem_b_get(M, Byte_address, &data, &old_section_name, &old_symbol_name)) {
@@ -793,12 +793,12 @@ _set_used(const gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shi
         symbol      = gp_symbol_find(Object, Section_name, Byte_address);
         symbol_name = (symbol != NULL) ? symbol->name : NULL;
         gp_error("More %s sections use same address: 0x%0*X -- \"%s/%s\", \"%s/%s\"", Type,
-                 addr_digits, gp_byte_to_org(Org_to_byte_shift, Byte_address),
+                 addr_digits, gp_insn_from_byte(Org_to_byte_shift, Byte_address),
                  old_section_name, old_symbol_name, Section_name, symbol_name);
       }
       else {
         gp_error("More %s sections use same address: 0x%0*X", Type,
-                 addr_digits, gp_byte_to_org(Org_to_byte_shift, Byte_address));
+                 addr_digits, gp_insn_from_byte(Org_to_byte_shift, Byte_address));
       }
       return;
     }
@@ -832,7 +832,7 @@ gp_cofflink_reloc_abs(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_by
       if ((Object->class == PROC_CLASS_PIC16E) &&
           (section->flags & STYP_ROM_AREA) &&
           (section->size & 1)) {
-        org = gp_processor_byte_to_real(Object->processor, section->address);
+        org = gp_processor_insn_from_byte_p(Object->processor, section->address);
 
         if ((gp_processor_is_idlocs_org(Object->processor, org) < 0) &&
             (gp_processor_is_config_org(Object->processor, org) < 0) &&
@@ -960,7 +960,7 @@ _search_memory(const MemBlock_t *M, unsigned int Org_to_byte_shift, unsigned int
     else {
       if (! in_block) {
         /* start of an unused block of memory */
-        gp_debug("    start unused block at %#x", gp_byte_to_org(Org_to_byte_shift, address));
+        gp_debug("    start unused block at %#x", gp_insn_from_byte(Org_to_byte_shift, address));
         current_address = address;
         current_size    = 1;
       }
@@ -973,8 +973,8 @@ _search_memory(const MemBlock_t *M, unsigned int Org_to_byte_shift, unsigned int
 
     if (end_block) {
       gp_debug("    end unused block at %#x with size %#x",
-               gp_byte_to_org(Org_to_byte_shift, address),
-               gp_byte_to_org(Org_to_byte_shift, current_size));
+               gp_insn_from_byte(Org_to_byte_shift, address),
+               gp_insn_from_byte(Org_to_byte_shift, current_size));
       if (current_size >= Size) {
         if (Stop_at_first) {
           *Block_size    = current_size;
@@ -1133,7 +1133,7 @@ gp_cofflink_reloc_assigned(gp_object_t *Object, MemBlock_t *M, unsigned int Org_
         (current->flags & STYP_ABS) &&
         (current->flags & STYP_ROM_AREA) &&
         (current->size & 1)) {
-      org = gp_processor_byte_to_real(Object->processor, current->address);
+      org = gp_processor_insn_from_byte_p(Object->processor, current->address);
 
       if ((gp_processor_is_idlocs_org(Object->processor, org) < 0) &&
           (gp_processor_is_config_org(Object->processor, org) < 0) &&
@@ -1150,7 +1150,7 @@ gp_cofflink_reloc_assigned(gp_object_t *Object, MemBlock_t *M, unsigned int Org_
                        &current_shadow_address, &current_size, false) == 1) {
       gp_debug("    logical section: '%s'", current->name);
       gp_debug("    section name   : '%s'", section_name);
-      gp_debug("    successful relocation to %#x", gp_byte_to_org(Org_to_byte_shift, current_shadow_address));
+      gp_debug("    successful relocation to %#x", gp_insn_from_byte(Org_to_byte_shift, current_shadow_address));
 
       if (gp_writeobj_has_data(current)) {
         _move_data(current->data, current->shadow_address, current->size, current_shadow_address);
@@ -1248,7 +1248,7 @@ gp_cofflink_reloc_cinit(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_
 
   /* set the memory used flag for all words in the block */
   if (success) {
-    gp_debug("    successful relocation to %#x", gp_byte_to_org(Org_to_byte_shift, smallest_shadow_address));
+    gp_debug("    successful relocation to %#x", gp_insn_from_byte(Org_to_byte_shift, smallest_shadow_address));
 
     if (gp_writeobj_has_data(Cinit_section)) {
       _move_data(Cinit_section->data, Cinit_section->shadow_address, size, smallest_shadow_address);
@@ -1338,7 +1338,7 @@ gp_cofflink_reloc_unassigned(gp_object_t *Object, MemBlock_t *M, unsigned int Or
 
     /* Workaround for the "odd size memory problem" in the PIC16E class. */
     if ((Object->class == PROC_CLASS_PIC16E) && (type == SECT_CODEPAGE) && (size & 1)) {
-      org = gp_processor_byte_to_real(Object->processor, current->address);
+      org = gp_processor_insn_from_byte_p(Object->processor, current->address);
 
       if ((gp_processor_is_idlocs_org(Object->processor, org) < 0) &&
           (gp_processor_is_config_org(Object->processor, org) < 0) &&
@@ -1398,7 +1398,7 @@ next_pass:
 
     /* set the memory used flag for all words in the block */
     if (success) {
-      gp_debug("    successful relocation to %#x", gp_byte_to_org(Org_to_byte_shift, smallest_shadow_address));
+      gp_debug("    successful relocation to %#x", gp_insn_from_byte(Org_to_byte_shift, smallest_shadow_address));
 
       if (gp_writeobj_has_data(current)) {
         _move_data(current->data, current->shadow_address, size, smallest_shadow_address);
@@ -1455,7 +1455,7 @@ gp_cofflink_update_table(gp_object_t *Object, unsigned int Org_to_byte_shift)
         offset = sym_sect->address;
 
         if (sym_sect->flags & STYP_ROM_AREA) {
-          offset = gp_byte_to_org(Org_to_byte_shift, offset);
+          offset = gp_insn_from_byte(Org_to_byte_shift, offset);
         }
 
         symbol->value += offset;
@@ -1632,7 +1632,7 @@ _patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Reloca
       break;
 
     case RELOCT_BANKSEL:
-      bank = gp_processor_check_bank(class, value);
+      bank = gp_processor_bank_from_addr(class, value);
       gp_processor_set_bank(class, num_banks, bank, Section->data, byte_addr);
       write_data = false;
       break;
@@ -1836,7 +1836,7 @@ gp_cofflink_make_memory(gp_object_t *Object)
         gp_mem_b_assert_get(section->data, addr, &byte, &section_name, &symbol_name);
 
         if (not_8_bit) {
-          org = gp_processor_byte_to_org(class, addr);
+          org = gp_processor_insn_from_byte_c(class, addr);
 
           if (gp_processor_is_idlocs_org(processor, org) >= 0) {
             if (addr & 1) {

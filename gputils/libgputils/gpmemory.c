@@ -727,7 +727,7 @@ gp_mem_i_print(const MemBlock_t *M, pic_processor_t Processor)
         }
 
         if (row_used) {
-          org = gp_processor_byte_to_real(Processor, byte_addr + i);
+          org = gp_processor_insn_from_byte_p(Processor, byte_addr + i);
           printf("%08X  ", org);
 
           if ((gp_processor_is_eeprom_org(Processor, org) >= 0) ||

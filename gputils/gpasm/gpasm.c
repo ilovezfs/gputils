@@ -238,6 +238,7 @@ init(void)
   state.found_idlocs            = false;
   state.found_end               = false;*/
   state.maxram                  = MAX_RAM - 1;
+  state.assumed_bank            = __ACTIVE_BANK_INV;
 
   state.cod_file                = OUT_NORMAL;
   state.dep_file                = OUT_SUPPRESS;
@@ -521,8 +522,8 @@ _add_path(const char *path)
     return;
   }
 
-  if (state.path_num < MAX_PATHS) {
-    state.paths[state.path_num++] = GP_Strdup(path);
+  if (state.num_paths < MAX_PATHS) {
+    state.paths[state.num_paths++] = GP_Strdup(path);
   }
   else {
     fprintf(stderr, "Too many -I paths.\n");
