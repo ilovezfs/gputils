@@ -205,74 +205,25 @@ init(void)
   memset(&state, 0, sizeof(state));
 
   /* restore gpasm to its initialized state */
-  state.mode                    = MODE_ABSOLUTE;
-/*  state.extended_pic16e         = false;*/
+  state.mode            = MODE_ABSOLUTE;
 
-  state.radix                   = 16;
-  state.hex_format              = INHX32;
-/*  state.case_insensitive        = false;
-  state.quiet                   = false;
-  state.use_absolute_path       = false;
-  state.show_full_addr          = false;
-  state.debug_info              = false;
-  state.error_level             = 0;
-  state.strict_level            = 0;
-  state.path_num                = 0;*/
-  state.preproc.do_emit         = true;
+  state.radix           = 16;
+  state.hex_format      = INHX32;
+  state.preproc.do_emit = true;
 
-/*  state.cmd_line.radix          = false;
-  state.cmd_line.hex_format     = false;
-  state.cmd_line.error_level    = false;
-  state.cmd_line.strict_level   = false;
-  state.cmd_line.macro_expand   = false;
-  state.cmd_line.processor      = false;
-  state.cmd_line.lst_force      = false;
+  state.maxram          = MAX_RAM - 1;
+  state.assumed_bank    = __ACTIVE_BANK_INV;
 
-  state.pass                    = 0;
-  state.byte_addr               = 0;
-  state.device.id_location      = 0;
-  state.dos_newlines            = false;
-  state.memory_dump             = false;
-  state.found_config            = false;
-  state.found_devid             = false;
-  state.found_idlocs            = false;
-  state.found_end               = false;*/
-  state.maxram                  = MAX_RAM - 1;
-  state.assumed_bank            = __ACTIVE_BANK_INV;
+  state.cod_file        = OUT_NORMAL;
+  state.dep_file        = OUT_SUPPRESS;
+  state.err_file        = OUT_SUPPRESS;
+  state.hex_file        = OUT_NORMAL;
+  state.lst_file        = OUT_NORMAL;
+  state.obj_file        = OUT_SUPPRESS;
 
-  state.cod_file                = OUT_NORMAL;
-  state.dep_file                = OUT_SUPPRESS;
-  state.err_file                = OUT_SUPPRESS;
-  state.hex_file                = OUT_NORMAL;
-  state.lst_file                = OUT_NORMAL;
-  state.obj_file                = OUT_SUPPRESS;
+  state.obj.newcoff     = true;         /* use new Microchip COFF format by default */
 
-/*  state.num.errors              = 0;
-  state.num.warnings            = 0;
-  state.num.messages            = 0;
-  state.num.warnings_suppressed = 0;
-  state.num.messages_suppressed = 0;
-
-  state.processor               = NULL;
-  state.processor_chosen        = false;
-
-  state.cod.enabled             = false;
-  state.dep.enabled             = false;
-  state.err.enabled             = false;
-  state.lst.enabled             = false;
-  state.obj.enabled             = false;*/
-  state.obj.newcoff             = true;   /* use new Microchip COFF format by default */
-
-/*  state.obj.object              = NULL;
-  state.obj.section             = NULL;
-  state.obj.symbol_num          = 0;
-  state.obj.section_num         = 0;
-
-  state.astack                  = NULL;*/
-
-  state.next_state              = STATE_NOCHANGE;
-
-/*  state.while_depth             = 0;*/
+  state.next_state      = STATE_NOCHANGE;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -775,7 +726,7 @@ process_args(int argc, char *argv[])
       break;
 
     case 'P':
-      state.preproc.preprocfilename = optarg;
+      state.preproc.preproc_file_name = optarg;
       break;
 
     case 'q':

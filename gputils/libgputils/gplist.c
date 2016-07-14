@@ -229,6 +229,21 @@ gp_node_move(void *Dst, void *Src, void *Node)
 
 /*------------------------------------------------------------------------------------------------*/
 
+void
+gp_list_set_delete_node_func(void *List, gp_node_del_t Function)
+{
+  gp_list_t *l;
+
+  if (List == NULL) {
+    return;
+  }
+
+  l = (gp_list_t *)List;
+  l->node_del = Function;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void **
 gp_list_make_block(void *List, size_t Num_nodes, size_t Item_size)
 {
@@ -358,6 +373,7 @@ gp_list_clear(void *List)
 void
 gp_list_delete(void *List)
 {
+  gp_list_t *l;
   gp_node_t *node;
   gp_node_t *next;
 
@@ -365,10 +381,20 @@ gp_list_delete(void *List)
     return;
   }
 
-  node = ((gp_list_t *)List)->first;
+  l = (gp_list_t *)List;
+
+  node = l->first;
   while (node != NULL) {
     next = node->next;
-    gp_node_free(gp_node_remove(List, node));
+    gp_node_remove(List, node);
+
+    if (l->node_del != NULL) {
+      (*l->node_del)(node);
+    }
+    else {
+      gp_node_free(node);
+    }
+
     node = next;
   }
 

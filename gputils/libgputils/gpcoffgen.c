@@ -47,6 +47,12 @@ gp_coffgen_new_object(const char *File_name)
   object->time      = (uint32_t)time(NULL);
   object->serial_id = object_serial_id++;
 
+  gp_list_set_delete_node_func(&object->section_list, (gp_node_del_t)gp_coffgen_free_section);
+  gp_list_set_delete_node_func(&object->dead_section_list, (gp_node_del_t)gp_coffgen_free_section);
+
+  gp_list_set_delete_node_func(&object->symbol_list, (gp_node_del_t)gp_coffgen_free_symbol);
+  gp_list_set_delete_node_func(&object->dead_symbol_list, (gp_node_del_t)gp_coffgen_free_symbol);
+
   return object;
 }
 

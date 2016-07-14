@@ -42,29 +42,18 @@ _write_file_block(void)
 {
   const file_context_t *fc;
   BlockList            *fb;
-  int                   id_number;
 
-  if (state.files == NULL) {
+  if (state.file_list.first == NULL) {
     return;
   }
 
-  /* Find the head of the file list: */
-
-  fc        = state.files;
-  id_number = 0;
-
-  while ((fc->prev != NULL) && (id_number++ < COD_FILE_MAX_NUM)) {
-    fc = fc->prev;
-  }
-
-  if (id_number >= COD_FILE_MAX_NUM) {
+  if (state.file_list.num_nodes >= COD_FILE_MAX_NUM) {
     /* Too many files to handle in the .cod file. */
     assert(0);
   }
 
-  fb        = NULL;
-  id_number = 0;
-
+  fb = NULL;
+  fc = state.file_list.first;
   while (fc != NULL) {
     if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * FILE_SIZE))) {
       fb = gp_blocks_append(&main_dir->src, gp_blocks_new());
@@ -141,7 +130,7 @@ cod_lst_line(unsigned int List_line)
   }
 
   /* Don't start until after the source is open. */
-  if (state.src == NULL) {
+  if (state.src_list.last == NULL) {
     return;
   }
 
@@ -167,8 +156,8 @@ cod_lst_line(unsigned int List_line)
     lb = gp_blocks_append(&dbi->lst, gp_blocks_new());
   }
 
-  assert(state.src->fc != NULL);
-  lb->block[dbi->lst.offset + COD_LS_SFILE] = state.src->fc->id;
+  assert(state.src_list.last->fc != NULL);
+  lb->block[dbi->lst.offset + COD_LS_SFILE] = state.src_list.last->fc->id;
 
   smod_flag = (first_time) ? COD_LS_SMOD_FLAG_ALL :
                              ((state.cod.emitting != 0) ? COD_LS_SMOD_FLAG_C1 :
@@ -177,7 +166,7 @@ cod_lst_line(unsigned int List_line)
   lb->block[dbi->lst.offset + COD_LS_SMOD] = smod_flag;
 
   /* Write the source file line number corresponding to the list file line number. */
-  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLINE], state.src->line_number);
+  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLINE], state.src_list.last->line_number);
 
   /* Write the address of the opcode. */
   gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLOC], address);

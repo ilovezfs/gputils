@@ -1,4 +1,13 @@
 2016-07-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gpasm/coff.c, gpasm/directive.c, gpasm/gpasm.c,
+    gpasm/gpasm.h.in, gpasm/gpmsg.c, gpasm/lst.c, gpasm/macro.c,
+    gpasm/parse.y, gpasm/preprocess.c, gpasm/scan.l, gpasm/util.c:
+    Use libgputils/gplist functions.
+
+  * libgputils/gpcoffgen.c, libgputils/gplist.c, libgputils/gplist.h:
+    New function: gp_list_set_delete_node_func
+
+2016-07-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/directive.c, gpasm/evaluate.c,
     gpasm/evaluate.h, gpasm/gpasm.c, gpasm/gpasm.h.in,
     gpasm/processor.c, gpasm/scan.l:

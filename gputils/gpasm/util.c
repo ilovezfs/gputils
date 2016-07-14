@@ -34,8 +34,6 @@ Boston, MA 02111-1307, USA.  */
 #define STR_INHX16              "inhx16"
 #define STR_INHX32              "inhx32"
 
-static file_context_t *last = NULL;
-
 /*------------------------------------------------------------------------------------------------*/
 
 /* MPASM compatible stripped version of strtoul:
@@ -871,17 +869,33 @@ print_macro_body(const macro_body_t *mac)
 
 /*------------------------------------------------------------------------------------------------*/
 
+void
+file_delete_node(void *Node)
+{
+  file_context_t *n;
+
+  if (Node == NULL) {
+    return;
+  }
+
+  n = (file_context_t *)Node;
+  free(n->name);
+  free(n);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* add_file: Add a file of type 'type' to the file_context stack. */
 
 file_context_t *
 add_file(unsigned int type, const char *name)
 {
-  static unsigned int file_id = 0;
+  static unsigned int  file_id = 0;
 
-  file_context_t *new;
+  file_context_t      *new;
 
   /* First check to make sure this file is not already in the list. */
-  new = last;
+  new = state.file_list.last;
   while (new != NULL) {
     if (strcmp(new->name, name) == 0) {
       return new;
@@ -889,38 +903,28 @@ add_file(unsigned int type, const char *name)
     new = new->prev;
   }
 
-  new = GP_Malloc(sizeof(*new));
+  new = gp_node_new(sizeof(*new));
 
   new->name = GP_Strdup(name);
   new->ft   = type;
-  new->prev = last;
   new->id   = file_id++;
-  new->next = NULL;
 
-  if (last != NULL) {
-    last->next = new;
+  if (state.file_list.first == NULL) {
+    gp_list_set_delete_node_func(&state.file_list, file_delete_node);
   }
 
-  last = new;
-  state.files = new;
+  gp_node_append(&state.file_list, new);
   return new;
 }
 
-/* free_files: free memory allocated to the file_context stack */
-
 /*------------------------------------------------------------------------------------------------*/
+
+/* free_files: free memory allocated to the file_context stack */
 
 void
 free_files(void)
 {
-  file_context_t *old;
-
-  while (last != NULL) {
-    old  = last;
-    last = old->prev;
-    free(old->name);
-    free(old);
-  }
+  gp_list_delete(&state.file_list);
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -42,9 +42,9 @@ Boston, MA 02111-1307, USA.  */
 
 #define IN_MACRO_WHILE_DEFINITION   (state.mac_prev != NULL)
 #define IN_WHILE_DEFINITION         (IN_MACRO_WHILE_DEFINITION && (state.while_head != NULL))
-#define IN_MACRO_EXPANSION          (state.src->type == SRC_MACRO)
-#define IN_WHILE_EXPANSION          (state.src->type == SRC_WHILE)
-#define IN_FILE_EXPANSION           (state.src->type == SRC_FILE)
+#define IN_MACRO_EXPANSION          (state.src_list.last->type == SRC_MACRO)
+#define IN_WHILE_EXPANSION          (state.src_list.last->type == SRC_WHILE)
+#define IN_FILE_EXPANSION           (state.src_list.last->type == SRC_FILE)
 
 enum gpasmValTypes {
   VAL_CONSTANT,
@@ -84,6 +84,8 @@ enum gpasm_modes {
   MODE_RELOCATABLE
 };
 
+/************************************************************************/
+
 typedef struct src_line {
   char   *line;                         /* Source line. */
   size_t  size;                         /* Source line allocated size. */
@@ -97,6 +99,151 @@ typedef struct conf_mem_block {
   unsigned int           line_number;
   struct conf_mem_block *next;
 } conf_mem_block_t;
+
+/************************************************************************/
+
+/* Parse node: created by the parser, interpreted by the 'backend' */
+
+typedef struct pnode {
+  enum pnode_tag {
+    PTAG_CONSTANT,
+    PTAG_SYMBOL,
+    PTAG_STRING,
+    PTAG_OFFSET,
+    PTAG_LIST,
+    PTAG_BINOP,
+    PTAG_UNOP
+  } tag;
+
+  union {
+    int             constant;
+    const char     *symbol;
+    char           *string;
+
+    struct pnode   *offset;
+
+    struct {
+      struct pnode *head;
+      struct pnode *tail;
+    } list;
+
+    struct {
+      int           op;
+      struct pnode *p0;
+      struct pnode *p1;
+    } binop;
+
+    struct {
+      int           op;
+      struct pnode *p0;
+    } unop;
+  } value;
+} pnode_t;
+
+#define PnIsConstant(Node)              ((Node)->tag == PTAG_CONSTANT)
+#define PnIsSymbol(Node)                ((Node)->tag == PTAG_SYMBOL)
+#define PnIsString(Node)                ((Node)->tag == PTAG_STRING)
+#define PnIsOffset(Node)                ((Node)->tag == PTAG_OFFSET)
+#define PnIsList(Node)                  ((Node)->tag == PTAG_LIST)
+#define PnIsBinOp(Node)                 ((Node)->tag == PTAG_BINOP)
+#define PnIsUnOp(Node)                  ((Node)->tag == PTAG_UNOP)
+
+#define PnConstant(Node)                ((Node)->value.constant)
+#define PnSymbol(Node)                  ((Node)->value.symbol)
+#define PnString(Node)                  ((Node)->value.string)
+#define PnOffset(Node)                  ((Node)->value.offset)
+#define PnListHead(Node)                ((Node)->value.list.head)
+#define PnListTail(Node)                ((Node)->value.list.tail)
+#define PnBinOpOp(Node)                 ((Node)->value.binop.op)
+#define PnBinOpP0(Node)                 ((Node)->value.binop.p0)
+#define PnBinOpP1(Node)                 ((Node)->value.binop.p1)
+#define PnUnOpOp(Node)                  ((Node)->value.unop.op)
+#define PnUnOpP0(Node)                  ((Node)->value.unop.p0)
+
+/************************************************************************/
+
+/* file_context: A structure to keep track of all files that have been opened.
+                 Used to create the list of project files that can be found
+                 in the .cod file. */
+
+typedef struct file_context {
+  /* This always should be the first item! (libgputils/gplist.c) */
+  GPNodeHeader(struct file_context);
+
+  char                *name;            /* file name */
+  unsigned int         id;              /* Unique identifier. */
+  enum file_types      ft;              /* allowed file types */
+} file_context_t;
+
+typedef struct file_context_list {
+  /* head of file contexts
+   * tail of file contexts
+   * number of file contexts */
+  GPListHeader(file_context_t);
+} file_context_list_t;
+
+typedef struct macro_body {
+  char              *src_line;          /* Original source line - for listing. */
+  struct macro_body *next;              /* Next line in listing. */
+} macro_body_t;
+
+typedef struct macro_head {
+  int           pass;                   /* Pass in which macro was defined: 1 or 2 */
+  pnode_t      *parms;
+  macro_body_t *body;
+  gp_boolean    defined;                /* 1 macro has been defined so calls are valid */
+  char         *src_name;
+  unsigned int  line_number;
+  gp_symbol_t  *file_symbol;
+} macro_head_t;
+
+typedef struct amode {
+  enum {
+    IN_THEN,
+    IN_ELIF,
+    IN_ELSE
+  } mode;
+
+  gp_boolean    enabled;                /* Are we currently enabled? */
+  gp_boolean    before_else_enabled;    /* This true if before else branch was an another enabled branch. */
+  gp_boolean    upper_enabled;
+  struct amode *upper;
+} amode_t;
+
+enum src_types {
+  SRC_UNKNOWN,
+  SRC_FILE,
+  SRC_MACRO,
+  SRC_WHILE
+};
+
+typedef struct source_context {
+  /* This always should be the first item! (libgputils/gplist.c) */
+  GPNodeHeader(struct source_context);
+
+  char                   *name;
+  enum src_types          type;
+  FILE                   *f;
+  struct macro_head      *mac_head;
+  struct macro_body      *mac_body;         /* Macro line to parse. */
+  struct yy_buffer_state *yybuf;
+  unsigned int            line_number;
+  unsigned int            loop_number;      /* Loop number for while loops. */
+  gp_symbol_t            *file_symbol;
+  file_context_t         *fc;               /* Position in the file context stack. */
+  struct amode           *astack;           /* Stack of amodes when a macro was called. */
+  gp_boolean              last_char_is_nl;  /* If the last read character is a newline. */
+  src_line_t              curr_src_line;    /* Current source line. */
+} source_context_t;
+
+typedef struct source_context_list {
+  /* head of source contexts
+   * tail of source contexts
+   * number of source contexts */
+  GPListHeader(source_context_t);
+} source_context_list_t;
+
+/************************************************************************/
 
 extern struct gpasm_state {
   enum gpasm_modes  mode;
@@ -253,7 +400,7 @@ extern struct gpasm_state {
   } lst;
 
   struct {                              /* Preprocessor emit state: */
-    char       *preprocfilename;        /*   preprocessor output file name */
+    char       *preproc_file_name;      /*   preprocessor output file name */
     FILE       *f;                      /*   preprocessor file pointer */
     gp_boolean  do_emit;                /*   emit current preprocessed asm line */
     src_line_t  curr_src_line;          /*  current preprocessed source line */
@@ -274,8 +421,10 @@ extern struct gpasm_state {
     gp_boolean    newcoff;
   } obj;
 
-  struct source_context *src;           /* Top of the stack of source files. */
-  struct file_context   *files;         /* Top of the stack of all files. */
+  source_context_list_t  src_list;      /* The stack of source files. */
+
+  file_context_list_t    file_list;     /* The stack of all files. */
+
   struct amode          *astack;        /* Stack of amodes (macros, etc). */
   gpasmVal               cblock;        /* cblock constant */
   gp_boolean             cblock_defined;
@@ -308,102 +457,6 @@ typedef struct variable {
 
 /************************************************************************/
 
-/* Parse node: created by the parser, interpreted by the 'backend' */
-
-typedef struct pnode {
-  enum pnode_tag {
-    PTAG_CONSTANT,
-    PTAG_SYMBOL,
-    PTAG_STRING,
-    PTAG_OFFSET,
-    PTAG_LIST,
-    PTAG_BINOP,
-    PTAG_UNOP
-  } tag;
-
-  union {
-    int             constant;
-    const char     *symbol;
-    char           *string;
-
-    struct pnode   *offset;
-
-    struct {
-      struct pnode *head;
-      struct pnode *tail;
-    } list;
-
-    struct {
-      int           op;
-      struct pnode *p0;
-      struct pnode *p1;
-    } binop;
-
-    struct {
-      int           op;
-      struct pnode *p0;
-    } unop;
-  } value;
-} pnode_t;
-
-#define PnIsConstant(Node)              ((Node)->tag == PTAG_CONSTANT)
-#define PnIsSymbol(Node)                ((Node)->tag == PTAG_SYMBOL)
-#define PnIsString(Node)                ((Node)->tag == PTAG_STRING)
-#define PnIsOffset(Node)                ((Node)->tag == PTAG_OFFSET)
-#define PnIsList(Node)                  ((Node)->tag == PTAG_LIST)
-#define PnIsBinOp(Node)                 ((Node)->tag == PTAG_BINOP)
-#define PnIsUnOp(Node)                  ((Node)->tag == PTAG_UNOP)
-
-#define PnConstant(Node)                ((Node)->value.constant)
-#define PnSymbol(Node)                  ((Node)->value.symbol)
-#define PnString(Node)                  ((Node)->value.string)
-#define PnOffset(Node)                  ((Node)->value.offset)
-#define PnListHead(Node)                ((Node)->value.list.head)
-#define PnListTail(Node)                ((Node)->value.list.tail)
-#define PnBinOpOp(Node)                 ((Node)->value.binop.op)
-#define PnBinOpP0(Node)                 ((Node)->value.binop.p0)
-#define PnBinOpP1(Node)                 ((Node)->value.binop.p1)
-#define PnUnOpOp(Node)                  ((Node)->value.unop.op)
-#define PnUnOpP0(Node)                  ((Node)->value.unop.p0)
-
-/************************************************************************/
-
-/* file_context: a structure to keep track of all files that have been
-                 opened.  Used to create the list of project files
-                 that can be found in the .cod file.  */
-
-typedef struct file_context {
-  char                *name;            /* file name */
-  unsigned int         id;              /* Unique identifier. */
-  enum file_types      ft;              /* allowed file types */
-  struct file_context *prev;            /* Previous in list pointer. */
-  struct file_context *next;            /* Next in list pointer. */
-} file_context_t;
-
-enum src_types {
-  SRC_UNKNOWN,
-  SRC_FILE,
-  SRC_MACRO,
-  SRC_WHILE
-};
-
-typedef struct source_context {
-  char                   *name;
-  enum src_types          type;
-  FILE                   *f;
-  struct macro_head      *mac_head;
-  struct macro_body      *mac_body;         /* Macro line to parse. */
-  struct yy_buffer_state *yybuf;
-  unsigned int            line_number;
-  unsigned int            loop_number;      /* Loop number for while loops. */
-  gp_symbol_t            *file_symbol;
-  file_context_t         *fc;               /* Position in the file context stack. */
-  struct amode           *astack;           /* Stack of amodes when a macro was called. */
-  gp_boolean              last_char_is_nl;  /* If the last read character is a newline. */
-  src_line_t              curr_src_line;    /* Current source line. */
-  struct source_context  *prev;
-} source_context_t;
-
 extern void yyerror(const char *s);
 
 /* util.c */
@@ -435,6 +488,7 @@ extern const char *value_type_to_str(const variable_t *Variable, gp_boolean Prev
 extern const char *pnode_symbol_name(const pnode_t *Pnode);
 extern gpasmVal pnode_symbol_value(const pnode_t *Pnode);
 extern const char *pnode_string(const pnode_t *Pnode);
+extern void file_delete_node(void *Node);
 extern file_context_t *add_file(unsigned int type, const char *name);
 extern void free_files(void);
 extern void macro_append(void);
@@ -451,35 +505,5 @@ extern pnode_t *mk_string(char *value);
 extern pnode_t *mk_list(pnode_t *head, pnode_t *tail);
 extern pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1);
 extern pnode_t *mk_1op(int op, pnode_t *p0);
-
-/************************************************************************/
-
-typedef struct macro_body {
-  char              *src_line;          /* Original source line - for listing. */
-  struct macro_body *next;              /* Next line in listing. */
-} macro_body_t;
-
-typedef struct macro_head {
-  int           pass;                   /* Pass in which macro was defined: 1 or 2 */
-  pnode_t      *parms;
-  macro_body_t *body;
-  gp_boolean    defined;                /* 1 macro has been defined so calls are valid */
-  char         *src_name;
-  unsigned int  line_number;
-  gp_symbol_t  *file_symbol;
-} macro_head_t;
-
-typedef struct amode {
-  enum {
-    IN_THEN,
-    IN_ELIF,
-    IN_ELSE
-  } mode;
-
-  gp_boolean    enabled;                /* Are we currently enabled? */
-  gp_boolean    before_else_enabled;    /* This true if before else branch was an another enabled branch. */
-  gp_boolean    upper_enabled;
-  struct amode *upper;
-} amode_t;
 
 #endif

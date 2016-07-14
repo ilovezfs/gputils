@@ -147,7 +147,7 @@ _create_config_sections(void)
     linenum = gp_coffgen_add_linenum(state.obj.section);
     linenum->symbol      = conf_sec_mem->file_symbol;
     /* MPASM(X) bug compatibility */
-    linenum->line_number = (state.mpasm_compatible) ? (state.src->line_number - 1) : conf_sec_mem->line_number;
+    linenum->line_number = (state.mpasm_compatible) ? (state.src_list.last->line_number - 1) : conf_sec_mem->line_number;
     linenum->address     = conf_sec_mem->addr;
 
     _update_section_symbol(state.obj.section);
@@ -365,8 +365,8 @@ coff_linenum(unsigned int Emitted)
       new->line_number = state.obj.debug_line;
     }
      else {
-      new->symbol      = state.src->file_symbol;
-      new->line_number = state.src->line_number;
+      new->symbol      = state.src_list.last->file_symbol;
+      new->line_number = state.src_list.last->line_number;
     }
 
     new->address = origin;
@@ -483,7 +483,7 @@ coff_add_file_sym(const char *Name, gp_boolean Is_include)
   new_aux->_aux_symbol._aux_file.filename = GP_Strdup(Name);
 
   if (Is_include) {
-    new_aux->_aux_symbol._aux_file.line_number = state.src->line_number - 1;
+    new_aux->_aux_symbol._aux_file.line_number = state.src_list.last->line_number - 1;
   }
   else {
     new_aux->_aux_symbol._aux_file.line_number = 0;
@@ -537,7 +537,7 @@ coff_add_list_sym(void)
 
   /* add .list symbol */
   new = gp_coffgen_add_symbol(state.obj.object, ".list");
-  new->value          = state.src->line_number;
+  new->value          = state.src_list.last->line_number;
   new->section_number = N_DEBUG;
 //  new->type           = T_NULL;
   new->class          = C_LIST;
@@ -564,7 +564,7 @@ coff_add_nolist_sym(void)
 
   /* add .nolist symbol */
   new = gp_coffgen_add_symbol(state.obj.object, ".nolist");
-  new->value          = state.src->line_number;
+  new->value          = state.src_list.last->line_number;
   new->section_number = N_DEBUG;
 //  new->type           = T_NULL;
   new->class          = C_LIST;
