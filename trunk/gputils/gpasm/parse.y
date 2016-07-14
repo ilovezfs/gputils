@@ -223,7 +223,7 @@ next_line(int Value)
 {
   if ((state.pass == 2) && (state.lst.line.linetype == LTY_DOLIST_DIR)) {
     state.lst.line.linetype = LTY_NONE;
-    lst_format_line(state.src->curr_src_line.line, Value);
+    lst_format_line(state.src_list.last->curr_src_line.line, Value);
   }
 
   if (IN_WHILE_EXPANSION || IN_MACRO_EXPANSION) {
@@ -232,9 +232,9 @@ next_line(int Value)
         (state.lst.line.linetype != LTY_DOLIST_DIR) &&
         (state.lst.line.linetype != LTY_NOLIST_DIR)) {
 
-      if (state.src->curr_src_line.line != NULL) {
+      if (state.src_list.last->curr_src_line.line != NULL) {
         /* Empty macro. */
-        lst_format_line(state.src->curr_src_line.line, Value);
+        lst_format_line(state.src_list.last->curr_src_line.line, Value);
       }
       preproc_emit();
     }
@@ -245,19 +245,19 @@ next_line(int Value)
 
       if (state.mac_body != NULL) {
         /* Empty macro. */
-        state.mac_body->src_line = GP_Strdup(state.src->mac_body->src_line);
+        state.mac_body->src_line = GP_Strdup(state.src_list.last->mac_body->src_line);
       }
     }
 
-    if (state.src->mac_body != NULL) {
-      state.src->mac_body = state.src->mac_body->next;
+    if (state.src_list.last->mac_body != NULL) {
+      state.src_list.last->mac_body = state.src_list.last->mac_body->next;
     }
   }
   else if (IN_FILE_EXPANSION) {
     if (!IN_WHILE_DEFINITION && (state.pass == 2) &&
         (state.lst.line.linetype != LTY_DOLIST_DIR) &&
         (state.lst.line.linetype != LTY_NOLIST_DIR)) {
-      lst_format_line(state.src->curr_src_line.line, Value);
+      lst_format_line(state.src_list.last->curr_src_line.line, Value);
 
       if (!IN_MACRO_WHILE_DEFINITION) {
         preproc_emit();
@@ -268,14 +268,14 @@ next_line(int Value)
       state.lst.line.linetype = LTY_NONE;
 
       if (state.mac_body != NULL) {
-        state.mac_body->src_line = GP_Strdup(state.src->curr_src_line.line);
+        state.mac_body->src_line = GP_Strdup(state.src_list.last->curr_src_line.line);
       }
     }
 
    if (state.next_state == STATE_INCLUDE) {
       /* includes have to be evaluated here and not in the following
        * switch statements so that the errors are reported correctly */
-      state.src->line_number++;
+      state.src_list.last->line_number++;
       open_src(state.next_buffer.file, true);
       free(state.next_buffer.file);
     }
@@ -283,19 +283,19 @@ next_line(int Value)
 
   switch (state.next_state) {
     case STATE_EXITMACRO:
-      state.src->line_number++;
+      ++(state.src_list.last->line_number);
       execute_exitm();
       break;
 
     case STATE_MACRO:
-      state.src->line_number++;
+      ++(state.src_list.last->line_number);
       /* push the label for local directive */
       state.stTop = macro_push_symbol_table(state.stTop);
       execute_macro(state.next_buffer.macro, false);
       break;
 
     case STATE_SECTION:
-      state.src->line_number++;
+      ++(state.src_list.last->line_number);
       /* create a new coff section */
       coff_new_section(state.obj.new_sect_name,
                        state.obj.new_sect_addr,
@@ -303,7 +303,7 @@ next_line(int Value)
       break;
 
     case STATE_WHILE:
-      state.src->line_number++;
+      ++(state.src_list.last->line_number);
       execute_macro(state.next_buffer.macro, true);
       break;
 
@@ -312,7 +312,7 @@ next_line(int Value)
       break;
 
     default:
-      state.src->line_number++;
+      ++(state.src_list.last->line_number);
       break;
   }
 }
@@ -523,8 +523,8 @@ line:
 
                 gp_sym_annotate_symbol(mac, state.mac_head);
                 head = state.mac_head;
-                head->line_number = state.src->line_number;
-                head->file_symbol = state.src->file_symbol;
+                head->line_number = state.src_list.last->line_number;
+                head->file_symbol = state.src_list.last->file_symbol;
               }
 
               head->pass = state.pass;
@@ -590,7 +590,7 @@ line:
           }
           else {
             if (state.found_end) {
-              switch (state.src->type) {
+              switch (state.src_list.last->type) {
                 case SRC_WHILE:
                   gpmsg_error(GPE_EXPECTED, "Expected (ENDW)");
                   break;

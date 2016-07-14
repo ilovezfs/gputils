@@ -1068,7 +1068,7 @@ lst_data:
   }
 
   if (state.stGlobal == state.stTop) {
-    _lst_printf("%05d ", state.src->line_number);
+    _lst_printf("%05d ", state.src_list.last->line_number);
   }
   else {
     _lst_printf("    M ");
@@ -1307,7 +1307,7 @@ lst_symbol_table(void)
 void
 preproc_init(void)
 {
-  const char *name = state.preproc.preprocfilename;
+  const char *name = state.preproc.preproc_file_name;
 
   if (name != NULL) {
     if ((name[0] == '-') && (name[1] == '\0')) {

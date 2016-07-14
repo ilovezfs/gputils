@@ -777,7 +777,7 @@ _in_macro_expansion(void)
 {
   const source_context_t *p;
 
-  for (p = state.src; p != NULL; p = p->prev) {
+  for (p = state.src_list.last; p != NULL; p = p->prev) {
     if (p->type == SRC_MACRO) {
       return true;
     }
@@ -796,7 +796,7 @@ preprocess_line(char *buf, int *n, int max_size)
 
   if (IN_MACRO_WHILE_DEFINITION) {
     /* don't preprocess source line if in macro definition */
-    _set_source_line(buf, *n, &state.src->curr_src_line);
+    _set_source_line(buf, *n, &state.src_list.last->curr_src_line);
   }
   else {
     gp_boolean macro_expansion = _in_macro_expansion();
@@ -812,7 +812,7 @@ preprocess_line(char *buf, int *n, int max_size)
 
     if (!macro_expansion) {
       /* set only #v processed source line if not in macro expansion */
-      _set_source_line(buf, *n, &state.src->curr_src_line);
+      _set_source_line(buf, *n, &state.src_list.last->curr_src_line);
     }
 
     /* preprocess line */
@@ -824,7 +824,7 @@ preprocess_line(char *buf, int *n, int max_size)
 
     if (macro_expansion) {
       /* set processed source line if in macro expansion */
-      _set_source_line(buf, *n, &state.src->curr_src_line);
+      _set_source_line(buf, *n, &state.src_list.last->curr_src_line);
     }
   }
 

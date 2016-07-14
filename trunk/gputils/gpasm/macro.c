@@ -55,7 +55,7 @@ _add_macro_table(symbol_table_t *Table)
 
   new = (macro_table_t *)GP_Calloc(1, sizeof(*new));
   new->table       = Table;
-  new->line_number = state.src->line_number;
+  new->line_number = state.src_list.last->line_number;
 
   if (macro_table_list == NULL) {
     macro_table_list = new;
@@ -123,7 +123,7 @@ macro_push_symbol_table(symbol_table_t *Table)
       exit(1);
     }
 
-    if (macro_table_ptr->line_number != state.src->line_number) {
+    if (macro_table_ptr->line_number != state.src_list.last->line_number) {
     /* The user must have conditionally assembled a macro using a forward
        reference to a label. This is a very bad practice. It means that
        a macro wasn't executed on the first pass, but it was on the second.
@@ -148,15 +148,15 @@ macro_push_symbol_table(symbol_table_t *Table)
 void
 macro_list(macro_body_t *Body)
 {
-  unsigned int old_line_number = state.src->line_number;
+  unsigned int old_line_number = state.src_list.last->line_number;
 
   /* Never executed: list the macro body */
   state.lst.line.linetype = LTY_DIR;
-  state.src->line_number  = state.while_head->line_number;
+  state.src_list.last->line_number  = state.while_head->line_number;
   while (Body != NULL) {
-    ++state.src->line_number;
+    ++(state.src_list.last->line_number);
     lst_format_line(Body->src_line, 0);
     Body = Body->next;
   }
-  state.src->line_number = old_line_number;
+  state.src_list.last->line_number = old_line_number;
 }

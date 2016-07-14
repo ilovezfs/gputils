@@ -1267,8 +1267,8 @@ _add_conf_sec_mem(unsigned int Ca, gp_boolean New_config)
     new->line_number = state.obj.debug_line;
   }
   else {
-    new->file_symbol = state.src->file_symbol;
-    new->line_number = state.src->line_number;
+    new->file_symbol = state.src_list.last->file_symbol;
+    new->line_number = state.src_list.last->line_number;
   }
 
   if (state.conf_sec_mem == NULL) {
@@ -4239,10 +4239,10 @@ _do_macro(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   head->body    = NULL;
   head->defined = false;
   /* Record data for the list, cod, and coff files. */
-  head->line_number = state.src->line_number;
-  head->file_symbol = state.src->file_symbol;
+  head->line_number = state.src_list.last->line_number;
+  head->file_symbol = state.src_list.last->file_symbol;
 
-  head->src_name = GP_Strdup(state.src->name);
+  head->src_name = GP_Strdup(state.src_list.last->name);
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -5015,10 +5015,10 @@ _do_while(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   head->body  = NULL;
 
   /* Record data for the list, cod, and coff files. */
-  head->line_number = state.src->line_number;
-  head->file_symbol = state.src->file_symbol;
+  head->line_number = state.src_list.last->line_number;
+  head->file_symbol = state.src_list.last->file_symbol;
 
-  head->src_name = GP_Strdup(state.src->name);
+  head->src_name = GP_Strdup(state.src_list.last->name);
 
   /* DON'T set up state.mac_head; this isn't a macro head. */
   state.while_head = head;
