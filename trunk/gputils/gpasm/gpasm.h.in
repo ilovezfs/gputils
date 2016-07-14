@@ -22,31 +22,29 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPASM_H__
 #define __GPASM_H__
 
-#define GPASM_VERSION_STRING ("gpasm-" VERSION " #" @REVISION@ " (" __DATE__ ")")
+#define GPASM_VERSION_STRING        ("gpasm-" VERSION " #" @REVISION@ " (" __DATE__ ")")
 
 /* This symbol will get placed into the symbol table for the 16bit cores
- * and thus allow compile-time selection of the proper macro set */
-#define __16bit_core_   "__16bit_core_"
+   and thus allow compile-time selection of the proper macro set. */
+#define __16bit_core_               "__16bit_core_"
 
-#define GLOBAL_ACT_BANK_ADDR      "__ACTIVE_BANK_ADDR"
-#define GLOBAL_ACT_BANK_INV       -1
+#define __ACTIVE_BANK_ADDR          "__ACTIVE_BANK_ADDR"
+#define __ACTIVE_BANK_INV           -1
 
-#define GLOBAL_ACT_PAGE_ADDR      "__ACTIVE_PAGE_ADDR"
-#define GLOBAL_ACT_PAGE_INV       -1
+#define __ACTIVE_PAGE_ADDR          "__ACTIVE_PAGE_ADDR"
+#define __ACTIVE_PAGE_INV           -1
 
-#define WHILE_LOOP_COUNT_MAX      255
+#define WHILE_LOOP_COUNT_MAX        255
 
-#define STRCMP(s1, s2)  ((state.case_insensitive) ? \
-                         strcasecmp((s1), (s2)) : \
-                         strcmp((s1), (s2)))
+#define STRCMP(s1, s2)              ((state.case_insensitive) ? strcasecmp((s1), (s2)) : strcmp((s1), (s2)))
 
-#define MAX_PATHS 100
+#define MAX_PATHS                   100
 
-#define IN_MACRO_WHILE_DEFINITION (state.mac_prev != NULL)
-#define IN_WHILE_DEFINITION       (IN_MACRO_WHILE_DEFINITION && (state.while_head != NULL))
-#define IN_MACRO_EXPANSION        (state.src->type == SRC_MACRO)
-#define IN_WHILE_EXPANSION        (state.src->type == SRC_WHILE)
-#define IN_FILE_EXPANSION         (state.src->type == SRC_FILE)
+#define IN_MACRO_WHILE_DEFINITION   (state.mac_prev != NULL)
+#define IN_WHILE_DEFINITION         (IN_MACRO_WHILE_DEFINITION && (state.while_head != NULL))
+#define IN_MACRO_EXPANSION          (state.src->type == SRC_MACRO)
+#define IN_WHILE_EXPANSION          (state.src->type == SRC_WHILE)
+#define IN_FILE_EXPANSION           (state.src->type == SRC_FILE)
 
 enum gpasmValTypes {
   VAL_CONSTANT,
@@ -113,7 +111,7 @@ extern struct gpasm_state {
   gp_boolean        debug_info;         /* Use debug directives for coff outputs. */
   int               error_level;        /* 0, 1, 2 */
   int               strict_level;       /* 0, 1, 2 */
-  int               path_num;           /* Number of paths in the list. */
+  int               num_paths;          /* Number of paths in the list. */
   char             *paths[MAX_PATHS];   /* The list of include paths. */
 
   struct {                              /* Command line override flags. */
@@ -134,6 +132,7 @@ extern struct gpasm_state {
   gp_boolean     found_devid;           /* Config directive in source code. */
   gp_boolean     found_idlocs;          /* Idlocs directive in source code. */
   gp_boolean     found_end;             /* End directive in source code. */
+  int            assumed_bank;          /* Helper variable for bank selection. */
   int            maxram;                /* Highest legal data memory location. */
   int            maxrom;                /* Highest legal program memory location. */
   gp_bit_array_t badrom;                /* Nonzero indicates illegal memory. */

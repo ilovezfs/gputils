@@ -633,7 +633,7 @@ statement:
           if (!IN_MACRO_WHILE_DEFINITION) {
             $$ = (IS_RAM_ORG) ? state.byte_addr :
                                 /* We want to have r as the value to assign to label. */
-                                gp_processor_byte_to_real(state.processor, state.byte_addr);
+                                gp_processor_insn_from_byte_p(state.processor, state.byte_addr);
           }
           else {
             macro_append();

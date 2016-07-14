@@ -484,7 +484,7 @@ gp_coffgen_make_section_array(gp_object_t *Object, unsigned int *Num_sections,
   section    = Object->section_list.first;
   while (section != NULL) {
     FlagClr(section->opt_flags, OPT_FLAGS_GPCOFFGEN_MODULE);
-    page = gp_processor_page_addr(class, gp_processor_byte_to_org(class, section->address));
+    page = gp_processor_page_addr(class, gp_processor_insn_from_byte_c(class, section->address));
 
     if ((page == Page_addr) && (FlagsIsNotAllClr(section->flags, Flags))) {
       /* Located on same page and there is at least one valid flag. */

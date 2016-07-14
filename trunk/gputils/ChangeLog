@@ -1,3 +1,28 @@
+2016-07-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/evaluate.c,
+    gpasm/evaluate.h, gpasm/gpasm.c, gpasm/gpasm.h.in,
+    gpasm/processor.c, gpasm/scan.l:
+    New experimental directive: assume
+
+  * gpasm/cod.c, gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c,
+    gpasm/lst.c, gpasm/parse.y, gpasm/util.c, gplink/cod.c,
+    gplink/lst.c, gplink/map.c, gplink/script.c, gputils/dump.c,
+    gputils/gpdasm.c, gputils/gpvo.c, libgputils/gpcoffgen.c,
+    libgputils/gpcofflink.c, libgputils/gpcoffopt.c,
+    libgputils/gpdis.c, libgputils/gpmemory.c,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h
+    libgputils/gpreadobj.c, libgputils/gpsymbol.c,
+    libgputils/gpwriteobj.c:
+    Renamed some functions:
+	gp_processor_byte_to_org --> gp_processor_insn_from_byte_c
+	gp_processor_org_to_byte --> gp_processor_byte_from_insn_c
+	gp_processor_byte_to_real --> gp_processor_insn_from_byte_p
+	gp_processor_real_to_byte --> gp_processor_byte_from_insn_p
+	gp_byte_to_org --> gp_insn_from_byte
+	gp_org_to_byte --> gp_byte_from_insn
+	gp_processor_check_bank --> gp_processor_bank_from_addr
+	gp_processor_bank_num_to_addr --> gp_processor_addr_from_bank_num
+
 2016-07-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, configure, configure.ac:
     Changed the gputils version from 1.4.5 to 1.4.6.

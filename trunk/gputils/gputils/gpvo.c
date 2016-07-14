@@ -170,7 +170,7 @@ _print_relocation_list(proc_class_t class, const gp_reloc_t *relocation, const c
 
   while (relocation != NULL) {
     printf("0x%0*x%s    0x%0*x%s  %-25s %-s\n",
-           addr_digits, gp_processor_byte_to_org(class, relocation->address), column_gap,
+           addr_digits, gp_processor_insn_from_byte_c(class, relocation->address), column_gap,
            addr_digits, relocation->offset, column_gap,
            _format_reloc_type(relocation->type, buffer, sizeof(buffer)),
            relocation->symbol->name);
@@ -204,7 +204,7 @@ _print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber, const ch
 
     printf("%-8i  0x%0*x%s    %s\n",
            linenumber->line_number,
-           addr_digits, gp_processor_byte_to_org(class, linenumber->address), column_gap,
+           addr_digits, gp_processor_insn_from_byte_c(class, linenumber->address), column_gap,
            filename);
 
     linenumber = linenumber->next;
@@ -242,7 +242,7 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
       num_words = gp_disassemble(section->data, address, class, bsr_boundary, 0,
                                  GPDIS_SHOW_ALL_BRANCH, buffer, sizeof(buffer), 0);
       printf("%0*x:  %04x  %s\n",
-             addr_digits, gp_processor_byte_to_org(class, address), word, buffer);
+             addr_digits, gp_processor_insn_from_byte_c(class, address), word, buffer);
 
       if (num_words != 1) {
         if (class->i_memory_get(section->data, address + WORD_SIZE, &word, NULL, NULL) != W_USED_ALL) {
@@ -250,19 +250,19 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
         }
 
         printf("%0*x:  %04x\n",
-               addr_digits, gp_processor_byte_to_org(class, address + WORD_SIZE), word);
+               addr_digits, gp_processor_insn_from_byte_c(class, address + WORD_SIZE), word);
       }
 
       address += num_words * WORD_SIZE;
     }
     else if ((section->flags & STYP_DATA_ROM) || (class == PROC_CLASS_EEPROM16)) {
       if (class->i_memory_get(section->data, address, &word, NULL, NULL) != 0) {
-        printf("%0*x:  %04x\n", addr_digits, gp_processor_byte_to_org(class, address), word);
+        printf("%0*x:  %04x\n", addr_digits, gp_processor_insn_from_byte_c(class, address), word);
         address += WORD_SIZE;
       }
       else {
         if (gp_mem_b_get(section->data, address, &byte, NULL, NULL)) {
-          printf("%0*x:  %02x\n", addr_digits, gp_processor_byte_to_org(class, address), byte);
+          printf("%0*x:  %02x\n", addr_digits, gp_processor_insn_from_byte_c(class, address), byte);
         }
 
         break;
@@ -293,8 +293,8 @@ _print_section_header(proc_class_t class, const gp_section_t *section)
 
   printf("Section Header\n");
   printf("Name                    %s\n",  section->name);
-  printf("Physical address        %#x\n", gp_byte_to_org(org_to_byte_shift, section->address));
-  printf("Virtual address         %#x\n", gp_byte_to_org(org_to_byte_shift, section->virtual_address));
+  printf("Physical address        %#x\n", gp_insn_from_byte(org_to_byte_shift, section->address));
+  printf("Virtual address         %#x\n", gp_insn_from_byte(org_to_byte_shift, section->virtual_address));
   printf("Size of Section         %u\n",  section->size);
   printf("Number of Relocations   %zu\n", section->relocation_list.num_nodes);
   printf("Number of Line Numbers  %zu\n", section->line_number_list.num_nodes);

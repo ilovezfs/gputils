@@ -1257,7 +1257,7 @@ gp_processor_id_location(pic_processor_t processor)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_org_to_byte(unsigned int shift, int insn_address)
+gp_byte_from_insn(unsigned int shift, int insn_address)
 {
   return (insn_address << shift);
 }
@@ -1265,7 +1265,7 @@ gp_org_to_byte(unsigned int shift, int insn_address)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_byte_to_org(unsigned int shift, int byte_address)
+gp_insn_from_byte(unsigned int shift, int byte_address)
 {
   return (byte_address >> shift);
 }
@@ -1279,7 +1279,7 @@ gp_processor_reg_offs(pic_processor_t processor, int address)
     return -1;
   }
 
-  return (address & (~processor->class->bank_mask));
+  return (address & processor->class->bank_mask);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1309,7 +1309,7 @@ gp_processor_bank_num(pic_processor_t processor, int address)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_processor_bank_num_to_addr(pic_processor_t processor, int number)
+gp_processor_addr_from_bank_num(pic_processor_t processor, int number)
 {
   if (processor == NULL) {
     return -1;
@@ -1365,7 +1365,7 @@ gp_processor_is_common_ram_addr(pic_processor_t processor, int address)
 
   if (processor->class != PROC_CLASS_PIC16E) {
     /* The Common RAM - except the PIC16E family - exists in the all RAM banks. */
-    address &= ~processor->class->bank_mask;
+    address &= processor->class->bank_mask;
   }
 
   if ((cram_addrs = gp_processor_common_ram_exist(processor)) != NULL) {
@@ -1516,7 +1516,7 @@ gp_processor_is_idlocs_byte_addr(pic_processor_t processor, int byte_address)
 
   if ((idlocs = gp_processor_idlocs_exist(processor)) != NULL) {
     /* There is a need an address conversion. */
-    start = gp_org_to_byte(processor->class->org_to_byte_shift, idlocs[0]);
+    start = gp_byte_from_insn(processor->class->org_to_byte_shift, idlocs[0]);
     end   = idlocs[1] - idlocs[0] + start;
 
     if ((start <= byte_address) && (byte_address <= end)) {
@@ -1575,7 +1575,7 @@ gp_processor_is_config_byte_addr(pic_processor_t processor, int byte_address)
 
   if ((config = gp_processor_config_exist(processor)) != NULL) {
     /* There is a need an address conversion. */
-    start = gp_org_to_byte(processor->class->org_to_byte_shift, config[0]);
+    start = gp_byte_from_insn(processor->class->org_to_byte_shift, config[0]);
     end   = config[1] - config[0] + start;
 
     if ((start <= byte_address) && (byte_address <= end)) {
@@ -1634,7 +1634,7 @@ gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address)
 
   if ((eeprom = gp_processor_eeprom_exist(processor)) != NULL) {
     /* There is a need an address conversion. */
-    start = gp_org_to_byte(processor->class->org_to_byte_shift, eeprom[0]);
+    start = gp_byte_from_insn(processor->class->org_to_byte_shift, eeprom[0]);
     end   = eeprom[1] - eeprom[0] + start;
 
     if ((start <= byte_address) && (byte_address <= end)) {
@@ -1678,9 +1678,9 @@ gp_processor_page_addr(proc_class_t class, unsigned int address)
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-gp_processor_page_bits_to_addr(proc_class_t class, unsigned int bits)
+gp_processor_addr_from_page_bits(proc_class_t class, unsigned int bits)
 {
-  return class->page_bits_to_addr(bits);
+  return class->addr_from_page_bits(bits);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1717,7 +1717,7 @@ gp_processor_retlw(proc_class_t class)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_processor_org_to_byte(proc_class_t class, int insn_address)
+gp_processor_byte_from_insn_c(proc_class_t class, int insn_address)
 {
   /* FIXME: In some places we use this value before we know what the
      processor is. Rather than fix those now, I'll just return some
@@ -1726,27 +1726,25 @@ gp_processor_org_to_byte(proc_class_t class, int insn_address)
     return insn_address;
   }
 
-  return gp_org_to_byte(class->org_to_byte_shift, insn_address);
+  return gp_byte_from_insn(class->org_to_byte_shift, insn_address);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_processor_real_to_byte(pic_processor_t processor, int insn_address)
+gp_processor_byte_from_insn_p(pic_processor_t processor, int insn_address)
 {
-  proc_class_t class;
-
-  if ((processor == NULL) || (class = processor->class) == NULL) {
+  if (processor == NULL) {
     return insn_address;
   }
 
-  return gp_org_to_byte(class->org_to_byte_shift, insn_address);
+  return gp_processor_byte_from_insn_c(processor->class, insn_address);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_processor_byte_to_org(proc_class_t class, int byte_address)
+gp_processor_insn_from_byte_c(proc_class_t class, int byte_address)
 {
   /* FIXME: In some places we use this value before we know what the
      processor is. Rather than fix those now, I'll just return some
@@ -1755,21 +1753,19 @@ gp_processor_byte_to_org(proc_class_t class, int byte_address)
     return byte_address;
   }
 
-  return gp_byte_to_org(class->org_to_byte_shift, byte_address);
+  return gp_insn_from_byte(class->org_to_byte_shift, byte_address);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_processor_byte_to_real(pic_processor_t processor, int byte_address)
+gp_processor_insn_from_byte_p(pic_processor_t processor, int byte_address)
 {
-  proc_class_t class;
-
-  if ((processor == NULL) || (class = processor->class) == NULL) {
+  if (processor == NULL) {
     return byte_address;
   }
 
-  return gp_byte_to_org(class->org_to_byte_shift, byte_address);
+  return gp_processor_insn_from_byte_c(processor->class, byte_address);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1787,9 +1783,9 @@ gp_processor_check_page(proc_class_t class, unsigned int insn_address)
 /* determine which bank of data memory the address is located */
 
 unsigned int
-gp_processor_check_bank(proc_class_t class, unsigned int address)
+gp_processor_bank_from_addr(proc_class_t class, unsigned int address)
 {
-  return class->check_bank(address);
+  return class->bank_from_addr(address);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1807,7 +1803,7 @@ gp_processor_check_ibank(proc_class_t class, unsigned int address)
 /* When unsupported on the class. */
 
 static unsigned int
-_check_xbank_unsupported(unsigned int address)
+_xbank_from_addr_unsupported(unsigned int address)
 {
   (void)address;
   assert(0);
@@ -1886,7 +1882,7 @@ _page_addr_unsupported(unsigned int address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_page_bits_to_addr_unsupported(unsigned int bits)
+_addr_from_page_bits_unsupported(unsigned int bits)
 {
   (void)bits;
   assert(0);
@@ -2092,7 +2088,7 @@ _id_location_pic12(pic_processor_t processor)
 {
   if ((processor->idlocs_addrs[0] > 0) && (processor->idlocs_addrs[1] > 0)) {
     /* We carry org in the struct px, but return byte address. */
-    return gp_org_to_byte(processor->class->org_to_byte_shift, processor->idlocs_addrs[0]);
+    return gp_byte_from_insn(processor->class->org_to_byte_shift, processor->idlocs_addrs[0]);
   }
   return 0;
 }
@@ -2100,7 +2096,7 @@ _id_location_pic12(pic_processor_t processor)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_check_bank_pic12(unsigned int address)
+_bank_from_addr_pic12(unsigned int address)
 {
   return ((address >> PIC12_BANK_SHIFT) & PIC12_BMSK_BANK);
 }
@@ -2137,7 +2133,7 @@ _page_addr_pic12(unsigned int insn_address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_page_bits_to_addr_pic12(unsigned int bits)
+_addr_from_page_bits_pic12(unsigned int bits)
 {
   return _page_addr_pic12(bits << PIC12_PAGE_SHIFT);
 }
@@ -2199,7 +2195,7 @@ _reloc_tris_pic12(unsigned int address)
 /* PIC12E */
 
 static unsigned int
-_check_bank_pic12e(unsigned int address)
+_bank_from_addr_pic12e(unsigned int address)
 {
   return ((address >> PIC12_BANK_SHIFT) & PIC12E_BMSK_BANK);
 }
@@ -2280,7 +2276,7 @@ _page_addr_sx(unsigned int insn_address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_page_bits_to_addr_sx(unsigned int bits)
+_addr_from_page_bits_sx(unsigned int bits)
 {
   return _page_addr_sx(bits << PIC12_PAGE_SHIFT);
 }
@@ -2315,7 +2311,7 @@ _id_location_pic14(pic_processor_t processor)
 {
   if ((processor->idlocs_addrs[0] > 0) && (processor->idlocs_addrs[1] > 0)) {
     /* We carry org in the struct px, but return byte address. */
-    return gp_org_to_byte(processor->class->org_to_byte_shift, processor->idlocs_addrs[0]);
+    return gp_byte_from_insn(processor->class->org_to_byte_shift, processor->idlocs_addrs[0]);
   }
   return 0;
 }
@@ -2323,7 +2319,7 @@ _id_location_pic14(pic_processor_t processor)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_check_bank_pic14(unsigned int address)
+_bank_from_addr_pic14(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & PIC14_BMSK_BANK);
 }
@@ -2380,7 +2376,7 @@ _page_addr_pic14(unsigned int insn_address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_page_bits_to_addr_pic14(unsigned int bits)
+_addr_from_page_bits_pic14(unsigned int bits)
 {
   return _page_addr_pic14(bits << PIC14_PAGE_SHIFT);
 }
@@ -2453,7 +2449,7 @@ _patch_strict_pic14(void)
 /* PIC14E */
 
 static unsigned int
-_check_bank_pic14e(unsigned int address)
+_bank_from_addr_pic14e(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & PIC14E_BMSK_BANK);
 }
@@ -2541,7 +2537,7 @@ _page_addr_pic14e(unsigned int insn_address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_page_bits_to_addr_pic14e(unsigned int bits)
+_addr_from_page_bits_pic14e(unsigned int bits)
 {
   return _page_addr_pic14e(bits << 8);
 }
@@ -2649,7 +2645,7 @@ _find_insn_pic14e(proc_class_t cls, unsigned int opcode)
 /* PIC14EX */
 
 static unsigned int
-_check_bank_pic14ex(unsigned int address)
+_bank_from_addr_pic14ex(unsigned int address)
 {
   return ((address >> PIC14_BANK_SHIFT) & PIC14EX_BMSK_BANK);
 }
@@ -2695,7 +2691,7 @@ _find_insn_pic14ex(proc_class_t cls, unsigned int opcode)
 /* PIC16 */
 
 static unsigned int
-_check_bank_pic16(unsigned int address)
+_bank_from_addr_pic16(unsigned int address)
 {
   if ((address & 0xff) < 0x20) {
     return (address >> PIC16_BANK_SHIFT) & PIC16_BMSK_BANK;
@@ -2747,7 +2743,7 @@ _page_addr_pic16(unsigned int insn_address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_page_bits_to_addr_pic16(unsigned int bits)
+_addr_from_page_bits_pic16(unsigned int bits)
 {
   return _page_addr_pic16(bits << 8);
 }
@@ -3184,16 +3180,16 @@ const struct proc_class proc_class_eeprom8 = {
   NULL,                                 /* vector_table */
   0,                                    /* vector_number */
   0,                                    /* id_location */
-  _check_xbank_unsupported,             /* check_bank */
+  _xbank_from_addr_unsupported,         /* bank_from_addr */
   _set_xbank_unsupported,               /* set_bank */
   _banksel_byte_length_unsupported,     /* banksel_byte_length */
-  _check_xbank_unsupported,             /* check_ibank */
+  _xbank_from_addr_unsupported,         /* check_ibank */
   _set_xbank_unsupported,               /* set_ibank */
   _check_page_unsupported,              /* check_page */
   _set_page_unsupported,                /* set_page */
   _pagesel_byte_length_unsupported,     /* pagesel_byte_length */
   _page_addr_unsupported,               /* page_addr */
-  _page_bits_to_addr_unsupported,       /* page_bits_to_addr */
+  _addr_from_page_bits_unsupported,     /* addr_from_page_bits */
   _reloc_unsupported,                   /* reloc_call */
   _reloc_unsupported,                   /* reloc_goto */
   _reloc_unsupported,                   /* reloc_f */
@@ -3230,16 +3226,16 @@ const struct proc_class proc_class_eeprom16 = {
   NULL,                                 /* vector_table */
   0,                                    /* vector_number */
   0,                                    /* id_location */
-  _check_xbank_unsupported,             /* check_bank */
+  _xbank_from_addr_unsupported,         /* bank_from_addr */
   _set_xbank_unsupported,               /* set_bank */
   _banksel_byte_length_unsupported,     /* banksel_byte_length */
-  _check_xbank_unsupported,             /* check_ibank */
+  _xbank_from_addr_unsupported,         /* check_ibank */
   _set_xbank_unsupported,               /* set_ibank */
   _check_page_unsupported,              /* check_page */
   _set_page_unsupported,                /* set_page */
   _pagesel_byte_length_unsupported,     /* pagesel_byte_length */
   _page_addr_unsupported,               /* page_addr */
-  _page_bits_to_addr_unsupported,       /* page_bits_to_addr */
+  _addr_from_page_bits_unsupported,     /* addr_from_page_bits */
   _reloc_unsupported,                   /* reloc_call */
   _reloc_unsupported,                   /* reloc_goto */
   _reloc_unsupported,                   /* reloc_f */
@@ -3276,16 +3272,16 @@ const struct proc_class proc_class_generic = {
   _vector_table_pic12,                  /* vector_table */
   TABLE_SIZE(_vector_table_pic12),      /* vector_number */
   _id_location_pic12,                   /* id_location */
-  _check_bank_pic12,                    /* check_bank */
+  _bank_from_addr_pic12,                /* bank_from_addr */
   _set_bank_pic12,                      /* set_bank */
   _banksel_byte_length_pic12_14,        /* banksel_byte_length */
-  _check_xbank_unsupported,             /* check_ibank */
+  _xbank_from_addr_unsupported,         /* check_ibank */
   _set_xbank_unsupported,               /* set_ibank */
   _check_page_pic12,                    /* check_page */
   _set_page_pic12,                      /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
   _page_addr_pic12,                     /* page_addr */
-  _page_bits_to_addr_pic12,             /* page_bits_to_addr */
+  _addr_from_page_bits_pic12,           /* addr_from_page_bits */
   _reloc_unsupported,                   /* reloc_call */
   _reloc_unsupported,                   /* reloc_goto */
   _reloc_unsupported,                   /* reloc_f */
@@ -3322,16 +3318,16 @@ const struct proc_class proc_class_pic12 = {
   _vector_table_pic12,                  /* vector_table */
   TABLE_SIZE(_vector_table_pic12),      /* vector_number */
   _id_location_pic12,                   /* id_location */
-  _check_bank_pic12,                    /* check_bank */
+  _bank_from_addr_pic12,                /* bank_from_addr */
   _set_bank_pic12,                      /* set_bank */
   _banksel_byte_length_pic12_14,        /* banksel_byte_length */
-  _check_xbank_unsupported,             /* check_ibank */
+  _xbank_from_addr_unsupported,         /* check_ibank */
   _set_xbank_unsupported,               /* set_ibank */
   _check_page_pic12,                    /* check_page */
   _set_page_pic12,                      /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
   _page_addr_pic12,                     /* page_addr */
-  _page_bits_to_addr_pic12,             /* page_bits_to_addr */
+  _addr_from_page_bits_pic12,           /* addr_from_page_bits */
   _reloc_call_pic12,                    /* reloc_call */
   _reloc_goto_pic12,                    /* reloc_goto */
   _reloc_f_pic12,                       /* reloc_f */
@@ -3368,16 +3364,16 @@ const struct proc_class proc_class_pic12e = {
   _vector_table_pic12,                  /* vector_table */
   TABLE_SIZE(_vector_table_pic12),      /* vector_number */
   _id_location_pic12,                   /* id_location */
-  _check_bank_pic12e,                   /* check_bank */
+  _bank_from_addr_pic12e,               /* bank_from_addr */
   _set_bank_pic12e,                     /* set_bank */
   _banksel_byte_length_pic12e,          /* banksel_byte_length */
-  _check_xbank_unsupported,             /* check_ibank */
+  _xbank_from_addr_unsupported,         /* check_ibank */
   _set_xbank_unsupported,               /* set_ibank */
   _check_page_pic12,                    /* check_page */
   _set_page_pic12,                      /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
   _page_addr_pic12,                     /* page_addr */
-  _page_bits_to_addr_pic12,             /* page_bits_to_addr */
+  _addr_from_page_bits_pic12,           /* addr_from_page_bits */
   _reloc_call_pic12,                    /* reloc_call */
   _reloc_goto_pic12,                    /* reloc_goto */
   _reloc_f_pic12,                       /* reloc_f */
@@ -3414,16 +3410,16 @@ const struct proc_class proc_class_pic12i = {
   _vector_table_pic12i,                 /* vector_table */
   TABLE_SIZE(_vector_table_pic12i),     /* vector_number */
   _id_location_pic12,                   /* id_location */
-  _check_bank_pic12e,                   /* check_bank */
+  _bank_from_addr_pic12e,               /* bank_from_addr */
   _set_bank_pic12e,                     /* set_bank */
   _banksel_byte_length_pic12e,          /* banksel_byte_length */
-  _check_xbank_unsupported,             /* check_ibank */
+  _xbank_from_addr_unsupported,         /* check_ibank */
   _set_xbank_unsupported,               /* set_ibank */
   _check_page_pic12,                    /* check_page */
   _set_page_pic12,                      /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
   _page_addr_pic12,                     /* page_addr */
-  _page_bits_to_addr_pic12,             /* page_bits_to_addr */
+  _addr_from_page_bits_pic12,           /* addr_from_page_bits */
   _reloc_call_pic12,                    /* reloc_call */
   _reloc_goto_pic12,                    /* reloc_goto */
   _reloc_f_pic12,                       /* reloc_f */
@@ -3460,16 +3456,16 @@ const struct proc_class proc_class_sx = {
   _vector_table_sx,                     /* vector_table */
   TABLE_SIZE(_vector_table_sx),         /* vector_number */
   _id_location_pic12,                   /* id_location */
-  _check_bank_pic12,                    /* check_bank */
+  _bank_from_addr_pic12,                /* bank_from_addr */
   _set_bank_pic12,                      /* set_bank */
   _banksel_byte_length_pic12_14,        /* banksel_byte_length */
-  _check_xbank_unsupported,             /* check_ibank */
+  _xbank_from_addr_unsupported,         /* check_ibank */
   _set_xbank_unsupported,               /* set_ibank */
   _check_page_sx,                       /* check_page */
   _set_page_sx,                         /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
   _page_addr_sx,                        /* page_addr */
-  _page_bits_to_addr_sx,                /* page_bits_to_addr */
+  _addr_from_page_bits_sx,              /* addr_from_page_bits */
   _reloc_call_pic12,                    /* reloc_call */
   _reloc_goto_pic12,                    /* reloc_goto */
   _reloc_f_pic12,                       /* reloc_f */
@@ -3506,7 +3502,7 @@ const struct proc_class proc_class_pic14 = {
   _vector_table_pic14,                  /* vector_table */
   TABLE_SIZE(_vector_table_pic14),      /* vector_number */
   _id_location_pic14,                   /* id_location */
-  _check_bank_pic14,                    /* check_bank */
+  _bank_from_addr_pic14,                /* bank_from_addr */
   _set_bank_pic14,                      /* set_bank */
   _banksel_byte_length_pic12_14,        /* banksel_byte_length */
   _check_ibank_pic14,                   /* check_ibank */
@@ -3515,7 +3511,7 @@ const struct proc_class proc_class_pic14 = {
   _set_page_pic14,                      /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
   _page_addr_pic14,                     /* page_addr */
-  _page_bits_to_addr_pic14,             /* page_bits_to_addr */
+  _addr_from_page_bits_pic14,           /* addr_from_page_bits */
   _reloc_call_pic14,                    /* reloc_call */
   _reloc_goto_pic14,                    /* reloc_goto */
   _reloc_f_pic14,                       /* reloc_f */
@@ -3552,7 +3548,7 @@ const struct proc_class proc_class_pic14e = {
   _vector_table_pic14,                  /* vector_table */
   TABLE_SIZE(_vector_table_pic14),      /* vector_number */
   _id_location_pic14,                   /* id_location */
-  _check_bank_pic14e,                   /* check_bank */
+  _bank_from_addr_pic14e,               /* bank_from_addr */
   _set_bank_pic14e,                     /* set_bank */
   _banksel_byte_length_pic14e,          /* banksel_byte_length */
   _check_ibank_pic14e,                  /* check_ibank */
@@ -3561,7 +3557,7 @@ const struct proc_class proc_class_pic14e = {
   _set_page_pic14e,                     /* set_page */
   _pagesel_byte_length_pic14e,          /* pagesel_byte_length */
   _page_addr_pic14e,                    /* page_addr */
-  _page_bits_to_addr_pic14e,            /* page_bits_to_addr */
+  _addr_from_page_bits_pic14e,          /* addr_from_page_bits */
   _reloc_call_pic14,                    /* reloc_call */
   _reloc_goto_pic14,                    /* reloc_goto */
   _reloc_f_pic14,                       /* reloc_f */
@@ -3598,7 +3594,7 @@ const struct proc_class proc_class_pic14ex = {
   _vector_table_pic14,                  /* vector_table */
   TABLE_SIZE(_vector_table_pic14),      /* vector_number */
   _id_location_pic14,                   /* id_location */
-  _check_bank_pic14ex,                  /* check_bank */
+  _bank_from_addr_pic14ex,              /* bank_from_addr */
   _set_bank_pic14ex,                    /* set_bank */
   _banksel_byte_length_pic14e,          /* banksel_byte_length */
   _check_ibank_pic14e,                  /* check_ibank */
@@ -3607,7 +3603,7 @@ const struct proc_class proc_class_pic14ex = {
   _set_page_pic14e,                     /* set_page */
   _pagesel_byte_length_pic14e,          /* pagesel_byte_length */
   _page_addr_pic14e,                    /* page_addr */
-  _page_bits_to_addr_pic14e,            /* page_bits_to_addr */
+  _addr_from_page_bits_pic14e,          /* addr_from_page_bits */
   _reloc_call_pic14,                    /* reloc_call */
   _reloc_goto_pic14,                    /* reloc_goto */
   _reloc_f_pic14,                       /* reloc_f */
@@ -3644,16 +3640,16 @@ const struct proc_class proc_class_pic16 = {
   _vector_table_pic16,                  /* vector_table */
   TABLE_SIZE(_vector_table_pic16),      /* vector_number */
   NULL,                                 /* id_location */
-  _check_bank_pic16,                    /* check_bank */
+  _bank_from_addr_pic16,                /* bank_from_addr */
   _set_bank_pic16,                      /* set_bank */
   _banksel_byte_length_pic16,           /* banksel_byte_length */
-  _check_bank_pic16,                    /* check_ibank: same as check_bank */
+  _bank_from_addr_pic16,                /* check_ibank: same as bank_from_addr */
   _set_bank_pic16,                      /* set_ibank: same as set_bank */
   _check_page_pic16,                    /* check_page */
   _set_page_pic16,                      /* set_page */
   _pagesel_byte_length_pic16,           /* pagesel_byte_length */
   _page_addr_pic16,                     /* page_addr */
-  _page_bits_to_addr_pic16,             /* page_bits_to_addr */
+  _addr_from_page_bits_pic16,           /* addr_from_page_bits */
   _reloc_call_pic16,                    /* reloc_call */
   _reloc_goto_pic16,                    /* reloc_goto */
   _reloc_f_pic16,                       /* reloc_f */
@@ -3690,16 +3686,16 @@ const struct proc_class proc_class_pic16e = {
   _vector_table_pic16e,                 /* vector_table */
   TABLE_SIZE(_vector_table_pic16e),     /* vector_number */
   _id_location_pic16e,                  /* id_location */
-  _check_bank_pic16,                    /* check_bank: Same as for pic16 */
+  _bank_from_addr_pic16,                /* bank_from_addr: Same as for pic16 */
   _set_bank_pic16e,                     /* set_bank */
   _banksel_byte_length_pic16,           /* banksel_byte_length */
-  _check_xbank_unsupported,             /* check_ibank */
+  _xbank_from_addr_unsupported,         /* check_ibank */
   _set_xbank_unsupported,               /* set_ibank */
   _check_page_unsupported,              /* check_page */
   _set_page_unsupported,                /* set_page */
   _pagesel_byte_length_unsupported,     /* pagesel_byte_length */
   _page_addr_unsupported,               /* page_addr */
-  _page_bits_to_addr_unsupported,       /* page_bits_to_addr */
+  _addr_from_page_bits_unsupported,     /* addr_from_page_bits */
   _reloc_call_pic16e,                   /* reloc_call */
   _reloc_goto_pic16e,                   /* reloc_goto */
   _reloc_f_pic16,                       /* reloc_f: same as for pic16 */

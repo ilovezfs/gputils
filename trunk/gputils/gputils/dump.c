@@ -419,8 +419,8 @@ dump_memmap(proc_class_t class, gp_boolean make_list)
             start_addr = _64k_base + first_offset;
             end_addr   = _64k_base + last_offset + 1;
             printf("using ROM %0*x to %0*x\n",
-                   addr_digits, gp_processor_byte_to_org(class, start_addr),
-                   addr_digits, gp_processor_byte_to_org(class, end_addr) - 1);
+                   addr_digits, gp_processor_insn_from_byte_c(class, start_addr),
+                   addr_digits, gp_processor_insn_from_byte_c(class, end_addr) - 1);
 
             if (make_list) {
               _memmap_add(start_addr, end_addr);
@@ -569,7 +569,7 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
 
             if (! empty_line) {
               byte_address = _64k_base + (k * COD_BLOCK_N_WORDS + i) * WORD_SIZE;
-              printf("%0*x: ", addr_digits, gp_processor_byte_to_org(class, byte_address));
+              printf("%0*x: ", addr_digits, gp_processor_insn_from_byte_c(class, byte_address));
 
               for (j = 0; j < column_num; j++) {
                 if (used_map[(i + j) * WORD_SIZE]) {
@@ -605,7 +605,7 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
 
             if (! empty_line) {
               byte_address = _64k_base + (k * COD_BLOCK_N_WORDS + i) * WORD_SIZE;
-              printf("%0*x: ", addr_digits, gp_processor_byte_to_org(class, byte_address));
+              printf("%0*x: ", addr_digits, gp_processor_insn_from_byte_c(class, byte_address));
 
               for (j = 0; j < column_num; j++) {
                 printf(" %04x", gp_getu16(&temp[(i + j) * WORD_SIZE]));
@@ -650,7 +650,7 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
 
             num_words = gp_disassemble(data, byte_address, class, bsr_boundary, 0,
                                        GPDIS_SHOW_ALL_BRANCH, buffer, sizeof(buffer), 0);
-            printf("%0*x:  %04x  %s\n", addr_digits, gp_processor_byte_to_org(class, byte_address), word, buffer);
+            printf("%0*x:  %04x  %s\n", addr_digits, gp_processor_insn_from_byte_c(class, byte_address), word, buffer);
 
             if (num_words != 1) {
               if (class->i_memory_get(data, byte_address + WORD_SIZE, &word, NULL, NULL) != W_USED_ALL) {
@@ -658,7 +658,7 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
                 assert(0);
               }
 
-              printf("%0*x:  %04x\n", addr_digits, gp_processor_byte_to_org(class, byte_address + WORD_SIZE), word);
+              printf("%0*x:  %04x\n", addr_digits, gp_processor_insn_from_byte_c(class, byte_address + WORD_SIZE), word);
             }
 
             empty_signal = false;
@@ -1090,8 +1090,8 @@ dump_local_vars(proc_class_t proc_class)
             stop  = gp_getl32(&sh[COD_SSYMBOL_STOP]);
 
             printf("Local symbols between %06x and %06x:  ",
-                   gp_processor_byte_to_org(proc_class, start),
-                   gp_processor_byte_to_org(proc_class, stop + 1) - 1);
+                   gp_processor_insn_from_byte_c(proc_class, start),
+                   gp_processor_insn_from_byte_c(proc_class, stop + 1) - 1);
           }
           else {
             printf("%.12s = %04x, type = %s\n", &sh[COD_SSYMBOL_NAME],

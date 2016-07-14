@@ -424,7 +424,7 @@ _mark_false_addresses(MemBlock_t *memory)
 
     insn_size = 2;
     while (i < maximum) {
-      org = gp_processor_byte_to_real(state.processor, i);
+      org = gp_processor_insn_from_byte_p(state.processor, i);
 
       if (gp_processor_is_idlocs_org(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
@@ -496,7 +496,7 @@ _recognize_labels_and_spec_words(MemBlock_t *memory)
 
     insn_size = 2;
     while (i < maximum) {
-      org = gp_processor_byte_to_real(state.processor, i);
+      org = gp_processor_insn_from_byte_p(state.processor, i);
 
       if ((index = gp_processor_is_idlocs_org(state.processor, org)) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
@@ -681,7 +681,7 @@ _recognize_registers(MemBlock_t *memory)
 
     insn_size = 2;
     while (i < maximum) {
-      org = gp_processor_byte_to_real(state.processor, i);
+      org = gp_processor_insn_from_byte_p(state.processor, i);
 
       if (gp_processor_is_idlocs_org(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
@@ -1179,7 +1179,7 @@ _dasm(MemBlock_t *memory)
 
     insn_size = 2;
     while (i < maximum) {
-      org = gp_processor_byte_to_real(state.processor, i);
+      org = gp_processor_insn_from_byte_p(state.processor, i);
 
       if ((offset = gp_processor_is_idlocs_org(state.processor, org)) >= 0) {
         /* This is idlocs word/bytes. Not need disassemble. */
@@ -1444,7 +1444,7 @@ _dasm(MemBlock_t *memory)
               /* Some 18xx instructions use two words. */
               if (state.format) {
                 state.class->i_memory_get(m, i + 2, &data, NULL, NULL);
-                _ux_print(true, "%0*x:  %0*x", addr_digits, gp_processor_byte_to_real(state.processor, i + 2),
+                _ux_print(true, "%0*x:  %0*x", addr_digits, gp_processor_insn_from_byte_p(state.processor, i + 2),
                           word_digits, (unsigned int)data);
                 prev_empty_line = false;
               }

@@ -279,7 +279,7 @@ eval_evaluate(const pnode_t *Pnode)
     case PTAG_SYMBOL: {
       if (strcmp(PnSymbol(Pnode), "$") == 0) {
         return (IS_RAM_ORG ? state.byte_addr :
-                             gp_processor_byte_to_real(state.processor, state.byte_addr));
+                             gp_processor_insn_from_byte_p(state.processor, state.byte_addr));
       }
 
       sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
@@ -565,7 +565,7 @@ eval_count_reloc(const pnode_t *Pnode)
    [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offs>]) */
 
 static gpasmVal
-_add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
+_add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type, gp_boolean Add_coff)
 {
   const symbol_t     *sym;
   const variable_t   *var;
@@ -576,7 +576,7 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
 
   switch (Pnode->tag) {
     case PTAG_OFFSET:
-      return _add_reloc(PnOffset(Pnode), Offset, Type);
+      return _add_reloc(PnOffset(Pnode), Offset, Type, Add_coff);
       break;
 
     case PTAG_SYMBOL: {
@@ -588,7 +588,7 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
         }
         else {
           digits = state.device.class->addr_digits;
-          org    = gp_processor_byte_to_real(state.processor, state.byte_addr);
+          org    = gp_processor_insn_from_byte_p(state.processor, state.byte_addr);
           type   = VAL_ADDRESS;
         }
 
@@ -612,10 +612,13 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
             case VAL_EXTERNAL:
             case VAL_GLOBAL:
             case VAL_STATIC:
-            case VAL_ADDRESS:
-              coff_reloc(var->coff_symbol_num, Offset, Type);
+            case VAL_ADDRESS: {
+              if (Add_coff) {
+                coff_reloc(var->coff_symbol_num, Offset, Type);
+              }
               return ((var->coff_section_flags & STYP_ABS) ? var->value : -1);
               break;
+            }
 
             default:
               return -1;
@@ -630,13 +633,13 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
     case PTAG_UNOP: {
       switch (PnUnOpOp(Pnode)) {
         case UPPER:
-          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOCT_UPPER);
+          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOCT_UPPER, Add_coff);
 
         case HIGH:
-          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOCT_HIGH);
+          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOCT_HIGH, Add_coff);
 
         case LOW:
-          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOCT_LOW);
+          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOCT_LOW, Add_coff);
 
         case '!':
         case '+':
@@ -659,10 +662,10 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
         case '+': {
           /* The symbol can be in either position. */
           if (eval_count_reloc(PnBinOpP0(Pnode)) == 1) {
-            return _add_reloc(PnBinOpP0(Pnode), Offset + eval_maybe_evaluate(PnBinOpP1(Pnode)), Type);
+            return _add_reloc(PnBinOpP0(Pnode), Offset + eval_maybe_evaluate(PnBinOpP1(Pnode)), Type, Add_coff);
           }
           else {
-            return _add_reloc(PnBinOpP1(Pnode), Offset + eval_maybe_evaluate(PnBinOpP0(Pnode)), Type);
+            return _add_reloc(PnBinOpP1(Pnode), Offset + eval_maybe_evaluate(PnBinOpP0(Pnode)), Type, Add_coff);
           }
 
           break;
@@ -671,7 +674,7 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type)
         case '-': {
           /* The symbol has to be first. */
           if (eval_count_reloc(PnBinOpP0(Pnode)) == 1) {
-            return _add_reloc(PnBinOpP0(Pnode), Offset - eval_maybe_evaluate(PnBinOpP1(Pnode)), Type);
+            return _add_reloc(PnBinOpP0(Pnode), Offset - eval_maybe_evaluate(PnBinOpP1(Pnode)), Type, Add_coff);
           }
           else {
             gpmsg_verror(GPE_UNRESOLVABLE, NULL);
@@ -775,7 +778,8 @@ _same_section(const pnode_t *Pnode)
 /*------------------------------------------------------------------------------------------------*/
 
 gpasmVal
-eval_reloc_evaluate(const pnode_t *Pnode, uint16_t Type, gp_boolean *Is_reloc, gpasmVal *Reloc_value)
+eval_reloc_evaluate(const pnode_t *Pnode, uint16_t Type, gp_boolean *Is_reloc, gpasmVal *Reloc_value,
+                    gp_boolean Add_coff)
 {
   int      count;
   gpasmVal value;
@@ -811,7 +815,7 @@ eval_reloc_evaluate(const pnode_t *Pnode, uint16_t Type, gp_boolean *Is_reloc, g
   }
 
   /* add the coff relocation */
-  value = _add_reloc(Pnode, 0, Type);
+  value = _add_reloc(Pnode, 0, Type, Add_coff);
 
   if (Is_reloc != NULL) {
     *Is_reloc = true;
@@ -839,5 +843,5 @@ eval_fill_number(const pnode_t *Pnode)
     gpmsg_verror(GPE_FILL_ODD, NULL);
   }
 
-  return (gp_processor_org_to_byte(state.device.class, number) >> 1);
+  return (gp_processor_byte_from_insn_c(state.device.class, number) >> 1);
 }

@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 13
+2016 Jul 14
 \end_layout
 
 \begin_layout Standard
@@ -6072,6 +6072,43 @@ See also: __BADROM
 \end_layout
 
 \begin_layout Subsection*
+ASSUME
+\begin_inset Index idx
+status collapsed
+
+\begin_layout Plain Layout
+ASSUME
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+ASSUME <label>
+\end_layout
+
+\begin_layout Standard
+This is a helper directive for advanced users.
+ It tells the compiler which bank will be the default.
+ This directive does not create any code, rather helps eliminate the unnecessary
+ and confusing bank warnings.
+ Worth using is primarily in the absolute mode.
+ This directive can not be used in 
+\begin_inset Quotes eld
+\end_inset
+
+mpasm compatible
+\begin_inset Quotes erd
+\end_inset
+
+ mode! 
+\series bold
+This directive for now experimental.
+\end_layout
+
+\begin_layout Subsection*
 BANKISEL
 \begin_inset Index idx
 status collapsed
@@ -6106,7 +6143,7 @@ See also: BANKSEL, PAGESEL
 \begin_layout Subsection*
 BANKSEL
 \begin_inset Index idx
-status open
+status collapsed
 
 \begin_layout Plain Layout
 BANKSEL
@@ -6137,7 +6174,7 @@ See also: BANKISEL, PAGESEL
 \begin_layout Subsection*
 CONFIG
 \begin_inset Index idx
-status open
+status collapsed
 
 \begin_layout Plain Layout
 CONFIG
@@ -6181,7 +6218,7 @@ See also: __CONFIG
 \begin_layout Subsection*
 CBLOCK
 \begin_inset Index idx
-status open
+status collapsed
 
 \begin_layout Plain Layout
 CBLOCK
@@ -6219,7 +6256,7 @@ See also: EQU
 \begin_layout Subsection*
 CODE
 \begin_inset Index idx
-status open
+status collapsed
 
 \begin_layout Plain Layout
 CODE
@@ -6258,7 +6295,7 @@ See also: IDATA, UDATA, CODE_PACK
 \begin_layout Subsection*
 CODE_PACK
 \begin_inset Index idx
-status open
+status collapsed
 
 \begin_layout Plain Layout
 CODE
@@ -6328,7 +6365,7 @@ CONSTANT <label>=<expression> [, <label>=<expression>]*
 \begin_layout Standard
 Permanently assigns the value obtained by evaluating <expression> to thesymbol
  <label>.
- Similar to SET and VARIABLE, except it can not be changed once assigned.
+ Similar to SET and VARIABLE, except it can not be changed if once assigned.
 \end_layout
 
 \begin_layout Standard
@@ -6786,7 +6823,7 @@ EQU
 \begin_layout Standard
 Permanently assigns the value obtained by evaluating <expression> to the
  symbol <label>.
- Similar to SET and VARIABLE, except it can not be changed once assigned.
+ Similar to SET and VARIABLE, except it can not be changed if once assigned.
 \end_layout
 
 \begin_layout Standard
@@ -6836,7 +6873,8 @@ ERRORLEVEL
 \end_layout
 
 \begin_layout LyX-Code
-ERRORLEVEL {0 | 1 | 2 | +<msgnum> | -<msgnum>}[, ...]
+ERRORLEVEL {0 | 1 | 2 | +<msgnum> | +<msgnum0-msgnum1> | -<msgnum> | -<msgnum0-m
+sgnum1>}[, ...]
 \end_layout
 
 \begin_layout Standard
@@ -8037,7 +8075,7 @@ See also: LIST
 \begin_layout Subsection*
 RADIX
 \begin_inset Index idx
-status open
+status collapsed
 
 \begin_layout Plain Layout
 RADIX
@@ -8532,7 +8570,7 @@ absolute
 \begin_inset Text
 
 \begin_layout Plain Layout
-Absolute symbol keyword 
+Absolute symbol keyword.
 \end_layout
 
 \end_inset
@@ -8552,7 +8590,7 @@ class=nnn
 \begin_inset Text
 
 \begin_layout Plain Layout
-Sets the symbol class (byte sized)
+Sets the symbol class (byte sized).
 \end_layout
 
 \end_inset
@@ -8572,7 +8610,7 @@ debug
 \begin_inset Text
 
 \begin_layout Plain Layout
-Debug symbol keyword 
+Debug symbol keyword.
 \end_layout
 
 \end_inset
@@ -8592,7 +8630,7 @@ extern
 \begin_inset Text
 
 \begin_layout Plain Layout
-External symbol keyword
+External symbol keyword.
 \end_layout
 
 \end_inset
@@ -8612,7 +8650,7 @@ global
 \begin_inset Text
 
 \begin_layout Plain Layout
-Global symbol keyword
+Global symbol keyword.
 \end_layout
 
 \end_inset
@@ -8632,7 +8670,7 @@ size=nnn
 \begin_inset Text
 
 \begin_layout Plain Layout
-Reserve words or bytes for the symbol
+Reserve words or bytes for the symbol.
 \end_layout
 
 \end_inset
@@ -8652,7 +8690,7 @@ static
 \begin_inset Text
 
 \begin_layout Plain Layout
-Static Symbol keyword
+Static Symbol keyword.
 \end_layout
 
 \end_inset
@@ -8672,7 +8710,7 @@ type=nnn
 \begin_inset Text
 
 \begin_layout Plain Layout
-Sets the symbol type (short sized)
+Sets the symbol type (short sized).
 \end_layout
 
 \end_inset
@@ -8692,7 +8730,7 @@ value=nnn
 \begin_inset Text
 
 \begin_layout Plain Layout
-Sets the symbol value
+Sets the symbol value.
 \end_layout
 
 \end_inset
@@ -8876,7 +8914,7 @@ a
 \begin_inset Text
 
 \begin_layout Plain Layout
-User defined assert
+User defined assert.
 \end_layout
 
 \end_inset
@@ -8896,7 +8934,7 @@ A
 \begin_inset Text
 
 \begin_layout Plain Layout
-Assembler/Compiler defined assert
+Assembler/Compiler defined assert.
 \end_layout
 
 \end_inset
@@ -8916,7 +8954,7 @@ e
 \begin_inset Text
 
 \begin_layout Plain Layout
-User defined emulator commands
+User defined emulator commands.
 \end_layout
 
 \end_inset
@@ -8936,7 +8974,7 @@ E
 \begin_inset Text
 
 \begin_layout Plain Layout
-Assembler/Compiler defined emulator commands
+Assembler/Compiler defined emulator commands.
 \end_layout
 
 \end_inset
@@ -8956,7 +8994,7 @@ f
 \begin_inset Text
 
 \begin_layout Plain Layout
-User defined printf
+User defined printf.
 \end_layout
 
 \end_inset
@@ -8976,7 +9014,7 @@ F
 \begin_inset Text
 
 \begin_layout Plain Layout
-Assembler/Compiler defined printf
+Assembler/Compiler defined printf.
 \end_layout
 
 \end_inset
@@ -8996,7 +9034,7 @@ l
 \begin_inset Text
 
 \begin_layout Plain Layout
-User defined log command
+User defined log command.
 \end_layout
 
 \end_inset
@@ -9016,7 +9054,7 @@ L
 \begin_inset Text
 
 \begin_layout Plain Layout
-Assembler/Compiler/Code verification generated log command
+Assembler/Compiler/Code verification generated log command.
 \end_layout
 
 \end_inset

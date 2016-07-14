@@ -236,7 +236,7 @@ _page_addr_from_insn_addr(proc_class_t Class, uint32_t Insn_addr)
 static uint32_t
 _page_addr_from_byte_addr(proc_class_t Class, uint32_t Byte_addr)
 {
-  return gp_processor_page_addr(Class, gp_processor_byte_to_org(Class, Byte_addr));
+  return gp_processor_page_addr(Class, gp_processor_insn_from_byte_c(Class, Byte_addr));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -395,7 +395,7 @@ _sections_decrease_start_address(proc_class_t Class, const gp_section_t *Section
     /* Prevents the modification of sections on other pages. */
     if (section->address > Section->address) {
       byte_address = section->address - Byte_offset;
-      insn_address = gp_processor_byte_to_org(Class, byte_address);
+      insn_address = gp_processor_insn_from_byte_c(Class, byte_address);
       gp_mem_b_move(section->data, section->address, byte_address, section->size);
       section->address = byte_address;
 
@@ -561,7 +561,7 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
     assert(0);
   }
 
-  reloc_insn_addr = gp_processor_byte_to_org(Class, reloc_byte_addr);
+  reloc_insn_addr = gp_processor_insn_from_byte_c(Class, reloc_byte_addr);
   reloc_page      = gp_processor_page_addr(Class, reloc_insn_addr);
   target_page     = gp_processor_page_addr(Class, value);
 
@@ -704,7 +704,7 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
   }
 
   reloc_pipe[0].reloc_byte_length = reloc_byte_length;
-  reloc_pipe[0].reloc_insn_length = gp_processor_byte_to_org(Class, reloc_byte_length);
+  reloc_pipe[0].reloc_insn_length = gp_processor_insn_from_byte_c(Class, reloc_byte_length);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -912,7 +912,7 @@ gp_coffopt_remove_unnecessary_pagesel(gp_object_t *Object)
     if (gp_writeobj_has_data(section)) {
       num_sections  = 0;
       section_array = gp_coffgen_make_section_array(Object, &num_sections,
-                              gp_processor_page_addr(class, gp_processor_byte_to_org(class, section->address)),
+                              gp_processor_page_addr(class, gp_processor_insn_from_byte_c(class, section->address)),
                               STYP_ROM_AREA);
       _label_arrays_make(class);
 
@@ -963,7 +963,7 @@ _banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section
 
   symbol          = Relocation->symbol;
   reloc_byte_addr = Section->address + Relocation->address;
-  reloc_insn_addr = gp_processor_byte_to_org(Class, reloc_byte_addr);
+  reloc_insn_addr = gp_processor_insn_from_byte_c(Class, reloc_byte_addr);
   value           = Relocation->offset + (uint32_t)symbol->value;
 
   reloc_page      = gp_processor_page_addr(Class, reloc_insn_addr);
@@ -1077,7 +1077,7 @@ _banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section
     reloc_pipe[0].reloc_byte_addr   = reloc_byte_addr;
     reloc_pipe[0].reloc_insn_addr   = reloc_insn_addr;
     reloc_pipe[0].reloc_byte_length = reloc_byte_length;
-    reloc_pipe[0].reloc_insn_length = gp_processor_byte_to_org(Class, reloc_byte_length);
+    reloc_pipe[0].reloc_insn_length = gp_processor_insn_from_byte_c(Class, reloc_byte_length);
     reloc_pipe[0].ram_bank          = ram_bank;
 
     if (!first_banksel) {
@@ -1187,7 +1187,7 @@ gp_coffopt_remove_unnecessary_banksel(gp_object_t *Object)
     if (gp_writeobj_has_data(section)) {
       num_sections  = 0;
       section_array = gp_coffgen_make_section_array(Object, &num_sections,
-                              gp_processor_page_addr(class, gp_processor_byte_to_org(class, section->address)),
+                              gp_processor_page_addr(class, gp_processor_insn_from_byte_c(class, section->address)),
                               STYP_ROM_AREA);
       _label_arrays_make(class);
       reloc_curr = section->relocation_list.first;

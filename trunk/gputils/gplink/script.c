@@ -434,7 +434,7 @@ _do_secdef(const char *name, enum section_type type, const pnode_t *parms)
     sym = gp_sym_get_symbol(state.section.definition, section_name);
 
     if (sym == NULL) {
-      sym = gp_sym_add_symbol(state.section.definition, section_name);
+      sym         = gp_sym_add_symbol(state.section.definition, section_name);
       section_def = (struct linker_section *)GP_Calloc(1, sizeof(struct linker_section));
       gp_sym_annotate_symbol(sym, section_def);
 
@@ -446,8 +446,8 @@ _do_secdef(const char *name, enum section_type type, const pnode_t *parms)
         break;
 
       case SECT_CODEPAGE:
-        start = gp_processor_org_to_byte(state.class, start);
-        end = gp_processor_org_to_byte(state.class, end + 1) - 1;
+        start = gp_processor_byte_from_insn_c(state.class, start);
+        end   = gp_processor_byte_from_insn_c(state.class, end + 1) - 1;
         break;
 
       case SECT_NONE:

@@ -259,7 +259,7 @@ _write_source(int last_line)
             if (len != 0) {
               gp_mem_b_assert_get(line_section->data, org, &byte, NULL, NULL);
               gp_disassemble_byte(line_section->data, org, dasmbuf, sizeof(dasmbuf));
-              _lst_line("%06lx   %02x       %-24s %s", gp_processor_byte_to_org(state.class, org),
+              _lst_line("%06lx   %02x       %-24s %s", gp_processor_insn_from_byte_c(state.class, org),
                         (unsigned int)byte, _expand_tabs(dasmbuf), linebuf);
               gp_mem_b_set_listed(line_section->data, org, 1);
               state.lst.was_byte_addr = org;
@@ -273,7 +273,7 @@ _write_source(int last_line)
                                             gp_processor_bsr_boundary(state.processor),
                                             state.processor->prog_mem_size, GPDIS_SHOW_ALL_BRANCH,
                                             dasmbuf, sizeof(dasmbuf), len);
-            _lst_line("%06lx   %04x     %-24s %s", gp_processor_byte_to_org(state.class, org),
+            _lst_line("%06lx   %04x     %-24s %s", gp_processor_insn_from_byte_c(state.class, org),
                       word, _expand_tabs(dasmbuf), linebuf);
             gp_mem_b_set_listed(line_section->data, org, num_bytes);
             state.lst.was_byte_addr = org;
@@ -283,7 +283,7 @@ _write_source(int last_line)
             if (num_bytes > 2) {
               state.lst.was_byte_addr = org;
               state.class->i_memory_get(line_section->data, org, &word, NULL, NULL);
-              _lst_line("%06lx   %04x", gp_processor_byte_to_org(state.class, org), word);
+              _lst_line("%06lx   %04x", gp_processor_insn_from_byte_c(state.class, org), word);
               cod_lst_line(COD_NORMAL_LST_LINE);
               org += 2;
 

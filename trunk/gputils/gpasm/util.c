@@ -821,7 +821,7 @@ pnode_symbol_value(const pnode_t *Pnode)
   if (PnIsSymbol(Pnode)) {
     if (strcmp(PnSymbol(Pnode), "$") == 0) {
       addr = (IS_RAM_ORG ? state.byte_addr :
-                           gp_processor_byte_to_real(state.processor, state.byte_addr));
+                           gp_processor_insn_from_byte_p(state.processor, state.byte_addr));
       return addr;
     }
     else {

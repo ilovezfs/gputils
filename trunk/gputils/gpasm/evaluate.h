@@ -35,7 +35,7 @@ extern gpasmVal eval_maybe_evaluate(const struct pnode *Pnode);
 
 extern int eval_count_reloc(const struct pnode *Pnode);
 extern gpasmVal eval_reloc_evaluate(const struct pnode *Pnode, uint16_t Type,
-                                    gp_boolean *Is_reloc, gpasmVal *Reloc_value);
+                                    gp_boolean *Is_reloc, gpasmVal *Reloc_value, gp_boolean Add_coff);
 
 extern int eval_fill_number(const struct pnode *Pnode);
 

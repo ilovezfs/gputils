@@ -213,8 +213,8 @@ gp_symbol_make_label_array(gp_section_t *Section, unsigned int Org_to_byte_shift
     return NULL;
   }
 
-  start_addr = gp_byte_to_org(Org_to_byte_shift, Section->address);
-  end_addr   = start_addr + gp_byte_to_org(Org_to_byte_shift, Section->size);
+  start_addr = gp_insn_from_byte(Org_to_byte_shift, Section->address);
+  end_addr   = start_addr + gp_insn_from_byte(Org_to_byte_shift, Section->size);
 
   n_labels = 0;
   symbol   = Section->symbol;

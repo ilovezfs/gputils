@@ -224,7 +224,7 @@ struct proc_class {
   unsigned int        (*id_location)(const struct px *processor);
 
   /* Determine which bank of data memory the address is located. */
-  unsigned int        (*check_bank)(unsigned int address);
+  unsigned int        (*bank_from_addr)(unsigned int address);
 
   /* Set the bank bits, return the number of instructions required. */
   unsigned int        (*set_bank)(unsigned int num_banks, unsigned int bank, MemBlock_t *m,
@@ -250,7 +250,7 @@ struct proc_class {
 
   unsigned int        (*page_addr)(unsigned int insn_address);
 
-  unsigned int        (*page_bits_to_addr)(unsigned int bits);
+  unsigned int        (*addr_from_page_bits)(unsigned int bits);
 
   /* These return the bits to set in instruction for given address. */
   unsigned int        (*reloc_call)(unsigned int insn_address);
@@ -395,13 +395,13 @@ extern const char *gp_processor_header(pic_processor_t processor);
 extern const char *gp_processor_script(pic_processor_t processor);
 extern unsigned int gp_processor_id_location(pic_processor_t processor);
 
-extern int gp_org_to_byte(unsigned int shift, int insn_address);
-extern int gp_byte_to_org(unsigned int shift, int byte_address);
+extern int gp_byte_from_insn(unsigned int shift, int insn_address);
+extern int gp_insn_from_byte(unsigned int shift, int byte_address);
 
 extern int gp_processor_reg_offs(pic_processor_t processor, int address);
 extern int gp_processor_bank_addr(pic_processor_t processor, int address);
 extern int gp_processor_bank_num(pic_processor_t processor, int address);
-extern int gp_processor_bank_num_to_addr(pic_processor_t processor, int number);
+extern int gp_processor_addr_from_bank_num(pic_processor_t processor, int number);
 
 extern const int *gp_processor_common_ram_exist(pic_processor_t processor);
 extern int gp_processor_is_common_ram_addr(pic_processor_t processor, int address);
@@ -426,7 +426,7 @@ extern int gp_processor_is_eeprom_org(pic_processor_t processor, int org);
 extern int gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address);
 
 extern unsigned int gp_processor_rom_width(proc_class_t class);
-extern unsigned int gp_processor_check_bank(proc_class_t class, unsigned int address);
+extern unsigned int gp_processor_bank_from_addr(proc_class_t class, unsigned int address);
 
 extern unsigned int gp_processor_set_bank(proc_class_t class, unsigned int num_banks,
                                           unsigned int bank, MemBlock_t *m, unsigned int byte_address);
@@ -443,15 +443,15 @@ extern unsigned int gp_processor_set_page(proc_class_t class, unsigned int num_p
 
 extern unsigned int gp_processor_page_addr(proc_class_t class, unsigned int insn_address);
 
-extern unsigned int gp_processor_page_bits_to_addr(proc_class_t class, unsigned int bits);
+extern unsigned int gp_processor_addr_from_page_bits(proc_class_t class, unsigned int bits);
 
 extern unsigned int gp_processor_retlw(proc_class_t class);
 
-extern int gp_processor_org_to_byte(proc_class_t class, int insn_address);
-extern int gp_processor_real_to_byte(pic_processor_t processor, int insn_address);
+extern int gp_processor_byte_from_insn_c(proc_class_t class, int insn_address);
+extern int gp_processor_byte_from_insn_p(pic_processor_t processor, int insn_address);
 
-extern int gp_processor_byte_to_org(proc_class_t class, int byte_address);
-extern int gp_processor_byte_to_real(pic_processor_t processor, int byte_address);
+extern int gp_processor_insn_from_byte_c(proc_class_t class, int byte_address);
+extern int gp_processor_insn_from_byte_p(pic_processor_t processor, int byte_address);
 
 extern const core_sfr_t *gp_processor_find_sfr(proc_class_t class, unsigned int address);
 extern const char *gp_processor_find_sfr_name(proc_class_t class, unsigned int address);
