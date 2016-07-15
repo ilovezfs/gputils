@@ -39,11 +39,14 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
-#define STRINGIFY(s) _str(s)
-#define _str(s) #s
+#define STRINGIFY(s)            _str(s)
+#define _str(s)                 #s
 
-#define IS_EEPROM (IS_EEPROM8 || IS_EEPROM16)
-#define IS_BYTE   (IS_PIC16E_CORE || IS_EEPROM)
+#define IS_EEPROM               (IS_EEPROM8 || IS_EEPROM16)
+#define IS_BYTE                 (IS_PIC16E_CORE || IS_EEPROM)
+
+#define MEM_USED_CHAR           'X'
+#define MEM_UNUSED_CHAR         '-'
 
 typedef struct {
   const symbol_t *sym;
@@ -112,6 +115,16 @@ _lst_printf(const char *Format, ...)
 
   assert(r >= 0);
   return (unsigned int)r;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_lst_putc(char Ch)
+{
+  if (state.lst.f != NULL) {
+    putc(Ch, state.lst.f);
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -658,7 +671,7 @@ lst_init(void)
     state.lst.expand = true;
   }
 
-  state.lst.force = (state.cmd_line.lst_force) ? true : false;
+  state.lst.force            = state.cmd_line.lst_force;
   state.lst.config_address   = 0;
   state.lst.title_name[0]    = '\0';
   state.lst.subtitle_name[0] = '\0';
@@ -705,6 +718,7 @@ lst_close(void)
     putc('\f', state.lst.f);
 
     fclose(state.lst.f);
+    state.lst.f = NULL;
   }
 }
 
@@ -738,6 +752,15 @@ lst_throw(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
+_mem_header(void)
+{
+  lst_line("LOC    OBJECT CODE    LINE  SOURCE TEXT");
+  lst_line("  VALUE");
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
 _symbol_table_header(void)
 {
   lst_line("SYMBOL TABLE");
@@ -753,18 +776,29 @@ _symbol_table_header(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
+static void
+_memory_map_header(void)
+{
+  lst_line("MEMORY USAGE MAP ('%c' = Used,  '%c' = Unused)", MEM_USED_CHAR, MEM_UNUSED_CHAR);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
 lst_page_start(void)
 {
   lst_throw();
   switch (state.lst.lst_state) {
     case LST_IN_MEM:
-      lst_line("LOC    OBJECT CODE    LINE  SOURCE TEXT");
-      lst_line("  VALUE");
+      _mem_header();
       break;
 
     case LST_IN_SYMTAB:
       _symbol_table_header();
+      break;
+
+    case LST_IN_MAP:
+      _memory_map_header();
       break;
 
     default:
@@ -808,44 +842,54 @@ lst_err_line(const char *Type, unsigned int Code, const char *Format, va_list Ar
 
 /*------------------------------------------------------------------------------------------------*/
 
+#define MEM_IS_USED(M, I)  \
+        (((M)->memory != NULL) ? (IS_BYTE ? (gp_mem_b_offset_is_used(M, I)) : \
+                                            (gp_mem_i_offset_is_used(M, (I) * 2) == W_USED_ALL)) : false)
+
+#define NUM_PER_LINE            64
+#define NUM_PER_BLOCK           16
+
 void
 lst_memory_map(MemBlock_t *M)
 {
-#define MEM_IS_USED(m, i)  (((m)->memory != NULL) ? (IS_BYTE ? ((m)->memory[i].data & BYTE_USED_MASK) : (((m)->memory[2 * (i)].data & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1].data & BYTE_USED_MASK))) : 0)
-
-  int          i;
-  int          j;
-  int          base;
-  gp_boolean   row_used;
-  int          num_per_line;
-  int          num_per_block;
   unsigned int max_mem;
+  unsigned int base;
+  unsigned int i;
+  unsigned int j;
   int          addr_digits;
+  gp_boolean   row_is_used;
+  char         row_map[NUM_PER_LINE];
+  char         ch;
+  unsigned int used;
 
+  state.lst.lst_state = LST_IN_MAP;
   lst_line(NULL);
   lst_line(NULL);
-  lst_line("MEMORY USAGE MAP ('X' = Used,  '-' = Unused)");
+  _memory_map_header();
   lst_line(NULL);
 
-  num_per_line  = 64;
-  num_per_block = 16;
-  addr_digits   = (state.device.class != NULL) ? state.device.class->addr_digits : 4;
+  addr_digits = (state.device.class != NULL) ? state.device.class->addr_digits : 4;
 
   while (M != NULL) {
     max_mem = I_MEM_MAX >> !IS_BYTE;
     base    = IMemAddrFromBase(M->base) >> !IS_BYTE;
 
-    for (i = 0; i < max_mem; i += num_per_line) {
-      row_used = false;
+    for (i = 0; i < max_mem; i += NUM_PER_LINE) {
+      row_is_used = false;
 
-      for (j = 0; j < num_per_line; j++) {
+      for (j = 0; j < NUM_PER_LINE; j++) {
         if (MEM_IS_USED(M, i + j)) {
-          row_used = true;
-          break;
+          ch = MEM_USED_CHAR;
+          row_is_used = true;
         }
+        else {
+          ch = MEM_UNUSED_CHAR;
+        }
+
+        row_map[j] = ch;
       }
 
-      if (row_used) {
+      if (row_is_used) {
         if (state.show_full_addr && IS_PIC16E_CORE) {
           /* Gpasm mode: Print all address digits. */
           _lst_printf("%0*X :", addr_digits, (i + base));
@@ -855,12 +899,12 @@ lst_memory_map(MemBlock_t *M)
           _lst_printf("%04X :", (i + base) & 0xffff);
         }
 
-        for (j = 0; j < num_per_line; j++) {
-          if ((j % num_per_block) == 0) {
-            _lst_printf(" ");
+        for (j = 0; j < NUM_PER_LINE; j++) {
+          if ((j % NUM_PER_BLOCK) == 0) {
+            _lst_putc(' ');
           }
 
-          _lst_printf(MEM_IS_USED(M, i + j) ? "X" : "-");
+          _lst_putc(row_map[j]);
         }
 
         _lst_eol();
@@ -884,11 +928,11 @@ lst_memory_map(MemBlock_t *M)
     lst_line("Memory Bytes Used: %5i", gp_mem_b_used(state.i_memory));
   }
   else {
-    unsigned int used = gp_processor_insn_from_byte_p(state.processor, ((!IS_PIC16) && (state.processor != NULL)) ?
-                                b_range_memory_used(state.i_memory, 0,
-                                                    gp_processor_byte_from_insn_c(state.device.class,
-                                                                                  state.processor->prog_mem_size)) :
-                                gp_mem_b_used(state.i_memory));
+    used = gp_processor_insn_from_byte_p(state.processor, ((!IS_PIC16) && (state.processor != NULL)) ?
+                        b_range_memory_used(state.i_memory, 0,
+                                            gp_processor_byte_from_insn_c(state.device.class,
+                                                                          state.processor->prog_mem_size)) :
+                        gp_mem_b_used(state.i_memory));
 
     lst_line("Program Memory %s Used: %5i", IS_BYTE ? "Bytes" : "Words", used);
 
@@ -1177,9 +1221,7 @@ lst_symbol_table(void)
   const void      *ptr;
 
   state.lst.lst_state = LST_IN_SYMTAB;
-
   _symbol_table_header();
-
   lst_line(NULL);
 
   _cod_symbol_table();

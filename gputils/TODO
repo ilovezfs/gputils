@@ -7,7 +7,6 @@ gputils
   * Use dejagnu for testing.
 
 gpasm
-  * Implement nested while loops.
   * Clean up the byte verses word, data memory/program memory stuff.
   * Move opcode generator from /gpasm/directive.c to /libgputils/gpopcode.c.
   * Move COD file generation to library.

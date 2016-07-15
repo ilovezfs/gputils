@@ -71,13 +71,13 @@ typedef union
         struct MemBlock_t *next;
       } MemBlock_t;
 
- Each MemBlock_t can hold up to `I_MEM_MAX' (32k currently) bytes. The `base'
+ Each MemBlock_t can hold up to 'I_MEM_MAX' (64kB currently) bytes. The 'base'
  is the base address of the memory block. If the instruction memory spans
- more than 32k, then additional memory blocks can be allocated and linked
- together in a singly linked list (`next'). The last memory block in a
- linked list of blocks has its next ptr set to NULL. 32k is left over
+ more than 64kB, then additional memory blocks can be allocated and linked
+ together in a singly linked list ('next'). The last memory block in a
+ linked list of blocks has its next ptr set to NULL. 64kB is left over
  from when it was number of two byte instructions and it corresponded
- to 64K bytes which is the upper limit on inhx8m files.
+ to 64k bytes which is the upper limit on inhx8m files.
 
  **************************************************************************************************/
 
@@ -113,7 +113,6 @@ _memory_new(MemBlock_t *M, MemBlock_t *Mbp, unsigned int Base_address)
   } while (M != NULL);
 
   assert(0);
-
   return NULL;
 }
 
@@ -210,6 +209,18 @@ gp_mem_b_is_used(MemBlock_t *M, unsigned int Byte_address)
   } while (M != NULL);
 
   return false;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+gp_mem_b_offset_is_used(MemBlock_t *M, unsigned int Byte_offset)
+{
+  if ((M == NULL) || (M->memory == NULL)) {
+    return false;
+  }
+
+  return ((M->memory[Byte_offset].data & BYTE_USED_MASK) != 0);
 }
 
 /**************************************************************************************************
@@ -635,6 +646,18 @@ gp_mem_b_used(const MemBlock_t *M)
  *
  *
  **************************************************************************************************/
+
+unsigned int
+gp_mem_i_offset_is_used(MemBlock_t *M, unsigned int Byte_offset)
+{
+  unsigned int ret;
+
+  ret  = (gp_mem_b_offset_is_used(M, Byte_offset))     ? W_USED_L : 0;
+  ret |= (gp_mem_b_offset_is_used(M, Byte_offset + 1)) ? W_USED_H : 0;
+  return ret;
+}
+
+/*------------------------------------------------------------------------------------------------*/
 
 unsigned int
 gp_mem_i_get_le(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
