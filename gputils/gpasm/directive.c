@@ -622,16 +622,12 @@ _do_assume(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     return Value;
   }
 
-  if (prev_btfsx) {
-    gpmsg_vwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, NULL, "Banksel");
-  }
-
   if (eval_enforce_arity(Arity, 1)) {
     p = PnListHead(Parms);
 
     if (state.mode == MODE_ABSOLUTE) {
       address            = eval_maybe_evaluate(p);
-      state.assumed_bank = gp_processor_bank_addr(proc, address);
+      state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
     }
     else {
       /* state.mode == MODE_RELOCATABLE */
@@ -640,7 +636,7 @@ _do_assume(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       if (num_reloc == 0) {
         /* It is an absolute address, generate the banksel but no relocation. */
         address            = eval_maybe_evaluate(p);
-        state.assumed_bank = gp_processor_bank_addr(proc, address);
+        state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
       }
       else if (num_reloc != 1) {
         gpmsg_verror(GPE_UNRESOLVABLE, "\"%s\"", Name);

@@ -844,7 +844,7 @@ lst_err_line(const char *Type, unsigned int Code, const char *Format, va_list Ar
 
 #define MEM_IS_USED(M, I)  \
         (((M)->memory != NULL) ? (IS_BYTE ? (gp_mem_b_offset_is_used(M, I)) : \
-                                            (gp_mem_i_offset_is_used(M, (I) * 2) == W_USED_ALL)) : false)
+                                            (gp_mem_i_offset_is_used_le(M, (I) * 2) == W_USED_ALL)) : false)
 
 #define NUM_PER_LINE            64
 #define NUM_PER_BLOCK           16

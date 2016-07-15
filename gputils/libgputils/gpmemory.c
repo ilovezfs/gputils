@@ -52,8 +52,42 @@ typedef union
         MemArg_t second;
       } MemArgList_t;
 
+      typedef union __attribute__ ((packed)) MemData {
+        unsigned int all;
+
+        struct __attribute__ ((packed)) {
+          unsigned byte              : 8;     [0-7] The data byte.
+
+          unsigned is_addr_branch_src: 1;     [ 8] W_ADDR_T_BRANCH_SRC
+          unsigned is_addr_label     : 1;     [ 9] W_ADDR_T_LABEL
+          unsigned is_addr_func      : 1;     [10] W_ADDR_T_FUNC
+
+          unsigned is_arg_first      : 1;     [11] W_ARG_T_FIRST
+          unsigned is_arg_second     : 1;     [12] W_ARG_T_SECOND
+
+          unsigned is_second_word    : 1;     [13] W_SECOND_WORD
+          unsigned is_const_data     : 1;     [14] W_CONST_DATA
+
+          unsigned is_byte_listed    : 1;     [15] BYTE_LISTED_MASK
+          unsigned is_byte_used      : 1;     [16] BYTE_USED_MASK
+        };
+
+        struct __attribute__ ((packed)) {
+          unsigned       : 8;
+          unsigned addr_t: 3;
+          unsigned arg_t : 2;
+          unsigned       : 2;
+          unsigned attr_t: 2;
+        };
+
+        struct __attribute__ ((packed)) {
+          unsigned         : 8;
+          unsigned all_attr: 24;
+        };
+      } MemData_t;
+
       typedef struct MemByte {
-        unsigned int  data;           The data byte and the attributes of.
+        MemData_t     data;           The data byte and the attributes of.
 
         char         *section_name;   During assembly or linking shows the name of section.
 
@@ -202,7 +236,7 @@ gp_mem_b_is_used(MemBlock_t *M, unsigned int Byte_address)
 
   do {
     if (M->base == block) {
-      return (((M->memory != NULL) && (M->memory[offset].data & BYTE_USED_MASK)) ? true : false);
+      return ((M->memory != NULL) && M->memory[offset].data.is_byte_used);
     }
 
     M = M->next;
@@ -220,7 +254,7 @@ gp_mem_b_offset_is_used(MemBlock_t *M, unsigned int Byte_offset)
     return false;
   }
 
-  return ((M->memory[Byte_offset].data & BYTE_USED_MASK) != 0);
+  return M->memory[Byte_offset].data.is_byte_used;
 }
 
 /**************************************************************************************************
@@ -252,7 +286,7 @@ gp_mem_b_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
     if (M->base == block) {
       if (M->memory != NULL) {
         b = &M->memory[offset];
-        *Byte = b->data & 0xff;
+        *Byte = b->data.byte;
 
         if (Section_name != NULL) {
           *Section_name = b->section_name;
@@ -262,7 +296,7 @@ gp_mem_b_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
           *Symbol_name = b->symbol_name;
         }
 
-        return ((b->data & BYTE_USED_MASK) ? true : false);
+        return b->data.is_byte_used;
       }
       else {
         *Byte = 0;
@@ -336,7 +370,8 @@ gp_mem_b_put(MemBlock_t *I_memory, unsigned int Byte_address, uint8_t Value,
         _store_symbol_name(b, Symbol_name);
       }
 
-      b->data = Value | BYTE_USED_MASK;
+      b->data.byte         = Value;
+      b->data.is_byte_used = true;
       return;
     }
 
@@ -348,7 +383,8 @@ gp_mem_b_put(MemBlock_t *I_memory, unsigned int Byte_address, uint8_t Value,
 
   m = _memory_new(I_memory, (MemBlock_t *)GP_Malloc(sizeof(MemBlock_t)), Byte_address);
   b = &m->memory[offset];
-  b->data = Value | BYTE_USED_MASK;
+  b->data.byte         = Value;
+  b->data.is_byte_used = true;
   _store_section_name(b, Section_name);
   _store_symbol_name(b, Symbol_name);
 }
@@ -377,19 +413,17 @@ gp_mem_b_clear(MemBlock_t *M, unsigned int Byte_address)
     if (M->base == block) {
       if (M->memory != NULL) {
         b = &M->memory[offset];
-        b->data = 0;
+        b->data.all = 0;
 
         if (b->section_name != NULL) {
           free(b->section_name);
+          b->section_name = NULL;
         }
-
-        b->section_name = NULL;
 
         if (b->symbol_name != NULL) {
           free(b->symbol_name);
+          b->symbol_name = NULL;
         }
-
-        b->symbol_name = NULL;
       }
 
       return;
@@ -620,7 +654,7 @@ b_range_memory_used(const MemBlock_t *M, unsigned int From_byte_address, unsigne
   /* count used bytes */
   while ((M != NULL) && (j < To_byte_address)) {
     for (i = 0; (i < I_MEM_MAX) && (j < To_byte_address); ++i) {
-      if ((M->memory != NULL) && (M->memory[i].data & BYTE_USED_MASK)) {
+      if ((M->memory != NULL) && M->memory[i].data.is_byte_used) {
         ++n_bytes;
       }
       ++j;
@@ -648,7 +682,7 @@ gp_mem_b_used(const MemBlock_t *M)
  **************************************************************************************************/
 
 unsigned int
-gp_mem_i_offset_is_used(MemBlock_t *M, unsigned int Byte_offset)
+gp_mem_i_offset_is_used_le(MemBlock_t *M, unsigned int Byte_offset)
 {
   unsigned int ret;
 
@@ -680,6 +714,18 @@ gp_mem_i_put_le(MemBlock_t *M, unsigned int Byte_address, uint16_t Word,
 {
   gp_mem_b_put(M, Byte_address,     Word & 0xff, Section_name, Symbol_name);
   gp_mem_b_put(M, Byte_address + 1, Word >> 8,   Section_name, Symbol_name);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+unsigned int
+gp_mem_i_offset_is_used_be(MemBlock_t *M, unsigned int Byte_offset)
+{
+  unsigned int ret;
+
+  ret  = (gp_mem_b_offset_is_used(M, Byte_offset))     ? W_USED_H : 0;
+  ret |= (gp_mem_b_offset_is_used(M, Byte_offset + 1)) ? W_USED_L : 0;
+  return ret;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -743,7 +789,7 @@ gp_mem_i_print(const MemBlock_t *M, pic_processor_t Processor)
         row_used = false;
 
         for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-          if (M->memory[i + j].data != 0) {
+          if (M->memory[i + j].data.all != 0) {
             row_used = true;
             break;
           }
@@ -768,7 +814,7 @@ gp_mem_i_print(const MemBlock_t *M, pic_processor_t Processor)
             }
 
             for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-              c = M->memory[i + j].data & 0xff;
+              c = M->memory[i + j].data.byte;
               putchar(isprint(c) ? c : '.');
             }
           }
@@ -795,7 +841,7 @@ gp_mem_i_print(const MemBlock_t *M, pic_processor_t Processor)
             }
 
             for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-              c = M->memory[i + j].data & 0xff;
+              c = M->memory[i + j].data.byte;
               putchar(isprint(c) ? c : '.');
             }
           }
@@ -820,7 +866,8 @@ gp_mem_i_print(const MemBlock_t *M, pic_processor_t Processor)
 void
 gp_mem_b_set_listed(MemBlock_t *M, unsigned int Byte_address, unsigned int N_bytes)
 {
-  unsigned int block = IMemBaseFromAddr(Byte_address);
+  unsigned int block  = IMemBaseFromAddr(Byte_address);
+  unsigned int offset = IMemOffsFromAddr(Byte_address);
 
   while (N_bytes--) {
     while (M != NULL) {
@@ -829,7 +876,7 @@ gp_mem_b_set_listed(MemBlock_t *M, unsigned int Byte_address, unsigned int N_byt
           M->memory = (MemByte_t *)GP_Calloc(I_MEM_MAX, sizeof(MemByte_t));
         }
 
-        M->memory[IMemOffsFromAddr(Byte_address)].data |= BYTE_LISTED_MASK;
+        M->memory[offset].data.is_byte_listed = true;
         break;
       }
 
@@ -859,8 +906,7 @@ gp_mem_b_get_unlisted_size(const MemBlock_t *M, unsigned int Byte_address)
         }
       }
 
-      if ((M->memory != NULL) &&
-          ((M->memory[IMemOffsFromAddr(Byte_address)].data & BYTE_ATTR_MASK) == BYTE_USED_MASK)) {
+      if ((M->memory != NULL) && (!M->memory[IMemOffsFromAddr(Byte_address)].data.is_byte_listed)) {
         /* byte at byte_address not listed */
         ++Byte_address;
         ++n_bytes;
@@ -889,8 +935,8 @@ gp_mem_b_set_addr_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Ty
     if ((M->base == block) && (M->memory != NULL)) {
       b = &M->memory[offset];
 
-      if (b->data & BYTE_USED_MASK) {
-        b->data |= Type & W_ADDR_T_MASK;
+      if (b->data.is_byte_used) {
+        b->data.all |= Type & W_ADDR_T_MASK;
 
 	if (Type & W_ADDR_T_BRANCH_SRC) {
 	  b->dest_byte_addr = Dest_byte_addr;
@@ -923,14 +969,14 @@ gp_mem_b_get_addr_type(const MemBlock_t *M, unsigned int Byte_address, const cha
       b = &M->memory[offset];
 
       if (Label_name != NULL) {
-	*Label_name = (b->data & (W_ADDR_T_FUNC | W_ADDR_T_LABEL)) ? b->symbol_name : NULL;
+	*Label_name = (b->data.all & (W_ADDR_T_FUNC | W_ADDR_T_LABEL)) ? b->symbol_name : NULL;
       }
 
       if (Dest_byte_addr != NULL) {
-	*Dest_byte_addr = (b->data & W_ADDR_T_BRANCH_SRC) ? b->dest_byte_addr : 0;
+	*Dest_byte_addr = (b->data.all & W_ADDR_T_BRANCH_SRC) ? b->dest_byte_addr : 0;
       }
 
-      return (b->data & W_ADDR_T_MASK);
+      return (b->data.all & W_ADDR_T_MASK);
     }
 
     M = M->next;
@@ -986,8 +1032,8 @@ gp_mem_b_set_args(MemBlock_t *M, unsigned int Byte_address, unsigned int Type, c
     if ((M->base == block) && (M->memory != NULL)) {
       b = &M->memory[offset];
 
-      if (b->data & BYTE_USED_MASK) {
-        b->data |= Type & W_ARG_T_MASK;
+      if (b->data.is_byte_used) {
+        b->data.all |= Type & W_ARG_T_MASK;
 
         if (Type & W_ARG_T_FIRST) {
           b->args.first.arg  = Args->first.arg;
@@ -1026,9 +1072,9 @@ gp_mem_b_get_args(const MemBlock_t *M, unsigned int Byte_address, MemArgList_t *
     if ((M->base == block) && (M->memory != NULL)) {
       b = &M->memory[offset];
 
-      if (b->data & BYTE_USED_MASK) {
+      if (b->data.is_byte_used) {
         if (Args != NULL) {
-          if (b->data & W_ARG_T_FIRST) {
+          if (b->data.is_arg_first) {
             Args->first.arg  = b->args.first.arg;
             Args->first.val  = b->args.first.val;
             Args->first.offs = b->args.first.offs;
@@ -1039,7 +1085,7 @@ gp_mem_b_get_args(const MemBlock_t *M, unsigned int Byte_address, MemArgList_t *
             Args->first.offs = 0;
           }
 
-          if (b->data & W_ARG_T_SECOND) {
+          if (b->data.is_arg_second) {
             Args->second.arg  = b->args.second.arg;
             Args->second.val  = b->args.second.val;
             Args->second.offs = b->args.second.offs;
@@ -1051,7 +1097,7 @@ gp_mem_b_get_args(const MemBlock_t *M, unsigned int Byte_address, MemArgList_t *
           }
         }
 
-        return (b->data & W_ARG_T_MASK);
+        return (b->data.all & W_ARG_T_MASK);
       }
     }
 
@@ -1080,7 +1126,7 @@ gp_mem_b_set_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
 
   while (M != NULL) {
     if ((M->base == block) && (M->memory != NULL)) {
-      M->memory[offset].data |= Type & W_TYPE_MASK;
+      M->memory[offset].data.all |= Type & W_TYPE_MASK;
       return true;
     }
 
@@ -1100,7 +1146,7 @@ gp_mem_b_clear_type(MemBlock_t *M, unsigned int Byte_address, unsigned int Type)
 
   while (M != NULL) {
     if ((M->base == block) && (M->memory != NULL)) {
-      M->memory[offset].data &= ~(Type & W_TYPE_MASK);
+      M->memory[offset].data.all &= ~(Type & W_TYPE_MASK);
       return true;
     }
 
@@ -1120,7 +1166,7 @@ gp_mem_b_get_type(const MemBlock_t *M, unsigned int Byte_address)
 
   while (M != NULL) {
     if ((M->base == block) && (M->memory != NULL)) {
-      return (M->memory[offset].data & W_TYPE_MASK);
+      return (M->memory[offset].data.all & W_TYPE_MASK);
     }
 
     M = M->next;
