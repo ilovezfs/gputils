@@ -37,26 +37,6 @@ Boston, MA 02111-1307, USA.  */
 #define IMemBaseFromAddr(Addr)  (((Addr) >> I_MEM_BITS) & I_BASE_MASK)
 #define IMemOffsFromAddr(Addr)  ((Addr) & I_MEM_MASK)
 
-#define BYTE_USED_MASK          (1 << 31)           /* Means occupied in MemBlock.memory.data. */
-#define BYTE_LISTED_MASK        (1 << 30)           /* Means already listed. */
-#define BYTE_ATTR_MASK          (BYTE_USED_MASK | BYTE_LISTED_MASK)
-
-#define W_CONST_DATA            (1 << 14)           /* Data in the code area. */
-#define W_SECOND_WORD           (1 << 13)           /* PIC16E family, second word of 32 bits instruction. (movff, ...) */
-
-#define W_ARG_T_FIRST           (1 << 12)           /* The first argumentum of instruction a known register. */
-#define W_ARG_T_SECOND          (1 << 11)           /* The second argumentum of instruction a known register. */
-#define W_ARG_T_BOTH            (W_ARG_T_FIRST | W_ARG_T_SECOND) /* Both argumentum of instruction a known register or bit. */
-#define W_ARG_T_MASK            W_ARG_T_BOTH
-
-#define W_ADDR_T_FUNC           (1 << 10)           /* A function starts at this address. */
-#define W_ADDR_T_LABEL          (1 <<  9)           /* A label there is at this address. */
-#define W_ADDR_T_BRANCH_SRC     (1 <<  8)           /* Source of a branch there is at this address. */
-#define W_ADDR_T_MASK           (W_ADDR_T_FUNC | W_ADDR_T_LABEL | W_ADDR_T_BRANCH_SRC)
-
-#define W_TYPE_MASK             ((UINT_MAX << 8) & UINT_MAX)
-
-
 #define W_USED_H                (1 << 1)            /* Used top half of the word. */
 #define W_USED_L                (1 << 0)            /* Used bottom half of the word. */
 #define W_USED_ALL              (W_USED_H | W_USED_L)
@@ -76,8 +56,61 @@ typedef struct MemArgList {
   MemArg_t second;
 } MemArgList_t;
 
+#define W_ADDR_T_BRANCH_SRC     (1 <<  8)           /* Source of a branch there is at this address. */
+#define W_ADDR_T_LABEL          (1 <<  9)           /* A label there is at this address. */
+#define W_ADDR_T_FUNC           (1 << 10)           /* A function starts at this address. */
+#define W_ADDR_T_MASK           (W_ADDR_T_FUNC | W_ADDR_T_LABEL | W_ADDR_T_BRANCH_SRC)
+
+#define W_ARG_T_FIRST           (1 << 11)           /* The first argumentum of instruction a known register. */
+#define W_ARG_T_SECOND          (1 << 12)           /* The second argumentum of instruction a known register. */
+#define W_ARG_T_BOTH            (W_ARG_T_FIRST | W_ARG_T_SECOND) /* Both argumentum of instruction a known register or bit. */
+#define W_ARG_T_MASK            W_ARG_T_BOTH
+
+#define W_SECOND_WORD           (1 << 13)           /* PIC16E family, second word of 32 bits instruction. (movff, ...) */
+#define W_CONST_DATA            (1 << 14)           /* Data in the code area. */
+
+#define BYTE_LISTED_MASK        (1 << 15)           /* Means already listed. */
+#define BYTE_USED_MASK          (1 << 16)           /* Means occupied in MemBlock.memory.data. */
+#define BYTE_ATTR_MASK          (BYTE_USED_MASK | BYTE_LISTED_MASK)
+
+#define W_TYPE_MASK             ((UINT_MAX << 8) & UINT_MAX)
+
+typedef union __attribute__ ((packed)) MemData {
+  unsigned int all;
+
+  struct __attribute__ ((packed)) {
+    unsigned byte              : 8;     /* [0-7] The data byte. */
+
+    unsigned is_addr_branch_src: 1;     /* [ 8] W_ADDR_T_BRANCH_SRC */
+    unsigned is_addr_label     : 1;     /* [ 9] W_ADDR_T_LABEL */
+    unsigned is_addr_func      : 1;     /* [10] W_ADDR_T_FUNC */
+
+    unsigned is_arg_first      : 1;     /* [11] W_ARG_T_FIRST */
+    unsigned is_arg_second     : 1;     /* [12] W_ARG_T_SECOND */
+
+    unsigned is_second_word    : 1;     /* [13] W_SECOND_WORD */
+    unsigned is_const_data     : 1;     /* [14] W_CONST_DATA */
+
+    unsigned is_byte_listed    : 1;     /* [15] BYTE_LISTED_MASK */
+    unsigned is_byte_used      : 1;     /* [16] BYTE_USED_MASK */
+  };
+
+  struct __attribute__ ((packed)) {
+    unsigned       : 8;
+    unsigned addr_t: 3;
+    unsigned arg_t : 2;
+    unsigned       : 2;
+    unsigned attr_t: 2;
+  };
+
+  struct __attribute__ ((packed)) {
+    unsigned         : 8;
+    unsigned all_attr: 24;
+  };
+} MemData_t;
+
 typedef struct MemByte {
-  unsigned int  data;
+  MemData_t     data;
   char         *section_name;
   char         *symbol_name;
   unsigned int  dest_byte_addr;
@@ -132,10 +165,12 @@ struct px;
 
 extern void gp_mem_i_print(const MemBlock_t *M, const struct px *Processor);
 
-extern unsigned int gp_mem_i_offset_is_used(MemBlock_t *M, unsigned int Byte_offset);
+extern unsigned int gp_mem_i_offset_is_used_le(MemBlock_t *M, unsigned int Byte_offset);
 
 extern unsigned int gp_mem_i_get_le(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
                                     const char **Section_name, const char **Symbol_name);
+
+extern unsigned int gp_mem_i_offset_is_used_be(MemBlock_t *M, unsigned int Byte_offset);
 
 extern unsigned int gp_mem_i_get_be(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
                                     const char **Section_name, const char **Symbol_name);
