@@ -2,6 +2,8 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Scott Dattalo
 
+    Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -23,6 +25,8 @@ Boston, MA 02111-1307, USA.  */
 #define __GPMEMORY_H__
 
 #define MAX_RAM                 0x2000              /* Maximum RAM. */
+#define MAX_C_MEM               0x100               /* Maximum configuration memory (only a few bytes are used). */
+
 /* Choose bases such that each base has different hex 04 record. */
 #define I_MEM_BITS              16                  /* MemBlock base bit alignment. */
 #define I_MEM_MAX               (1 << I_MEM_BITS)   /* MemBlock base alignment. */
@@ -32,8 +36,6 @@ Boston, MA 02111-1307, USA.  */
 #define IMemAddrFromBase(Base)  ((Base) << I_MEM_BITS)
 #define IMemBaseFromAddr(Addr)  (((Addr) >> I_MEM_BITS) & I_BASE_MASK)
 #define IMemOffsFromAddr(Addr)  ((Addr) & I_MEM_MASK)
-
-#define MAX_C_MEM               0x100               /* Maximum configuration memory (only a few bytes are used). */
 
 #define BYTE_USED_MASK          (1 << 31)           /* Means occupied in MemBlock.memory.data. */
 #define BYTE_LISTED_MASK        (1 << 30)           /* Means already listed. */
@@ -52,7 +54,7 @@ Boston, MA 02111-1307, USA.  */
 #define W_ADDR_T_BRANCH_SRC     (1 <<  8)           /* Source of a branch there is at this address. */
 #define W_ADDR_T_MASK           (W_ADDR_T_FUNC | W_ADDR_T_LABEL | W_ADDR_T_BRANCH_SRC)
 
-#define W_TYPE_MASK             (UINT_MAX << 8)
+#define W_TYPE_MASK             ((UINT_MAX << 8) & UINT_MAX)
 
 
 #define W_USED_H                (1 << 1)            /* Used top half of the word. */
@@ -91,6 +93,9 @@ typedef struct MemBlock {
 extern MemBlock_t *gp_mem_i_create(void);
 extern void gp_mem_i_free(MemBlock_t *M);
 
+extern gp_boolean gp_mem_b_is_used(MemBlock_t *M, unsigned int Byte_address);
+extern gp_boolean gp_mem_b_offset_is_used(MemBlock_t *M, unsigned int Byte_offset);
+
 extern gp_boolean gp_mem_b_get(const MemBlock_t *M, unsigned int Byte_address, uint8_t *Byte,
                                const char **Section_name, const char **Symbol_name);
 
@@ -126,6 +131,8 @@ extern unsigned int gp_mem_b_used(const MemBlock_t *M);
 struct px;
 
 extern void gp_mem_i_print(const MemBlock_t *M, const struct px *Processor);
+
+extern unsigned int gp_mem_i_offset_is_used(MemBlock_t *M, unsigned int Byte_offset);
 
 extern unsigned int gp_mem_i_get_le(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
                                     const char **Section_name, const char **Symbol_name);

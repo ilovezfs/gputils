@@ -363,7 +363,8 @@ extern struct gpasm_state {
     enum {
       LST_IN_NONE,
       LST_IN_MEM,
-      LST_IN_SYMTAB
+      LST_IN_SYMTAB,
+      LST_IN_MAP
     } lst_state;                        /*   Listing state. */
 
     struct {
