@@ -734,11 +734,11 @@ macro_append(void)
   macro_body_t *body = GP_Malloc(sizeof(*body));
 
   body->src_line = NULL;
+  body->next     = NULL;            /* make sure it's terminated */
 
-  *state.mac_prev = body;       /* append this to the chain */
-  state.mac_prev  = &body->next; /* this is the new end of the chain */
+  *state.mac_prev = body;           /* append this to the chain */
+  state.mac_prev  = &body->next;    /* this is the new end of the chain */
   state.mac_body  = body;
-  body->next = NULL;            /* make sure it's terminated */
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -866,66 +866,6 @@ print_macro_body(const macro_body_t *mac)
   }
   printf("}\n");
 }*/
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-file_delete_node(void *Node)
-{
-  file_context_t *n;
-
-  if (Node == NULL) {
-    return;
-  }
-
-  n = (file_context_t *)Node;
-  free(n->name);
-  free(n);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* add_file: Add a file of type 'type' to the file_context stack. */
-
-file_context_t *
-add_file(unsigned int type, const char *name)
-{
-  static unsigned int  file_id = 0;
-
-  file_context_t      *new;
-
-  /* First check to make sure this file is not already in the list. */
-  new = state.file_list.last;
-  while (new != NULL) {
-    if (strcmp(new->name, name) == 0) {
-      return new;
-    }
-    new = new->prev;
-  }
-
-  new = gp_node_new(sizeof(*new));
-
-  new->name = GP_Strdup(name);
-  new->ft   = type;
-  new->id   = file_id++;
-
-  if (state.file_list.first == NULL) {
-    gp_list_set_delete_node_func(&state.file_list, file_delete_node);
-  }
-
-  gp_node_append(&state.file_list, new);
-  return new;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* free_files: free memory allocated to the file_context stack */
-
-void
-free_files(void)
-{
-  gp_list_delete(&state.file_list);
-}
 
 /*------------------------------------------------------------------------------------------------*/
 

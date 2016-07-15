@@ -1,3 +1,13 @@
+2016-07-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/Makefile.*, gpasm/cod.c, gpasm/file.c, gpasm/file.h,
+    gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/lst.c, gpasm/macro.c,
+    gpasm/parse.y, gpasm/scan.l, gpasm/util.c:
+    Code optimizations.
+
+  * libgputils/gpcoffgen.c, libgputils/gplist.c, libgputils/gplist.h:
+    New function: gp_list_node_delete
+    Renamed some functions.
+
 2016-07-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gpasm/coff.c, gpasm/directive.c, gpasm/gpasm.c,
     gpasm/gpasm.h.in, gpasm/gpmsg.c, gpasm/lst.c, gpasm/macro.c,

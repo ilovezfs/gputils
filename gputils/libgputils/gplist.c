@@ -37,7 +37,7 @@ static unsigned int list_serial_id = 1;
 /*------------------------------------------------------------------------------------------------*/
 
 void *
-gp_node_new(size_t Item_size)
+gp_list_node_new(size_t Item_size)
 {
   if (Item_size == 0) {
     fprintf(stderr, "%s() -- Item_size is 0.\n", __func__);
@@ -50,9 +50,20 @@ gp_node_new(size_t Item_size)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_node_free(void *Node)
+gp_list_node_free(void *List, void *Node)
 {
-  if (Node != NULL) {
+  gp_list_t *l;
+
+  if ((List == NULL) || (Node == NULL)) {
+    return;
+  }
+
+  l = (gp_list_t *)List;
+
+  if (l->node_del != NULL) {
+    (*l->node_del)(Node);
+  }
+  else {
     free(Node);
   }
 }
@@ -60,7 +71,7 @@ gp_node_free(void *Node)
 /*------------------------------------------------------------------------------------------------*/
 
 void *
-gp_node_append(void *List, void *Node)
+gp_list_node_append(void *List, void *Node)
 {
   gp_list_t *l;
   gp_node_t *n;
@@ -98,7 +109,7 @@ gp_node_append(void *List, void *Node)
 /*------------------------------------------------------------------------------------------------*/
 
 void *
-gp_node_insert_after(void *List, void *Node, void *Node_new)
+gp_list_node_insert_after(void *List, void *Node, void *Node_new)
 {
   gp_list_t *l;
   gp_node_t *n;
@@ -137,7 +148,7 @@ gp_node_insert_after(void *List, void *Node, void *Node_new)
 /*------------------------------------------------------------------------------------------------*/
 
 void *
-gp_node_insert_before(void *List, void *Node, void *Node_new)
+gp_list_node_insert_before(void *List, void *Node, void *Node_new)
 {
   gp_list_t *l;
   gp_node_t *n;
@@ -176,7 +187,7 @@ gp_node_insert_before(void *List, void *Node, void *Node_new)
 /*------------------------------------------------------------------------------------------------*/
 
 void *
-gp_node_remove(void *List, void *Node)
+gp_list_node_remove(void *List, void *Node)
 {
   gp_list_t *l;
   gp_node_t *n;
@@ -222,9 +233,17 @@ gp_node_remove(void *List, void *Node)
 /*------------------------------------------------------------------------------------------------*/
 
 void *
-gp_node_move(void *Dst, void *Src, void *Node)
+gp_list_node_move(void *Dst, void *Src, void *Node)
 {
-  return gp_node_append(Dst, gp_node_remove(Src, Node));
+  return gp_list_node_append(Dst, gp_list_node_remove(Src, Node));
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+gp_list_node_delete(void *List, void *Node)
+{
+  gp_list_node_free(List, gp_list_node_remove(List, Node));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -269,7 +288,7 @@ gp_list_make_block(void *List, size_t Num_nodes, size_t Item_size)
   l->serial_id = id;
 
   for (i = 0; i < Num_nodes; i++) {
-    ptr_array[i] = (gp_node_t *)gp_node_new(Item_size);
+    ptr_array[i] = (gp_node_t *)gp_list_node_new(Item_size);
     ptr_array[i]->list_id = id;
   }
 
@@ -386,15 +405,7 @@ gp_list_delete(void *List)
   node = l->first;
   while (node != NULL) {
     next = node->next;
-    gp_node_remove(List, node);
-
-    if (l->node_del != NULL) {
-      (*l->node_del)(node);
-    }
-    else {
-      gp_node_free(node);
-    }
-
+    gp_list_node_delete(List, node);
     node = next;
   }
 

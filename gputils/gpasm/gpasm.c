@@ -29,6 +29,7 @@ Boston, MA 02111-1307, USA.  */
 #include "scan.h"
 #include "deps.h"
 #include "directive.h"
+#include "file.h"
 #include "lst.h"
 #include "cod.h"
 #include "processor.h"
@@ -1049,7 +1050,7 @@ assemble(void)
     cod_close_file();
   }
 
-  free_files();
+  file_free();
   gp_bitarray_delete(&state.badrom);
   return (((state.num.errors > 0) || (gp_num_errors > 0)) ? EXIT_FAILURE : EXIT_SUCCESS);
 }
