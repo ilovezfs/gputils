@@ -221,9 +221,13 @@ int return_op(int Operation);
 void
 next_line(int Value)
 {
+  source_context_t *ctx;
+
+  ctx = state.src_list.last;
+
   if ((state.pass == 2) && (state.lst.line.linetype == LTY_DOLIST_DIR)) {
     state.lst.line.linetype = LTY_NONE;
-    lst_format_line(state.src_list.last->curr_src_line.line, Value);
+    lst_format_line(ctx->curr_src_line.line, Value);
   }
 
   if (IN_WHILE_EXPANSION || IN_MACRO_EXPANSION) {
@@ -232,32 +236,32 @@ next_line(int Value)
         (state.lst.line.linetype != LTY_DOLIST_DIR) &&
         (state.lst.line.linetype != LTY_NOLIST_DIR)) {
 
-      if (state.src_list.last->curr_src_line.line != NULL) {
+      if (ctx->curr_src_line.line != NULL) {
         /* Empty macro. */
-        lst_format_line(state.src_list.last->curr_src_line.line, Value);
+        lst_format_line(ctx->curr_src_line.line, Value);
       }
       preproc_emit();
     }
 
-    /* while loops can be defined inside a macro or nested */
+    /* While loops can be defined inside a macro or nested. */
     if (IN_MACRO_WHILE_DEFINITION) {
       state.lst.line.linetype = LTY_NONE;
 
       if (state.mac_body != NULL) {
         /* Empty macro. */
-        state.mac_body->src_line = GP_Strdup(state.src_list.last->mac_body->src_line);
+        state.mac_body->src_line = GP_Strdup(ctx->mac_body->src_line);
       }
     }
 
-    if (state.src_list.last->mac_body != NULL) {
-      state.src_list.last->mac_body = state.src_list.last->mac_body->next;
+    if (ctx->mac_body != NULL) {
+      ctx->mac_body = ctx->mac_body->next;
     }
   }
   else if (IN_FILE_EXPANSION) {
     if (!IN_WHILE_DEFINITION && (state.pass == 2) &&
         (state.lst.line.linetype != LTY_DOLIST_DIR) &&
         (state.lst.line.linetype != LTY_NOLIST_DIR)) {
-      lst_format_line(state.src_list.last->curr_src_line.line, Value);
+      lst_format_line(ctx->curr_src_line.line, Value);
 
       if (!IN_MACRO_WHILE_DEFINITION) {
         preproc_emit();
@@ -268,42 +272,41 @@ next_line(int Value)
       state.lst.line.linetype = LTY_NONE;
 
       if (state.mac_body != NULL) {
-        state.mac_body->src_line = GP_Strdup(state.src_list.last->curr_src_line.line);
+        state.mac_body->src_line = GP_Strdup(ctx->curr_src_line.line);
       }
     }
 
    if (state.next_state == STATE_INCLUDE) {
-      /* includes have to be evaluated here and not in the following
-       * switch statements so that the errors are reported correctly */
-      state.src_list.last->line_number++;
+      /* Includes have to be evaluated here and not in the following
+         switch statements so that the errors are reported correctly. */
+      ++(ctx->line_number);
       open_src(state.next_buffer.file, true);
       free(state.next_buffer.file);
     }
   }
 
+  ctx = state.src_list.last;
   switch (state.next_state) {
     case STATE_EXITMACRO:
-      ++(state.src_list.last->line_number);
+      ++(ctx->line_number);
       execute_exitm();
       break;
 
     case STATE_MACRO:
-      ++(state.src_list.last->line_number);
+      ++(ctx->line_number);
       /* push the label for local directive */
       state.stTop = macro_push_symbol_table(state.stTop);
       execute_macro(state.next_buffer.macro, false);
       break;
 
     case STATE_SECTION:
-      ++(state.src_list.last->line_number);
+      ++(ctx->line_number);
       /* create a new coff section */
-      coff_new_section(state.obj.new_sect_name,
-                       state.obj.new_sect_addr,
-                       state.obj.new_sect_flags);
+      coff_new_section(state.obj.new_sect_name, state.obj.new_sect_addr, state.obj.new_sect_flags);
       break;
 
     case STATE_WHILE:
-      ++(state.src_list.last->line_number);
+      ++(ctx->line_number);
       execute_macro(state.next_buffer.macro, true);
       break;
 
@@ -312,7 +315,7 @@ next_line(int Value)
       break;
 
     default:
-      ++(state.src_list.last->line_number);
+      ++(ctx->line_number);
       break;
   }
 }

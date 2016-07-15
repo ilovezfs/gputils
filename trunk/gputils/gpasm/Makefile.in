@@ -109,8 +109,8 @@ am__v_AR_1 =
 libgpasm_a_AR = $(AR) $(ARFLAGS)
 libgpasm_a_LIBADD =
 am_libgpasm_a_OBJECTS = cod.$(OBJEXT) coff.$(OBJEXT) deps.$(OBJEXT) \
-	directive.$(OBJEXT) evaluate.$(OBJEXT) gpasm.$(OBJEXT) \
-	gpmsg.$(OBJEXT) lst.$(OBJEXT) macro.$(OBJEXT) \
+	directive.$(OBJEXT) evaluate.$(OBJEXT) file.$(OBJEXT) \
+	gpasm.$(OBJEXT) gpmsg.$(OBJEXT) lst.$(OBJEXT) macro.$(OBJEXT) \
 	preprocess.$(OBJEXT) processor.$(OBJEXT) special.$(OBJEXT) \
 	util.$(OBJEXT) ppscan.$(OBJEXT) scan.$(OBJEXT) parse.$(OBJEXT) \
 	ppparse.$(OBJEXT)
@@ -325,6 +325,8 @@ libgpasm_a_SOURCES = \
 	directive.h \
 	evaluate.c \
 	evaluate.h \
+	file.c \
+	file.h \
 	gpasm.c \
 	gpasm.h.in \
 	gpmsg.c \
@@ -463,6 +465,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/deps.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/directive.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/evaluate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpasm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpmsg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lst.Po@am__quote@

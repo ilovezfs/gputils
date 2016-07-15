@@ -45,6 +45,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gpasm.h"
 #include "parse.h"
 #include "scan.h"
+#include "file.h"
 #include "deps.h"
 #include "gpmsg.h"
 #include "directive.h"
@@ -640,23 +641,6 @@ a'{STR_QCHAR}'           {
                          }
 %%
 
-static void
-_search_paths(source_context_t *Context, const char *Name)
-{
-  char tryname[PATH_MAX + 1];
-  int  i;
-
-  for (i = 0; i < state.num_paths; i++) {
-    snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], Name);
-    Context->f = fopen(tryname, "rt");
-
-    if (Context->f != NULL) {
-      Context->name = GP_Strdup(tryname);
-      break;
-    }
-  }
-}
-
 void
 open_src(const char *Name, gp_boolean Is_include)
 {
@@ -668,7 +652,7 @@ open_src(const char *Name, gp_boolean Is_include)
     state.src_list.last->yybuf = YY_CURRENT_BUFFER;
   }
 
-  new = gp_node_new(sizeof(source_context_t));
+  new = gp_list_node_new(sizeof(source_context_t));
   new->f = fopen(Name, "rt");
 
   if (new->f != NULL) {
@@ -676,14 +660,14 @@ open_src(const char *Name, gp_boolean Is_include)
   }
   else if (Is_include && (strchr(Name, PATH_SEPARATOR_CHAR) == 0)) {
     /* If include file and no PATH_SEPARATOR_CHAR in name, try searching include path. */
-    _search_paths(new, Name);
+    file_search_paths(new, Name);
 
     if (new->f == NULL) {
       /* We didn't find a match so check for lower case. This is mainly for
          Microchip examples and some includes in which filenames were written
          without regard to case. */
       lower_case_name = gp_strdup_lower_case(Name);
-      _search_paths(new, lower_case_name);
+      file_search_paths(new, lower_case_name);
       free(lower_case_name);
 
       if (new->f != NULL) {
@@ -722,9 +706,9 @@ open_src(const char *Name, gp_boolean Is_include)
       gp_list_set_delete_node_func(&state.src_list, file_delete_node);
     }
 
-    gp_node_append(&state.src_list, new);
+    gp_list_node_append(&state.src_list, new);
 
-    state.src_list.last->fc = add_file(FT_SRC, new->name);
+    state.src_list.last->fc = file_add(FT_SRC, new->name);
     deps_add(new->name);
 
     if (!Is_include) {
@@ -732,6 +716,7 @@ open_src(const char *Name, gp_boolean Is_include)
       force_decimal = false;
       force_ident   = false;
     }
+
     state.src_list.last->last_char_is_nl = true;
     state.found_end = false;
   }
@@ -740,26 +725,28 @@ open_src(const char *Name, gp_boolean Is_include)
 void
 execute_macro(macro_head_t *Head, gp_boolean Is_while)
 {
-  source_context_t *new = gp_node_new(sizeof(source_context_t));
+  source_context_t *ctx;
+  source_context_t *new;
 
-  assert(state.src_list.last != NULL);
-  state.src_list.last->yybuf = YY_CURRENT_BUFFER;
-  /* store the stack so it can be returned when the macro is complete */
-  state.src_list.last->astack = state.astack;
+  ctx = state.src_list.last;
+  assert(ctx != NULL);
+  ctx->yybuf = YY_CURRENT_BUFFER;
+  /* Store the stack so it can be returned when the macro is complete. */
+  ctx->astack = state.astack;
 
-  /* create new source_context */
-  new->name = GP_Strdup(Head->src_name);
-  new->type = (Is_while) ? SRC_WHILE : SRC_MACRO;
-
+  /* Create new source_context. */
+  new = gp_list_node_new(sizeof(source_context_t));
+  new->name        = GP_Strdup(Head->src_name);
+  new->type        = (Is_while) ? SRC_WHILE : SRC_MACRO;
   new->line_number = Head->line_number + 1;
   new->loop_number = 1;
   new->file_symbol = Head->file_symbol;
   new->mac_head    = Head;
   new->mac_body    = Head->body;
 
-  gp_node_append(&state.src_list, new);
+  gp_list_node_append(&state.src_list, new);
 
-  state.src_list.last->fc = add_file(FT_SRC, new->name); /* scan list for fc */
+  state.src_list.last->fc = file_add(FT_SRC, new->name); /* scan list for fc */
   yy_switch_to_buffer(yy_create_buffer(NULL, YY_BUF_SIZE));
 }
 
@@ -801,12 +788,10 @@ close_file(void)
       coff_add_eof_sym();
     }
 
-    gp_node_remove(&state.src_list, ctx);
-    free(ctx->name);
-    free(ctx);
+    gp_list_node_delete(&state.src_list, ctx);
   }
   else if (ctx->type == SRC_MACRO) {
-    gp_node_remove(&state.src_list, ctx);
+    gp_list_node_remove(&state.src_list, ctx);
 
     state.stTop         = gp_sym_pop_table(state.stTop);
     state.stMacroParams = gp_sym_pop_table(state.stMacroParams);
@@ -818,13 +803,10 @@ close_file(void)
     assert(state.stTop != NULL);
     assert(state.stMacroParams != NULL);
 
-    free(ctx->name);
-    free(ctx);
+    gp_list_node_free(&state.src_list, ctx);
   }
   else if (ctx->type == SRC_WHILE) {
-    gp_node_remove(&state.src_list, ctx);
-    free(ctx->name);
-    free(ctx);
+    gp_list_node_delete(&state.src_list, ctx);
   }
 }
 
@@ -870,12 +852,16 @@ found_end(void)
 static gp_boolean
 _found_eof(void)
 {
-  gp_boolean     terminate = false;
-  enum src_types prev_type;
+  source_context_t *ctx;
+  gp_boolean        terminate;
+  enum src_types    prev_type;
+
+  ctx       = state.src_list.last;
+  terminate = false;
 
   if (IN_WHILE_EXPANSION) {
-    if (eval_maybe_evaluate(state.src_list.last->mac_head->parms)) {
-      if (state.src_list.last->loop_number > WHILE_LOOP_COUNT_MAX) {
+    if (eval_maybe_evaluate(ctx->mac_head->parms)) {
+      if (ctx->loop_number > WHILE_LOOP_COUNT_MAX) {
         gpmsg_verror(GPE_BAD_WHILE_LOOP, NULL);
       }
       else {
@@ -888,20 +874,21 @@ _found_eof(void)
 
   prev_type = state.src_list.last->type;
   close_file();
+  ctx = state.src_list.last;
 
-  if (state.src_list.last != NULL) {
+  if (ctx != NULL) {
     /* Just an include file. */
     yy_delete_buffer(YY_CURRENT_BUFFER);
-    yy_switch_to_buffer(state.src_list.last->yybuf);
+    yy_switch_to_buffer(ctx->yybuf);
 
     if ((state.pass == 2) && (prev_type == SRC_WHILE)) {
       /* Force ENDW listing */
       state.lst.line.linetype = LTY_DIR;
       /* Line number was alreay incremented, so it has to be decremented,
-       * source line listed and line number incremented again. */
-      --(state.src_list.last->line_number);
-      lst_format_line(state.src_list.last->curr_src_line.line, 0);
-      ++(state.src_list.last->line_number);
+         source line listed and line number incremented again. */
+      --(ctx->line_number);
+      lst_format_line(ctx->curr_src_line.line, 0);
+      ++(ctx->line_number);
     }
   }
   else {

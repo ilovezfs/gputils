@@ -119,6 +119,7 @@ cod_lst_line(unsigned int List_line)
   static DirBlockInfo *dbi = NULL;
   static int           _64k_base = 0;
 
+  source_context_t    *ctx;
   uint8_t              smod_flag;
   BlockList           *lb;
   gp_boolean           first_time;
@@ -129,8 +130,10 @@ cod_lst_line(unsigned int List_line)
     return;
   }
 
+  ctx = state.src_list.last;
+
   /* Don't start until after the source is open. */
-  if (state.src_list.last == NULL) {
+  if (ctx == NULL) {
     return;
   }
 
@@ -156,8 +159,8 @@ cod_lst_line(unsigned int List_line)
     lb = gp_blocks_append(&dbi->lst, gp_blocks_new());
   }
 
-  assert(state.src_list.last->fc != NULL);
-  lb->block[dbi->lst.offset + COD_LS_SFILE] = state.src_list.last->fc->id;
+  assert(ctx->fc != NULL);
+  lb->block[dbi->lst.offset + COD_LS_SFILE] = ctx->fc->id;
 
   smod_flag = (first_time) ? COD_LS_SMOD_FLAG_ALL :
                              ((state.cod.emitting != 0) ? COD_LS_SMOD_FLAG_C1 :
@@ -166,7 +169,7 @@ cod_lst_line(unsigned int List_line)
   lb->block[dbi->lst.offset + COD_LS_SMOD] = smod_flag;
 
   /* Write the source file line number corresponding to the list file line number. */
-  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLINE], state.src_list.last->line_number);
+  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLINE], ctx->line_number);
 
   /* Write the address of the opcode. */
   gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLOC], address);

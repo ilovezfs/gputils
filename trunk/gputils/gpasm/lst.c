@@ -909,31 +909,40 @@ lst_memory_map(MemBlock_t *M)
 void
 lst_format_line(const char *Src_line, unsigned int Value)
 {
-  unsigned int  emitted = 0;
-  unsigned int  emitted_lines = 0;
-  unsigned int  byte_addr = 0;
-  unsigned int  bytes_emitted = 0;
+  unsigned int  emitted;
+  unsigned int  emitted_lines;
+  unsigned int  byte_addr;
+  unsigned int  bytes_emitted;
   unsigned int  lst_bytes;
-  const char   *addr_fmt = IS_PIC16E_CORE ? "%06X " : (IS_EEPROM ? "%04X " : "%04X   ");
-  unsigned int  pos = 0;
+  const char   *addr_fmt;
+  unsigned int  pos;
   uint16_t      reloc_type;
-  MemBlock_t   *m = state.i_memory;
+  MemBlock_t   *m;
   uint32_t      addr;
   uint16_t      word;
-  gp_reloc_t   *p;
+  gp_reloc_t   *reloc;
 
   assert(Src_line != NULL);
+
+  emitted       = 0;
+  emitted_lines = 0;
+  bytes_emitted = 0;
+  addr_fmt      = IS_PIC16E_CORE ? "%06X " : (IS_EEPROM ? "%04X " : "%04X   ");
+  pos           = 0;
+  m             = state.i_memory;
+
+  byte_addr = state.lst.line.was_byte_addr;
 
   if ((state.mode == MODE_RELOCATABLE) && (state.obj.section != NULL) &&
       (state.obj.new_sect_flags & STYP_TEXT) && (state.obj.section->relocation_list.last != NULL)) {
       addr = state.obj.section->address + state.obj.section->relocation_list.last->address;
 
-      if (addr > state.lst.line.was_byte_addr) {
+      if (addr > byte_addr) {
         /* already passed it, go back to the history */
-        p = _find_reloc_by_address(state.lst.line.was_byte_addr);
-        reloc_type = (p != NULL) ? p->type : 0;
+        reloc      = _find_reloc_by_address(byte_addr);
+        reloc_type = (reloc != NULL) ? reloc->type : 0;
       }
-      else if (addr == state.lst.line.was_byte_addr) {
+      else if (addr == byte_addr) {
         reloc_type = state.obj.section->relocation_list.last->type;
       }
       else {
@@ -946,11 +955,11 @@ lst_format_line(const char *Src_line, unsigned int Value)
 
   switch (state.lst.line.linetype) {
     case LTY_INSN:
-      emitted_lines = emitted = state.byte_addr - state.lst.line.was_byte_addr;
+      emitted_lines = emitted = state.byte_addr - byte_addr;
       break;
 
     case LTY_DATA: {
-      emitted = state.byte_addr - state.lst.line.was_byte_addr;
+      emitted = state.byte_addr - byte_addr;
 
       if ((SECTION_FLAGS & (STYP_TEXT | (state.mpasm_compatible ? STYP_BPACK : 0))) == STYP_TEXT) {
         /* generate line numbers for data directives in program memory;
@@ -963,11 +972,11 @@ lst_format_line(const char *Src_line, unsigned int Value)
     case LTY_RES: {
       if (SECTION_FLAGS & STYP_DATA) {
         /* generate data listing for idata */
-        emitted = state.byte_addr - state.lst.line.was_byte_addr;
+        emitted = state.byte_addr - byte_addr;
       }
       else if (!IS_RAM_ORG) {
         /* generate line numbers for res directives in program memory */
-        emitted_lines = emitted = state.byte_addr - state.lst.line.was_byte_addr;
+        emitted_lines = emitted = state.byte_addr - byte_addr;
       }
       break;
     }
@@ -988,6 +997,7 @@ lst_format_line(const char *Src_line, unsigned int Value)
     return;
   }
 
+  byte_addr = 0;
   switch (state.lst.line.linetype) {
     case LTY_EQU:
     case LTY_SET:
@@ -1007,11 +1017,11 @@ lst_format_line(const char *Src_line, unsigned int Value)
 
     case LTY_IDLOCS:
       /* not used for 16 bit devices, config is used */
-      m = state.c_memory;
-      pos += _lst_printf(addr_fmt, gp_processor_insn_from_byte_p(state.processor, state.device.id_location));
-      lst_bytes = _lst_data(pos, m, state.device.id_location, emitted, reloc_type);
-      byte_addr = state.device.id_location + lst_bytes;
-      bytes_emitted = emitted - lst_bytes;
+      m              = state.c_memory;
+      pos           += _lst_printf(addr_fmt, gp_processor_insn_from_byte_p(state.processor, state.device.id_location));
+      lst_bytes      = _lst_data(pos, m, state.device.id_location, emitted, reloc_type);
+      byte_addr      = state.device.id_location + lst_bytes;
+      bytes_emitted  = emitted - lst_bytes;
       break;
 
     case LTY_DATA:
@@ -1024,8 +1034,8 @@ lst_format_line(const char *Src_line, unsigned int Value)
 
 lst_data:
 
-      lst_bytes = _lst_data(pos, m, state.lst.line.was_byte_addr, emitted, reloc_type);
-      byte_addr = state.lst.line.was_byte_addr + lst_bytes;
+      lst_bytes     = _lst_data(pos, m, state.lst.line.was_byte_addr, emitted, reloc_type);
+      byte_addr     = state.lst.line.was_byte_addr + lst_bytes;
       bytes_emitted = emitted - lst_bytes;
       break;
 

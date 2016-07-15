@@ -488,9 +488,6 @@ extern const char *value_type_to_str(const variable_t *Variable, gp_boolean Prev
 extern const char *pnode_symbol_name(const pnode_t *Pnode);
 extern gpasmVal pnode_symbol_value(const pnode_t *Pnode);
 extern const char *pnode_string(const pnode_t *Pnode);
-extern void file_delete_node(void *Node);
-extern file_context_t *add_file(unsigned int type, const char *name);
-extern void free_files(void);
 extern void macro_append(void);
 extern void hex_init(void);
 

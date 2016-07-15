@@ -36,13 +36,14 @@ typedef void (*gp_node_del_t)(void *);
   gp_node_del_t  node_del;  \
   unsigned int   serial_id
 
-extern void *gp_node_new(size_t Item_size);
-extern void gp_node_free(void *Node);
-extern void *gp_node_append(void *List, void *Node);
-extern void *gp_node_insert_after(void *List, void *Node, void *Node_new);
-extern void *gp_node_insert_before(void *List, void *Node, void *Node_new);
-extern void *gp_node_remove(void *List, void *Node);
-extern void *gp_node_move(void *Dst, void *Src, void *Node);
+extern void *gp_list_node_new(size_t Item_size);
+extern void gp_list_node_free(void *List, void *Node);
+extern void *gp_list_node_append(void *List, void *Node);
+extern void *gp_list_node_insert_after(void *List, void *Node, void *Node_new);
+extern void *gp_list_node_insert_before(void *List, void *Node, void *Node_new);
+extern void *gp_list_node_remove(void *List, void *Node);
+extern void *gp_list_node_move(void *Dst, void *Src, void *Node);
+extern void gp_list_node_delete(void *List, void *Node);
 
 extern void gp_list_set_delete_node_func(void *List, gp_node_del_t Function);
 extern void **gp_list_make_block(void *List, size_t Num_nodes, size_t Item_size);

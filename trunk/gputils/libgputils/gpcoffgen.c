@@ -153,7 +153,7 @@ gp_coffgen_new_section(const char *Name, MemBlock_t *Data)
   gp_section_t *new;
 
   /* allocate memory for the section */
-  new = (gp_section_t *)gp_node_new(sizeof(gp_section_t));
+  new = (gp_section_t *)gp_list_node_new(sizeof(gp_section_t));
 
   /* initialize section */
   new->name      = GP_Strdup(Name);
@@ -209,7 +209,7 @@ gp_coffgen_add_exists_section(gp_object_t *Object, gp_section_t *Section)
     return NULL;
   }
 
-  gp_node_append(&Object->section_list, Section);
+  gp_list_node_append(&Object->section_list, Section);
   Section->object_id = Object->serial_id;
 
   return Section;
@@ -232,7 +232,7 @@ gp_coffgen_insert_after_section(gp_object_t *Object, gp_section_t *Ancestor, gp_
     assert(0);
   }
 
-  gp_node_insert_after(&Object->section_list, Ancestor, Following);
+  gp_list_node_insert_after(&Object->section_list, Ancestor, Following);
   Following->object_id = Object->serial_id;
 
   return Following;
@@ -416,7 +416,7 @@ gp_coffgen_move_reserve_section(gp_object_t *Object, gp_section_t *Section)
     assert(0);
   }
 
-  gp_node_move(&Object->dead_section_list, &Object->section_list, Section);
+  gp_list_node_move(&Object->dead_section_list, &Object->section_list, Section);
   _decrease_relocation_counts(Section);
   return Section;
 }
@@ -438,7 +438,7 @@ gp_coffgen_del_section(gp_object_t *Object, gp_section_t *Section)
     assert(0);
   }
 
-  gp_node_remove(&Object->section_list, Section);
+  gp_list_node_remove(&Object->section_list, Section);
   gp_coffgen_free_section(Section);
   return true;
 }
@@ -646,7 +646,7 @@ gp_coffgen_add_symbol(gp_object_t *Object, const char *Name)
   gp_symbol_t *new;
 
   /* allocate memory for the symbol */
-  new = (gp_symbol_t *)gp_node_append(&Object->symbol_list, gp_node_new(sizeof(gp_symbol_t)));
+  new = (gp_symbol_t *)gp_list_node_append(&Object->symbol_list, gp_list_node_new(sizeof(gp_symbol_t)));
   new->name      = GP_Strdup(Name);
   new->number    = Object->num_symbols;
   new->object_id = Object->serial_id;
@@ -664,7 +664,7 @@ gp_coffgen_add_aux(gp_object_t *Object, gp_symbol_t *Symbol)
 {
   gp_aux_t *new;
 
-  new = (gp_aux_t *)gp_node_append(&Symbol->aux_list, gp_node_new(sizeof(gp_aux_t)));
+  new = (gp_aux_t *)gp_list_node_append(&Symbol->aux_list, gp_list_node_new(sizeof(gp_aux_t)));
 
   (Object->num_symbols)++;
 
@@ -720,7 +720,7 @@ gp_coffgen_move_reserve_symbol(gp_object_t *Object, gp_symbol_t *Symbol)
     assert(0);
   }
 
-  gp_node_move(&Object->dead_symbol_list, &Object->symbol_list, Symbol);
+  gp_list_node_move(&Object->dead_symbol_list, &Object->symbol_list, Symbol);
   Object->num_symbols -= 1 + Symbol->aux_list.num_nodes;
 
   return Symbol;
@@ -743,7 +743,7 @@ gp_coffgen_del_symbol(gp_object_t *Object, gp_symbol_t *Symbol)
     assert(0);
   }
 
-  gp_node_remove(&Object->symbol_list, Symbol);
+  gp_list_node_remove(&Object->symbol_list, Symbol);
   Object->num_symbols -= 1 + gp_coffgen_free_symbol(Symbol);
   return true;
 }
@@ -926,7 +926,7 @@ gp_coffgen_add_reloc(gp_section_t *Section)
   gp_reloc_t *new;
 
   /* allocate memory for the relocation */
-  new = (gp_reloc_t *)gp_node_append(&Section->relocation_list, gp_node_new(sizeof(gp_reloc_t)));
+  new = (gp_reloc_t *)gp_list_node_append(&Section->relocation_list, gp_list_node_new(sizeof(gp_reloc_t)));
   new->section_id = Section->serial_id;
 
   return new;
@@ -1102,7 +1102,7 @@ gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation)
     assert(0);
   }
 
-  gp_node_remove(&Section->relocation_list, Relocation);
+  gp_list_node_remove(&Section->relocation_list, Relocation);
 
   symbol  = Relocation->symbol;
   assert(symbol != NULL);
@@ -1142,7 +1142,7 @@ gp_coffgen_del_reloc(gp_section_t *Section, gp_reloc_t *Relocation)
     gp_warning("Number of relocation references of symbol from all section is zero: '%s'", symbol->name);
   }
 
-  gp_node_free(Relocation);
+  gp_list_node_free(&Section->relocation_list, Relocation);
   return true;
 }
 
@@ -1240,7 +1240,7 @@ gp_coffgen_add_linenum(gp_section_t *Section)
   gp_linenum_t *new;
 
   /* allocate memory for the line number */
-  new = (gp_linenum_t *)gp_node_append(&Section->line_number_list, gp_node_new(sizeof(gp_linenum_t)));
+  new = (gp_linenum_t *)gp_list_node_append(&Section->line_number_list, gp_list_node_new(sizeof(gp_linenum_t)));
   new->section_id = Section->serial_id;
 
   return new;
@@ -1263,8 +1263,7 @@ gp_coffgen_del_linenum(gp_section_t *Section, gp_linenum_t *Linenum)
     assert(0);
   }
 
-  gp_node_remove(&Section->line_number_list, Linenum);
-  gp_node_free(Linenum);
+  gp_list_node_delete(&Section->line_number_list, Linenum);
   return true;
 }
 

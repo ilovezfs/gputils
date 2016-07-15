@@ -148,15 +148,19 @@ macro_push_symbol_table(symbol_table_t *Table)
 void
 macro_list(macro_body_t *Body)
 {
-  unsigned int old_line_number = state.src_list.last->line_number;
+  source_context_t *ctx;
+  unsigned int      old_line_number;
 
-  /* Never executed: list the macro body */
+  ctx             = state.src_list.last;
+  old_line_number = ctx->line_number;
+  /* Never executed: List the macro body. */
   state.lst.line.linetype = LTY_DIR;
-  state.src_list.last->line_number  = state.while_head->line_number;
+  ctx->line_number        = state.while_head->line_number;
   while (Body != NULL) {
-    ++(state.src_list.last->line_number);
+    ++(ctx->line_number);
     lst_format_line(Body->src_line, 0);
     Body = Body->next;
   }
-  state.src_list.last->line_number = old_line_number;
+
+  ctx->line_number = old_line_number;
 }

@@ -17,6 +17,8 @@ libgpasm_a_SOURCES = \
 	directive.h \
 	evaluate.c \
 	evaluate.h \
+	file.c \
+	file.h \
 	gpasm.c \
 	gpasm.h.in \
 	gpmsg.c \
