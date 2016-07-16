@@ -1,4 +1,8 @@
 2016-07-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gputils/dump.c:
+    bugfix
+
+2016-07-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
     Fixed the assume bug.
 
