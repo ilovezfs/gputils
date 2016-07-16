@@ -134,11 +134,11 @@ _memmap_free(void)
 static void
 _memmap_create_used_map(unsigned int Start_address)
 {
-  memmap_info_t *info;
-  unsigned int   block_start;
-  unsigned int   block_end;
-  unsigned int   offset;
-  unsigned int   size;
+  const memmap_info_t *info;
+  unsigned int         block_start;
+  unsigned int         block_end;
+  unsigned int         offset;
+  unsigned int         size;
 
   info = memmap_info_list;
   if (info == NULL) {
@@ -162,6 +162,18 @@ _memmap_create_used_map(unsigned int Start_address)
       if (size > 0) {
         /* This is a used ROM range. */
         memset(&used_map[offset], true, size);
+      }
+    }
+    else if ((info->start_addr < block_start) && (info->start_addr < block_end)) {
+      size = info->end_addr - block_start;
+
+      if (size > COD_BLOCK_SIZE) {
+        size = COD_BLOCK_SIZE;
+      }
+
+      if (size > 0) {
+        /* This is a used ROM range. */
+        memset(used_map, true, size);
       }
     }
     else if (info->start_addr >= block_end) {
