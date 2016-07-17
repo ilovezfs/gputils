@@ -650,7 +650,7 @@ gp_absolute_path(char *file_name)
 
   resolved_name = realpath(file_name, NULL);
   if (resolved_name == NULL) {
-    gp_error("Can't fetch full path of %s.", file_name);
+    gp_error("Can't fetch full path of \"%s\".", file_name);
     return file_name;
   }
   else {
