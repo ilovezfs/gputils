@@ -30,22 +30,22 @@ Boston, MA 02111-1307, USA.  */
 /*------------------------------------------------------------------------------------------------*/
 
 void
-read_block(uint8_t *block, unsigned int block_number)
+read_block(FILE *Code_file, uint8_t *Block, unsigned int Block_number)
 {
   size_t n;
 
-  fseek(codefile, block_number * COD_BLOCK_SIZE, SEEK_SET);
-  n = fread(block, 1, COD_BLOCK_SIZE, codefile);
+  fseek(Code_file, Block_number * COD_BLOCK_SIZE, SEEK_SET);
+  n = fread(Block, 1, COD_BLOCK_SIZE, Code_file);
 
   if (n != COD_BLOCK_SIZE) {
-    gp_error("bad block number %u", block_number);
+    gp_error("bad block number %u", Block_number);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 DirBlockInfo *
-read_directory(void)
+read_directory(FILE *Code_file)
 {
   DirBlockInfo *dbi;
   DirBlockInfo *start;
@@ -67,7 +67,7 @@ read_directory(void)
       dbi       = p;
     }
 
-    read_block(dbi->dir, next_dir_block);
+    read_block(Code_file, dbi->dir, next_dir_block);
   } while ((next_dir_block = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR])) != 0);
 
   dbi->next = NULL;

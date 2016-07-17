@@ -38,13 +38,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define DISPLAY_WIDE            (1 << 5)
 
-FILE         *codefile;
-char         *source_file_names[MAX_SOURCE_FILES];
-DirBlockInfo *main_dir = NULL;
-
-static char filename[BUFFER_LENGTH];
-
-#define GET_OPTIONS         "adhlmrsvw"
+#define GET_OPTIONS             "adhlmrsvw"
 
 /* Used: adhlmrsv */
 static struct option longopts[] =
@@ -60,6 +54,10 @@ static struct option longopts[] =
   { "wide",      no_argument, NULL, 'w' },
   { NULL,        no_argument, NULL, '\0'}
 };
+
+static char          filename[PATH_MAX];
+static FILE         *code_file;
+static DirBlockInfo *main_dir;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -159,14 +157,14 @@ main(int argc, char *argv[])
     _show_usage();
   }
 
-  codefile = fopen(filename, "rb");
-  if (codefile == NULL) {
+  code_file = fopen(filename, "rb");
+  if (code_file == NULL) {
     perror(filename);
     exit(1);
   }
 
   /* Start off by reading the directory block. */
-  main_dir = read_directory();
+  main_dir = read_directory(code_file);
 
   /* Determine if byte address and org are different. */
   processor_name  = substr(temp_buf, sizeof(temp_buf), &main_dir->dir[COD_DIR_PROCESSOR], 8);
@@ -174,29 +172,29 @@ main(int argc, char *argv[])
   processor_class = gp_processor_class(processor_info);
 
   if (display_flags & DISPLAY_DIR) {
-    dump_directory_blocks(processor_class);
+    dump_directory_blocks(main_dir, processor_class);
   }
 
   if (display_flags & DISPLAY_ROM) {
-    dump_code(processor_class, processor_info, (display_flags & DISPLAY_WIDE));
+    dump_code(code_file, main_dir, processor_info, (display_flags & DISPLAY_WIDE));
   }
 
   if (display_flags & DISPLAY_SYM) {
-    dump_symbols();
-    dump_lsymbols();
-    dump_local_vars(processor_class);
+    dump_symbols(code_file, main_dir);
+    dump_lsymbols(code_file, main_dir);
+    dump_local_vars(code_file, main_dir, processor_class);
   }
 
-  dump_source_files();
+  dump_source_files(code_file, main_dir);
 
   if (display_flags & DISPLAY_SRC) {
-    dump_line_symbols();
+    dump_line_symbols(code_file, main_dir);
   }
 
   if (display_flags & DISPLAY_MESS) {
-    dump_message_area();
+    dump_message_area(code_file, main_dir);
   }
 
-  fclose(codefile);
+  fclose(code_file);
   return EXIT_SUCCESS;
 }

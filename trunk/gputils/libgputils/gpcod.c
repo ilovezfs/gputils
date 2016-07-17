@@ -54,7 +54,7 @@ gp_cod_date(uint8_t *Buffer, size_t Sizeof_buffer)
 
   time(&now);
   now_tm = localtime(&now);
-  snprintf(temp, sizeof(temp), "%02d%3s%02d", now_tm->tm_mday, &mon_name[now_tm->tm_mon][0],
+  snprintf(temp, sizeof(temp), "%02d%3s%02d", now_tm->tm_mday, mon_name[now_tm->tm_mon],
            now_tm->tm_year % 100);
 
   memcpy(Buffer, temp, Sizeof_buffer);

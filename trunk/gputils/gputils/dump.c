@@ -29,16 +29,19 @@ Boston, MA 02111-1307, USA.  */
 #include "dump.h"
 #include "block.h"
 
+#define MAX_SOURCE_FILES        100
+
 typedef struct memmap_info {
   unsigned int        start_addr;
   unsigned int        end_addr;
   struct memmap_info *next;
 } memmap_info_t;
 
-int number_of_source_files = 0;
-
 static uint8_t  temp[COD_BLOCK_SIZE];
 static uint8_t  used_map[COD_BLOCK_SIZE];
+
+static int      number_of_source_files = 0;
+static char    *source_file_names[MAX_SOURCE_FILES];
 static FILE    *source_files[MAX_SOURCE_FILES];
 
 static const char *SymbolType4[154] = {
@@ -192,7 +195,7 @@ _memmap_create_used_map(unsigned int Start_address)
 */
 
 static char *
-_fget_line(int line, char *buffer, int size, FILE *pFile)
+_fget_line(int Line, char *Buffer, int Size, FILE *pFile)
 {
   static FILE *plastFile = NULL;
   static int   lastline  = -1;
@@ -209,25 +212,25 @@ _fget_line(int line, char *buffer, int size, FILE *pFile)
     then see if we can take advantage of the file state:
    */
   if ((pFile != plastFile) ||       /* if the file is the same */
-      (line < (lastline - 1)) ||    /* and the line is past the previous */
+      (Line < (lastline - 1)) ||    /* and the line is past the previous */
       (ftell(pFile) != lastPos)) {  /* and the file hasn't been touched */
     plastFile = pFile;
-    lastline = 1;
+    lastline  = 1;
+    lastPos   = -1;
     rewind(pFile);
-    lastPos = -1;
   }
 
-  while (line >= ++lastline) {
-    ps = fgets(buffer, size, plastFile);
-    assert(ps == buffer);
+  while (Line >= ++lastline) {
+    ps = fgets(Buffer, Size, plastFile);
+    assert(ps == Buffer);
   }
 
-  ps = fgets(buffer, size, plastFile);
-  assert(ps == buffer);
+  ps = fgets(Buffer, Size, plastFile);
+  assert(ps == Buffer);
 
   lastPos = ftell(plastFile);
 
-  return buffer;
+  return Buffer;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -237,13 +240,13 @@ _fget_line(int line, char *buffer, int size, FILE *pFile)
 */
 
 char *
-substr(char *dst, size_t sizeof_dst, const uint8_t *src, size_t sizeof_src)
+substr(char *Dst, size_t Sizeof_dst, const uint8_t *Src, size_t Sizeof_src)
 {
-  size_t size = (sizeof_src < sizeof_dst) ? sizeof_src : (sizeof_dst - 1);
+  size_t size = (Sizeof_src < Sizeof_dst) ? Sizeof_src : (Sizeof_dst - 1);
 
-  memcpy(dst, src, size);
-  dst[size] = '\0';
-  return dst;
+  memcpy(Dst, Src, size);
+  Dst[size] = '\0';
+  return Dst;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -253,32 +256,37 @@ substr(char *dst, size_t sizeof_dst, const uint8_t *src, size_t sizeof_src)
  */
 
 static void
-_dump_directory_block(const uint8_t *block, unsigned block_num)
+_dump_directory_block(const uint8_t *Block, unsigned int Block_num)
 {
   char         temp_buf[256];
+  unsigned int year;
+  char         month[8];
+  unsigned int day;
   unsigned int time;
   unsigned int bytes_for_address;
 
   printf("Directory block:                %04x\n"
-         "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n", block_num);
+         "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n", Block_num);
 
   printf("%03x - Source file:              %s\n",
-         COD_DIR_SOURCE, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_SOURCE], COD_FILE_SIZE - 1));
-  printf("%03x - Date:                     %s\n",
-         COD_DIR_DATE, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_DATE], 7));
+         COD_DIR_SOURCE, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_SOURCE], COD_FILE_SIZE - 1));
+  substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_DATE], 7);
+  sscanf(temp_buf, "%u%3s%u", &day, month, &year);
+  printf("%03x - Date:                     %u %s %u\n",
+         COD_DIR_DATE, year + 2000, month, day);
 
-  time = gp_getl16(&block[COD_DIR_TIME]);
+  time = gp_getl16(&Block[COD_DIR_TIME]);
   printf("%03x - Time:                     %02u:%02u\n",
          COD_DIR_TIME, time / 100, time % 100);
 
   printf("%03x - Compiler version:         %s\n",
-         COD_DIR_VERSION, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_VERSION], 19));
+         COD_DIR_VERSION, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_VERSION], 19));
   printf("%03x - Compiler:                 %s\n",
-         COD_DIR_COMPILER, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_COMPILER], 11));
+         COD_DIR_COMPILER, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_COMPILER], 11));
   printf("%03x - Notice:                   %s\n",
-         COD_DIR_NOTICE, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_NOTICE], COD_FILE_SIZE - 1));
+         COD_DIR_NOTICE, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_NOTICE], COD_FILE_SIZE - 1));
 
-  bytes_for_address = block[COD_DIR_ADDRSIZE];
+  bytes_for_address = Block[COD_DIR_ADDRSIZE];
   printf("%03x - Bytes for address:        %u\n", COD_DIR_ADDRSIZE, bytes_for_address);
 
   if (bytes_for_address != 0) {
@@ -286,42 +294,42 @@ _dump_directory_block(const uint8_t *block, unsigned block_num)
   }
 
   printf("%03x - High word of 64k address: %04x\n",
-         COD_DIR_HIGHADDR, gp_getl16(&block[COD_DIR_HIGHADDR]));
+         COD_DIR_HIGHADDR, gp_getl16(&Block[COD_DIR_HIGHADDR]));
   printf("%03x - Next directory block:     %04x\n",
-         COD_DIR_NEXTDIR, gp_getl16(&block[COD_DIR_NEXTDIR]));
+         COD_DIR_NEXTDIR, gp_getl16(&Block[COD_DIR_NEXTDIR]));
   printf("%03x - COD file version:         %d\n",
-         COD_DIR_CODTYPE, gp_getl16(&block[COD_DIR_CODTYPE]));
+         COD_DIR_CODTYPE, gp_getl16(&Block[COD_DIR_CODTYPE]));
   printf("%03x - Processor:                %s\n",
-         COD_DIR_PROCESSOR, substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_PROCESSOR], 8));
+         COD_DIR_PROCESSOR, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_PROCESSOR], 8));
 
   printf("%03x,%03x - Short symbol table start block: %04x  end block: %04x\n",
          COD_DIR_SYMTAB, COD_DIR_SYMTAB + 2,
-         gp_getl16(&block[COD_DIR_SYMTAB]),
-         gp_getl16(&block[COD_DIR_SYMTAB + 2]));
+         gp_getl16(&Block[COD_DIR_SYMTAB]),
+         gp_getl16(&Block[COD_DIR_SYMTAB + 2]));
   printf("%03x,%03x - File name table start block:    %04x  end block: %04x\n",
          COD_DIR_NAMTAB, COD_DIR_NAMTAB + 2,
-         gp_getl16(&block[COD_DIR_NAMTAB]),
-         gp_getl16(&block[COD_DIR_NAMTAB + 2]));
+         gp_getl16(&Block[COD_DIR_NAMTAB]),
+         gp_getl16(&Block[COD_DIR_NAMTAB + 2]));
   printf("%03x,%03x - Source info table start block:  %04x  end block: %04x\n",
          COD_DIR_LSTTAB, COD_DIR_LSTTAB + 2,
-         gp_getl16(&block[COD_DIR_LSTTAB]),
-         gp_getl16(&block[COD_DIR_LSTTAB + 2]));
+         gp_getl16(&Block[COD_DIR_LSTTAB]),
+         gp_getl16(&Block[COD_DIR_LSTTAB + 2]));
   printf("%03x,%03x - Rom table start block:          %04x  end block: %04x\n",
          COD_DIR_MEMMAP, COD_DIR_MEMMAP + 2,
-         gp_getl16(&block[COD_DIR_MEMMAP]),
-         gp_getl16(&block[COD_DIR_MEMMAP + 2]));
+         gp_getl16(&Block[COD_DIR_MEMMAP]),
+         gp_getl16(&Block[COD_DIR_MEMMAP + 2]));
   printf("%03x,%03x - Local scope table start block:  %04x  end block: %04x\n",
          COD_DIR_LOCALVAR, COD_DIR_LOCALVAR + 2,
-         gp_getl16(&block[COD_DIR_LOCALVAR]),
-         gp_getl16(&block[COD_DIR_LOCALVAR + 2]));
+         gp_getl16(&Block[COD_DIR_LOCALVAR]),
+         gp_getl16(&Block[COD_DIR_LOCALVAR + 2]));
   printf("%03x,%03x - Long symbol table start block:  %04x  end block: %04x\n",
          COD_DIR_LSYMTAB, COD_DIR_LSYMTAB + 2,
-         gp_getl16(&block[COD_DIR_LSYMTAB]),
-         gp_getl16(&block[COD_DIR_LSYMTAB + 2]));
+         gp_getl16(&Block[COD_DIR_LSYMTAB]),
+         gp_getl16(&Block[COD_DIR_LSYMTAB + 2]));
   printf("%03x,%03x - Debug messages start block:     %04x  end block: %04x\n",
          COD_DIR_MESSTAB, COD_DIR_MESSTAB + 2,
-         gp_getl16(&block[COD_DIR_MESSTAB]),
-         gp_getl16(&block[COD_DIR_MESSTAB + 2]));
+         gp_getl16(&Block[COD_DIR_MESSTAB]),
+         gp_getl16(&Block[COD_DIR_MESSTAB + 2]));
   putchar('\n');
 }
 
@@ -332,7 +340,7 @@ _dump_directory_block(const uint8_t *block, unsigned block_num)
  */
 
 static void
-_dump_index(proc_class_t class, uint8_t *block)
+_dump_index(proc_class_t Class, const uint8_t *Block)
 {
   unsigned int _64k_base;
   unsigned int i;
@@ -343,11 +351,11 @@ _dump_index(proc_class_t class, uint8_t *block)
          "Block range    Block number\n"
          "---------------------------\n");
 
-  _64k_base   = IMemAddrFromBase((unsigned int)gp_getu16(&block[COD_DIR_HIGHADDR]));
-  addr_digits = class->addr_digits;
+  _64k_base   = IMemAddrFromBase((unsigned int)gp_getu16(&Block[COD_DIR_HIGHADDR]));
+  addr_digits = Class->addr_digits;
 
   for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
-    if ((curr_block = gp_getu16(&block[i * 2])) != 0) {
+    if ((curr_block = gp_getu16(&Block[i * 2])) != 0) {
       printf("%0*x-%0*x:    %u\n",
              addr_digits, _64k_base | (i << COD_BLOCK_BITS),
              addr_digits, (_64k_base | ((i + 1) << COD_BLOCK_BITS)) - 1,
@@ -365,17 +373,17 @@ _dump_index(proc_class_t class, uint8_t *block)
  */
 
 void
-dump_directory_blocks(proc_class_t class)
+dump_directory_blocks(const DirBlockInfo *Main_dir, proc_class_t Class)
 {
-  DirBlockInfo *dbi;
-  unsigned int  block_num;
+  const DirBlockInfo *dbi;
+  unsigned int        block_num;
 
   block_num = 0;
-  dbi       = main_dir;
+  dbi       = Main_dir;
 
   do {
     _dump_directory_block(dbi->dir, block_num);
-    _dump_index(class, dbi->dir);
+    _dump_index(Class, dbi->dir);
     block_num = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR]);
     dbi = dbi->next;
   } while (dbi != NULL);
@@ -388,24 +396,24 @@ dump_directory_blocks(proc_class_t class)
  */
 
 void
-dump_memmap(proc_class_t class, gp_boolean make_list)
+dump_memmap(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Class, gp_boolean Make_list)
 {
-  DirBlockInfo *dbi;
-  unsigned int  _64k_base;
-  int           addr_digits;
-  uint16_t      i;
-  uint16_t      j;
-  uint16_t      start_map_block;
-  uint16_t      end_map_block;
-  uint16_t      first_offset;
-  uint16_t      last_offset;
-  unsigned int  start_addr;
-  unsigned int  end_addr;
-  gp_boolean    first;
+  const DirBlockInfo *dbi;
+  unsigned int        _64k_base;
+  int                 addr_digits;
+  uint16_t            i;
+  uint16_t            j;
+  uint16_t            start_map_block;
+  uint16_t            end_map_block;
+  uint16_t            first_offset;
+  uint16_t            last_offset;
+  unsigned int        start_addr;
+  unsigned int        end_addr;
+  gp_boolean          first;
 
   first       = true;
-  addr_digits = class->addr_digits;
-  dbi         = main_dir;
+  addr_digits = Class->addr_digits;
+  dbi         = Main_dir;
 
   do {
     _64k_base       = IMemAddrFromBase((unsigned int)gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]));
@@ -421,7 +429,7 @@ dump_memmap(proc_class_t class, gp_boolean make_list)
       }
 
       for (j = start_map_block; j <= end_map_block; j++) {
-        read_block(temp, j);
+        read_block(Code_file, temp, j);
 
         for (i = 0; i < COD_CODE_IMAGE_BLOCKS; i++) {
           first_offset = gp_getl16(&temp[i * COD_MAPENTRY_SIZE + COD_MAPTAB_START]);
@@ -431,10 +439,10 @@ dump_memmap(proc_class_t class, gp_boolean make_list)
             start_addr = _64k_base + first_offset;
             end_addr   = _64k_base + last_offset + 1;
             printf("using ROM %0*x to %0*x\n",
-                   addr_digits, gp_processor_insn_from_byte_c(class, start_addr),
-                   addr_digits, gp_processor_insn_from_byte_c(class, end_addr) - 1);
+                   addr_digits, gp_processor_insn_from_byte_c(Class, start_addr),
+                   addr_digits, gp_processor_insn_from_byte_c(Class, end_addr) - 1);
 
-            if (make_list) {
+            if (Make_list) {
               _memmap_add(start_addr, end_addr);
             }
           }
@@ -477,35 +485,37 @@ _is_empty_to_last(unsigned int Index, unsigned int End)
 #define CODE_COLUMN_NUM_WIDE    16
 
 void
-dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
+dump_code(FILE *Code_file, const DirBlockInfo *Main_dir, pic_processor_t Processor, gp_boolean Wide_dump)
 {
-  char          border_gap0[16];
-  char          border_gap1[16];
-  char          buffer[BUFSIZ];
-  DirBlockInfo *dbi;
-  MemBlock_t   *data;
-  int           addr_digits;
-  unsigned int  _64k_base;
-  unsigned int  block_index;
-  unsigned int  byte_address;
-  int           num_words;
-  unsigned int  bsr_boundary;
-  unsigned int  i;
-  unsigned int  j;
-  unsigned int  k;
-  unsigned int  column_num;
-  uint16_t      word;
-  gp_boolean    used_prev;
-  gp_boolean    used_act;
-  gp_boolean    empty_signal;
-  gp_boolean    empty_line;
+  proc_class_t        class;
+  char                border_gap0[16];
+  char                border_gap1[16];
+  char                buffer[BUFSIZ];
+  const DirBlockInfo *dbi;
+  MemBlock_t         *data;
+  int                 addr_digits;
+  unsigned int        _64k_base;
+  unsigned int        block_index;
+  unsigned int        byte_address;
+  int                 num_words;
+  unsigned int        bsr_boundary;
+  unsigned int        i;
+  unsigned int        j;
+  unsigned int        k;
+  unsigned int        column_num;
+  uint16_t            word;
+  gp_boolean          used_prev;
+  gp_boolean          used_act;
+  gp_boolean          empty_signal;
+  gp_boolean          empty_line;
 
-  dump_memmap(class, true);
+  class = Processor->class;
+  dump_memmap(Code_file, Main_dir, class, true);
 
-  bsr_boundary = gp_processor_bsr_boundary(processor);
+  bsr_boundary = gp_processor_bsr_boundary(Processor);
   addr_digits  = class->addr_digits;
-  column_num   = (wide_dump) ? CODE_COLUMN_NUM_WIDE : CODE_COLUMN_NUM;
-  dbi          = main_dir;
+  column_num   = (Wide_dump) ? CODE_COLUMN_NUM_WIDE : CODE_COLUMN_NUM;
+  dbi          = Main_dir;
 
   i = addr_digits + 2;
 
@@ -531,10 +541,10 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
       block_index = gp_getu16(&dbi->dir[(k + COD_DIR_CODE) * WORD_SIZE]);
 
       if (block_index != 0) {
-        read_block(temp, block_index);
+        read_block(Code_file, temp, block_index);
 
         byte_address = _64k_base + (k * COD_BLOCK_N_WORDS) * WORD_SIZE;
-        if (wide_dump) {
+        if (Wide_dump) {
           printf("%s---------------------------------------------------------------------------------\n"
                  " Block %u -- %0*x-%0*x\n"
                  "%s+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n"
@@ -703,7 +713,7 @@ dump_code(proc_class_t class, pic_processor_t processor, gp_boolean wide_dump)
  */
 
 void
-dump_symbols(void)
+dump_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
   char         buf[16];
   unsigned int start_block;
@@ -711,16 +721,16 @@ dump_symbols(void)
   unsigned int i;
   unsigned int j;
 
-  start_block = gp_getu16(&main_dir->dir[COD_DIR_SYMTAB]);
+  start_block = gp_getu16(&Main_dir->dir[COD_DIR_SYMTAB]);
 
   if (start_block != 0) {
-    end_block = gp_getu16(&main_dir->dir[COD_DIR_SYMTAB + 2]);
+    end_block = gp_getu16(&Main_dir->dir[COD_DIR_SYMTAB + 2]);
 
     printf("Symbol Table Information:\n"
            "-------------------------\n");
 
     for (j = start_block; j <= end_block; j++) {
-      read_block(temp, j);
+      read_block(Code_file, temp, j);
 
       for (i = 0; i < SYMBOLS_PER_BLOCK; i++) {
         if (temp[i * SSYMBOL_SIZE + COD_SSYMBOL_NAME]) {
@@ -742,7 +752,7 @@ dump_symbols(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_lsymbols_max_length(void)
+_lsymbols_max_length(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
   unsigned int   start_block;
   unsigned int   end_block;
@@ -752,14 +762,14 @@ _lsymbols_max_length(void)
   unsigned int   length;
   unsigned int   max_length;
 
-  start_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB]);
+  start_block = gp_getu16(&Main_dir->dir[COD_DIR_LSYMTAB]);
 
   if (start_block != 0) {
-    end_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB + 2]);
+    end_block = gp_getu16(&Main_dir->dir[COD_DIR_LSYMTAB + 2]);
 
     max_length = 0;
     for (j = start_block; j <= end_block; j++) {
-      read_block(temp, j);
+      read_block(Code_file, temp, j);
 
       for (i = 0; i < COD_BLOCK_SIZE; ) {
         sym    = &temp[i];
@@ -788,7 +798,7 @@ _lsymbols_max_length(void)
  */
 
 void
-dump_lsymbols(void)
+dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
   char           buf[256];
   unsigned int   start_block;
@@ -801,17 +811,17 @@ dump_lsymbols(void)
   unsigned int   value;
   int            symbol_align;
 
-  symbol_align = _lsymbols_max_length();
-  start_block  = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB]);
+  symbol_align = _lsymbols_max_length(Code_file, Main_dir);
+  start_block  = gp_getu16(&Main_dir->dir[COD_DIR_LSYMTAB]);
 
   if (start_block != 0) {
-    end_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB + 2]);
+    end_block = gp_getu16(&Main_dir->dir[COD_DIR_LSYMTAB + 2]);
 
     printf("Long Symbol Table Information:\n"
            "-----------------------------------------------\n");
 
     for (j = start_block; j <= end_block; j++) {
-      read_block(temp, j);
+      read_block(Code_file, temp, j);
 
       for (i = 0; i < COD_BLOCK_SIZE; ) {
         sym    = &temp[i];
@@ -849,7 +859,7 @@ dump_lsymbols(void)
  */
 
 void
-dump_source_files(void)
+dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
   unsigned int  start_block;
   unsigned int  end_block;
@@ -859,16 +869,16 @@ dump_source_files(void)
   char          b[FILE_SIZE];
   char         *name;
 
-  start_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB]);
+  start_block = gp_getu16(&Main_dir->dir[COD_DIR_NAMTAB]);
 
   if (start_block != 0) {
-    end_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB + 2]);
+    end_block = gp_getu16(&Main_dir->dir[COD_DIR_NAMTAB + 2]);
 
     printf("Source File Information:\n"
            "------------------------\n");
 
     for (j = start_block; j <= end_block; j++) {
-      read_block(temp, j);
+      read_block(Code_file, temp, j);
 
       for (i = 0, offset = 0; i < FILES_PER_BLOCK; ++i, offset += FILE_SIZE) {
         substr(b, sizeof (b), &temp[offset + 1], FILE_SIZE);
@@ -922,29 +932,29 @@ _smod_flags(int smod)
  */
 
 void
-dump_line_symbols(void)
+dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
-  static int    lst_line_number = 1;
-  static int    last_src_line = 0;
+  static int          lst_line_number = 1;
+  static int          last_src_line = 0;
 
-  char          tline[2048];
-  char          nbuf[128];
-  const char   *source_file_name;
-  DirBlockInfo *dbi;
-  gp_boolean    has_line_num_info;
-  unsigned int  _64k_base;
-  unsigned int  offset;
-  unsigned int  start_block;
-  unsigned int  end_block;
-  unsigned int  i;
-  unsigned int  j;
-  uint8_t       sfile;
-  uint8_t       smod;
-  uint16_t      sline;
-  uint16_t      sloc;
+  char                tline[2048];
+  char                nbuf[128];
+  const char         *source_file_name;
+  const DirBlockInfo *dbi;
+  gp_boolean          has_line_num_info;
+  unsigned int        _64k_base;
+  unsigned int        offset;
+  unsigned int        start_block;
+  unsigned int        end_block;
+  unsigned int        i;
+  unsigned int        j;
+  uint8_t             sfile;
+  uint8_t             smod;
+  uint16_t            sline;
+  uint16_t            sloc;
 
   has_line_num_info = false;
-  dbi = main_dir;
+  dbi = Main_dir;
   do {
     _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]);
 
@@ -962,7 +972,7 @@ dump_line_symbols(void)
       }
 
       for (j = start_block; j <= end_block; j++) {
-        read_block(temp, j);
+        read_block(Code_file, temp, j);
 
         for (i = 0; i < COD_MAX_LINE_SYM; i++) {
           offset = i * COD_LINE_SYM_SIZE;
@@ -1018,7 +1028,7 @@ dump_line_symbols(void)
  */
 
 void
-dump_message_area(void)
+dump_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
   char         DebugType;
   char         DebugMessage[MAX_STRING_LEN];
@@ -1028,17 +1038,17 @@ dump_message_area(void)
   unsigned int j;
   uint32_t     laddress;
 
-  start_block = gp_getu16(&main_dir->dir[COD_DIR_MESSTAB]);
+  start_block = gp_getu16(&Main_dir->dir[COD_DIR_MESSTAB]);
 
   if (start_block != 0) {
-    end_block = gp_getu16(&main_dir->dir[COD_DIR_MESSTAB + 2]);
+    end_block = gp_getu16(&Main_dir->dir[COD_DIR_MESSTAB + 2]);
 
     printf("Debug Message area:\n"
            "     Addr  Cmd  Message\n"
            " --------  ---  -------------------------------------\n");
 
     for (i = start_block; i <= end_block; i++) {
-      read_block(temp, i);
+      read_block(Code_file, temp, i);
 
       for (j = 0; j < 504; ) {
         /* read big endian */
@@ -1072,7 +1082,7 @@ dump_message_area(void)
  */
 
 void
-dump_local_vars(proc_class_t proc_class)
+dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t proc_class)
 {
   uint8_t      *sh; /* scope_head */
   unsigned int  start_block;
@@ -1082,16 +1092,16 @@ dump_local_vars(proc_class_t proc_class)
   unsigned int  start;
   unsigned int  stop;
 
-  start_block = gp_getu16(&main_dir->dir[COD_DIR_LOCALVAR]);
+  start_block = gp_getu16(&Main_dir->dir[COD_DIR_LOCALVAR]);
 
   if (start_block != 0) {
-    end_block = gp_getu16(&main_dir->dir[COD_DIR_LOCALVAR + 2]);
+    end_block = gp_getu16(&Main_dir->dir[COD_DIR_LOCALVAR + 2]);
 
     printf("Local Symbol Scoping Information:\n"
            "---------------------------------\n");
 
     for (i = start_block; i <= end_block; i++) {
-      read_block(temp, i);
+      read_block(Code_file, temp, i);
 
       for (j = 0; j < SYMBOLS_PER_BLOCK; j++) {
         sh = &temp[j * SSYMBOL_SIZE];

@@ -36,16 +36,16 @@ Boston, MA 02111-1307, USA.  */
  * tells the starting and ending blocks that contain the symbols.
  *
  * Types of data blocks:
- * short symbol table    - A list of symbols in the "short format", which means that
+ * Short symbol table    - A list of symbols in the "short format", which means that
  *                         the symbol name is restricted to 12 characters. This is an
  *                         old format and is not provided by gpasm.
- * long symbol table     - A list of symbols in the "long format". Like the short
+ * Long symbol table     - A list of symbols in the "long format". Like the short
  *                         symbol table except the symbol names can be up to 255 chars.
- * list table            - A cross reference between the source line numbers, list
- *                         line numbers, and the program memory.
+ * List table            - A cross reference between the source line numbers, list
+ *                         line numbers and the program memory.
  * Memory map table      - Describes the ranges of memory used in the processor.
- * Local variables table - [c files - not supported by gpasm] this describes
- *                         the memory locations used by functions.
+ * Local variables table - This describes the memory locations used by functions.
+ *                         [C files - not supported by gpasm]
  * Source file names     - A list of the files used to assemble the source file.
  * Debug messages        - [not supported by gpasm] this provides a list of messages
  *     that can control the simulator or emulator.
@@ -75,18 +75,18 @@ Boston, MA 02111-1307, USA.  */
 #define COD_DIR_VERSION         331         /* Compiler version. */
 #define COD_DIR_COMPILER        351         /* Compiler name. */
 #define COD_DIR_NOTICE          363         /* Compiler copyright. */
-#define COD_DIR_SYMTAB          426         /* Start block of short symbol table. */
-#define COD_DIR_NAMTAB          430         /* Start block of file name table. */
-#define COD_DIR_LSTTAB          434         /* Start block of list file cross reference. */
-#define COD_DIR_ADDRSIZE        438         /* # of bytes for an address. */
+#define COD_DIR_SYMTAB          426         /* Start and end blocks of short symbol table. */
+#define COD_DIR_NAMTAB          430         /* Start and end blocks of file name table. */
+#define COD_DIR_LSTTAB          434         /* Start and end blocks of list file cross reference. */
+#define COD_DIR_ADDRSIZE        438         /* Number of bytes for an address. */
 #define COD_DIR_HIGHADDR        439         /* High word of address for 64kB Code block. */
 #define COD_DIR_NEXTDIR         441         /* Next directory block. */
-#define COD_DIR_MEMMAP          443         /* Start block of memory map. */
-#define COD_DIR_LOCALVAR        447         /* Start block of local variables. */
+#define COD_DIR_MEMMAP          443         /* Start and end blocks of memory map. */
+#define COD_DIR_LOCALVAR        447         /* Start and end blocks of local variables. */
 #define COD_DIR_CODTYPE         451         /* Type of .cod file. */
 #define COD_DIR_PROCESSOR       454         /* Target processor. */
-#define COD_DIR_LSYMTAB         462         /* Start block of long symbol table. */
-#define COD_DIR_MESSTAB         466         /* Start block of debug message area. */
+#define COD_DIR_LSYMTAB         462         /* Start and end blocks of long symbol table. */
+#define COD_DIR_MESSTAB         466         /* Start and end blocks of debug message area. */
 
 /*
  * Here's a list of sizes of various objects in a .cod file.
