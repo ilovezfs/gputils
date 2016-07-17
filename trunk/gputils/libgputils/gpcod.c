@@ -29,9 +29,9 @@ Boston, MA 02111-1307, USA.  */
    string length occupies the first string location */
 
 void 
-gp_cod_strncpy(uint8_t *Dest, const char *Src, int Max_len)
+gp_cod_Pstrncpy(uint8_t *Dest, const char *Src, size_t Max_len)
 {
-  int len;
+  size_t len;
 
   len = strlen(Src);
   Dest[-1] = (Max_len > len) ? len : Max_len;
@@ -41,23 +41,17 @@ gp_cod_strncpy(uint8_t *Dest, const char *Src, int Max_len)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_cod_date(uint8_t *Buffer, size_t Sizeof_buffer)
+gp_cod_Pdate(uint8_t *Buffer, size_t Sizeof_buffer)
 {
-  char       temp[32];
   time_t     now;
-  struct tm *now_tm;
-
-  static const char mon_name[12][4] = {
-    "Jan\0", "Feb\0", "Mar\0", "Apr\0", "May\0", "Jun\0",
-    "Jul\0", "Aug\0", "Sep\0", "Oct\0", "Nov\0", "Dec\0"
-  };
+  struct tm *local;
+  char       temp[32];
 
   time(&now);
-  now_tm = localtime(&now);
-  snprintf(temp, sizeof(temp), "%02d%3s%02d", now_tm->tm_mday, mon_name[now_tm->tm_mon],
-           now_tm->tm_year % 100);
-
+  local = localtime(&now);
+  strftime(temp, sizeof(temp), "%d%b%g", local);
   memcpy(Buffer, temp, Sizeof_buffer);
+  Buffer[-1] = 7;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -65,18 +59,15 @@ gp_cod_date(uint8_t *Buffer, size_t Sizeof_buffer)
 void
 gp_cod_time(uint8_t *Buffer, size_t Sizeof_buffer)
 {
-  time_t     now;
-  struct tm *now_tm;
-  int        value;
+  time_t        now;
+  struct tm    *local;
+  unsigned int  value;
 
   time(&now);
-  now_tm = localtime(&now);
-
-  value = (now_tm->tm_hour * 100) + now_tm->tm_min;
-
-  Buffer[0] = value & 0xff;
-  Buffer[1] = (value >> 8) & 0xff;
-  Buffer[2] = now_tm->tm_sec & 0xff;
+  local = localtime(&now);
+  value = (local->tm_hour * 100) + local->tm_min;
+  gp_putl16(Buffer, value);
+  /* No space for the seconds. */
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -111,12 +102,12 @@ gp_cod_init_dir_block(const char *File_name, const char *Compiler)
 
   /* Initialize the directory block with known data. It'll be written
    * to the .cod file after everything else. */
-  gp_cod_strncpy(&dir->dir[COD_DIR_SOURCE], File_name, COD_DIR_DATE - COD_DIR_SOURCE);
-  gp_cod_date(&dir->dir[COD_DIR_DATE], COD_DIR_TIME - COD_DIR_DATE);
-  gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_VERSION - COD_DIR_TIME);
-  gp_cod_strncpy(&dir->dir[COD_DIR_VERSION], VERSION, COD_DIR_COMPILER - COD_DIR_VERSION);
-  gp_cod_strncpy(&dir->dir[COD_DIR_COMPILER], Compiler, COD_DIR_NOTICE - COD_DIR_COMPILER);
-  gp_cod_strncpy(&dir->dir[COD_DIR_NOTICE], GPUTILS_COPYRIGHT_STRING, COD_DIR_SYMTAB - COD_DIR_NOTICE);
+  gp_cod_Pstrncpy(&dir->dir[COD_DIR_SOURCE + 1], File_name, COD_DIR_SOURCE_C_SIZE);
+  gp_cod_Pdate(&dir->dir[COD_DIR_DATE + 1], COD_DIR_DATE_C_SIZE);
+  gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_TIME_SIZE);
+  gp_cod_Pstrncpy(&dir->dir[COD_DIR_VERSION + 1], VERSION, COD_DIR_VERSION_C_SIZE);
+  gp_cod_Pstrncpy(&dir->dir[COD_DIR_COMPILER + 1], Compiler, COD_DIR_COMPILER_C_SIZE);
+  gp_cod_Pstrncpy(&dir->dir[COD_DIR_NOTICE + 1], GPUTILS_COPYRIGHT_STRING, COD_DIR_NOTICE_C_SIZE);
 
   /* The address is always two shorts or 4 bytes long. */
   dir->dir[COD_DIR_ADDRSIZE] = 0;

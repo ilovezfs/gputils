@@ -85,7 +85,7 @@ _write_file_block(void)
 
   symbol = state.object->symbol_list.first;
   while (symbol != NULL) {
-    if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * FILE_SIZE))) {
+    if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
       fb = gp_blocks_append(&main_dir->src, gp_blocks_new());
     }
 
@@ -100,10 +100,10 @@ _write_file_block(void)
        * can handle larger file lists...
        */
 
-      gp_cod_strncpy(&fb->block[main_dir->src.offset + 1],
-                     symbol->aux_list.first->_aux_symbol._aux_file.filename, FILE_SIZE - 1);
+      gp_cod_Pstrncpy(&fb->block[main_dir->src.offset + 1],
+                      symbol->aux_list.first->_aux_symbol._aux_file.filename, COD_DIR_SOURCE_C_SIZE);
 
-      main_dir->src.offset += FILE_SIZE;
+      main_dir->src.offset += COD_DIR_SOURCE_P_SIZE;
     }
 
     symbol = symbol->next;
@@ -149,7 +149,7 @@ _write_symbols(const symbol_t **symbol_list, size_t num_symbols)
       sb = gp_blocks_append(&main_dir->sym, gp_blocks_new());
     }
 
-    gp_cod_strncpy(&sb->block[main_dir->sym.offset + 1], name, MAX_SYM_LEN);
+    gp_cod_Pstrncpy(&sb->block[main_dir->sym.offset + 1], name, MAX_SYM_LEN);
 
     symbol = var->symbol;
     assert(symbol != NULL);
@@ -231,7 +231,7 @@ _write_debug(void)
       gp_putb32(&db->block[main_dir->dbg.offset + COD_DEBUG_ADDR], symbol->value);
 
       db->block[main_dir->dbg.offset + COD_DEBUG_CMD] = command;
-      gp_cod_strncpy(&db->block[main_dir->dbg.offset + COD_DEBUG_MSG], string, MAX_STRING_LEN);
+      gp_cod_Pstrncpy(&db->block[main_dir->dbg.offset + COD_DEBUG_MSG], string, MAX_STRING_LEN);
 
       main_dir->dbg.offset += len + COD_DEBUG_EXTRA;
     }
@@ -342,8 +342,8 @@ cod_close_file(void)
 
   /* processor is unknown if not defined in command line at cod_init() call
      so it should be set here */
-  gp_cod_strncpy(&main_dir->dir[COD_DIR_PROCESSOR], gp_processor_name(state.processor, 2),
-                 COD_DIR_LSYMTAB - COD_DIR_PROCESSOR);
+  gp_cod_Pstrncpy(&main_dir->dir[COD_DIR_PROCESSOR + 1], gp_processor_name(state.processor, 2),
+                  COD_DIR_PROCESSOR_C_SIZE);
 
   /* All the global symbols are written.  Need to figure out what to do about the local symbols. */
   _write_symbol_table(state.symbol.definition);

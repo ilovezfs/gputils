@@ -93,6 +93,14 @@ Boston, MA 02111-1307, USA.  */
   #define EXIT_FAILURE          1
 #endif
 
+#ifdef HAVE_LOCALE_H
+  #include <locale.h>
+
+  #ifdef HAVE_LANGINFO_H
+    #include <langinfo.h>
+  #endif
+#endif
+
 #ifdef HAVE_UNISTD_H
   #include <unistd.h>
 #endif

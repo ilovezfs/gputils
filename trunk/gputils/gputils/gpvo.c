@@ -78,7 +78,7 @@ _show_usage(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_header(const gp_object_t *object)
+_print_header(const gp_object_t *Object)
 {
   static struct magic_s {
     uint16_t    magic_num;
@@ -89,57 +89,68 @@ _print_header(const gp_object_t *object)
   };
 
   time_t      time;
-  char       *time_str;
   const char *processor_name;
   int         i;
+#ifdef HAVE_LOCALE_H
+  char        time_str[256];
+#else
+  char       *time_str;
+#endif
 
-  time     = (time_t)object->time;
+  time = (time_t)Object->time;
+
+#ifdef HAVE_LOCALE_H
+  setlocale(LC_ALL, "");
+  strftime(time_str, sizeof(time_str), "%c", localtime(&time));
+#else
   time_str = ctime(&time);
-  processor_name = gp_processor_name(object->processor, 2);
-
   /* strip the newline from time */
   time_str[strlen(time_str) - 1] = '\0';
+#endif
+
+  processor_name = gp_processor_name(Object->processor, 2);
 
   printf("COFF File and Optional Headers\n");
 
   for (i = 0; i < ARRAY_SIZE(magic); ++i) {
-    if (magic[i].magic_num == object->version) {
+    if (magic[i].magic_num == Object->version) {
       break;
     }
   }
-  printf("COFF version         %#x: %s\n", object->version,
+
+  printf("COFF version         %#x: %s\n", Object->version,
          (i < ARRAY_SIZE(magic)) ? magic[i].magic_name : "unknown");
   printf("Processor Type       %s\n",  processor_name);
   printf("Time Stamp           %s\n",  time_str);
-  printf("Number of Sections   %zu\n", object->section_list.num_nodes);
-  printf("Number of Symbols    %u\n",  object->num_symbols);
-  printf("Characteristics      %#x\n", object->flags);
+  printf("Number of Sections   %zu\n", Object->section_list.num_nodes);
+  printf("Number of Symbols    %u\n",  Object->num_symbols);
+  printf("Characteristics      %#x\n", Object->flags);
 
-  if (object->flags & F_RELFLG) {
+  if (Object->flags & F_RELFLG) {
     printf("  Relocation info has been stripped.\n");
   }
 
-  if (object->flags & F_EXEC) {
+  if (Object->flags & F_EXEC) {
     printf("  File is executable.\n");
   }
 
-  if (object->flags & F_LINENO) {
+  if (Object->flags & F_LINENO) {
     printf("  Line numbers have been stripped.\n");
   }
 
-  if (object->flags & F_ABSOLUTE) {
+  if (Object->flags & F_ABSOLUTE) {
     printf("  The MPASM assembler object file is from absolute assembly code.\n");
   }
 
-  if (object->flags & L_SYMS) {
+  if (Object->flags & L_SYMS) {
     printf("  Local symbols have been stripped.\n");
   }
 
-  if (object->flags & F_EXTENDED18) {
+  if (Object->flags & F_EXTENDED18) {
     printf("  The COFF file produced utilizing the Extended mode.\n");
   }
 
-  if (object->flags & F_GENERIC) {
+  if (Object->flags & F_GENERIC) {
     printf("  Processor independent file for a core.\n");
   }
 
@@ -149,33 +160,33 @@ _print_header(const gp_object_t *object)
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_format_reloc_type(uint16_t type, char *buffer, size_t sizeof_buffer)
+_format_reloc_type(uint16_t Type, char *Buffer, size_t Sizeof_buffer)
 {
-  snprintf(buffer, sizeof_buffer, "0x%04x %-20s", type, gp_coffgen_reloc_type_to_str(type));
-  return buffer;
+  snprintf(Buffer, Sizeof_buffer, "0x%04x %-20s", Type, gp_coffgen_reloc_type_to_str(Type));
+  return Buffer;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_relocation_list(proc_class_t class, const gp_reloc_t *relocation, const char *column_gap)
+_print_relocation_list(proc_class_t Class, const gp_reloc_t *Relocation, const char *Column_gap)
 {
   char        buffer[32];
   int         addr_digits;
 
-  addr_digits = class->addr_digits;
+  addr_digits = Class->addr_digits;
 
   printf("Relocations Table\n"
          "Address     Offset    Type                        Symbol\n");
 
-  while (relocation != NULL) {
+  while (Relocation != NULL) {
     printf("0x%0*x%s    0x%0*x%s  %-25s %-s\n",
-           addr_digits, gp_processor_insn_from_byte_c(class, relocation->address), column_gap,
-           addr_digits, relocation->offset, column_gap,
-           _format_reloc_type(relocation->type, buffer, sizeof(buffer)),
-           relocation->symbol->name);
+           addr_digits, gp_processor_insn_from_byte_c(Class, Relocation->address), Column_gap,
+           addr_digits, Relocation->offset, Column_gap,
+           _format_reloc_type(Relocation->type, buffer, sizeof(buffer)),
+           Relocation->symbol->name);
 
-    relocation = relocation->next;
+    Relocation = Relocation->next;
   }
 
   printf("\n");
@@ -184,30 +195,30 @@ _print_relocation_list(proc_class_t class, const gp_reloc_t *relocation, const c
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber, const char *column_gap)
+_print_linenum_list(proc_class_t Class, const gp_linenum_t *Linenumber, const char *Column_gap)
 {
   const char *filename;
   int         addr_digits;
 
-  addr_digits = class->addr_digits;
+  addr_digits = Class->addr_digits;
 
   printf("Line Number Table\n"
          "Line      Address     Symbol\n");
 
-  while (linenumber != NULL) {
+  while (Linenumber != NULL) {
     if (state.suppress_names) {
-      filename = linenumber->symbol->name;
+      filename = Linenumber->symbol->name;
     }
     else {
-      filename = linenumber->symbol->aux_list.first->_aux_symbol._aux_file.filename;
+      filename = Linenumber->symbol->aux_list.first->_aux_symbol._aux_file.filename;
     }
 
     printf("%-8i  0x%0*x%s    %s\n",
-           linenumber->line_number,
-           addr_digits, gp_processor_insn_from_byte_c(class, linenumber->address), column_gap,
+           Linenumber->line_number,
+           addr_digits, gp_processor_insn_from_byte_c(Class, Linenumber->address), Column_gap,
            filename);
 
-    linenumber = linenumber->next;
+    Linenumber = Linenumber->next;
   }
 
   printf("\n");
@@ -216,8 +227,9 @@ _print_linenum_list(proc_class_t class, const gp_linenum_t *linenumber, const ch
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *section)
+_print_data(pic_processor_t Processor, const gp_section_t *Section)
 {
+  proc_class_t class;
   char         buffer[BUFSIZ];
   unsigned int address;
   int          num_words;
@@ -226,26 +238,27 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
   uint16_t     word;
   uint8_t      byte;
 
-  address      = section->address;
-  bsr_boundary = gp_processor_bsr_boundary(processor);
+  class        = Processor->class;
+  address      = Section->address;
+  bsr_boundary = gp_processor_bsr_boundary(Processor);
   addr_digits  = class->addr_digits;
 
   buffer[0] = '\0';
 
   printf("Data\n");
   while (true) {
-    if ((section->flags & STYP_TEXT) && (class->find_insn != NULL)) {
-      if (class->i_memory_get(section->data, address, &word, NULL, NULL) != W_USED_ALL) {
+    if ((Section->flags & STYP_TEXT) && (class->find_insn != NULL)) {
+      if (class->i_memory_get(Section->data, address, &word, NULL, NULL) != W_USED_ALL) {
         break;
       }
 
-      num_words = gp_disassemble(section->data, address, class, bsr_boundary, 0,
+      num_words = gp_disassemble(Section->data, address, class, bsr_boundary, 0,
                                  GPDIS_SHOW_ALL_BRANCH, buffer, sizeof(buffer), 0);
       printf("%0*x:  %04x  %s\n",
              addr_digits, gp_processor_insn_from_byte_c(class, address), word, buffer);
 
       if (num_words != 1) {
-        if (class->i_memory_get(section->data, address + WORD_SIZE, &word, NULL, NULL) != W_USED_ALL) {
+        if (class->i_memory_get(Section->data, address + WORD_SIZE, &word, NULL, NULL) != W_USED_ALL) {
           break;
         }
 
@@ -255,13 +268,13 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
 
       address += num_words * WORD_SIZE;
     }
-    else if ((section->flags & STYP_DATA_ROM) || (class == PROC_CLASS_EEPROM16)) {
-      if (class->i_memory_get(section->data, address, &word, NULL, NULL) != 0) {
+    else if ((Section->flags & STYP_DATA_ROM) || (class == PROC_CLASS_EEPROM16)) {
+      if (class->i_memory_get(Section->data, address, &word, NULL, NULL) != 0) {
         printf("%0*x:  %04x\n", addr_digits, gp_processor_insn_from_byte_c(class, address), word);
         address += WORD_SIZE;
       }
       else {
-        if (gp_mem_b_get(section->data, address, &byte, NULL, NULL)) {
+        if (gp_mem_b_get(Section->data, address, &byte, NULL, NULL)) {
           printf("%0*x:  %02x\n", addr_digits, gp_processor_insn_from_byte_c(class, address), byte);
         }
 
@@ -270,7 +283,7 @@ _print_data(proc_class_t class, pic_processor_t processor, const gp_section_t *s
     }
     else {
       /* STYP_DATA or STYP_ACTREC, or EEPROM8 */
-      if (!gp_mem_b_get(section->data, address, &byte, NULL, NULL)) {
+      if (!gp_mem_b_get(Section->data, address, &byte, NULL, NULL)) {
         break;
       }
 
@@ -342,15 +355,15 @@ _print_section_header(proc_class_t class, const gp_section_t *section)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_section_list(const gp_object_t *object)
+_print_section_list(const gp_object_t *Object)
 {
   proc_class_t        class;
   const gp_section_t *section;
   char                column_gap[16];
   unsigned int        i;
 
-  class = object->class;
-  i = class->addr_digits;
+  class = Object->class;
+  i     = class->addr_digits;
 
   if (i > 6) {
     i = 6;
@@ -368,12 +381,12 @@ _print_section_list(const gp_object_t *object)
 
   column_gap[i] = '\0';
 
-  section = object->section_list.first;
+  section = Object->section_list.first;
   while (section != NULL) {
     _print_section_header(class, section);
 
     if ((section->size > 0) && (section->data_ptr > 0)) {
-      _print_data(class, object->processor, section);
+      _print_data(Object->processor, section);
     }
 
     if (section->relocation_list.num_nodes > 0) {
@@ -391,11 +404,11 @@ _print_section_list(const gp_object_t *object)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_coff_type(unsigned int type, char *buffer, size_t sizeof_buffer)
+_coff_type(unsigned int Type, char *Buffer, size_t Sizeof_buffer)
 {
   const char *str;
 
-  switch (type) {
+  switch (Type) {
     case T_NULL:   str = "NULL";                break; /* null */
     case T_VOID:   str = "void";                break; /* void */
     case T_CHAR:   str = "char";                break; /* character */
@@ -419,59 +432,59 @@ _coff_type(unsigned int type, char *buffer, size_t sizeof_buffer)
   }
 
   if (str != NULL) {
-    snprintf(buffer, sizeof_buffer, str);
+    snprintf(Buffer, Sizeof_buffer, str);
   }
   else {
-    snprintf(buffer, sizeof_buffer, "unknown(%u)", type);
+    snprintf(Buffer, Sizeof_buffer, "unknown(%u)", Type);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_format_sym_type(unsigned int type, char *buffer, size_t sizeof_buffer)
+_format_sym_type(unsigned int Type, char *Buffer, size_t Sizeof_buffer)
 {
   const char *str;
 
-  str = gp_coffgen_symbol_type_to_str(type);
+  str = gp_coffgen_symbol_type_to_str(Type);
   if (str != NULL) {
     return str;
   }
 
-  snprintf(buffer, sizeof_buffer, "%u", type);
-  return buffer;
+  snprintf(Buffer, Sizeof_buffer, "%u", Type);
+  return Buffer;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_format_sym_derived_type(unsigned int type, char *buffer, size_t sizeof_buffer)
+_format_sym_derived_type(unsigned int Type, char *Buffer, size_t Sizeof_buffer)
 {
   const char *str;
 
-  str = gp_coffgen_symbol_derived_type_to_str(type);
+  str = gp_coffgen_symbol_derived_type_to_str(Type);
   if (str != NULL) {
     return str;
   }
 
-  snprintf(buffer, sizeof_buffer, "%u", type);
-  return buffer;
+  snprintf(Buffer, Sizeof_buffer, "%u", Type);
+  return Buffer;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static const char *
-_format_sym_class(unsigned int cls, char *buffer, size_t sizeof_buffer)
+_format_sym_class(unsigned int Class, char *Buffer, size_t Sizeof_buffer)
 {
   const char *str;
 
-  str = gp_coffgen_symbol_class_to_str(cls);
+  str = gp_coffgen_symbol_class_to_str(Class);
   if (str != NULL) {
     return str;
   }
 
-  snprintf(buffer, sizeof_buffer, "%u", cls);
-  return buffer;
+  snprintf(Buffer, Sizeof_buffer, "%u", Class);
+  return Buffer;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -479,7 +492,7 @@ _format_sym_class(unsigned int cls, char *buffer, size_t sizeof_buffer)
 #define AUX_INDENT              "      "
 
 static void
-_print_symbol_table(const gp_object_t *object)
+_print_symbol_table(const gp_object_t *Object)
 {
   static char  buf[64];
 
@@ -497,7 +510,7 @@ _print_symbol_table(const gp_object_t *object)
   printf("Symbol Table\n");
   printf("Idx  Name                     Section          Value      Type     DT           Class     NumAux\n");
 
-  symbol = object->symbol_list.first;
+  symbol = Object->symbol_list.first;
   while (symbol != NULL) {
     if (symbol->section_number == N_DEBUG) {
       section = "DEBUG";
@@ -564,14 +577,14 @@ _print_symbol_table(const gp_object_t *object)
 
         default: {
           printf("%u  ", aux->type);
-          for (i = 0; i < object->symbol_size; i++) {
+          for (i = 0; i < Object->symbol_size; i++) {
             printf("%02x", aux->_aux_symbol.data[i] & 0xFF);
 
             if (i & 1) {
               putchar(' ');
             }
           }
-          for (i = 0; i < object->symbol_size; i++) {
+          for (i = 0; i < Object->symbol_size; i++) {
             c = aux->_aux_symbol.data[i] & 0xFF;
             putchar((isprint(c)) ? c : '.');
           }
@@ -587,18 +600,18 @@ _print_symbol_table(const gp_object_t *object)
     ++idx;
   }
 
-  printf("\n");
+  putchar('\n');
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_export_symbol_table(gp_object_t *object)
+_export_symbol_table(gp_object_t *Object)
 {
   gp_symbol_t *symbol;
   char         buffer[BUFSIZ];
 
-  symbol = object->symbol_list.first;
+  symbol = Object->symbol_list.first;
   while (symbol != NULL) {
     if ((state.export.enabled) && (symbol->class == C_EXT) && (symbol->section_number > N_UNDEF)) {
       _coff_type(symbol->type, buffer, sizeof(buffer));
@@ -614,23 +627,23 @@ _export_symbol_table(gp_object_t *object)
 #define BIN_DATA_LINE_SIZE    16
 
 static void
-_print_binary(const uint8_t *data, long file_size)
+_print_binary(const uint8_t *Data, long File_size)
 {
   long         i;
   long         j;
   unsigned int memory;
   int          c;
 
-  printf("\nObject file size = %li bytes\n", file_size);
+  printf("\nObject file size = %li bytes\n", File_size);
 
   printf("\nBinary object file contents:");
-  for (i = 0; i < file_size; i += BIN_DATA_LINE_SIZE) {
+  for (i = 0; i < File_size; i += BIN_DATA_LINE_SIZE) {
     printf("\n%06lx", i);
 
     for (j = 0; j < BIN_DATA_LINE_SIZE; j += 2) {
-      memory = (data[i + j] << 8) | data[i + j + 1];
+      memory = (Data[i + j] << 8) | Data[i + j + 1];
 
-      if ((i + j) >= file_size) {
+      if ((i + j) >= File_size) {
         printf("     ");
       }
       else {
@@ -638,14 +651,14 @@ _print_binary(const uint8_t *data, long file_size)
       }
     }
 
-    printf(" ");
+    putchar(' ');
 
     for (j = 0; j < BIN_DATA_LINE_SIZE; j += 2) {
-      if ((i + j) < file_size) {
-        c = data[i + j];
+      if ((i + j) < File_size) {
+        c = Data[i + j];
         putchar((isprint(c)) ? c : '.');
 
-        c = data[i + j + 1];
+        c = Data[i + j + 1];
         putchar((isprint(c)) ? c : '.');
       }
     }

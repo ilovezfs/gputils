@@ -68,25 +68,51 @@ Boston, MA 02111-1307, USA.  */
  * has its costs.
  */
 
-#define COD_DIR_CODE            0           /* Code block indices are at the start. */
-#define COD_DIR_SOURCE          257         /* Source file name. */
-#define COD_DIR_DATE            321         /* Date .cod file was created. */
-#define COD_DIR_TIME            328         /* Time .cod file was created. */
-#define COD_DIR_VERSION         331         /* Compiler version. */
-#define COD_DIR_COMPILER        351         /* Compiler name. */
-#define COD_DIR_NOTICE          363         /* Compiler copyright. */
-#define COD_DIR_SYMTAB          426         /* Start and end blocks of short symbol table. */
-#define COD_DIR_NAMTAB          430         /* Start and end blocks of file name table. */
-#define COD_DIR_LSTTAB          434         /* Start and end blocks of list file cross reference. */
-#define COD_DIR_ADDRSIZE        438         /* Number of bytes for an address. */
-#define COD_DIR_HIGHADDR        439         /* High word of address for 64kB Code block. */
-#define COD_DIR_NEXTDIR         441         /* Next directory block. */
-#define COD_DIR_MEMMAP          443         /* Start and end blocks of memory map. */
-#define COD_DIR_LOCALVAR        447         /* Start and end blocks of local variables. */
-#define COD_DIR_CODTYPE         451         /* Type of .cod file. */
-#define COD_DIR_PROCESSOR       454         /* Target processor. */
-#define COD_DIR_LSYMTAB         462         /* Start and end blocks of long symbol table. */
-#define COD_DIR_MESSTAB         466         /* Start and end blocks of debug message area. */
+#define COD_DIR_CODE            0           /* [0x000] Code block indices are at the start. */
+    /* Pascal style string. */
+#define COD_DIR_SOURCE          256         /* [0x100] Source file name. */
+    /* Pascal style string. */
+#define COD_DIR_DATE            320         /* [0x140] Date .cod file was created. */
+#define COD_DIR_TIME            328         /* [0x148] Time .cod file was created. */
+    /* Pascal style string. */
+#define COD_DIR_VERSION         330         /* [0x14A] Compiler version. */
+    /* Pascal style string. */
+#define COD_DIR_COMPILER        350         /* [0x15E] Compiler name. */
+    /* Pascal style string. */
+#define COD_DIR_NOTICE          362         /* [0x16A] Compiler copyright. */
+#define COD_DIR_SYMTAB          426         /* [0x1AA] Start and end blocks of short symbol table. */
+#define COD_DIR_NAMTAB          430         /* [0x1AE] Start and end blocks of file name table. */
+#define COD_DIR_LSTTAB          434         /* [0x1B2] Start and end blocks of list file cross reference. */
+#define COD_DIR_ADDRSIZE        438         /* [0x1B6] Number of bytes for an address. */
+#define COD_DIR_HIGHADDR        439         /* [0x1B7] High word of address for 64kB Code block. */
+#define COD_DIR_NEXTDIR         441         /* [0x1B9] Next directory block. */
+#define COD_DIR_MEMMAP          443         /* [0x1BB] Start and end blocks of memory map. */
+#define COD_DIR_LOCALVAR        447         /* [0x1BF] Start and end blocks of local variables. */
+#define COD_DIR_CODTYPE         451         /* [0x1C3] Type of .cod file. */
+    /* Pascal style string. */
+#define COD_DIR_PROCESSOR       453         /* [0x1C5] Target processor. */
+#define COD_DIR_LSYMTAB         462         /* [0x1CE] Start and end blocks of long symbol table. */
+#define COD_DIR_MESSTAB         466         /* [0x1D2] Start and end blocks of debug message area. */
+
+#define COD_DIR_SOURCE_P_SIZE           (COD_DIR_DATE - COD_DIR_SOURCE)
+#define COD_DIR_SOURCE_C_SIZE           (COD_DIR_SOURCE_P_SIZE - 1)
+
+#define COD_DIR_DATE_P_SIZE             (COD_DIR_TIME - COD_DIR_DATE)
+#define COD_DIR_DATE_C_SIZE             (COD_DIR_DATE_P_SIZE - 1)
+
+#define COD_DIR_TIME_SIZE               (COD_DIR_VERSION - COD_DIR_TIME)
+
+#define COD_DIR_VERSION_P_SIZE          (COD_DIR_COMPILER - COD_DIR_VERSION)
+#define COD_DIR_VERSION_C_SIZE          (COD_DIR_VERSION_P_SIZE - 1)
+
+#define COD_DIR_COMPILER_P_SIZE         (COD_DIR_NOTICE - COD_DIR_COMPILER)
+#define COD_DIR_COMPILER_C_SIZE         (COD_DIR_COMPILER_P_SIZE)
+
+#define COD_DIR_NOTICE_P_SIZE           (COD_DIR_SYMTAB - COD_DIR_NOTICE)
+#define COD_DIR_NOTICE_C_SIZE           (COD_DIR_NOTICE_P_SIZE - 1)
+
+#define COD_DIR_PROCESSOR_P_SIZE        (COD_DIR_LSYMTAB - COD_DIR_PROCESSOR)
+#define COD_DIR_PROCESSOR_C_SIZE        (COD_DIR_PROCESSOR_P_SIZE - 1)
 
 /*
  * Here's a list of sizes of various objects in a .cod file.
@@ -194,12 +220,12 @@ typedef struct dir_block_info {
   Blocks                 sym;   /* pointer to the list of long symbol blocks */
   Blocks                 rng;   /* pointer to the list of range blocks */
   Blocks                 dbg;   /* pointer to the list of debug messages blocks */
-  struct dir_block_info *next;  /* pointer to the next dirdctory info block */
+  struct dir_block_info *next;  /* pointer to the next directory info block */
 } DirBlockInfo;
 
 /* common cod functions */
-extern void gp_cod_strncpy(uint8_t *Dest, const char *Src, int Max_len);
-extern void gp_cod_date(uint8_t *Buffer, size_t Sizeof_buffer);
+extern void gp_cod_Pstrncpy(uint8_t *Dest, const char *Src, size_t Max_len);
+extern void gp_cod_Pdate(uint8_t *Buffer, size_t Sizeof_buffer);
 extern void gp_cod_time(uint8_t *Buffer, size_t Sizeof_buffer);
 extern void gp_cod_create(Block *B);
 

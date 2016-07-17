@@ -45,18 +45,18 @@ extern const char *gp_lib_path;
 
 extern void gp_init(void);
 
-extern void     gp_fputl16(int16_t data, FILE *fp);
-extern void     gp_fputl32(int32_t data, FILE *fp); 
-extern void     gp_fputvar(const void *data, int number, FILE *fp); 
-extern int16_t  gp_getl16(const uint8_t *addr);
-extern uint16_t gp_getu16(const uint8_t *addr);
-extern int32_t  gp_getl32(const uint8_t *addr);
-extern uint32_t gp_getu32(const uint8_t *addr);
-extern void     gp_putl16(uint8_t *addr, uint16_t data);
-extern void     gp_putl32(uint8_t *addr, uint32_t data);
+extern void     gp_fputl16(int16_t Data, FILE *Fp);
+extern void     gp_fputl32(int32_t Data, FILE *Fp);
+extern void     gp_fputvar(const void *Data, size_t Number, FILE *Fp);
+extern int16_t  gp_getl16(const uint8_t *Addr);
+extern uint16_t gp_getu16(const uint8_t *Addr);
+extern int32_t  gp_getl32(const uint8_t *Addr);
+extern uint32_t gp_getu32(const uint8_t *Addr);
+extern void     gp_putl16(uint8_t *Addr, uint16_t Data);
+extern void     gp_putl32(uint8_t *Addr, uint32_t Data);
 
-extern int32_t  gp_getb32(const uint8_t *addr);
-extern void     gp_putb32(uint8_t *addr, uint32_t data);
+extern int32_t  gp_getb32(const uint8_t *Addr);
+extern void     gp_putb32(uint8_t *Addr, uint32_t Data);
 
 extern gp_boolean gp_num_range_is_overlapped(int Area_start, int Area_end, int Ref_start, int Ref_end);
 

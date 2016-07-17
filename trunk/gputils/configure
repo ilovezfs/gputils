@@ -5195,6 +5195,7 @@ $as_echo "#define STDC_HEADERS 1" >>confdefs.h
 
 fi
 
+
 # On IRIX 5.3, sys/types and inttypes.h are conflicting.
 for ac_header in sys/types.h sys/stat.h stdlib.h string.h memory.h strings.h \
 		  inttypes.h stdint.h unistd.h
@@ -5212,7 +5213,8 @@ fi
 done
 
 
-for ac_header in libintl.h malloc.h stdlib.h string.h strings.h sys/ioctl.h termios.h unistd.h windows.h
+for ac_header in libintl.h langinfo.h locale.h malloc.h stdlib.h string.h \
+strings.h sys/ioctl.h termios.h unistd.h windows.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -5224,6 +5226,7 @@ _ACEOF
 fi
 
 done
+
 
 ac_fn_c_check_decl "$LINENO" "asprintf" "ac_cv_have_decl_asprintf" "$ac_includes_default"
 if test "x$ac_cv_have_decl_asprintf" = xyes; then :

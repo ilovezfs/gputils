@@ -77,45 +77,46 @@ gp_init(void)
 /* little endian functions */
 
 void 
-gp_fputl16(int16_t data, FILE *fp) 
+gp_fputl16(int16_t Data, FILE *Fp)
 {
-  fputc(data & 0xff, fp);
-  fputc((data >> 8) & 0xff, fp);
+  fputc(Data & 0xff, Fp);
+  fputc((Data >> 8) & 0xff, Fp);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_fputl32(int32_t data, FILE *fp) 
+gp_fputl32(int32_t Data, FILE *Fp)
 {
-  fputc(data & 0xff, fp);
-  fputc((data >>  8) & 0xff, fp);
-  fputc((data >> 16) & 0xff, fp);
-  fputc((data >> 24) & 0xff, fp);
+  fputc(Data & 0xff, Fp);
+  fputc((Data >>  8) & 0xff, Fp);
+  fputc((Data >> 16) & 0xff, Fp);
+  fputc((Data >> 24) & 0xff, Fp);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_fputvar(const void *data_, int number, FILE *fp)
+gp_fputvar(const void *Data, size_t Number, FILE *Fp)
 {
-  const uint8_t *data = (const uint8_t *)data_;
-  int            i;
+  const uint8_t *d;
+  size_t         i;
 
-  for (i = 0; i < number; i++) {
-    fputc(data[i], fp);
+  d = (const uint8_t *)Data;
+  for (i = 0; i < Number; i++) {
+    fputc(d[i], Fp);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 int16_t
-gp_getl16(const uint8_t *addr)
+gp_getl16(const uint8_t *Addr)
 {
   int16_t value;
   
-  value  = (int16_t)addr[0];
-  value |= (int16_t)addr[1] << 8;
+  value  = (int16_t)Addr[0];
+  value |= (int16_t)Addr[1] << 8;
   
   return value;
 }
@@ -123,22 +124,22 @@ gp_getl16(const uint8_t *addr)
 /*------------------------------------------------------------------------------------------------*/
 
 uint16_t
-gp_getu16(const uint8_t *addr)
+gp_getu16(const uint8_t *Addr)
 {
-  return (uint16_t)gp_getl16(addr);
+  return (uint16_t)gp_getl16(Addr);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 int32_t
-gp_getl32(const uint8_t *addr)
+gp_getl32(const uint8_t *Addr)
 {
   int32_t value;
 
-  value  = (int32_t)addr[0];
-  value |= (int32_t)addr[1] << 8;
-  value |= (int32_t)addr[2] << 16;
-  value |= (int32_t)addr[3] << 24;
+  value  = (int32_t)Addr[0];
+  value |= (int32_t)Addr[1] << 8;
+  value |= (int32_t)Addr[2] << 16;
+  value |= (int32_t)Addr[3] << 24;
 
   return value;
 }
@@ -146,29 +147,29 @@ gp_getl32(const uint8_t *addr)
 /*------------------------------------------------------------------------------------------------*/
 
 uint32_t
-gp_getu32(const uint8_t *addr)
+gp_getu32(const uint8_t *Addr)
 {
-  return (uint32_t)gp_getl32(addr);
+  return (uint32_t)gp_getl32(Addr);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_putl16(uint8_t *addr, uint16_t data)
+gp_putl16(uint8_t *Addr, uint16_t Data)
 {
-  addr[0] = data & 0xff;
-  addr[1] = (data >> 8) & 0xff;
+  Addr[0] = Data & 0xff;
+  Addr[1] = (Data >> 8) & 0xff;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_putl32(uint8_t *addr, uint32_t data)
+gp_putl32(uint8_t *Addr, uint32_t Data)
 {
-  addr[0] = data & 0xff;
-  addr[1] = (data >>  8) & 0xff;
-  addr[2] = (data >> 16) & 0xff;
-  addr[3] = (data >> 24) & 0xff;
+  Addr[0] = Data & 0xff;
+  Addr[1] = (Data >>  8) & 0xff;
+  Addr[2] = (Data >> 16) & 0xff;
+  Addr[3] = (Data >> 24) & 0xff;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -176,14 +177,14 @@ gp_putl32(uint8_t *addr, uint32_t data)
 /* big endian functions */
 
 int32_t 
-gp_getb32(const uint8_t *addr)
+gp_getb32(const uint8_t *Addr)
 {
   int32_t value;
 
-  value  = (int32_t)addr[0] << 24;
-  value |= (int32_t)addr[1] << 16;
-  value |= (int32_t)addr[2] <<  8;
-  value |= (int32_t)addr[3];
+  value  = (int32_t)Addr[0] << 24;
+  value |= (int32_t)Addr[1] << 16;
+  value |= (int32_t)Addr[2] <<  8;
+  value |= (int32_t)Addr[3];
 
   return value;
 }
@@ -191,12 +192,12 @@ gp_getb32(const uint8_t *addr)
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_putb32(uint8_t *addr, uint32_t data)
+gp_putb32(uint8_t *Addr, uint32_t Data)
 {
-  addr[0] = (data >> 24) & 0xff;
-  addr[1] = (data >> 16) & 0xff;
-  addr[2] = (data >>  8) & 0xff;
-  addr[3] = data & 0xff;
+  Addr[0] = (Data >> 24) & 0xff;
+  Addr[1] = (Data >> 16) & 0xff;
+  Addr[2] = (Data >>  8) & 0xff;
+  Addr[3] = Data & 0xff;
 }
 
 /*------------------------------------------------------------------------------------------------*/

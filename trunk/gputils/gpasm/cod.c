@@ -55,7 +55,7 @@ _write_file_block(void)
   fb = NULL;
   fc = state.file_list.first;
   while (fc != NULL) {
-    if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * FILE_SIZE))) {
+    if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
       fb = gp_blocks_append(&main_dir->src, gp_blocks_new());
     }
 
@@ -66,8 +66,8 @@ _write_file_block(void)
      * can handle larger file lists...
      */
 
-    gp_cod_strncpy(&fb->block[main_dir->src.offset + 1], fc->name, FILE_SIZE - 1);
-    main_dir->src.offset += FILE_SIZE;
+    gp_cod_Pstrncpy(&fb->block[main_dir->src.offset + 1], fc->name, COD_DIR_SOURCE_C_SIZE);
+    main_dir->src.offset += COD_DIR_SOURCE_P_SIZE;
 
     fc = fc->next;
   }
@@ -217,7 +217,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
       sb = gp_blocks_append(&main_dir->sym, gp_blocks_new());
     }
 
-    gp_cod_strncpy(&sb->block[main_dir->sym.offset + 1], name, MAX_SYM_LEN);
+    gp_cod_Pstrncpy(&sb->block[main_dir->sym.offset + 1], name, MAX_SYM_LEN);
 
     switch (var->type) {
       case VAL_CBLOCK:
@@ -254,8 +254,8 @@ cod_close_file(void)
 
   /* processor is unknown if not defined in command line at cod_init() call
      so it should be set here */
-  gp_cod_strncpy(&main_dir->dir[COD_DIR_PROCESSOR], gp_processor_name(state.processor, 2),
-                 COD_DIR_LSYMTAB - COD_DIR_PROCESSOR);
+  gp_cod_Pstrncpy(&main_dir->dir[COD_DIR_PROCESSOR + 1], gp_processor_name(state.processor, 2),
+                  COD_DIR_PROCESSOR_C_SIZE);
   _write_file_block();
   gp_cod_write_code(state.device.class, state.i_memory, main_dir);
   gp_blocks_enumerate_directory(main_dir);
