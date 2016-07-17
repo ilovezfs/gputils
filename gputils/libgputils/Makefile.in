@@ -109,11 +109,12 @@ libgputils_a_LIBADD =
 am_libgputils_a_OBJECTS = gparchive.$(OBJEXT) gpbitarray.$(OBJEXT) \
 	gpcfg.$(OBJEXT) gpcfg-table.$(OBJEXT) gpcod.$(OBJEXT) \
 	gpcoffgen.$(OBJEXT) gpcofflink.$(OBJEXT) gpcoffopt.$(OBJEXT) \
-	gpdis.$(OBJEXT) gphash.$(OBJEXT) gplist.$(OBJEXT) gpmemory.$(OBJEXT) \
-	gpmessage.$(OBJEXT) gpopcode.$(OBJEXT) gpprocessor.$(OBJEXT) \
-	gpreadhex.$(OBJEXT) gpreadobj.$(OBJEXT) gpreg-table.$(OBJEXT) \
-	gpregister.$(OBJEXT) gpsym.$(OBJEXT) gpsymbol.$(OBJEXT) \
-	gpsystem.$(OBJEXT) gpwritehex.$(OBJEXT) gpwriteobj.$(OBJEXT)
+	gpdis.$(OBJEXT) gphash.$(OBJEXT) gplist.$(OBJEXT) \
+	gpmemory.$(OBJEXT) gpmessage.$(OBJEXT) gpopcode.$(OBJEXT) \
+	gpprocessor.$(OBJEXT) gpreadhex.$(OBJEXT) gpreadobj.$(OBJEXT) \
+	gpreg-table.$(OBJEXT) gpregister.$(OBJEXT) gpsym.$(OBJEXT) \
+	gpsymbol.$(OBJEXT) gpsystem.$(OBJEXT) gpwritehex.$(OBJEXT) \
+	gpwriteobj.$(OBJEXT)
 libgputils_a_OBJECTS = $(am_libgputils_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)

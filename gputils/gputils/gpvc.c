@@ -167,7 +167,8 @@ main(int argc, char *argv[])
   main_dir = read_directory(code_file);
 
   /* Determine if byte address and org are different. */
-  processor_name  = substr(temp_buf, sizeof(temp_buf), &main_dir->dir[COD_DIR_PROCESSOR], 8);
+  processor_name  = substr(temp_buf, sizeof(temp_buf), &main_dir->dir[COD_DIR_PROCESSOR + 1], COD_DIR_PROCESSOR_C_SIZE);
+  assert(processor_name != NULL);
   processor_info  = gp_find_processor(processor_name);
   processor_class = gp_processor_class(processor_info);
 

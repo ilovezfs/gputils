@@ -111,9 +111,9 @@ libgpasm_a_LIBADD =
 am_libgpasm_a_OBJECTS = cod.$(OBJEXT) coff.$(OBJEXT) deps.$(OBJEXT) \
 	directive.$(OBJEXT) evaluate.$(OBJEXT) file.$(OBJEXT) \
 	gpasm.$(OBJEXT) gpmsg.$(OBJEXT) lst.$(OBJEXT) macro.$(OBJEXT) \
-	preprocess.$(OBJEXT) processor.$(OBJEXT) special.$(OBJEXT) \
-	util.$(OBJEXT) ppscan.$(OBJEXT) scan.$(OBJEXT) parse.$(OBJEXT) \
-	ppparse.$(OBJEXT)
+	parse.$(OBJEXT) ppparse.$(OBJEXT) ppscan.$(OBJEXT) \
+	preprocess.$(OBJEXT) processor.$(OBJEXT) scan.$(OBJEXT) \
+	special.$(OBJEXT) util.$(OBJEXT)
 libgpasm_a_OBJECTS = $(am_libgpasm_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)

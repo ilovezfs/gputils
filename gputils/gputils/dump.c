@@ -236,14 +236,15 @@ _fget_line(int Line, char *Buffer, int Size, FILE *pFile)
 /*------------------------------------------------------------------------------------------------*/
 
 /*
-  substr - copy first n characters from b to a
+  substr - Copy first size characters from Src to Dst.
 */
 
 char *
 substr(char *Dst, size_t Sizeof_dst, const uint8_t *Src, size_t Sizeof_src)
 {
-  size_t size = (Sizeof_src < Sizeof_dst) ? Sizeof_src : (Sizeof_dst - 1);
+  size_t size;
 
+  size = (Sizeof_src < Sizeof_dst) ? Sizeof_src : (Sizeof_dst - 1);
   memcpy(Dst, Src, size);
   Dst[size] = '\0';
   return Dst;
@@ -264,27 +265,55 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
   unsigned int day;
   unsigned int time;
   unsigned int bytes_for_address;
+#if defined(HAVE_LOCALE_H) && defined(HAVE_LANGINFO_H)
+  struct tm    tm;
+#endif
+
+  substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_DATE + 1], COD_DIR_DATE_C_SIZE);
+  time = gp_getl16(&Block[COD_DIR_TIME]);
+  sscanf(temp_buf, "%u%3s%u", &day, month, &year);
+
+#if defined(HAVE_LOCALE_H) && defined(HAVE_LANGINFO_H)
+  memset(&tm, 0, sizeof(tm));
+  snprintf(temp_buf, sizeof(temp_buf), "%u %s %u %u %u", year + 2000, month, day, time / 100, time % 100);
+  strptime(temp_buf, "%Y %b %d %H %M", &tm);
+  setlocale(LC_ALL, "");
+#endif
 
   printf("Directory block:                %04x\n"
          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n", Block_num);
 
   printf("%03x - Source file:              %s\n",
-         COD_DIR_SOURCE, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_SOURCE], COD_FILE_SIZE - 1));
-  substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_DATE], 7);
-  sscanf(temp_buf, "%u%3s%u", &day, month, &year);
-  printf("%03x - Date:                     %u %s %u\n",
-         COD_DIR_DATE, year + 2000, month, day);
+         COD_DIR_SOURCE, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_SOURCE + 1],
+         COD_DIR_SOURCE_C_SIZE));
 
-  time = gp_getl16(&Block[COD_DIR_TIME]);
+#if defined(HAVE_LOCALE_H) && defined(HAVE_LANGINFO_H)
+  strftime(temp_buf, sizeof(temp_buf), nl_langinfo(D_FMT), &tm);
+  printf("%03x - Date:                     %s\n",
+         COD_DIR_DATE, temp_buf);
+#else
+  printf("%03x - Date:                     %u %s %u\n",
+         COD_DIR_DATE, day, month, year + 2000);
+#endif
+
+#if defined(HAVE_LOCALE_H) && defined(HAVE_LANGINFO_H)
+  strftime(temp_buf, sizeof(temp_buf), nl_langinfo(T_FMT), &tm);
+  printf("%03x - Time:                     %s\n",
+         COD_DIR_TIME, temp_buf);
+#else
   printf("%03x - Time:                     %02u:%02u\n",
          COD_DIR_TIME, time / 100, time % 100);
+#endif
 
   printf("%03x - Compiler version:         %s\n",
-         COD_DIR_VERSION, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_VERSION], 19));
+         COD_DIR_VERSION, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_VERSION + 1],
+         COD_DIR_VERSION_C_SIZE));
   printf("%03x - Compiler:                 %s\n",
-         COD_DIR_COMPILER, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_COMPILER], 11));
+         COD_DIR_COMPILER, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_COMPILER + 1],
+         COD_DIR_COMPILER_C_SIZE));
   printf("%03x - Notice:                   %s\n",
-         COD_DIR_NOTICE, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_NOTICE], COD_FILE_SIZE - 1));
+         COD_DIR_NOTICE, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_NOTICE + 1],
+         COD_DIR_NOTICE_C_SIZE));
 
   bytes_for_address = Block[COD_DIR_ADDRSIZE];
   printf("%03x - Bytes for address:        %u\n", COD_DIR_ADDRSIZE, bytes_for_address);
@@ -300,7 +329,8 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
   printf("%03x - COD file version:         %d\n",
          COD_DIR_CODTYPE, gp_getl16(&Block[COD_DIR_CODTYPE]));
   printf("%03x - Processor:                %s\n",
-         COD_DIR_PROCESSOR, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_PROCESSOR], 8));
+         COD_DIR_PROCESSOR, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_PROCESSOR + 1],
+         COD_DIR_PROCESSOR_C_SIZE));
 
   printf("%03x,%03x - Short symbol table start block: %04x  end block: %04x\n",
          COD_DIR_SYMTAB, COD_DIR_SYMTAB + 2,
