@@ -32,6 +32,4 @@ extern void dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir);
 extern void dump_message_area(FILE *Code_file, const DirBlockInfo *Main_dir);
 extern void dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Class);
 
-extern char *substr(char *Dst, size_t Sizeof_dst, const uint8_t *Src, size_t Sizeof_src);
-
 #endif

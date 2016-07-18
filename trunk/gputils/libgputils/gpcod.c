@@ -25,33 +25,20 @@ Boston, MA 02111-1307, USA.  */
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* copy a string to a cod block using the pascal convention, i.e. the 
-   string length occupies the first string location */
-
-void 
-gp_cod_Pstrncpy(uint8_t *Dest, const char *Src, size_t Max_len)
-{
-  size_t len;
-
-  len = strlen(Src);
-  Dest[-1] = (Max_len > len) ? len : Max_len;
-  memcpy(Dest, Src, Dest[-1]);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 void
-gp_cod_Pdate(uint8_t *Buffer, size_t Sizeof_buffer)
+gp_cod_Pdate(uint8_t *Pascal_str, size_t Pascal_max_size)
 {
-  time_t     now;
-  struct tm *local;
-  char       temp[32];
+  time_t now;
+  char   temp[32];
+  size_t length;
 
   time(&now);
-  local = localtime(&now);
-  strftime(temp, sizeof(temp), "%d%b%g", local);
-  memcpy(Buffer, temp, Sizeof_buffer);
-  Buffer[-1] = 7;
+  length = strftime(temp, sizeof(temp), "%d%b%g", localtime(&now));
+  assert(length < Pascal_max_size);
+
+  *Pascal_str = (uint8_t)length;
+  ++Pascal_str;
+  memcpy(Pascal_str, temp, length);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -102,12 +89,12 @@ gp_cod_init_dir_block(const char *File_name, const char *Compiler)
 
   /* Initialize the directory block with known data. It'll be written
    * to the .cod file after everything else. */
-  gp_cod_Pstrncpy(&dir->dir[COD_DIR_SOURCE + 1], File_name, COD_DIR_SOURCE_C_SIZE);
-  gp_cod_Pdate(&dir->dir[COD_DIR_DATE + 1], COD_DIR_DATE_C_SIZE);
+  gp_Pstr_from_str(&dir->dir[COD_DIR_SOURCE], COD_DIR_SOURCE_P_SIZE, File_name);
+  gp_cod_Pdate(&dir->dir[COD_DIR_DATE], COD_DIR_DATE_P_SIZE);
   gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_TIME_SIZE);
-  gp_cod_Pstrncpy(&dir->dir[COD_DIR_VERSION + 1], VERSION, COD_DIR_VERSION_C_SIZE);
-  gp_cod_Pstrncpy(&dir->dir[COD_DIR_COMPILER + 1], Compiler, COD_DIR_COMPILER_C_SIZE);
-  gp_cod_Pstrncpy(&dir->dir[COD_DIR_NOTICE + 1], GPUTILS_COPYRIGHT_STRING, COD_DIR_NOTICE_C_SIZE);
+  gp_Pstr_from_str(&dir->dir[COD_DIR_VERSION], COD_DIR_VERSION_P_SIZE, VERSION);
+  gp_Pstr_from_str(&dir->dir[COD_DIR_COMPILER], COD_DIR_COMPILER_P_SIZE, Compiler);
+  gp_Pstr_from_str(&dir->dir[COD_DIR_NOTICE], COD_DIR_NOTICE_P_SIZE, GPUTILS_COPYRIGHT_STRING);
 
   /* The address is always two shorts or 4 bytes long. */
   dir->dir[COD_DIR_ADDRSIZE] = 0;
@@ -218,14 +205,14 @@ gp_cod_write_code(proc_class_t Class, const MemBlock_t *Mem, DirBlockInfo *Main)
         /* No code at address i, but we need to check if this is the
            first empty address after a range of address. */
         if (used_flag) {
-          rb = gp_blocks_get_last_or_new(&dbi->rng);
+          rb = gp_cod_block_get_last_or_new(&dbi->rng);
 
           if ((rb == NULL) || ((dbi->rng.offset + COD_MAPENTRY_SIZE) >= COD_BLOCK_SIZE)) {
             /* If there are a whole bunch of non-contiguous pieces of
                code then we'll get here. But most pic apps will only need
                one directory block (that will give you 64 ranges or non-
                contiguous chunks of pic code). */
-            rb = gp_blocks_append(&dbi->rng, gp_blocks_new());
+            rb = gp_cod_block_append(&dbi->rng, gp_cod_block_new());
           }
           /* We need to update dir map indicating a range of memory that
              is needed. This is done by writing the start and end address to
@@ -247,7 +234,7 @@ gp_cod_write_code(proc_class_t Class, const MemBlock_t *Mem, DirBlockInfo *Main)
 /*------------------------------------------------------------------------------------------------*/
 
 BlockList *
-gp_blocks_new(void)
+gp_cod_block_new(void)
 {
   return (BlockList *)GP_Calloc(1, sizeof(BlockList));
 }
@@ -255,7 +242,7 @@ gp_blocks_new(void)
 /*------------------------------------------------------------------------------------------------*/
 
 BlockList *
-gp_blocks_append(Blocks *Bl, BlockList *B)
+gp_cod_block_append(Blocks *Bl, BlockList *B)
 {
   if (Bl->first == NULL) {
     Bl->first = B;
@@ -274,7 +261,7 @@ gp_blocks_append(Blocks *Bl, BlockList *B)
 /*------------------------------------------------------------------------------------------------*/
 
 BlockList *
-gp_blocks_get_last(Blocks *Bl)
+gp_cod_block_get_last(Blocks *Bl)
 {
   return Bl->last;
 }
@@ -282,13 +269,13 @@ gp_blocks_get_last(Blocks *Bl)
 /*------------------------------------------------------------------------------------------------*/
 
 BlockList *
-gp_blocks_get_last_or_new(Blocks *Bl)
+gp_cod_block_get_last_or_new(Blocks *Bl)
 {
   if (Bl->first != NULL) {
-    return gp_blocks_get_last(Bl);
+    return gp_cod_block_get_last(Bl);
   }
   else {
-    Bl->first  = gp_blocks_new();
+    Bl->first  = gp_cod_block_new();
     Bl->last   = Bl->first;
     Bl->offset = 0;
     Bl->count  = 1;
@@ -299,7 +286,7 @@ gp_blocks_get_last_or_new(Blocks *Bl)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gp_blocks_count(const Blocks *Bl)
+gp_cod_block_count(const Blocks *Bl)
 {
   return ((Bl->first == NULL) ? 0 : Bl->count);
 }
@@ -307,12 +294,12 @@ gp_blocks_count(const Blocks *Bl)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_enumerate(DirBlockInfo *Dir, unsigned int Offset, Blocks *Bl, unsigned int *Block_num)
+gp_cod_block_enumerate(DirBlockInfo *Dir, unsigned int Offset, Blocks *Bl, unsigned int *Block_num)
 {
   if (Bl->first != NULL) {
     /* enumerate block list */
     gp_putl16(&Dir->dir[Offset], ++(*Block_num));
-    *Block_num += gp_blocks_count(Bl) - 1;
+    *Block_num += gp_cod_block_count(Bl) - 1;
     gp_putl16(&Dir->dir[Offset + 2], *Block_num);
   }
 }
@@ -320,7 +307,7 @@ gp_blocks_enumerate(DirBlockInfo *Dir, unsigned int Offset, Blocks *Bl, unsigned
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_enumerate_directory(DirBlockInfo *Main_dir)
+gp_cod_enumerate_directory(DirBlockInfo *Main_dir)
 {
   DirBlockInfo *dbi;
   unsigned int  block_num;
@@ -344,34 +331,34 @@ gp_blocks_enumerate_directory(DirBlockInfo *Main_dir)
 
   /* enumerate surce files blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_enumerate(dbi, COD_DIR_NAMTAB, &dbi->src, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_NAMTAB, &dbi->src, &block_num);
   }
 
   /* enumerate list lines blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_enumerate(dbi, COD_DIR_LSTTAB, &dbi->lst, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_LSTTAB, &dbi->lst, &block_num);
   }
 
   /* enumerate memory map blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_enumerate(dbi, COD_DIR_MEMMAP, &dbi->rng, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_MEMMAP, &dbi->rng, &block_num);
   }
 
   /* enumerate long symbol table blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_enumerate(dbi, COD_DIR_LSYMTAB, &dbi->sym, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_LSYMTAB, &dbi->sym, &block_num);
   }
 
   /* enumerate debug messages table blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_enumerate(dbi, COD_DIR_MESSTAB, &dbi->dbg, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_MESSTAB, &dbi->dbg, &block_num);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_write(FILE *F, Blocks *Bl)
+gp_cod_block_write(FILE *F, Blocks *Bl)
 {
   BlockList *curr = Bl->first;
 
@@ -388,7 +375,7 @@ gp_blocks_write(FILE *F, Blocks *Bl)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_write_directory(FILE *F, DirBlockInfo *Main_dir)
+gp_cod_write_directory(FILE *F, DirBlockInfo *Main_dir)
 {
   DirBlockInfo *dbi;
   unsigned int  i;
@@ -415,34 +402,34 @@ gp_blocks_write_directory(FILE *F, DirBlockInfo *Main_dir)
 
   /* write source files blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(F, &dbi->src);
+    gp_cod_block_write(F, &dbi->src);
   }
 
   /* write list lines blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(F, &dbi->lst);
+    gp_cod_block_write(F, &dbi->lst);
   }
 
   /* write memory map blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(F, &dbi->rng);
+    gp_cod_block_write(F, &dbi->rng);
   }
 
   /* write long symbol table blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(F, &dbi->sym);
+    gp_cod_block_write(F, &dbi->sym);
   }
 
   /* write debug messages table blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_blocks_write(F, &dbi->dbg);
+    gp_cod_block_write(F, &dbi->dbg);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_free(Blocks *Bl)
+gp_cod_block_free(Blocks *Bl)
 {
   BlockList *curr;
   BlockList *next;
@@ -463,7 +450,7 @@ gp_blocks_free(Blocks *Bl)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_blocks_free_directory(DirBlockInfo *Main_dir)
+gp_cod_free_directory(DirBlockInfo *Main_dir)
 {
   DirBlockInfo *dbi;
   DirBlockInfo *next;
@@ -479,19 +466,19 @@ gp_blocks_free_directory(DirBlockInfo *Main_dir)
     }
 
     /* free surce files blocks */
-    gp_blocks_free(&dbi->src);
+    gp_cod_block_free(&dbi->src);
 
     /* free list lines blocks */
-    gp_blocks_free(&dbi->lst);
+    gp_cod_block_free(&dbi->lst);
 
     /* free memory map blocks */
-    gp_blocks_free(&dbi->rng);
+    gp_cod_block_free(&dbi->rng);
 
     /* free long symbol table blocks */
-    gp_blocks_free(&dbi->sym);
+    gp_cod_block_free(&dbi->sym);
 
     /* free debug messages table blocks */
-    gp_blocks_free(&dbi->dbg);
+    gp_cod_block_free(&dbi->dbg);
 
     next = dbi->next;
     /* free directory blocks */
