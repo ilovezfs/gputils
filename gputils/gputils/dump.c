@@ -37,7 +37,7 @@ typedef struct memmap_info {
   struct memmap_info *next;
 } memmap_info_t;
 
-static uint8_t  temp[COD_BLOCK_SIZE];
+static uint8_t  cod_block[COD_BLOCK_SIZE];
 static uint8_t  used_map[COD_BLOCK_SIZE];
 
 static int      number_of_source_files = 0;
@@ -236,23 +236,6 @@ _fget_line(int Line, char *Buffer, int Size, FILE *pFile)
 /*------------------------------------------------------------------------------------------------*/
 
 /*
-  substr - Copy first size characters from Src to Dst.
-*/
-
-char *
-substr(char *Dst, size_t Sizeof_dst, const uint8_t *Src, size_t Sizeof_src)
-{
-  size_t size;
-
-  size = (Sizeof_src < Sizeof_dst) ? Sizeof_src : (Sizeof_dst - 1);
-  memcpy(Dst, Src, size);
-  Dst[size] = '\0';
-  return Dst;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/*
  * Dump directory block.
  */
 
@@ -269,7 +252,8 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
   struct tm    tm;
 #endif
 
-  substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_DATE + 1], COD_DIR_DATE_C_SIZE);
+  /* Pascal style string. */
+  gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_DATE], COD_DIR_DATE_P_SIZE);
   time = gp_getl16(&Block[COD_DIR_TIME]);
   sscanf(temp_buf, "%u%3s%u", &day, month, &year);
 
@@ -283,9 +267,10 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
   printf("Directory block:                %04x\n"
          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n", Block_num);
 
+  /* Pascal style string. */
   printf("%03x - Source file:              %s\n",
-         COD_DIR_SOURCE, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_SOURCE + 1],
-         COD_DIR_SOURCE_C_SIZE));
+         COD_DIR_SOURCE,
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_SOURCE], COD_DIR_SOURCE_P_SIZE));
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_LANGINFO_H)
   strftime(temp_buf, sizeof(temp_buf), nl_langinfo(D_FMT), &tm);
@@ -305,15 +290,18 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
          COD_DIR_TIME, time / 100, time % 100);
 #endif
 
+  /* Pascal style string. */
   printf("%03x - Compiler version:         %s\n",
-         COD_DIR_VERSION, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_VERSION + 1],
-         COD_DIR_VERSION_C_SIZE));
+         COD_DIR_VERSION,
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_VERSION], COD_DIR_VERSION_P_SIZE));
+  /* Pascal style string. */
   printf("%03x - Compiler:                 %s\n",
-         COD_DIR_COMPILER, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_COMPILER + 1],
-         COD_DIR_COMPILER_C_SIZE));
+         COD_DIR_COMPILER,
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_COMPILER], COD_DIR_COMPILER_P_SIZE));
+  /* Pascal style string. */
   printf("%03x - Notice:                   %s\n",
-         COD_DIR_NOTICE, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_NOTICE + 1],
-         COD_DIR_NOTICE_C_SIZE));
+         COD_DIR_NOTICE,
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_NOTICE], COD_DIR_NOTICE_P_SIZE));
 
   bytes_for_address = Block[COD_DIR_ADDRSIZE];
   printf("%03x - Bytes for address:        %u\n", COD_DIR_ADDRSIZE, bytes_for_address);
@@ -328,9 +316,10 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
          COD_DIR_NEXTDIR, gp_getl16(&Block[COD_DIR_NEXTDIR]));
   printf("%03x - COD file version:         %d\n",
          COD_DIR_CODTYPE, gp_getl16(&Block[COD_DIR_CODTYPE]));
+  /* Pascal style string. */
   printf("%03x - Processor:                %s\n",
-         COD_DIR_PROCESSOR, substr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_PROCESSOR + 1],
-         COD_DIR_PROCESSOR_C_SIZE));
+         COD_DIR_PROCESSOR,
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_P_SIZE));
 
   printf("%03x,%03x - Short symbol table start block: %04x  end block: %04x\n",
          COD_DIR_SYMTAB, COD_DIR_SYMTAB + 2,
@@ -431,12 +420,14 @@ dump_memmap(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Class, g
   const DirBlockInfo *dbi;
   unsigned int        _64k_base;
   int                 addr_digits;
-  uint16_t            i;
-  uint16_t            j;
-  uint16_t            start_map_block;
-  uint16_t            end_map_block;
-  uint16_t            first_offset;
-  uint16_t            last_offset;
+  unsigned int        start_map_block;
+  unsigned int        end_map_block;
+  unsigned int        i;
+  unsigned int        j;
+  unsigned int        offset;
+  const uint8_t      *record;
+  unsigned int        first_offset;
+  unsigned int        last_offset;
   unsigned int        start_addr;
   unsigned int        end_addr;
   gp_boolean          first;
@@ -459,11 +450,12 @@ dump_memmap(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Class, g
       }
 
       for (j = start_map_block; j <= end_map_block; j++) {
-        read_block(Code_file, temp, j);
+        read_block(Code_file, cod_block, j);
 
-        for (i = 0; i < COD_CODE_IMAGE_BLOCKS; i++) {
-          first_offset = gp_getl16(&temp[i * COD_MAPENTRY_SIZE + COD_MAPTAB_START]);
-          last_offset  = gp_getl16(&temp[i * COD_MAPENTRY_SIZE + COD_MAPTAB_LAST]);
+        for (i = 0, offset = 0; i < COD_CODE_IMAGE_BLOCKS; offset += COD_MAPENTRY_SIZE, ++i) {
+          record = &cod_block[offset];
+          first_offset = gp_getl16(&record[COD_MAPTAB_START]);
+          last_offset  = gp_getl16(&record[COD_MAPTAB_LAST]);
 
           if ((first_offset != 0) || (last_offset != 0)) {
             start_addr = _64k_base + first_offset;
@@ -571,7 +563,7 @@ dump_code(FILE *Code_file, const DirBlockInfo *Main_dir, pic_processor_t Process
       block_index = gp_getu16(&dbi->dir[(k + COD_DIR_CODE) * WORD_SIZE]);
 
       if (block_index != 0) {
-        read_block(Code_file, temp, block_index);
+        read_block(Code_file, cod_block, block_index);
 
         byte_address = _64k_base + (k * COD_BLOCK_N_WORDS) * WORD_SIZE;
         if (Wide_dump) {
@@ -626,7 +618,7 @@ dump_code(FILE *Code_file, const DirBlockInfo *Main_dir, pic_processor_t Process
               for (j = 0; j < column_num; j++) {
                 if (used_map[(i + j) * WORD_SIZE]) {
                   /* This is a used ROM word. */
-                  printf(" %04x", gp_getu16(&temp[(i + j) * WORD_SIZE]));
+                  printf(" %04x", gp_getu16(&cod_block[(i + j) * WORD_SIZE]));
                 }
                 else if (!_is_empty_to_last(i + j, i + column_num)) {
                   /* In this line there is also at least one used ROM word. */
@@ -649,7 +641,7 @@ dump_code(FILE *Code_file, const DirBlockInfo *Main_dir, pic_processor_t Process
           do {
             empty_line = true;
             for (j = 0; j < column_num; j++) {
-              if (gp_getu16(&temp[(i + j) * WORD_SIZE]) != 0) {
+              if (gp_getu16(&cod_block[(i + j) * WORD_SIZE]) != 0) {
                 empty_line = false;
                 break;
               }
@@ -660,7 +652,7 @@ dump_code(FILE *Code_file, const DirBlockInfo *Main_dir, pic_processor_t Process
               printf("%0*x: ", addr_digits, gp_processor_insn_from_byte_c(class, byte_address));
 
               for (j = 0; j < column_num; j++) {
-                printf(" %04x", gp_getu16(&temp[(i + j) * WORD_SIZE]));
+                printf(" %04x", gp_getu16(&cod_block[(i + j) * WORD_SIZE]));
               }
 
               putchar('\n');
@@ -677,7 +669,7 @@ dump_code(FILE *Code_file, const DirBlockInfo *Main_dir, pic_processor_t Process
         byte_address = _64k_base + k * COD_BLOCK_N_WORDS * WORD_SIZE;
         data         = gp_mem_i_create();
         for (j = 0; j < COD_BLOCK_SIZE; j++) {
-          gp_mem_b_put(data, byte_address + j, temp[j], NULL, NULL);
+          gp_mem_b_put(data, byte_address + j, cod_block[j], NULL, NULL);
         }
 
         /* Disassembles this code array. */
@@ -745,11 +737,16 @@ dump_code(FILE *Code_file, const DirBlockInfo *Main_dir, pic_processor_t Process
 void
 dump_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
-  char         buf[16];
-  unsigned int start_block;
-  unsigned int end_block;
-  unsigned int i;
-  unsigned int j;
+  unsigned int   start_block;
+  unsigned int   end_block;
+  unsigned int   i;
+  unsigned int   j;
+  unsigned int   offset;
+  const uint8_t *record;
+  unsigned int   length;
+  char           name[COD_SSYMBOL_NAME_C_SIZE + 1];
+  unsigned int   type;
+  unsigned int   value;
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_SYMTAB]);
 
@@ -760,14 +757,17 @@ dump_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
            "-------------------------\n");
 
     for (j = start_block; j <= end_block; j++) {
-      read_block(Code_file, temp, j);
+      read_block(Code_file, cod_block, j);
 
-      for (i = 0; i < SYMBOLS_PER_BLOCK; i++) {
-        if (temp[i * SSYMBOL_SIZE + COD_SSYMBOL_NAME]) {
-          printf("%-12s = %04x, type = %s\n",
-                 substr(buf, sizeof(buf), &temp[i * SSYMBOL_SIZE + COD_SSYMBOL_NAME], 12),
-                 gp_getu16(&temp[i * SSYMBOL_SIZE + COD_SSYMBOL_SVALUE]),
-                 SymbolType4[(unsigned int)temp[i * SSYMBOL_SIZE + COD_SSYMBOL_STYPE]]);
+      for (i = 0, offset = 0; i < SYMBOLS_PER_BLOCK; offset += SSYMBOL_SIZE, ++i) {
+        record = &cod_block[offset];
+        length = record[COD_SSYMBOL_NAME];
+
+        if (length != 0) {
+          gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_P_SIZE);
+          type  = record[COD_SSYMBOL_STYPE];
+          value = gp_getu16(&record[COD_SSYMBOL_SVALUE]);
+          printf("%-12s = %04x, type = %s\n", name, value, SymbolType4[type]);
         }
       }
     }
@@ -784,13 +784,12 @@ dump_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 static unsigned int
 _lsymbols_max_length(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
-  unsigned int   start_block;
-  unsigned int   end_block;
-  unsigned int   i;
-  unsigned int   j;
-  const uint8_t *sym;
-  unsigned int   length;
-  unsigned int   max_length;
+  unsigned int start_block;
+  unsigned int end_block;
+  unsigned int i;
+  unsigned int j;
+  unsigned int length;
+  unsigned int max_length;
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_LSYMTAB]);
 
@@ -799,11 +798,11 @@ _lsymbols_max_length(FILE *Code_file, const DirBlockInfo *Main_dir)
 
     max_length = 0;
     for (j = start_block; j <= end_block; j++) {
-      read_block(Code_file, temp, j);
+      read_block(Code_file, cod_block, j);
 
       for (i = 0; i < COD_BLOCK_SIZE; ) {
-        sym    = &temp[i];
-        length = *sym;
+        /* Pascal style string. */
+        length = cod_block[i];
 
         if (length == 0) {
           break;
@@ -813,7 +812,7 @@ _lsymbols_max_length(FILE *Code_file, const DirBlockInfo *Main_dir)
           max_length = length;
         }
 
-        i += length + 7;
+        i += length + COD_LSYMBOL_EXTRA;
       }
     }
   }
@@ -830,14 +829,14 @@ _lsymbols_max_length(FILE *Code_file, const DirBlockInfo *Main_dir)
 void
 dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
-  char           buf[256];
   unsigned int   start_block;
   unsigned int   end_block;
   unsigned int   i;
   unsigned int   j;
   const uint8_t *sym;
   unsigned int   length;
-  uint16_t       type;
+  char           name[COD_LSYMBOL_NAME_MAX_LEN + 1];
+  unsigned int   type;
   unsigned int   value;
   int            symbol_align;
 
@@ -851,27 +850,29 @@ dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
            "-----------------------------------------------\n");
 
     for (j = start_block; j <= end_block; j++) {
-      read_block(Code_file, temp, j);
+      read_block(Code_file, cod_block, j);
 
       for (i = 0; i < COD_BLOCK_SIZE; ) {
-        sym    = &temp[i];
+        /* Pascal style string. */
+        sym    = &cod_block[i + COD_LSYMBOL_NAME];
         length = *sym;
 
         if (length == 0) {
           break;
         }
 
-        type = gp_getl16(&sym[length + 1]);
+        gp_str_from_Pstr(name, sizeof(name), sym, COD_LSYMBOL_NAME_MAX_LEN);
+        type = gp_getl16(&sym[length + COD_LSYMBOL_TYPE]);
 
         if (type > 128) {
           type = 0;
         }
-        /* read big endian */
-        value = gp_getb32(&sym[length + 3]);
 
-	++sym;
-        printf("%-*s = %08x, type = %s\n", symbol_align, substr(buf, sizeof(buf), sym, length), value, SymbolType4[type]);
-        i += length + 7;
+        /* read big endian */
+        value = gp_getb32(&sym[length + COD_LSYMBOL_VALUE]);
+
+        printf("%-*s = %08x, type = %s\n", symbol_align, name, value, SymbolType4[type]);
+        i += length + COD_LSYMBOL_EXTRA;
       }
     }
   }
@@ -896,7 +897,7 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
   unsigned int  i;
   unsigned int  j;
   unsigned int  offset;
-  char          b[FILE_SIZE];
+  char          buf_name[COD_DIR_SOURCE_C_SIZE + 1];
   char         *name;
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_NAMTAB]);
@@ -908,13 +909,13 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
            "------------------------\n");
 
     for (j = start_block; j <= end_block; j++) {
-      read_block(Code_file, temp, j);
+      read_block(Code_file, cod_block, j);
 
-      for (i = 0, offset = 0; i < FILES_PER_BLOCK; ++i, offset += FILE_SIZE) {
-        substr(b, sizeof (b), &temp[offset + 1], FILE_SIZE);
+      for (i = 0, offset = 0; i < FILES_PER_BLOCK; offset += COD_DIR_SOURCE_P_SIZE, ++i) {
+        gp_str_from_Pstr(buf_name, sizeof(buf_name), &cod_block[offset], COD_DIR_SOURCE_P_SIZE);
 
-        if (temp[offset] != 0) {
-          name = (char *)GP_Strdup(b);
+        if (cod_block[offset] != 0) {
+          name = GP_Strdup(buf_name);
           source_file_names[number_of_source_files] = name;
           printf("%s\n", name);
           source_files[number_of_source_files] = fopen(name, "rt");
@@ -937,22 +938,22 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static char *
-_smod_flags(int smod)
+static const char *
+_mod_flags_to_str(int Mode)
 {
-  static char f[9];
+  static char fl[9];
 
-  f[0] = (smod & COD_LS_SMOD_FLAG_C1) ? 'C' : '.';
-  f[1] = (smod & COD_LS_SMOD_FLAG_F)  ? 'F' : '.';
-  f[2] = (smod & COD_LS_SMOD_FLAG_I)  ? 'I' : '.';
-  f[3] = (smod & COD_LS_SMOD_FLAG_D)  ? 'D' : '.';
-  f[4] = (smod & COD_LS_SMOD_FLAG_C0) ? 'C' : '.';
-  f[5] = (smod & COD_LS_SMOD_FLAG_L)  ? 'L' : '.';
-  f[6] = (smod & COD_LS_SMOD_FLAG_N)  ? 'N' : '.';
-  f[7] = (smod & COD_LS_SMOD_FLAG_A)  ? 'A' : '.';
-  f[8] = '\0';
+  fl[0] = (Mode & COD_LS_SMOD_FLAG_C1) ? 'C' : '.';
+  fl[1] = (Mode & COD_LS_SMOD_FLAG_F)  ? 'F' : '.';
+  fl[2] = (Mode & COD_LS_SMOD_FLAG_I)  ? 'I' : '.';
+  fl[3] = (Mode & COD_LS_SMOD_FLAG_D)  ? 'D' : '.';
+  fl[4] = (Mode & COD_LS_SMOD_FLAG_C0) ? 'C' : '.';
+  fl[5] = (Mode & COD_LS_SMOD_FLAG_L)  ? 'L' : '.';
+  fl[6] = (Mode & COD_LS_SMOD_FLAG_N)  ? 'N' : '.';
+  fl[7] = (Mode & COD_LS_SMOD_FLAG_A)  ? 'A' : '.';
+  fl[8] = '\0';
 
-  return f;
+  return fl;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -964,24 +965,25 @@ _smod_flags(int smod)
 void
 dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
-  static int          lst_line_number = 1;
-  static int          last_src_line = 0;
+  static unsigned int  lst_line_number = 1;
+  static unsigned int  last_src_line = 0;
 
-  char                tline[2048];
-  char                nbuf[128];
-  const char         *source_file_name;
-  const DirBlockInfo *dbi;
-  gp_boolean          has_line_num_info;
-  unsigned int        _64k_base;
-  unsigned int        offset;
-  unsigned int        start_block;
-  unsigned int        end_block;
-  unsigned int        i;
-  unsigned int        j;
-  uint8_t             sfile;
-  uint8_t             smod;
-  uint16_t            sline;
-  uint16_t            sloc;
+  char                 line[2048];
+  char                 nbuf[128];
+  const char          *source_file_name;
+  const DirBlockInfo  *dbi;
+  gp_boolean           has_line_num_info;
+  unsigned int         _64k_base;
+  unsigned int         start_block;
+  unsigned int         end_block;
+  unsigned int         i;
+  unsigned int         j;
+  unsigned int         offset;
+  const uint8_t       *record;
+  unsigned int         src_file_num;
+  unsigned int         src_mod_flag;
+  unsigned int         src_line_num;
+  unsigned int         src_location;
 
   has_line_num_info = false;
   dbi = Main_dir;
@@ -1002,42 +1004,43 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
       }
 
       for (j = start_block; j <= end_block; j++) {
-        read_block(Code_file, temp, j);
+        read_block(Code_file, cod_block, j);
 
-        for (i = 0; i < COD_MAX_LINE_SYM; i++) {
-          offset = i * COD_LINE_SYM_SIZE;
-          sfile  = temp[offset + COD_LS_SFILE];
-          smod   = temp[offset + COD_LS_SMOD];
-          sline  = gp_getl16(&temp[offset + COD_LS_SLINE]);
-          sloc   = gp_getl16(&temp[offset + COD_LS_SLOC]);
+        for (i = 0, offset = 0; i < COD_MAX_LINE_SYM; offset += COD_LINE_SYM_SIZE, ++i) {
+          record = &cod_block[offset];
+          src_file_num = record[COD_LS_SFILE];
+          src_mod_flag = record[COD_LS_SMOD];
+          src_line_num = gp_getl16(&record[COD_LS_SLINE]);
+          src_location = gp_getl16(&record[COD_LS_SLOC]);
 
-          if (((sfile != 0) || (smod != 0) || (sline != 0) || (sloc != 0)) &&
-              ((smod & COD_LS_SMOD_FLAG_L) == 0)) {
-            if (sfile < number_of_source_files) {
-              source_file_name = source_file_names[sfile];
+          if (((src_file_num != 0) || (src_mod_flag != 0) || (src_line_num != 0) || (src_location != 0)) &&
+              ((src_mod_flag & COD_LS_SMOD_FLAG_L) == 0)) {
+            if (src_file_num < number_of_source_files) {
+              source_file_name = source_file_names[src_file_num];
             }
             else {
-              snprintf(nbuf, sizeof(nbuf), "Bad source file index: %d", sfile);
+              snprintf(nbuf, sizeof(nbuf), "Bad source file index: %u", src_file_num);
               source_file_name = nbuf;
             }
 
-            printf(" %5d  %5d  %06x  %2x %s  %-50s\n",
-                   lst_line_number++, sline,
-                   IMemAddrFromBase(_64k_base) | sloc,
-                   smod, _smod_flags(smod), source_file_name);
+            printf(" %5u  %5u  %06x  %2x %s  %-50s\n",
+                   lst_line_number, src_line_num,
+                   IMemAddrFromBase(_64k_base) | src_location,
+                   src_mod_flag, _mod_flags_to_str(src_mod_flag), source_file_name);
+            lst_line_number++;
 
-            if ((sfile < number_of_source_files) && (sline != last_src_line)) {
-              if (source_files[sfile] != NULL) {
-                /*fgets(tline, sizeof(tline), source_files[sfile]);*/
-                _fget_line(sline, tline, sizeof(tline), source_files[sfile]);
-                printf("%s", tline);
+            if ((src_file_num < number_of_source_files) && (src_line_num != last_src_line)) {
+              if (source_files[src_file_num] != NULL) {
+                _fget_line(src_line_num, line, sizeof(line), source_files[src_file_num]);
+                printf("%s", line);
               }
               else {
-                printf("ERROR: Source file \"%s\" does not exist.\n", source_file_names[sfile]);
+                printf("ERROR: Source file \"%s\" does not exist.\n", source_file_names[src_file_num]);
               }
             }
           }
-          last_src_line = sline;
+
+          last_src_line = src_line_num;
         }
       } /* for */
     } /* if */
@@ -1060,13 +1063,14 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 void
 dump_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
-  char         DebugType;
-  char         DebugMessage[MAX_STRING_LEN];
   unsigned int start_block;
   unsigned int end_block;
   unsigned int i;
   unsigned int j;
-  uint32_t     laddress;
+  unsigned int address;
+  char         type;
+  unsigned int length;
+  char         message[COD_DEBUG_MSG_MAX_LEN + 1];
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_MESSTAB]);
 
@@ -1078,23 +1082,23 @@ dump_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
            " --------  ---  -------------------------------------\n");
 
     for (i = start_block; i <= end_block; i++) {
-      read_block(Code_file, temp, i);
+      read_block(Code_file, cod_block, i);
 
-      for (j = 0; j < 504; ) {
+      for (j = 0; j < (COD_BLOCK_SIZE - COD_DEBUG_MIN_LEN); ) {
         /* read big endian */
-        laddress = gp_getb32(&temp[j]);
-        j += 4;
+        address = gp_getb32(&cod_block[j + COD_DEBUG_ADDR]);
+        type    = cod_block[j + COD_DEBUG_CMD];
 
-        DebugType = temp[j++];
-
-        if (DebugType == 0) {
+        if (type == '\0') {
           break;
         }
 
-        substr(DebugMessage, sizeof(DebugMessage), &temp[j], MAX_STRING_LEN);
-        j += strlen(DebugMessage);
+        /* Pascal style string. */
+        length = cod_block[j + COD_DEBUG_MSG];
+        gp_str_from_Pstr(message, sizeof(message), &cod_block[j + COD_DEBUG_MSG], COD_DEBUG_MSG_MAX_LEN);
+        j += length + COD_DEBUG_EXTRA;
 
-        printf(" %8x    %c  %s\n", laddress, DebugType, DebugMessage);
+        printf(" %8x    %c  %s\n", address, type, message);
       }
     }
   }
@@ -1114,13 +1118,18 @@ dump_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
 void
 dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t proc_class)
 {
-  uint8_t      *sh; /* scope_head */
-  unsigned int  start_block;
-  unsigned int  end_block;
-  unsigned int  i;
-  unsigned int  j;
-  unsigned int  start;
-  unsigned int  stop;
+  unsigned int   start_block;
+  unsigned int   end_block;
+  unsigned int   i;
+  unsigned int   j;
+  unsigned int   offset;
+  const uint8_t *record;
+  unsigned int   length;
+  unsigned int   start;
+  unsigned int   stop;
+  char           name[COD_SSYMBOL_NAME_C_SIZE + 1];
+  unsigned int   type;
+  unsigned int   value;
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_LOCALVAR]);
 
@@ -1131,24 +1140,26 @@ dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t proc
            "---------------------------------\n");
 
     for (i = start_block; i <= end_block; i++) {
-      read_block(Code_file, temp, i);
+      read_block(Code_file, cod_block, i);
 
-      for (j = 0; j < SYMBOLS_PER_BLOCK; j++) {
-        sh = &temp[j * SSYMBOL_SIZE];
+      for (j = 0, offset = 0; j < SYMBOLS_PER_BLOCK; offset += SSYMBOL_SIZE, ++j) {
+        record = &cod_block[offset];
+        length = record[COD_SSYMBOL_NAME];
 
-        if (sh[COD_SSYMBOL_NAME] != '\0') {
-          if (memcmp(&sh[COD_SSYMBOL_NAME], "__LOCAL", 7) == 0) {
-            start = gp_getl32(&sh[COD_SSYMBOL_START]);
-            stop  = gp_getl32(&sh[COD_SSYMBOL_STOP]);
+        if (length != 0) {
+          if (memcmp(&record[COD_SSYMBOL_NAME + 1], "__LOCAL", length) == 0) {
+            start = gp_getl32(&record[COD_SSYMBOL_START]);
+            stop  = gp_getl32(&record[COD_SSYMBOL_STOP]);
 
             printf("Local symbols between %06x and %06x:  ",
                    gp_processor_insn_from_byte_c(proc_class, start),
                    gp_processor_insn_from_byte_c(proc_class, stop + 1) - 1);
           }
           else {
-            printf("%.12s = %04x, type = %s\n", &sh[COD_SSYMBOL_NAME],
-                   gp_getl16(&sh[COD_SSYMBOL_SVALUE]),
-                   SymbolType4[(unsigned int)sh[COD_SSYMBOL_STYPE]]);
+            gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_P_SIZE);
+            type  = record[COD_SSYMBOL_STYPE];
+            value = gp_getl16(&record[COD_SSYMBOL_SVALUE]);
+            printf("%-12s = %04x, type = %s\n", name, value, SymbolType4[type]);
           }
         }
       }

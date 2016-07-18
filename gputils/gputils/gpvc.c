@@ -85,14 +85,13 @@ _show_usage(void)
 int
 main(int argc, char *argv[])
 {
-  int              c;
-  gp_boolean       usage = false;
-  int              display_flags;
+  int             c;
+  gp_boolean      usage = false;
+  int             display_flags;
 
-  char             temp_buf[12];
-  const char      *processor_name;
-  pic_processor_t  processor_info;
-  proc_class_t     processor_class;
+  char            processor_name[COD_DIR_PROCESSOR_C_SIZE + 1];
+  pic_processor_t processor_info;
+  proc_class_t    processor_class;
 
   gp_init();
 
@@ -167,9 +166,11 @@ main(int argc, char *argv[])
   main_dir = read_directory(code_file);
 
   /* Determine if byte address and org are different. */
-  processor_name  = substr(temp_buf, sizeof(temp_buf), &main_dir->dir[COD_DIR_PROCESSOR + 1], COD_DIR_PROCESSOR_C_SIZE);
-  assert(processor_name != NULL);
+  gp_str_from_Pstr(processor_name, sizeof(processor_name),
+                   &main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_P_SIZE);
+
   processor_info  = gp_find_processor(processor_name);
+  assert(processor_info != NULL);
   processor_class = gp_processor_class(processor_info);
 
   if (display_flags & DISPLAY_DIR) {

@@ -434,9 +434,7 @@ gp_strdup(const char *String, const char *File, size_t Line, const char *Func)
 {
   char *s;
 
-  if (String == NULL) {
-    return NULL;
-  }
+  assert(String != NULL);
 
   if ((s = strdup(String)) == NULL) {
     fprintf(stderr, "%s(\"%s\") -- Could not allocate string {%s.LINE-%lu, %s()}, error: %s.\n",
@@ -454,9 +452,7 @@ gp_strndup(const char *String, size_t Length, const char *File, size_t Line, con
 {
   char *s;
 
-  if (String == NULL) {
-    return NULL;
-  }
+  assert(String != NULL);
 
   if ((s = strndup(String, Length)) == NULL) {
     fprintf(stderr, "%s(\"%s\", %lu) -- Could not allocate string {%s.LINE-%lu, %s()}, error: %s.\n",
@@ -489,13 +485,15 @@ gp_strdup_lower_case(const char *name)
 /*------------------------------------------------------------------------------------------------*/
 
 char *
-gp_strdup_upper_case(const char *name)
+gp_strdup_upper_case(const char *Name)
 {
   char  ch;
   char *new;
   char *ptr;
 
-  ptr = new = GP_Strdup(name);
+  assert(Name != NULL);
+
+  ptr = new = GP_Strdup(Name);
 
   while ((ch = *ptr) != '\0') {
     *ptr = toupper(ch);
@@ -512,7 +510,10 @@ gp_strncpy(char *Dest, const char *Src, size_t Maxlen)
 {
   char ch;
 
-  if ((Dest == NULL) || (Src == NULL) || (Maxlen == 0)) {
+  assert(Dest != NULL);
+  assert(Src != NULL);
+
+  if (Maxlen == 0) {
     return NULL;
   }
 
@@ -536,7 +537,10 @@ gp_arch_strncpy(char *Dest, const char *Src, size_t Maxlen)
 {
   char ch;
 
-  if ((Dest == NULL) || (Src == NULL) || (Maxlen == 0)) {
+  assert(Dest != NULL);
+  assert(Src != NULL);
+
+  if (Maxlen == 0) {
     return NULL;
   }
 
@@ -580,6 +584,73 @@ gp_stptoupper(char *Dest, const char *Src, size_t Maxlen)
   } while (ch != '\0');
 
   return Dest;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+    C_str          : Beginning address of C style string area.
+    C_max_size     : Size of C style string area.
+    Pascal_str     : Beginning address of Pascal style string area.
+    Pascal_max_size: Size of Pascal style string area, included the string length.
+*/
+
+char *
+gp_str_from_Pstr(char *C_str, size_t C_max_size, const uint8_t *Pascal_str, size_t Pascal_max_size)
+{
+  size_t length;
+
+  assert(C_str != NULL);
+  assert(Pascal_str != NULL);
+
+  /* This is a Pascal style string, read the length. */
+  length = *Pascal_str;
+  /* The real beginning of string. */
+  ++Pascal_str;
+
+  if (length >= Pascal_max_size) {
+    /* The string too long, corrects the size. */
+    length = Pascal_max_size - 1;
+  }
+
+  if (length >= C_max_size) {
+    /* Too little the storage area. */
+    length = C_max_size - 1;
+  }
+
+  memcpy(C_str, Pascal_str, length);
+  C_str[length] = '\0';
+  return C_str;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+    Pascal_str     : Beginning address of Pascal style string area.
+    Pascal_max_size: Size of Pascal style string area, included the string length.
+    C_str          : Beginning address of C style string area.
+*/
+
+void
+gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str)
+{
+  size_t length;
+
+  assert(Pascal_str != NULL);
+  assert(C_str != NULL);
+
+  length = strlen(C_str);
+
+  if (length >= Pascal_max_size) {
+    /* Truncate the length. */
+    length = Pascal_max_size - 1;
+  }
+
+  /* Store the string length. */
+  *Pascal_str = length;
+  /* The real beginning of string. */
+  ++Pascal_str;
+  memcpy(Pascal_str, C_str, length);
 }
 
 /*------------------------------------------------------------------------------------------------*/

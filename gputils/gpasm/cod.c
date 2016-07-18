@@ -38,7 +38,7 @@ static DirBlockInfo *main_dir;
  */
 
 static void
-_write_file_block(void)
+_write_source_file_block(void)
 {
   const file_context_t *fc;
   BlockList            *fb;
@@ -56,7 +56,7 @@ _write_file_block(void)
   fc = state.file_list.first;
   while (fc != NULL) {
     if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
-      fb = gp_blocks_append(&main_dir->src, gp_blocks_new());
+      fb = gp_cod_block_append(&main_dir->src, gp_cod_block_new());
     }
 
     /* The file id is used to define the index at which the file
@@ -66,7 +66,7 @@ _write_file_block(void)
      * can handle larger file lists...
      */
 
-    gp_cod_Pstrncpy(&fb->block[main_dir->src.offset + 1], fc->name, COD_DIR_SOURCE_C_SIZE);
+    gp_Pstr_from_str(&fb->block[main_dir->src.offset], COD_DIR_SOURCE_P_SIZE, fc->name);
     main_dir->src.offset += COD_DIR_SOURCE_P_SIZE;
 
     fc = fc->next;
@@ -123,8 +123,9 @@ cod_lst_line(unsigned int List_line)
   uint8_t              smod_flag;
   BlockList           *lb;
   gp_boolean           first_time;
-  int                  address;
-  int                  high_address;
+  unsigned int         address;
+  unsigned int         high_address;
+  uint8_t             *record;
 
   if (!state.cod.enabled) {
     return;
@@ -151,28 +152,29 @@ cod_lst_line(unsigned int List_line)
     dbi       = gp_cod_find_dir_block_by_high_addr(main_dir, _64k_base);
   }
 
-  first_time = (gp_blocks_get_last(&dbi->lst) == NULL) ? true : false;
+  first_time = (gp_cod_block_get_last(&dbi->lst) == NULL) ? true : false;
 
-  lb = gp_blocks_get_last_or_new(&dbi->lst);
+  lb = gp_cod_block_get_last_or_new(&dbi->lst);
 
   if (dbi->lst.offset >= (COD_MAX_LINE_SYM * COD_LINE_SYM_SIZE)) {
-    lb = gp_blocks_append(&dbi->lst, gp_blocks_new());
+    lb = gp_cod_block_append(&dbi->lst, gp_cod_block_new());
   }
 
   assert(ctx->fc != NULL);
-  lb->block[dbi->lst.offset + COD_LS_SFILE] = ctx->fc->id;
 
   smod_flag = (first_time) ? COD_LS_SMOD_FLAG_ALL :
                              ((state.cod.emitting != 0) ? COD_LS_SMOD_FLAG_C1 :
                                                           (COD_LS_SMOD_FLAG_C1 | COD_LS_SMOD_FLAG_D));
 
-  lb->block[dbi->lst.offset + COD_LS_SMOD] = smod_flag;
+  record = &lb->block[dbi->lst.offset];
+  record[COD_LS_SFILE] = ctx->fc->id;
+  record[COD_LS_SMOD]  = smod_flag;
 
   /* Write the source file line number corresponding to the list file line number. */
-  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLINE], ctx->line_number);
+  gp_putl16(&record[COD_LS_SLINE], ctx->line_number);
 
   /* Write the address of the opcode. */
-  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLOC], address);
+  gp_putl16(&record[COD_LS_SLOC], address);
 
   dbi->lst.offset += COD_LINE_SYM_SIZE;
 }
@@ -191,11 +193,12 @@ void
 cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 {
   size_t            i;
-  int               len;
-  int               type;
+  unsigned int      length;
+  unsigned int      type;
   const variable_t *var;
   const char       *name;
   BlockList        *sb;
+  uint8_t          *record;
 
   if ((Symbol_list == NULL) || (Num_symbols == 0)) {
     return;
@@ -207,17 +210,15 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 
   sb = NULL;
   for (i = 0; i < Num_symbols; i++) {
-    name = gp_sym_get_symbol_name(Symbol_list[i]);
-    var  = gp_sym_get_symbol_annotation(Symbol_list[i]);
-    len  = strlen(name);
+    name   = gp_sym_get_symbol_name(Symbol_list[i]);
+    var    = gp_sym_get_symbol_annotation(Symbol_list[i]);
+    length = strlen(name);
 
     /* If this symbol extends past the end of the cod block then write this block out. */
 
-    if ((sb == NULL) || ((main_dir->sym.offset + len + COD_SYM_EXTRA) >= COD_BLOCK_SIZE)) {
-      sb = gp_blocks_append(&main_dir->sym, gp_blocks_new());
+    if ((sb == NULL) || ((main_dir->sym.offset + length + COD_LSYMBOL_EXTRA) >= COD_BLOCK_SIZE)) {
+      sb = gp_cod_block_append(&main_dir->sym, gp_cod_block_new());
     }
-
-    gp_cod_Pstrncpy(&sb->block[main_dir->sym.offset + 1], name, MAX_SYM_LEN);
 
     switch (var->type) {
       case VAL_CBLOCK:
@@ -234,12 +235,14 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
         type = COD_ST_CONSTANT;
     }
 
-    gp_putl16(&sb->block[main_dir->sym.offset + len + COD_SYM_TYPE], type);
+    record = &sb->block[main_dir->sym.offset];
+    gp_Pstr_from_str(record, COD_LSYMBOL_NAME_MAX_LEN, name);
+    gp_putl16(&record[length + COD_LSYMBOL_TYPE], type);
 
     /* write 32 bits, big endian */
-    gp_putb32(&sb->block[main_dir->sym.offset + len + COD_SYM_VALUE], var->value);
+    gp_putb32(&record[length + COD_LSYMBOL_VALUE], var->value);
 
-    main_dir->sym.offset += len + COD_SYM_EXTRA;
+    main_dir->sym.offset += length + COD_LSYMBOL_EXTRA;
   }
 }
 
@@ -252,15 +255,16 @@ cod_close_file(void)
     return;
   }
 
-  /* processor is unknown if not defined in command line at cod_init() call
-     so it should be set here */
-  gp_cod_Pstrncpy(&main_dir->dir[COD_DIR_PROCESSOR + 1], gp_processor_name(state.processor, 2),
-                  COD_DIR_PROCESSOR_C_SIZE);
-  _write_file_block();
+  /* The processor is unknown if not defined in command line at cod_init() call
+     so it should be set here. */
+  gp_Pstr_from_str(&main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_P_SIZE,
+                   gp_processor_name(state.processor, 2));
+
+  _write_source_file_block();
   gp_cod_write_code(state.device.class, state.i_memory, main_dir);
-  gp_blocks_enumerate_directory(main_dir);
-  gp_blocks_write_directory(state.cod.f, main_dir);
-  gp_blocks_free_directory(main_dir);
+  gp_cod_enumerate_directory(main_dir);
+  gp_cod_write_directory(state.cod.f, main_dir);
+  gp_cod_free_directory(main_dir);
   main_dir = NULL;
   fclose(state.cod.f);
 }

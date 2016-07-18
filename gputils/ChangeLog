@@ -1,3 +1,20 @@
+2016-07-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gplink/cod.c:
+    Use gp_Pstr_from_str function instead of gp_cod_Pstrncpy.
+    Renamed some functions and code optimizing.
+
+  * gputils/dump.c, gputils/dump.h, gputils/gpvc.c:
+    Removed substr function.
+    Use gp_str_from_Pstr function instead of substr.
+
+  * libgputils/gpcod.c, libgputils/gpcod.h:
+    Removed function: gp_cod_Pstrncpy
+    Use gp_Pstr_from_str function instead of gp_cod_Pstrncpy.
+    Renamed some functions and code optimizing.
+
+  * libgputils/gpsystem.c, libgputils/gpsystem.h:
+    New functions: gp_str_from_Pstr, gp_Pstr_from_str
+
 2016-07-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * config.h.in, configure, configure.ac, gpasm/Makefile.in,
     gpasm/cod.c, gplink/cod.c, gputils/dump.c, gputils/gpvc.c,
