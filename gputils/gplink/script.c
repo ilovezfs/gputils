@@ -26,27 +26,24 @@ Boston, MA 02111-1307, USA.  */
 #include "scan.h"
 #include "script.h"
 
-#define HEAD(L) (L)->value.list.head
-#define TAIL(L) (L)->value.list.tail
-
-#define NELEM(x)  (sizeof(x) / sizeof(x)[0])
+#define NELEM(x)                (sizeof(x) / sizeof(x)[0])
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-script_error(const char *messg, const char *detail)
+script_error(const char *Messg, const char *Detail)
 {
   gp_num_errors++;
 
   if (!gp_quiet) {
     if (state.src == NULL) {
-      printf("%s\n", messg);
+      printf("%s\n", Messg);
     }
-    else if (detail == NULL) {
-      printf("%s:%d:Error %s\n", state.src->name, state.src->line_number, messg);
+    else if (Detail == NULL) {
+      printf("%s:%d:Error %s\n", state.src->name, state.src->line_number, Messg);
     }
     else {
-      printf("%s:%d:Error %s (%s)\n", state.src->name, state.src->line_number, messg, detail);
+      printf("%s:%d:Error %s (%s)\n", state.src->name, state.src->line_number, Messg, Detail);
     }
   }
 }
@@ -54,9 +51,9 @@ script_error(const char *messg, const char *detail)
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_enforce_simple(const pnode_t *p)
+_enforce_simple(const pnode_t *Pnode)
 {
-  if (p->tag == PTAG_SYMBOL) {
+  if (PnIsSymbol(Pnode)) {
     return true;
   }
   else {
@@ -68,34 +65,33 @@ _enforce_simple(const pnode_t *p)
 /*------------------------------------------------------------------------------------------------*/
 
 static long
-_evaluate(const pnode_t *p)
+_evaluate(const pnode_t *Pnode)
 {
+  switch (Pnode->tag) {
+    case PTAG_CONSTANT:
+      return PnConstant(Pnode);
 
-  switch (p->tag) {
-  case PTAG_CONSTANT:
-    return p->value.constant;
+    case PTAG_SYMBOL:
+      return script_get_macro(PnSymbol(Pnode));
 
-  case PTAG_SYMBOL:
-    return script_get_macro(p->value.symbol);
-
-  default:
-    script_error("illegal argument", NULL);
-    return 0;
+    default:
+      script_error("illegal argument", NULL);
+      return 0;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_do_files(const char *name, enum section_type type, const pnode_t *parms)
+_do_files(const char *Name, enum section_type Type, const pnode_t *Parms)
 {
   const pnode_t *p;
 
-  for (; parms != NULL; parms = TAIL(parms)) {
-    p = HEAD(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
     if (_enforce_simple(p)) {
-      gplink_open_coff(p->value.symbol);
+      gplink_open_coff(PnSymbol(p));
     }
   }
 
@@ -105,15 +101,15 @@ _do_files(const char *name, enum section_type type, const pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_do_include(const char *name, enum section_type type, const pnode_t *parms)
+_do_include(const char *Name, enum section_type Type, const pnode_t *Parms)
 {
   const pnode_t *p;
 
   /* FIXME: make sure only one argument is passed */
-  p = HEAD(parms);
+  p = PnListHead(Parms);
 
   if (_enforce_simple(p)) {
-    open_src(p->value.symbol, true);
+    open_src(PnSymbol(p), true);
   }
 
   return 0;
@@ -122,17 +118,17 @@ _do_include(const char *name, enum section_type type, const pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-script_add_path(const pnode_t *parms)
+script_add_path(const pnode_t *Parms)
 {
   const pnode_t *p;
 
-  for (; parms != NULL; parms = TAIL(parms)) {
-    p = HEAD(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
     if (_enforce_simple(p)) {
       /* gplink doesn't distinguish between lib pathes and lkr pathes.  There
          is one pathes list.  This shouldn't cause any problems. */
-      gplink_add_path(p->value.symbol);
+      gplink_add_path(PnSymbol(p));
     }
   }
 
@@ -142,37 +138,38 @@ script_add_path(const pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-script_add_macro(const char *name, long value)
+script_add_macro(const char *Name, long Value)
 {
   symbol_t *sym;
   long     *val;
 
-  sym = gp_sym_add_symbol(state.script_symbols, name);
+  sym = gp_sym_add_symbol(state.script_symbols, Name);
   val = gp_sym_get_symbol_annotation(sym);
 
   if (val == NULL) {
-    val = GP_Malloc(sizeof value);
+    val = GP_Malloc(sizeof(Value));
     gp_sym_annotate_symbol(sym, val);
   }
 
-  *val = value;
+  *val = Value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 long
-script_get_macro(const char *name)
+script_get_macro(const char *Name)
 {
   symbol_t *sym;
   long     *val;
 
-  sym = gp_sym_get_symbol(state.script_symbols, name);
+  sym = gp_sym_get_symbol(state.script_symbols, Name);
 
   if (sym == NULL) {
     return 0;
   }
 
   val = gp_sym_get_symbol_annotation(sym);
+  assert(val != NULL);
   return *val;
 }
 
@@ -185,7 +182,7 @@ script_get_macro(const char *name)
 
 /* logical section definition */
 static int
-_do_logsec(const char *name, enum section_type type, const pnode_t *parms)
+_do_logsec(const char *Name, enum section_type Type, const pnode_t *Parms)
 {
   enum arg_id_e {
     ID_UNKNOWN = 0,
@@ -210,16 +207,16 @@ _do_logsec(const char *name, enum section_type type, const pnode_t *parms)
   char             *section_name = NULL;
   linker_section_t *section = NULL;
   symbol_t         *sym;
+  const char       *lhs;
+  int               i;
 
   /* read the options */
-  for (; parms != NULL; parms = TAIL(parms)) {
-    p = HEAD(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
-    if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
-      if (_enforce_simple(p->value.binop.p0)) {
-        const char *lhs = p->value.binop.p0->value.symbol;
-        int         i;
-
+    if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
+      if (_enforce_simple(PnBinOpP0(p))) {
+        lhs = PnSymbol(PnBinOpP0(p));
         arg = ID_UNKNOWN;
         for (i = 0; i < NELEM(arg_tbl); ++i) {
           if (strcasecmp(arg_tbl[i].name, lhs) == 0) {
@@ -228,35 +225,35 @@ _do_logsec(const char *name, enum section_type type, const pnode_t *parms)
         }
 
         switch (arg) {
-        case ID_NAME:
-          if (_enforce_simple(p->value.binop.p1)) {
-            found_secname = true;
-            logical_section_name = p->value.binop.p1->value.symbol;
-          }
-          break;
+          case ID_NAME:
+            if (_enforce_simple(PnBinOpP1(p))) {
+              found_secname = true;
+              logical_section_name = PnSymbol(PnBinOpP1(p));
+            }
+            break;
 
-        case ID_RAM:
-          if (_enforce_simple(p->value.binop.p1)) {
-            found_ram = true;
-            section_name = GP_Strdup(p->value.binop.p1->value.symbol);
-          }
-          break;
+          case ID_RAM:
+            if (_enforce_simple(PnBinOpP1(p))) {
+              found_ram = true;
+              section_name = GP_Strdup(PnSymbol(PnBinOpP1(p)));
+            }
+            break;
 
-        case ID_ROM:
-          if (_enforce_simple(p->value.binop.p1)) {
-            found_rom = true;
-            section_name = GP_Strdup(p->value.binop.p1->value.symbol);
-          }
-          break;
+          case ID_ROM:
+            if (_enforce_simple(PnBinOpP1(p))) {
+              found_rom = true;
+              section_name = GP_Strdup(PnSymbol(PnBinOpP1(p)));
+            }
+            break;
 
-        default:
-          script_error("illegal argument", lhs);
+          default:
+            script_error("illegal argument", lhs);
         }
       }
     }
     else {
       if (_enforce_simple(p)) {
-        script_error("illegal argument", p->value.symbol);
+        script_error("illegal argument", PnSymbol(p));
       }
     }
   }
@@ -301,7 +298,7 @@ _do_logsec(const char *name, enum section_type type, const pnode_t *parms)
 
 /* general section definition processing */
 static int
-_do_secdef(const char *name, enum section_type type, const pnode_t *parms)
+_do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
 {
   enum arg_id_e {
     ID_UNKNOWN = 0,
@@ -335,15 +332,16 @@ _do_secdef(const char *name, enum section_type type, const pnode_t *parms)
   long              shadow_val = 0;
   symbol_t         *sym;
   linker_section_t *section_def;
+  const char       *lhs;
+  int               i;
 
   /* read the options */
-  for (; parms != NULL; parms = TAIL(parms)) {
-    p = HEAD(parms);
-    if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
-      if (_enforce_simple(p->value.binop.p0)) {
-        const char *lhs = p->value.binop.p0->value.symbol;
-        int         i;
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
+    if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
+      if (_enforce_simple(PnBinOpP0(p))) {
+        lhs = PnSymbol(PnBinOpP0(p));
         arg = ID_UNKNOWN;
         for (i = 0; i < NELEM(arg_tbl); ++i) {
           if (strcasecmp(arg_tbl[i].name, lhs) == 0) {
@@ -352,69 +350,70 @@ _do_secdef(const char *name, enum section_type type, const pnode_t *parms)
         }
 
         switch (arg) {
-        case ID_NAME:
-          if (_enforce_simple(p->value.binop.p1)) {
-            section_name = p->value.binop.p1->value.symbol;
-          }
-          break;
+          case ID_NAME:
+            if (_enforce_simple(PnBinOpP1(p))) {
+              section_name = PnSymbol(PnBinOpP1(p));
+            }
+            break;
 
-        case ID_START:
-          found_start = true;
-          start = _evaluate(p->value.binop.p1);
-          break;
+          case ID_START:
+            found_start = true;
+            start       = _evaluate(PnBinOpP1(p));
+            break;
 
-        case ID_END:
-          found_end = true;
-          end = _evaluate(p->value.binop.p1);
-          break;
+          case ID_END:
+            found_end = true;
+            end       = _evaluate(PnBinOpP1(p));
+            break;
 
-        case ID_FILL:
-          found_fill = true;
-          fill = _evaluate(p->value.binop.p1);
-          break;
+          case ID_FILL:
+            found_fill = true;
+            fill       = _evaluate(PnBinOpP1(p));
+            break;
 
-        case ID_SHADOW:
-          if (_enforce_simple(p->value.binop.p1)) {
-            const char *begin;
-            char       *end;
+          case ID_SHADOW: {
+            if (_enforce_simple(PnBinOpP1(p))) {
+              const char *begin;
+              char       *end;
 
-            begin = p->value.binop.p1->value.symbol;
-            if ((end = strchr(begin, ':')) != NULL) {
-              if (end == begin) {
-                script_error("bad shadow symbol", lhs);
-              }
-              else {
-                char *shsym = (char *)GP_Malloc(end - begin + 1);
+              begin = PnSymbol(PnBinOpP1(p));
+              if ((end = strchr(begin, ':')) != NULL) {
+                if (end == begin) {
+                  script_error("bad shadow symbol", lhs);
+                }
+                else {
+                  char *shsym = (char *)GP_Malloc(end - begin + 1);
 
-                memcpy(shsym, begin, end - begin);
-                shsym[end - begin] = '\0';
-                shadow_sym = shsym;
-                begin = ++end;
-                shadow_val = strtol(begin, &end, 0);
+                  memcpy(shsym, begin, end - begin);
+                  shsym[end - begin] = '\0';
+                  shadow_sym = shsym;
+                  begin = ++end;
+                  shadow_val = strtol(begin, &end, 0);
 
-                if (*end != '\0') {
-                  script_error("bad shadow value", lhs);
+                  if (*end != '\0') {
+                    script_error("bad shadow value", lhs);
+                  }
                 }
               }
+              else {
+                script_error("bad shadow argument", lhs);
+              }
             }
-            else {
-              script_error("bad shadow argument", lhs);
-            }
+            break;
           }
-          break;
 
-        default:
-          script_error("illegal argument", lhs);
+          default:
+            script_error("illegal argument", lhs);
         }
       }
     }
     else {
       if (_enforce_simple(p)) {
-        if (strcasecmp(p->value.symbol, "protected") == 0) {
+        if (strcasecmp(PnSymbol(p), "protected") == 0) {
           found_protected = true;
         }
         else {
-          script_error("illegal argument", p->value.symbol);
+          script_error("illegal argument", PnSymbol(p));
         }
       }
     }
@@ -438,27 +437,27 @@ _do_secdef(const char *name, enum section_type type, const pnode_t *parms)
       section_def = (struct linker_section *)GP_Calloc(1, sizeof(struct linker_section));
       gp_sym_annotate_symbol(sym, section_def);
 
-      switch (type) {
-      case SECT_ACCESSBANK:
-        if (state.class != PROC_CLASS_PIC16E) {
-          script_error("accessbank only valid with 18xx devices", name);
-        }
-        break;
+      switch (Type) {
+        case SECT_ACCESSBANK:
+          if (state.class != PROC_CLASS_PIC16E) {
+            script_error("accessbank only valid with 18xx devices", Name);
+          }
+          break;
 
-      case SECT_CODEPAGE:
-        start = gp_processor_byte_from_insn_c(state.class, start);
-        end   = gp_processor_byte_from_insn_c(state.class, end + 1) - 1;
-        break;
+        case SECT_CODEPAGE:
+          start = gp_processor_byte_from_insn_c(state.class, start);
+          end   = gp_processor_byte_from_insn_c(state.class, end + 1) - 1;
+          break;
 
-      case SECT_NONE:
-        script_error("invalid definition type", name);
-        break;
+        case SECT_NONE:
+          script_error("invalid definition type", Name);
+          break;
 
-      default:
-        break;
+        default:
+          break;
       }
 
-      section_def->type       = type;
+      section_def->type       = Type;
       section_def->start      = start;
       section_def->end        = end;
       section_def->protected  = found_protected;
@@ -481,7 +480,7 @@ _do_secdef(const char *name, enum section_type type, const pnode_t *parms)
         script_error("illegal argument", "fill");
       }
     }
-    else if (type != SECT_SHAREBANK) {
+    else if (Type != SECT_SHAREBANK) {
       script_error("duplicate section definition", section_name);
     }
   }
@@ -492,7 +491,7 @@ _do_secdef(const char *name, enum section_type type, const pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_do_stack(const char *name, enum section_type type, const pnode_t *parms)
+_do_stack(const char *Name, enum section_type Type, const pnode_t *Parms)
 {
   enum arg_id_e {
     ID_UNKNOWN = 0,
@@ -511,6 +510,8 @@ _do_stack(const char *name, enum section_type type, const pnode_t *parms)
   gp_boolean     found_size  = false;
   char          *ram_name = NULL;
   symbol_t      *sym;
+  const char    *lhs;
+  int            i;
 
   if (state.has_stack) {
     script_error("multiple stack definitions", NULL);
@@ -523,14 +524,12 @@ _do_stack(const char *name, enum section_type type, const pnode_t *parms)
   /* FIXME: Simplify this. There are only two arguments. */
 
   /* read the options */
-  for (; parms != NULL; parms = TAIL(parms)) {
-    p = HEAD(parms);
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
 
-    if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
+    if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (_enforce_simple(p->value.binop.p0)) {
-        const char *lhs = p->value.binop.p0->value.symbol;
-        int         i;
-
+        lhs = PnSymbol(PnBinOpP0(p));
         arg = ID_UNKNOWN;
         for (i = 0; i < NELEM(arg_tbl); ++i) {
           if (strcasecmp(arg_tbl[i].name, lhs) == 0) {
@@ -539,25 +538,25 @@ _do_stack(const char *name, enum section_type type, const pnode_t *parms)
         }
 
         switch (arg) {
-        case ID_SIZE:
-          found_size       = true;
-          state.stack_size = _evaluate(p->value.binop.p1);
-          break;
+          case ID_SIZE:
+            found_size       = true;
+            state.stack_size = _evaluate(PnBinOpP1(p));
+            break;
 
-        case ID_RAM:
-          if (_enforce_simple(p->value.binop.p1)) {
-            ram_name = GP_Strdup(p->value.binop.p1->value.symbol);
-          }
-          break;
+          case ID_RAM:
+            if (_enforce_simple(PnBinOpP1(p))) {
+              ram_name = GP_Strdup(PnSymbol(PnBinOpP1(p)));
+            }
+            break;
 
-        default:
-          script_error("illegal argument", lhs);
+          default:
+            script_error("illegal argument", lhs);
         }
       }
     }
     else {
       if (_enforce_simple(p)) {
-        script_error("illegal argument", p->value.symbol);
+        script_error("illegal argument", PnSymbol(p));
       }
     }
   }
@@ -577,12 +576,12 @@ _do_stack(const char *name, enum section_type type, const pnode_t *parms)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-script_execute_command(const char *name, const pnode_t *parms)
+script_execute_command(const char *Name, const pnode_t *Parms)
 {
   static struct {
     const char        *name;
     enum section_type  type;
-    int              (*address)(const char *name, enum section_type type, const pnode_t *parms);
+    int              (*address)(const char *Name, enum section_type Type, const pnode_t *Parms);
   } commands[] = {
     { "accessbank", SECT_ACCESSBANK, _do_secdef  },
     { "codepage",   SECT_CODEPAGE,   _do_secdef  },
@@ -594,15 +593,15 @@ script_execute_command(const char *name, const pnode_t *parms)
     { "sharebank",  SECT_SHAREBANK,  _do_secdef  },
     { "stack",      SECT_NONE,       _do_stack   }
   };
-  int i;
+  size_t i;
 
   for (i = 0; i < NELEM(commands); ++i) {
-    if (strcasecmp(name, commands[i].name) == 0) {
-      return (*commands[i].address)(name, commands[i].type, parms);
+    if (strcasecmp(Name, commands[i].name) == 0) {
+      return (*commands[i].address)(Name, commands[i].type, Parms);
     }
   }
 
-  script_error("invalid script command", name);
+  script_error("invalid script command", Name);
 
   return 0;
 }

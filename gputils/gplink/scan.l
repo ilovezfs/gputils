@@ -37,61 +37,57 @@ Boston, MA 02111-1307, USA.  */
 /* YY_UNPUT not used, suppress the warning */
 #define YY_NO_UNPUT
 
-static void bad_char(const char *character);
+static void bad_char(const char *Character);
 
 static inline size_t
-gp_input(char *buf, size_t max_size)
+gp_input(char *Buf, size_t Max_size)
 {
-  if (YY_CURRENT_BUFFER_LVALUE->yy_is_interactive)
-    {
-      int c = '*';
-      size_t n;
+  int    c;
+  size_t n;
 
-      for (n = 0; (n < max_size) && ((c = getc(yyin)) != EOF) && (c != '\n'); ++n)
-        {
-          buf[n] = (char)c;
-        }
+  if (YY_CURRENT_BUFFER_LVALUE->yy_is_interactive) {
+    c = '*';
 
-      if (c == '\n')
-        {
-          /* skip CR followed by LF */
-          if ((n > 0) && (buf[n - 1] == '\r'))
-            {
-              --n;
-            }
-
-          buf[n++] = (char)c;
-        }
-
-      if ((c == EOF) && ferror(yyin))
-        {
-          script_error("Internal error", "Input in flex scanner failed");
-        }
-
-      return n;
+    for (n = 0; (n < Max_size) && ((c = getc(yyin)) != EOF) && (c != '\n'); ++n) {
+      Buf[n] = (char)c;
     }
-  else
-    {
-      script_error("Internal error", "Interactive scanner should be used");
-      return 0;
+
+    if (c == '\n') {
+      /* skip CR followed by LF */
+      if ((n > 0) && (Buf[n - 1] == '\r')) {
+        --n;
+      }
+
+      Buf[n++] = (char)c;
+      }
+
+    if ((c == EOF) && ferror(yyin)) {
+      script_error("Internal error", "Input in flex scanner failed");
     }
+
+    return n;
+  }
+  else {
+    script_error("Internal error", "Interactive scanner should be used");
+    return 0;
+  }
 }
 
 static inline size_t
-gp_yyinput(char *buf, size_t max_size)
+gp_yyinput(char *Buf, size_t Max_size)
 {
-  size_t result = gp_input(buf, max_size);
+  size_t result;
 
-  if (result)
-    {
-      state.src->last_char_is_nl = (buf[result - 1] == '\n');
-    }
-  else if (!state.src->last_char_is_nl)
-    {
-      *buf = '\n';
-      result = 1;
-      state.src->last_char_is_nl = true;
-    }
+  result = gp_input(Buf, Max_size);
+
+  if (result != 0) {
+    state.src->last_char_is_nl = (Buf[result - 1] == '\n');
+  }
+  else if (!state.src->last_char_is_nl) {
+    *Buf = '\n';
+    result = 1;
+    state.src->last_char_is_nl = true;
+  }
 
   return result;
 }
@@ -171,39 +167,41 @@ error([ \t].*)?         {
                         }
 %%
 
-static void bad_char(const char *character)
+static void
+bad_char(const char *Character)
 {
   char complaint[80];
 
   snprintf(complaint, sizeof(complaint),
-           isprint(*character) ? "Illegal character '%c' in numeric constant" :
+           isprint(*Character) ? "Illegal character '%c' in numeric constant" :
                                  "Illegal character %#x in numeric constant",
-           *character);
+           *Character);
 
   script_error(complaint, NULL);
 }
 
-void open_src(const char *name, gp_boolean isinclude)
+void
+open_src(const char *Name, gp_boolean Is_include)
 {
-  extern FILE *yyin;
-  struct source_context *new = GP_Malloc(sizeof(*new));
+  extern FILE           *yyin;
+  struct source_context *new;
+  char                   tryname[BUFSIZ];
+  int                    i;
 
   if (state.src != NULL) {
     state.src->yybuf = YY_CURRENT_BUFFER;
   }
 
-  new->f = fopen(name, "rt");
+  new = GP_Malloc(sizeof(*new));
+  new->f = fopen(Name, "rt");
 
   if (new->f != NULL) {
-    new->name = GP_Strdup(name);
+    new->name = GP_Strdup(Name);
   }
-  else if(isinclude && (strchr(name, PATH_SEPARATOR_CHAR) == 0)) {
+  else if (Is_include && (strchr(Name, PATH_SEPARATOR_CHAR) == 0)) {
     /* If include file and no PATH_SEPARATOR_CHAR in name, try searching include path. */
-    char tryname[BUFSIZ];
-    int i;
-
     for (i = 0; i < state.num_paths; i++) {
-      snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
+      snprintf(tryname, sizeof(tryname), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], Name);
       new->f = fopen(tryname, "rt");
 
       if (new->f != NULL) {
@@ -217,10 +215,10 @@ void open_src(const char *name, gp_boolean isinclude)
 
   if (new->f == NULL) {
     if (state.src != NULL) {
-      gp_error("Unable to open file \"%s\" - %s", name, strerror(errno));
+      gp_error("Unable to open file \"%s\" - %s", Name, strerror(errno));
     }
     else {
-      perror(name);
+      perror(Name);
     }
     exit(1);
   }
@@ -229,16 +227,16 @@ void open_src(const char *name, gp_boolean isinclude)
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
 
-  new->line_number = 1;
-  new->prev = state.src;
+  new->line_number     = 1;
+  new->prev            = state.src;
   new->last_char_is_nl = true;
   state.src = new;
 }
 
-gp_boolean close_file(void)
+gp_boolean
+close_file(void)
 {
   struct source_context *old;
-  gp_boolean terminate = false;
 
   old = state.src;
   state.src = state.src->prev;
@@ -250,13 +248,11 @@ gp_boolean close_file(void)
   free(old);
 
   if (state.src != NULL) {
-    /* Just an include file */
+    /* Just an include file. */
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
-  }
-  else {
-    terminate = true;
+    return false;
   }
 
-  return terminate;
+  return true;
 }

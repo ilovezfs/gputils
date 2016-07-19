@@ -1,3 +1,27 @@
+2016-07-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/gpasm.h.in, gplink/script.c, gplink/script.h,
+    libgputils/gptypes.h:
+    Moved the "pnode_t" type from gpasm.h.in to gptypes.h
+
+  * gputils/dump.c:
+    More information in the symbol lists.
+
+  * gputils/gpvo.c, libgputils/gpcod.c, libgputils/gpcod.h:
+    Code optimization.
+
+  * libgputils/gpcofflink.c, libgputils/gpcofflink.h:
+    Use const modifier.
+
+  * libgputils/gpsystem.c:
+    Create the date and time format according to the locale settings,
+    if possible.
+
+  * gpasm/cod.c, gpasm/deps.c, gpasm/deps.h, gpasm/gpasm.c,
+    gpasm/lst.c, gpasm/processor.c, gpasm/util.c, gplink/cod.c,
+    gplink/gplink.c, gplink/gplink.h.in, gplink/lst.c, gplink/map.c,
+    gplink/parse.y, gplink/scan.l:
+    Code formatting.
+
 2016-07-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gplink/cod.c:
     Use gp_Pstr_from_str function instead of gp_cod_Pstrncpy.

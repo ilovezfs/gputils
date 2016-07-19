@@ -3,7 +3,7 @@
    James Bowman, Craig Franklin
    Copyright (C) 2012 Borut Razem
 
-    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -1186,19 +1186,19 @@ lst_data:
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_lst_symbol_verscmp(const void *p0, const void *p1)
+_lst_symbol_verscmp(const void *P0, const void *P1)
 {
-  return strverscmp(gp_sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
-                    gp_sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
+  return strverscmp(gp_sym_get_symbol_name(((const lst_symbol_t *)P0)->sym),
+                    gp_sym_get_symbol_name(((const lst_symbol_t *)P1)->sym));
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_lst_symbol_cmp(const void *p0, const void *p1)
+_lst_symbol_cmp(const void *P0, const void *P1)
 {
-  return strcmp(gp_sym_get_symbol_name(((const lst_symbol_t *)p0)->sym),
-                gp_sym_get_symbol_name(((const lst_symbol_t *)p1)->sym));
+  return strcmp(gp_sym_get_symbol_name(((const lst_symbol_t *)P0)->sym),
+                gp_sym_get_symbol_name(((const lst_symbol_t *)P1)->sym));
 }
 
 /*------------------------------------------------------------------------------------------------*/

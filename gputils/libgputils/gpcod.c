@@ -1,7 +1,7 @@
 /* .cod file support
    Copyright (C) 2003, 2004, 2005 Craig Franklin
    Copyright (C) 2012 Borut Razem
-   Copyright (C) 2015 Molnar Karoly
+   Copyright (C) 2015-2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -25,26 +25,8 @@ Boston, MA 02111-1307, USA.  */
 
 /*------------------------------------------------------------------------------------------------*/
 
-void
-gp_cod_Pdate(uint8_t *Pascal_str, size_t Pascal_max_size)
-{
-  time_t now;
-  char   temp[32];
-  size_t length;
-
-  time(&now);
-  length = strftime(temp, sizeof(temp), "%d%b%g", localtime(&now));
-  assert(length < Pascal_max_size);
-
-  *Pascal_str = (uint8_t)length;
-  ++Pascal_str;
-  memcpy(Pascal_str, temp, length);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-gp_cod_time(uint8_t *Buffer, size_t Sizeof_buffer)
+static void
+_cod_time(uint8_t *Buffer, size_t Sizeof_buffer)
 {
   time_t        now;
   struct tm    *local;
@@ -55,6 +37,27 @@ gp_cod_time(uint8_t *Buffer, size_t Sizeof_buffer)
   value = (local->tm_hour * 100) + local->tm_min;
   gp_putl16(Buffer, value);
   /* No space for the seconds. */
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_cod_Pdate(uint8_t *Pascal_str, size_t Pascal_max_size)
+{
+  time_t now;
+  char   temp[16];
+  size_t length;
+
+  time(&now);
+#ifdef HAVE_LOCALE_H
+  setlocale(LC_ALL, "C");
+#endif
+  length = strftime(temp, sizeof(temp), "%d%b%g", localtime(&now));
+  assert(length < Pascal_max_size);
+
+  *Pascal_str = (uint8_t)length;
+  ++Pascal_str;
+  memcpy(Pascal_str, temp, length);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -85,19 +88,22 @@ gp_cod_new_dir_block(void)
 DirBlockInfo *
 gp_cod_init_dir_block(const char *File_name, const char *Compiler)
 {
-  DirBlockInfo *dir = gp_cod_new_dir_block();
+  DirBlockInfo *dir;
+  uint8_t      *block;
 
+  dir   = gp_cod_new_dir_block();
+  block = dir->dir;
   /* Initialize the directory block with known data. It'll be written
    * to the .cod file after everything else. */
-  gp_Pstr_from_str(&dir->dir[COD_DIR_SOURCE], COD_DIR_SOURCE_P_SIZE, File_name);
-  gp_cod_Pdate(&dir->dir[COD_DIR_DATE], COD_DIR_DATE_P_SIZE);
-  gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_TIME_SIZE);
-  gp_Pstr_from_str(&dir->dir[COD_DIR_VERSION], COD_DIR_VERSION_P_SIZE, VERSION);
-  gp_Pstr_from_str(&dir->dir[COD_DIR_COMPILER], COD_DIR_COMPILER_P_SIZE, Compiler);
-  gp_Pstr_from_str(&dir->dir[COD_DIR_NOTICE], COD_DIR_NOTICE_P_SIZE, GPUTILS_COPYRIGHT_STRING);
+  gp_Pstr_from_str(&block[COD_DIR_SOURCE], COD_DIR_SOURCE_P_SIZE, File_name);
+  _cod_Pdate(&block[COD_DIR_DATE], COD_DIR_DATE_P_SIZE);
+  _cod_time(&block[COD_DIR_TIME], COD_DIR_TIME_SIZE);
+  gp_Pstr_from_str(&block[COD_DIR_VERSION], COD_DIR_VERSION_P_SIZE, VERSION);
+  gp_Pstr_from_str(&block[COD_DIR_COMPILER], COD_DIR_COMPILER_P_SIZE, Compiler);
+  gp_Pstr_from_str(&block[COD_DIR_NOTICE], COD_DIR_NOTICE_P_SIZE, GPUTILS_COPYRIGHT_STRING);
 
   /* The address is always two shorts or 4 bytes long. */
-  dir->dir[COD_DIR_ADDRSIZE] = 0;
+  block[COD_DIR_ADDRSIZE] = 0;
 
   return dir;
 }
@@ -174,6 +180,7 @@ gp_cod_write_code(proc_class_t Class, const MemBlock_t *Mem, DirBlockInfo *Main)
   BlockList        *rb;
   int               _64k_base;
   uint16_t          insn;
+  uint8_t          *record;
 
   start_address = 0;
   used_flag     = false;
@@ -214,11 +221,11 @@ gp_cod_write_code(proc_class_t Class, const MemBlock_t *Mem, DirBlockInfo *Main)
                contiguous chunks of pic code). */
             rb = gp_cod_block_append(&dbi->rng, gp_cod_block_new());
           }
-          /* We need to update dir map indicating a range of memory that
-             is needed. This is done by writing the start and end address to
-             the directory map. */
-          gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_START], start_address);
-          gp_putl16(&rb->block[dbi->rng.offset + COD_MAPTAB_LAST], i - 1);
+          /* We need to update dir map indicating a range of memory that is needed.
+             This is done by writing the start and end address to the directory map. */
+          record = &rb->block[dbi->rng.offset];
+          gp_putl16(&record[COD_MAPTAB_START], start_address);
+          gp_putl16(&record[COD_MAPTAB_LAST], i - 1);
 
           used_flag = false;
 
@@ -358,10 +365,11 @@ gp_cod_enumerate_directory(DirBlockInfo *Main_dir)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_cod_block_write(FILE *F, Blocks *Bl)
+gp_cod_block_write(FILE *F, const Blocks *Bl)
 {
-  BlockList *curr = Bl->first;
+  const BlockList *curr;
 
+  curr = Bl->first;
   /* write block list */
   while (curr != NULL) {
     if (fwrite(curr->block, 1, COD_BLOCK_SIZE, F) != COD_BLOCK_SIZE) {
@@ -375,10 +383,10 @@ gp_cod_block_write(FILE *F, Blocks *Bl)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_cod_write_directory(FILE *F, DirBlockInfo *Main_dir)
+gp_cod_write_directory(FILE *F, const DirBlockInfo *Main_dir)
 {
-  DirBlockInfo *dbi;
-  unsigned int  i;
+  const DirBlockInfo *dbi;
+  unsigned int        i;
 
   /* write directory blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {

@@ -2,6 +2,7 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Scott Dattalo
    Copyright (C) 2012 Borut Razem
+   Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -236,7 +237,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
     }
 
     record = &sb->block[main_dir->sym.offset];
-    gp_Pstr_from_str(record, COD_LSYMBOL_NAME_MAX_LEN, name);
+    gp_Pstr_from_str(&record[COD_LSYMBOL_NAME], COD_LSYMBOL_NAME_MAX_LEN, name);
     gp_putl16(&record[length + COD_LSYMBOL_TYPE], type);
 
     /* write 32 bits, big endian */

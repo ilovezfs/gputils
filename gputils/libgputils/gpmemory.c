@@ -3,7 +3,7 @@
    James Bowman, Scott Dattalo
    Copyright (C) 2013 Borut Razem
 
-    Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2016 Molnar Karoly
 
 This file is part of gputils.
 

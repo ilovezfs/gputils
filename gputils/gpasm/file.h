@@ -1,6 +1,6 @@
 /* Source file functions for gpasm
 
-    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 

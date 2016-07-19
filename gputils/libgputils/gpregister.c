@@ -1,6 +1,6 @@
 /* gpregister.c - Handler of the processor registers and bits.
 
-    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014 Molnar Karoly
 
 This file is part of gputils.
 

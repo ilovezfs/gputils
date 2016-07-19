@@ -2,7 +2,7 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Scott Dattalo
 
-    Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2016 Molnar Karoly
 
 This file is part of gputils.
 

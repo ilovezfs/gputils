@@ -2,7 +2,7 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
 
-    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -113,7 +113,7 @@ _make_page_constants(pic_processor_t Proc, int Num_of_pages)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-select_processor(const char *name)
+select_processor(const char *Name)
 {
   pic_processor_t  found;
   proc_class_t     class;
@@ -132,7 +132,7 @@ select_processor(const char *name)
     gpmsg_vwarning(GPW_CMDLINE_PROC, NULL);
   }
   else {
-    found = gp_find_processor(name);
+    found = gp_find_processor(Name);
 
     if (found != NULL) {
       if (state.processor == NULL) {
@@ -318,10 +318,10 @@ select_processor(const char *name)
     }
     else {
       if (state.pass > 0) {
-        gpmsg_verror(GPE_UNKNOWN_PROC, NULL, name);
+        gpmsg_verror(GPE_UNKNOWN_PROC, NULL, Name);
       }
       else {
-        printf("Didn't find any processor named: %s\nHere are the supported processors:\n", name);
+        printf("Didn't find any processor named: %s\nHere are the supported processors:\n", Name);
         gp_dump_processor_list(true, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN);
         exit(1);
       }

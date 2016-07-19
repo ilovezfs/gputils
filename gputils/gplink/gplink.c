@@ -2,7 +2,7 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
-    Copyright (C) 2015-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2015-2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -140,16 +140,16 @@ _count_missing(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_object_append(gp_object_t *object)
+_object_append(gp_object_t *Object)
 {
   gp_object_t *list;
 
   /* append the entry to the list */
   if (state.object == NULL) {
-    state.object    = object;
+    state.object    = Object;
     /* store the processor type from the first object file */
-    state.processor = object->processor;
-    state.class     = object->class;
+    state.processor = Object->processor;
+    state.class     = Object->class;
   }
   else {
     list = state.object;
@@ -157,33 +157,33 @@ _object_append(gp_object_t *object)
     while (list->next != NULL) {
       list = list->next;
     }
-    list->next = object;
+    list->next = Object;
 
-    if (object->class != state.class) {
-      gp_error("Processor family mismatch in \"%s\".", object->filename);
+    if (Object->class != state.class) {
+      gp_error("Processor family mismatch in \"%s\".", Object->filename);
     }
-    else if ((processor_mismatch_warning) && (object->processor != state.processor)) {
-      gp_warning("Processor mismatch in \"%s\".", object->filename);
+    else if ((processor_mismatch_warning) && (Object->processor != state.processor)) {
+      gp_warning("Processor mismatch in \"%s\".", Object->filename);
     }
   }
 
   if (state.optimize.weak_symbols) {
-    gp_coffgen_check_relocations(object, RELOC_DISABLE_WARN);
-    gp_coffopt_remove_weak(object);
+    gp_coffgen_check_relocations(Object, RELOC_DISABLE_WARN);
+    gp_coffopt_remove_weak(Object);
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_archive_append(gp_archive_t *file, const char *name)
+_archive_append(gp_archive_t *Archive, const char *Name)
 {
   struct archivelist *new;
 
   /* make the new entry */
   new = (struct archivelist *)GP_Malloc(sizeof(*new));
-  new->name    = GP_Strdup(name);
-  new->archive = file;
+  new->name    = GP_Strdup(Name);
+  new->archive = Archive;
   new->next    = NULL;
 
   /* append the entry to the list */
@@ -209,7 +209,7 @@ _archive_append(gp_archive_t *file, const char *name)
    objects are added. */
 
 static gp_boolean
-_scan_index(symbol_table_t *table, gp_archive_t *archive)
+_scan_index(symbol_table_t *Table)
 {
   const symbol_t *sym_miss;
   const symbol_t *sym_arch;
@@ -230,7 +230,7 @@ _scan_index(symbol_table_t *table, gp_archive_t *archive)
       name     = gp_sym_get_symbol_name(sym_miss);
       assert(name != NULL);
       /* Search for missing symbol name in archive symbol table. */
-      sym_arch = gp_sym_get_symbol(table, name);
+      sym_arch = gp_sym_get_symbol(Table, name);
 
       if (sym_arch != NULL) {
         /* Fetch the archive member, convert its binary data to an object
@@ -257,7 +257,7 @@ _scan_index(symbol_table_t *table, gp_archive_t *archive)
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_scan_archive(gp_archive_t *archive, const char *name)
+_scan_archive(gp_archive_t *Archive, const char *Name)
 {
   gp_boolean      modified;
   symbol_table_t *archive_tbl;
@@ -265,20 +265,20 @@ _scan_archive(gp_archive_t *archive, const char *name)
   state.symbol.archive = gp_sym_push_table(NULL, false);
 
   /* If necessary, build a symbol index for the archive. */
-  if (gp_archive_have_index(archive) == 0) {
+  if (gp_archive_have_index(Archive) == 0) {
     archive_tbl = gp_sym_push_table(NULL, true);
-    gp_archive_make_index(archive, archive_tbl);
-    archive = gp_archive_add_index(archive_tbl, archive);
-    gp_warning("\"%s\" is missing symbol index.", name);
+    gp_archive_make_index(Archive, archive_tbl);
+    Archive = gp_archive_add_index(archive_tbl, Archive);
+    gp_warning("\"%s\" is missing symbol index.", Name);
     archive_tbl = gp_sym_pop_table(archive_tbl);
   }
 
   /* Read the symbol index. */
-  gp_archive_read_index(state.symbol.archive, archive);
+  gp_archive_read_index(state.symbol.archive, Archive);
 
   /* Scan the symbol index for symbols in the missing symbol table.
      If found, add the object to state.objects. */
-  modified = _scan_index(state.symbol.archive, archive);
+  modified = _scan_index(state.symbol.archive);
 
   state.symbol.archive = gp_sym_pop_table(state.symbol.archive);
 
@@ -290,13 +290,13 @@ _scan_archive(gp_archive_t *archive, const char *name)
 /* Remove a symbol the linker created from the missing table. */
 
 static void
-_remove_linker_symbol(char *name)
+_remove_linker_symbol(const char *Name)
 {
   const symbol_t *sym;
 
-  sym = gp_sym_get_symbol(state.symbol.missing, name);
+  sym = gp_sym_get_symbol(state.symbol.missing, Name);
   if (sym != NULL) {
-    gp_cofflink_remove_symbol(state.symbol.missing, name);
+    gp_cofflink_remove_symbol(state.symbol.missing, Name);
   }
 }
 
@@ -305,7 +305,7 @@ _remove_linker_symbol(char *name)
 /* Add a symbol the linker created to the symbol table. */
 
 static void
-_add_linker_symbol(const char *name)
+_add_linker_symbol(const char *Name)
 {
   gp_symbol_t *current;
   gp_symbol_t *found;
@@ -313,7 +313,7 @@ _add_linker_symbol(const char *name)
   found   = NULL;
   current = state.object->symbol_list.first;
   while (current != NULL) {
-    if ((current->name != NULL) && (strcmp(current->name, name) == 0) && (current->section_number > N_UNDEF)) {
+    if ((current->name != NULL) && (strcmp(current->name, Name) == 0) && (current->section_number > N_UNDEF)) {
       found = current;
       break;
     }
@@ -433,14 +433,14 @@ _build_tables(void)
    This allows alternate extensions such as .a archives and .obj coff objects. */
 
 void
-gplink_open_coff(const char *name)
+gplink_open_coff(const char *Name)
 {
   gp_object_t  *object;
   gp_archive_t *archive;
   FILE         *coff;
   char          file_name[PATH_MAX + 1];
 
-  strncpy(file_name, name, sizeof(file_name));
+  strncpy(file_name, Name, sizeof(file_name));
 
   coff = fopen(file_name, "rb");
   if ((coff == NULL) && (strchr(file_name, PATH_SEPARATOR_CHAR) == 0)) {
@@ -448,7 +448,7 @@ gplink_open_coff(const char *name)
     int i;
 
     for (i = 0; i < state.num_paths; i++) {
-      snprintf(file_name, sizeof(file_name), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
+      snprintf(file_name, sizeof(file_name), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], Name);
       coff = fopen(file_name, "rb");
 
       if (coff != NULL) {
@@ -458,7 +458,7 @@ gplink_open_coff(const char *name)
   }
 
   if (coff == NULL) {
-    perror(name);
+    perror(Name);
     exit(1);
   }
 
@@ -565,10 +565,10 @@ _init(void)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gplink_add_path(const char *path)
+gplink_add_path(const char *Path)
 {
   if (state.num_paths < MAX_PATHS) {
-    state.paths[state.num_paths++] = GP_Strdup(path);
+    state.paths[state.num_paths++] = GP_Strdup(Path);
   }
   else {
     gp_error("Too many -I paths.");
@@ -582,22 +582,23 @@ gplink_add_path(const char *path)
 */
 
 static void
-_parse_define(const char *optarg, void (*func)(const char *name, long value))
+_parse_define(const char *Optarg, void (*Func)(const char *, long))
 {
   long  value = 0;
-  char *pc = strchr(optarg, '=');
+  char *pc = strchr(Optarg, '=');
 
   if (pc != NULL) {
     *pc++ = '\0';
     value = strtol(pc, &pc, 10);
   }
-  func(optarg, value);
+
+  Func(Optarg, value);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_process_args(int argc, char *argv[])
+_process_args(int Argc, char *Argv[])
 {
   int         option_index;
   int         c;
@@ -612,7 +613,7 @@ _process_args(int argc, char *argv[])
   processor_mismatch_warning = true;
 
   /* Scan through the options for the --strict-options flag. */
-  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
+  while ((c = getopt_long(Argc, Argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     if (c == OPT_STRICT_OPTIONS) {
       strict_options = true;
       break;
@@ -626,8 +627,8 @@ _process_args(int argc, char *argv[])
   while (true) {
     /* This is necessary for the gp_exit_is_excluded_arg() function. */
     option_index = -1;
-    command = argv[optind];
-    if ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, &option_index)) == EOF) {
+    command = Argv[optind];
+    if ((c = getopt_long(Argc, Argv, GET_OPTIONS, longopts, &option_index)) == EOF) {
       break;
     }
 
@@ -647,7 +648,7 @@ _process_args(int argc, char *argv[])
   _set_optimize_level();
 
   /* third pass through options */
-  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
+  while ((c = getopt_long(Argc, Argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
     case 'a':
       if (strcasecmp(optarg, "inhx8m") == 0) {
@@ -803,14 +804,14 @@ _process_args(int argc, char *argv[])
   }
 
   /* check if the first file is the linker script */
-  if (argv[optind] != NULL) {
-    pc = strrchr(argv[optind], '.');
+  if (Argv[optind] != NULL) {
+    pc = strrchr(Argv[optind], '.');
 
     if ((pc != NULL) && (strcasecmp(pc, ".lkr") == 0)) {
       srcfns_t *fn;
 
       fn = GP_Malloc(sizeof(srcfns_t));
-      fn->file_name = GP_Strdup(argv[optind++]);
+      fn->file_name = GP_Strdup(Argv[optind++]);
       fn->next      = NULL;
 
       if (state.src_file_names == NULL) {
@@ -824,7 +825,7 @@ _process_args(int argc, char *argv[])
     }
   }
 
-  if ((state.src_file_names == NULL) && (optind >= argc)) {
+  if ((state.src_file_names == NULL) && (optind >= Argc)) {
     /* No linker script was specified and no object filenames were provided,
        so print the usage. */
     usage = true;
@@ -845,8 +846,8 @@ _process_args(int argc, char *argv[])
   }
 
   /* Open all objects and archives in the file list. */
-  for ( ; optind < argc; optind++) {
-    gplink_open_coff(argv[optind]);
+  for ( ; optind < Argc; optind++) {
+    gplink_open_coff(Argv[optind]);
   }
 }
 

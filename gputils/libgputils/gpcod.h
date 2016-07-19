@@ -2,7 +2,7 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Scott Dattalo
    Copyright (C) 2012 Borut Razem
-   Copyright (C) 2015 Molnar Karoly
+   Copyright (C) 2015-2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -276,8 +276,6 @@ typedef struct dir_block_info {
 } DirBlockInfo;
 
 /* common cod functions */
-extern void gp_cod_Pdate(uint8_t *Pascal_str, size_t Pascal_max_size);
-extern void gp_cod_time(uint8_t *Buffer, size_t Sizeof_buffer);
 extern void gp_cod_create(Block *B);
 
 extern DirBlockInfo *gp_cod_new_dir_block(void);
@@ -293,8 +291,8 @@ extern BlockList *gp_cod_block_get_last_or_new(Blocks *Bl);
 extern int gp_cod_block_count(const Blocks *Bl);
 extern void gp_cod_block_enumerate(DirBlockInfo *Dir, unsigned int Offset, Blocks *Bl, unsigned int *Block_num);
 extern void gp_cod_enumerate_directory(DirBlockInfo *Main_dir);
-extern void gp_cod_block_write(FILE *F, Blocks *Bl);
-extern void gp_cod_write_directory(FILE *F, DirBlockInfo *Main_dir);
+extern void gp_cod_block_write(FILE *F, const Blocks *Bl);
+extern void gp_cod_write_directory(FILE *F, const DirBlockInfo *Main_dir);
 extern void gp_cod_block_free(Blocks *Bl);
 extern void gp_cod_free_directory(DirBlockInfo *Main_dir);
 
