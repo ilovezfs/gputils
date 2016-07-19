@@ -221,57 +221,57 @@ struct proc_class {
   /* Number of the interrupt vectors. */
   unsigned int          vector_number;
   /* Get the start address for ID location. */
-  unsigned int        (*id_location)(const struct px *processor);
+  unsigned int        (*id_location)(const struct px *Processor);
 
   /* Determine which bank of data memory the address is located. */
-  unsigned int        (*bank_from_addr)(unsigned int address);
+  unsigned int        (*bank_from_addr)(unsigned int Address);
 
   /* Set the bank bits, return the number of instructions required. */
-  unsigned int        (*set_bank)(unsigned int num_banks, unsigned int bank, MemBlock_t *m,
-                                  unsigned int byte_address);
+  unsigned int        (*set_bank)(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M,
+                                  unsigned int Byte_address);
 
-  unsigned int        (*banksel_byte_length)(unsigned int num_banks);
+  unsigned int        (*banksel_byte_length)(unsigned int Num_banks);
 
   /* Determine which ibank of data memory the address is located. */
-  unsigned int        (*check_ibank)(unsigned int address);
+  unsigned int        (*check_ibank)(unsigned int Address);
 
   /* Set the ibank bits, return the number of instructions required. */
-  unsigned int        (*set_ibank)(unsigned int num_banks, unsigned int bank, MemBlock_t *m,
-                                   unsigned int byte_address);
+  unsigned int        (*set_ibank)(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M,
+                                   unsigned int Byte_address);
 
   /* Determine which page of program memory the address is located. */
-  unsigned int        (*check_page)(unsigned int insn_address);
+  unsigned int        (*check_page)(unsigned int Insn_address);
 
   /* Set the page bits, return the number of instructions required. */
-  unsigned int        (*set_page)(unsigned int num_pages, unsigned int page, MemBlock_t *m,
-                                  unsigned int byte_address, gp_boolean use_wreg);
+  unsigned int        (*set_page)(unsigned int Num_pages, unsigned int Page, MemBlock_t *M,
+                                  unsigned int Byte_address, gp_boolean Use_wreg);
 
-  unsigned int        (*pagesel_byte_length)(unsigned int num_pages, gp_boolean use_wreg);
+  unsigned int        (*pagesel_byte_length)(unsigned int Num_pages, gp_boolean Use_wreg);
 
-  unsigned int        (*page_addr)(unsigned int insn_address);
+  unsigned int        (*page_addr)(unsigned int Insn_address);
 
-  unsigned int        (*addr_from_page_bits)(unsigned int bits);
+  unsigned int        (*addr_from_page_bits)(unsigned int Bits);
 
   /* These return the bits to set in instruction for given address. */
-  unsigned int        (*reloc_call)(unsigned int insn_address);
-  unsigned int        (*reloc_goto)(unsigned int insn_address);
-  unsigned int        (*reloc_f)(unsigned int address);
-  unsigned int        (*reloc_tris)(unsigned int address);
-  unsigned int        (*reloc_movlb)(unsigned int address);
-  unsigned int        (*reloc_bra)(struct gp_section *section, unsigned int value,
-                                   unsigned int byte_address);
+  unsigned int        (*reloc_call)(unsigned int Insn_address);
+  unsigned int        (*reloc_goto)(unsigned int Insn_address);
+  unsigned int        (*reloc_f)(unsigned int Address);
+  unsigned int        (*reloc_tris)(unsigned int Address);
+  unsigned int        (*reloc_movlb)(unsigned int Address);
+  unsigned int        (*reloc_bra)(const struct gp_section *Section, unsigned int Value,
+                                   unsigned int Byte_address);
 
-  unsigned int        (*reloc_high)(gp_boolean is_code, unsigned int value);
+  unsigned int        (*reloc_high)(gp_boolean Is_code, unsigned int Value);
 
   const insn_t         *instructions;
   const unsigned int   *num_instructions;
-  const insn_t       *(*find_insn)(const struct proc_class *cls, unsigned int opcode);
+  const insn_t       *(*find_insn)(const struct proc_class *Class, unsigned int Opcode);
 
-  unsigned int        (*i_memory_get)(const MemBlock_t *m, unsigned int byte_address, uint16_t *word,
-                                      const char **section_name, const char **symbol_name);
+  unsigned int        (*i_memory_get)(const MemBlock_t *M, unsigned int Byte_address, uint16_t *Word,
+                                      const char **Section_name, const char **Symbol_name);
 
-  void                (*i_memory_put)(MemBlock_t *m, unsigned int byte_address, uint16_t value,
-                                      const char *section_name, const char *symbol_name);
+  void                (*i_memory_put)(MemBlock_t *M, unsigned int Byte_address, uint16_t Value,
+                                      const char *Section_name, const char *Symbol_name);
 
   void                (*patch_strict)(void);
 };
@@ -376,85 +376,89 @@ typedef const struct px *pic_processor_t;
 #define DEVID1                      0x3ffffe
 #define DEVID2                      0x3fffff
 
-extern void gp_dump_processor_list(gp_boolean list_all, proc_class_t class0, proc_class_t class1, proc_class_t class2);
+extern void gp_dump_processor_list(gp_boolean List_all, proc_class_t Class0, proc_class_t Class1,
+                                   proc_class_t Class2);
 
-extern void gp_processor_invoke_custom_lister(proc_class_t class0, proc_class_t class1, proc_class_t class2,
-                                              void (*custom_lister)(pic_processor_t));
+extern void gp_processor_invoke_custom_lister(proc_class_t Class0, proc_class_t Class1, proc_class_t Class2,
+                                              void (*Custom_lister)(pic_processor_t));
 
-extern pic_processor_t gp_find_processor(const char *name);
-extern proc_class_t gp_processor_class(pic_processor_t);
-extern const char *gp_processor_class_to_str(proc_class_t class);
-extern unsigned int gp_processor_bsr_boundary(pic_processor_t processor);
-extern uint32_t gp_processor_coff_type(pic_processor_t processor);
-extern unsigned int gp_processor_num_pages(pic_processor_t processor);
-extern unsigned int gp_processor_num_banks(pic_processor_t processor);
-extern pic_processor_t gp_processor_coff_proc(uint32_t coff_type);
-extern const char *gp_processor_name(pic_processor_t processor, unsigned int choice);
-extern const char *gp_processor_coff_name(uint32_t coff_type, unsigned int choice);
-extern const char *gp_processor_header(pic_processor_t processor);
-extern const char *gp_processor_script(pic_processor_t processor);
-extern unsigned int gp_processor_id_location(pic_processor_t processor);
+extern pic_processor_t gp_find_processor(const char *Name);
+extern proc_class_t gp_processor_class(pic_processor_t Processor);
+extern const char *gp_processor_class_to_str(proc_class_t Class);
+extern unsigned int gp_processor_bsr_boundary(pic_processor_t Processor);
+extern uint32_t gp_processor_coff_type(pic_processor_t Processor);
+extern unsigned int gp_processor_num_pages(pic_processor_t Processor);
+extern unsigned int gp_processor_num_banks(pic_processor_t Processor);
+extern pic_processor_t gp_processor_coff_proc(uint32_t Coff_type);
+extern const char *gp_processor_name(pic_processor_t Processor, unsigned int Choice);
+extern const char *gp_processor_coff_name(uint32_t Coff_type, unsigned int Choice);
+extern const char *gp_processor_header(pic_processor_t Processor);
+extern const char *gp_processor_script(pic_processor_t Processor);
+extern unsigned int gp_processor_id_location(pic_processor_t Processor);
 
-extern int gp_byte_from_insn(unsigned int shift, int insn_address);
-extern int gp_insn_from_byte(unsigned int shift, int byte_address);
+extern int gp_byte_from_insn(unsigned int Shift, int Insn_address);
+extern int gp_insn_from_byte(unsigned int Shift, int Byte_address);
 
-extern int gp_processor_reg_offs(pic_processor_t processor, int address);
-extern int gp_processor_bank_addr(pic_processor_t processor, int address);
-extern int gp_processor_bank_num(pic_processor_t processor, int address);
-extern int gp_processor_addr_from_bank_num(pic_processor_t processor, int number);
+extern int gp_processor_reg_offs(pic_processor_t Processor, int Address);
+extern int gp_processor_bank_addr(pic_processor_t Processor, int Address);
+extern int gp_processor_bank_num(pic_processor_t Processor, int Address);
+extern int gp_processor_addr_from_bank_num(pic_processor_t Processor, int Number);
 
-extern const int *gp_processor_common_ram_exist(pic_processor_t processor);
-extern int gp_processor_is_common_ram_addr(pic_processor_t processor, int address);
+extern const int *gp_processor_common_ram_exist(pic_processor_t Processor);
+extern int gp_processor_is_common_ram_addr(pic_processor_t Processor, int Address);
 
-extern gp_boolean gp_processor_is_p16e_access_low(pic_processor_t processor, int address);
-extern gp_boolean gp_processor_is_p16e_access_high(pic_processor_t processor, int address, gp_boolean mpasm_compatible);
-extern gp_boolean gp_processor_is_p16e_access(pic_processor_t processor, int address, gp_boolean mpasm_compatible);
+extern gp_boolean gp_processor_is_p16e_access_low(pic_processor_t Processor, int Address);
+extern gp_boolean gp_processor_is_p16e_access_high(pic_processor_t Processor, int Address,
+                                                   gp_boolean Mpasm_compatible);
 
-extern const int *gp_processor_linear_ram_exist(pic_processor_t processor);
-extern int gp_processor_is_linear_ram_addr(pic_processor_t processor, int address);
+extern gp_boolean gp_processor_is_p16e_access(pic_processor_t Processor, int Address,
+                                              gp_boolean Mpasm_compatible);
 
-extern const int *gp_processor_idlocs_exist(pic_processor_t processor);
-extern int gp_processor_is_idlocs_org(pic_processor_t processor, int org);
-extern int gp_processor_is_idlocs_byte_addr(pic_processor_t processor, int byte_address);
+extern const int *gp_processor_linear_ram_exist(pic_processor_t Processor);
+extern int gp_processor_is_linear_ram_addr(pic_processor_t Processor, int Address);
 
-extern const int *gp_processor_config_exist(pic_processor_t processor);
-extern int gp_processor_is_config_org(pic_processor_t processor, int org);
-extern int gp_processor_is_config_byte_addr(pic_processor_t processor, int byte_address);
+extern const int *gp_processor_idlocs_exist(pic_processor_t Processor);
+extern int gp_processor_is_idlocs_org(pic_processor_t Processor, int Org);
+extern int gp_processor_is_idlocs_byte_addr(pic_processor_t Processor, int Byte_address);
 
-extern const int *gp_processor_eeprom_exist(pic_processor_t processor);
-extern int gp_processor_is_eeprom_org(pic_processor_t processor, int org);
-extern int gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address);
+extern const int *gp_processor_config_exist(pic_processor_t Processor);
+extern int gp_processor_is_config_org(pic_processor_t Processor, int Org);
+extern int gp_processor_is_config_byte_addr(pic_processor_t Processor, int Byte_address);
 
-extern unsigned int gp_processor_rom_width(proc_class_t class);
-extern unsigned int gp_processor_bank_from_addr(proc_class_t class, unsigned int address);
+extern const int *gp_processor_eeprom_exist(pic_processor_t Processor);
+extern int gp_processor_is_eeprom_org(pic_processor_t Processor, int Org);
+extern int gp_processor_is_eeprom_byte_addr(pic_processor_t Processor, int Byte_address);
 
-extern unsigned int gp_processor_set_bank(proc_class_t class, unsigned int num_banks,
-                                          unsigned int bank, MemBlock_t *m, unsigned int byte_address);
+extern unsigned int gp_processor_rom_width(proc_class_t Class);
+extern unsigned int gp_processor_bank_from_addr(proc_class_t Class, unsigned int Address);
 
-extern unsigned int gp_processor_check_ibank(proc_class_t class, unsigned int address);
+extern unsigned int gp_processor_set_bank(proc_class_t Class, unsigned int Num_banks,
+                                          unsigned int Bank, MemBlock_t *M, unsigned int Byte_address);
 
-extern unsigned int gp_processor_set_ibank(proc_class_t class, unsigned int num_banks,
-                                           unsigned int bank, MemBlock_t *m, unsigned int byte_address);
+extern unsigned int gp_processor_check_ibank(proc_class_t Class, unsigned int Address);
 
-extern unsigned int gp_processor_check_page(proc_class_t class, unsigned int address);
+extern unsigned int gp_processor_set_ibank(proc_class_t Class, unsigned int Num_banks,
+                                           unsigned int Bank, MemBlock_t *M, unsigned int Byte_address);
 
-extern unsigned int gp_processor_set_page(proc_class_t class, unsigned int num_pages, unsigned int page,
-                                          MemBlock_t *m, unsigned int byte_address, gp_boolean use_wreg);
+extern unsigned int gp_processor_check_page(proc_class_t Class, unsigned int Address);
 
-extern unsigned int gp_processor_page_addr(proc_class_t class, unsigned int insn_address);
+extern unsigned int gp_processor_set_page(proc_class_t Class, unsigned int Num_pages, unsigned int Page,
+                                          MemBlock_t *M, unsigned int Byte_address, gp_boolean Use_wreg);
 
-extern unsigned int gp_processor_addr_from_page_bits(proc_class_t class, unsigned int bits);
+extern unsigned int gp_processor_page_addr(proc_class_t Class, unsigned int Insn_address);
 
-extern unsigned int gp_processor_retlw(proc_class_t class);
+extern unsigned int gp_processor_addr_from_page_bits(proc_class_t Class, unsigned int Bits);
 
-extern int gp_processor_byte_from_insn_c(proc_class_t class, int insn_address);
-extern int gp_processor_byte_from_insn_p(pic_processor_t processor, int insn_address);
+extern unsigned int gp_processor_retlw(proc_class_t Class);
 
-extern int gp_processor_insn_from_byte_c(proc_class_t class, int byte_address);
-extern int gp_processor_insn_from_byte_p(pic_processor_t processor, int byte_address);
+extern int gp_processor_byte_from_insn_c(proc_class_t Class, int Insn_address);
+extern int gp_processor_byte_from_insn_p(pic_processor_t Processor, int Insn_address);
 
-extern const core_sfr_t *gp_processor_find_sfr(proc_class_t class, unsigned int address);
-extern const char *gp_processor_find_sfr_name(proc_class_t class, unsigned int address);
-extern const vector_t *gp_processor_find_vector(proc_class_t class, unsigned int address);
+extern int gp_processor_insn_from_byte_c(proc_class_t Class, int Byte_address);
+extern int gp_processor_insn_from_byte_p(pic_processor_t Processor, int Byte_address);
+
+extern const core_sfr_t *gp_processor_find_sfr(proc_class_t Class, unsigned int Address);
+extern const char *gp_processor_find_sfr_name(proc_class_t Class, unsigned int Address);
+extern const vector_t *gp_processor_find_vector(proc_class_t Class, unsigned int Address);
 
 #endif /* __GPPROCESSOR_H__ */

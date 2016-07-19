@@ -1,4 +1,11 @@
 2016-07-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gputils/gpdasm.c, gputils/gplib.c, gputils/gpstrip.c,
+    gputils/gpvo.c, gputils/parse.y, gputils/scan.l,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h,
+    libgputils/gpsystem.c, libgputils/gpsystem.h:
+    Code formatting.
+
+2016-07-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/gpasm.h.in, gplink/script.c, gplink/script.h,
     libgputils/gptypes.h:
     Moved the "pnode_t" type from gpasm.h.in to gptypes.h

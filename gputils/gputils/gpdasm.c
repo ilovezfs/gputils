@@ -234,15 +234,15 @@ _exit:
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_ux_print(gp_boolean newline, const char *format, ...)
+_ux_print(gp_boolean New_line, const char *Format, ...)
 {
-  va_list(ap);
+  va_list     ap;
   char        buffer[BUFSIZ];
   const char *bptr;
   size_t      len;
 
-  va_start(ap, format);
-  len = (size_t)vsnprintf(buffer, sizeof(buffer), format, ap);
+  va_start(ap, Format);
+  len = (size_t)vsnprintf(buffer, sizeof(buffer), Format, ap);
   va_end(ap);
 
   if ((int)len < 0) {
@@ -251,7 +251,7 @@ _ux_print(gp_boolean newline, const char *format, ...)
 
   bptr = buffer;
 
-  if (newline) {
+  if (New_line) {
     if (state.use_tab) {
       _unexpand(out_buffer, sizeof(out_buffer), buffer);
       bptr = out_buffer;
@@ -372,7 +372,7 @@ _end_asm(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_write_org(int org, int addr_digits, const char *title, const char *Address_name, int offset)
+_write_org(int Org, int Addr_digits, const char *Title, const char *Address_name, int Offset)
 {
   size_t length;
   char   buffer[BUFSIZ];
@@ -380,23 +380,23 @@ _write_org(int org, int addr_digits, const char *title, const char *Address_name
   if (!state.format) {
     _ux_print(true, "");
 
-    if (title != NULL) {
-      _ux_print(true, "        ; %s", title);
+    if (Title != NULL) {
+      _ux_print(true, "        ; %s", Title);
     }
 
     if (Address_name != NULL) {
-      if (offset > 0) {
+      if (Offset > 0) {
         length = snprintf(buffer, sizeof(buffer), "        org     (%s + 0x%0*x)", Address_name,
-                          addr_digits, offset);
+                          Addr_digits, Offset);
       }
       else {
         length = snprintf(buffer, sizeof(buffer), "        org     %s", Address_name);
       }
 
-      gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits, org);
+      gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", Addr_digits, Org);
     }
     else {
-      snprintf(buffer, sizeof(buffer), "        org     0x%0*x", addr_digits, org);
+      snprintf(buffer, sizeof(buffer), "        org     0x%0*x", Addr_digits, Org);
     }
 
     _ux_print(true, "\n%s\n", buffer);
@@ -407,7 +407,7 @@ _write_org(int org, int addr_digits, const char *title, const char *Address_name
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_mark_false_addresses(MemBlock_t *memory)
+_mark_false_addresses(MemBlock_t *Memory)
 {
   MemBlock_t    *m;
   int            i;
@@ -417,7 +417,7 @@ _mark_false_addresses(MemBlock_t *memory)
   int            num_words;
   uint16_t data;
 
-  m = memory;
+  m = Memory;
   while (m != NULL) {
     i = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
@@ -452,7 +452,7 @@ _mark_false_addresses(MemBlock_t *memory)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_recognize_labels_and_spec_words(MemBlock_t *memory)
+_recognize_labels_and_spec_words(MemBlock_t *Memory)
 {
   MemBlock_t            *m;
   int                    i;
@@ -482,7 +482,7 @@ _recognize_labels_and_spec_words(MemBlock_t *memory)
     dev = NULL;
   }
 
-  m                    = memory;
+  m                    = Memory;
   fstate.wreg          = 0;
   fstate.pclath        = 0;
   fstate.pclath_valid  = 0xff;
@@ -653,7 +653,7 @@ _user_data_finder(MemArg_t *Argument)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_recognize_registers(MemBlock_t *memory)
+_recognize_registers(MemBlock_t *Memory)
 {
   MemBlock_t      *m;
   int              i;
@@ -668,7 +668,7 @@ _recognize_registers(MemBlock_t *memory)
     return;
   }
 
-  m                   = memory;
+  m                   = Memory;
   fstate.wreg         = 0;
   fstate.bank         = 0;
   fstate.bank_valid   = 0xff;
@@ -711,7 +711,7 @@ _recognize_registers(MemBlock_t *memory)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_denominate_labels(MemBlock_t *memory)
+_denominate_labels(MemBlock_t *Memory)
 {
   MemBlock_t   *m;
   int           i;
@@ -721,7 +721,7 @@ _denominate_labels(MemBlock_t *memory)
   unsigned int  label_idx;
   char          buffer[BUFSIZ];
 
-  m         = memory;
+  m         = Memory;
   func_idx  = 0;
   label_idx = 0;
   while (m != NULL) {
@@ -752,22 +752,22 @@ _denominate_labels(MemBlock_t *memory)
 /*------------------------------------------------------------------------------------------------*/
 
 static size_t
-_byte_exclamation(char *buffer, size_t buffer_length, size_t current_length, uint8_t byte)
+_byte_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, uint8_t Byte)
 {
   int    l;
   size_t length;
 
-  l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%02x",
-               TABULATOR_SIZE, "db", (unsigned int)byte);
+  l = snprintf(&Buffer[Current_length], Buffer_length - Current_length, "%-*s0x%02x",
+               TABULATOR_SIZE, "db", (unsigned int)Byte);
 
   if (l <= 0) {
-    return current_length;
+    return Current_length;
   }
 
-  length = current_length + l;
+  length = Current_length + l;
 
-  if (isprint(byte)) {
-    gp_exclamation(buffer, buffer_length, length, "; '%c'", byte);
+  if (isprint(Byte)) {
+    gp_exclamation(Buffer, Buffer_length, length, "; '%c'", Byte);
   }
 
   return length;
@@ -1098,7 +1098,7 @@ _load_processor_constants(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_dasm(MemBlock_t *memory)
+_dasm(MemBlock_t *Memory)
 {
   MemBlock_t          *m;
   int                  i;
@@ -1130,12 +1130,12 @@ _dasm(MemBlock_t *memory)
                            (state.class == PROC_CLASS_PIC16)   ||
                            (state.class == PROC_CLASS_PIC16E))) {
     if (state.class == PROC_CLASS_PIC16E) {
-      _mark_false_addresses(memory);
+      _mark_false_addresses(Memory);
     }
 
-    _recognize_labels_and_spec_words(memory);
-    _recognize_registers(memory);
-    _denominate_labels(memory);
+    _recognize_labels_and_spec_words(Memory);
+    _recognize_registers(Memory);
+    _denominate_labels(Memory);
   }
 
   bsr_boundary = gp_processor_bsr_boundary(state.processor);
@@ -1171,7 +1171,7 @@ _dasm(MemBlock_t *memory)
     behavior = GPDIS_SHOW_NOTHING;
   }
 
-  m = memory;
+  m = Memory;
   last_loc = 0;
   while (m != NULL) {
     i = IMemAddrFromBase(m->base);

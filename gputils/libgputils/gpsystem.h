@@ -63,7 +63,7 @@ extern gp_boolean gp_num_range_is_overlapped(int Area_start, int Area_end, int R
 extern unsigned int gp_find_lowest_bit(uint64_t Bits);
 extern unsigned int gp_find_highest_bit(uint64_t Bits);
 
-extern void  gp_date_string(char *buffer, size_t sizeof_buffer);
+extern void  gp_date_string(char *Buffer, size_t Sizeof_buffer);
 
 extern void *gp_malloc(size_t Size, const char *File, size_t Line, const char *Func);
 extern void *gp_calloc(size_t Nmemb, size_t Size, const char *File, size_t Line, const char *Func);
@@ -77,8 +77,8 @@ extern char *gp_strndup(const char *String, size_t Length, const char *File, siz
 #define GP_Strdup(String)               gp_strdup(String, __FILE__, __LINE__, __func__)
 #define GP_Strndup(String, Length)      gp_strndup(String, Length, __FILE__, __LINE__, __func__)
 
-extern char *gp_strdup_lower_case(const char *name);
-extern char *gp_strdup_upper_case(const char *name);
+extern char *gp_strdup_lower_case(const char *Name);
+extern char *gp_strdup_upper_case(const char *Name);
 extern char *gp_strncpy(char *Dest, const char *Src, size_t Maxlen);
 extern char *gp_arch_strncpy(char *Dest, const char *Src, size_t Maxlen);
 extern char *gp_stptoupper(char *Dest, const char *Src, size_t Maxlen);
@@ -89,8 +89,8 @@ extern void gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const 
 extern size_t gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length);
 extern size_t gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...);
 
-extern char *gp_absolute_path(char *filename);
+extern char *gp_absolute_path(char *File_name);
 
-extern void gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int opt_index,
-                                     const char *opt_string, int opt_char, const char *command);
+extern void gp_exit_if_arg_an_option(const struct option *Options, int Opt_max_index, int Opt_index,
+                                     const char *Opt_string, int Opt_char, const char *Command);
 #endif

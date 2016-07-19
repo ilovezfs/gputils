@@ -42,7 +42,8 @@ static int type_state = 0;
 /*------------------------------------------------------------------------------------------------*/
 
 void
-open_label_source(const char *Src) {
+open_label_source(const char *Src)
+{
   if ((yyin = fopen(Src, "rt")) == NULL) {
     yyerror("Unable to open file \"%s\": %s", Src, strerror(errno));
     exit(1);
@@ -52,7 +53,8 @@ open_label_source(const char *Src) {
 /*------------------------------------------------------------------------------------------------*/
 
 void
-close_label_source(void) {
+close_label_source(void)
+{
   if (yyin != NULL) {
     fclose(yyin);
     yyin = NULL;
@@ -62,7 +64,8 @@ close_label_source(void) {
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-bad_char(const char *Str) {
+_bad_char(const char *Str)
+{
   if (Str == NULL) {
     yyerror("Illegal character '%c' in a numeric constant in the \"%s\".%d.",
             state.lset_root.file_name, yylineno);
@@ -98,151 +101,145 @@ SYM     [a-zA-Z_][a-zA-Z0-9_]*
 %%
 
 <<EOF>> {
-        close_label_source();
-        return LEXEOF;
+          close_label_source();
+          return LEXEOF;
         }
 
 {SPACE}*";" {
-        BEGIN(comment);
-        return COMMENT;
+          BEGIN(comment);
+          return COMMENT;
         }
 
 <comment>.*$ {
-        BEGIN(INITIAL);
+          BEGIN(INITIAL);
         }
 
 ^{SPACE}*"["{SPACE}* {
-        BEGIN(sect_name);
-        return '[';
+          BEGIN(sect_name);
+          return '[';
         }
 
 <sect_name>{SYM} {
-        BEGIN(sect_end);
-        yylval.string = GP_Strdup(yytext);
-        return SECTION;
+          BEGIN(sect_end);
+          yylval.string = GP_Strdup(yytext);
+          return SECTION;
         }
 
 <sect_end>{SYM} {
-        yyerror("Unnecessary text in the \"%s\".%d ==> \"%s\"",
-                state.lset_root.file_name, yylineno, yytext);
-        close_label_source();
-        exit(1);
-        }
-
-<sect_end>{SPACE}*"]" {
-        BEGIN(sect_eol);
-        return ']';
-        }
-
-<sect_eol>{SPACE}*$ {
-        BEGIN(INITIAL);
-        return EOL;
-        }
-
-<sect_eol>{XNWLN}+ {
-        yyerror("Unnecessary text in the \"%s\".%d ==> \"%s\"",
-                state.lset_root.file_name, yylineno, yytext);
-        close_label_source();
-        exit(1);
-        }
-
-^{SPACE}*"<"{SPACE}* {
-        BEGIN(type_name);
-        return '<';
-        }
-
-<type_name>{SYM} {
-        BEGIN(type_start);
-        yylval.string = GP_Strdup(yytext);
-        return TYPE;
-        }
-
-<type_start>{SPACE}*">" {
-        BEGIN(type_body);
-        return '>';
-        }
-
-<type_body>[^{]+ {
-        yyerror("Unnecessary text in the \"%s\".%d ==> \"%s\"",
-                state.lset_root.file_name, yylineno, yytext);
-        close_label_source();
-        exit(1);
-        }
-
-<type_body>{SPACE}*({NWLN}{SPACE}*)?"{"{SPACE}* {
-        BEGIN(INITIAL);
-
-        if (type_state != 0)
-          {
-          yyerror("Another start of type in the \"%s\".%d ==> \"%s\"",
+          yyerror("Unnecessary text in the \"%s\".%d ==> \"%s\"",
                   state.lset_root.file_name, yylineno, yytext);
           close_label_source();
           exit(1);
+        }
+
+<sect_end>{SPACE}*"]" {
+          BEGIN(sect_eol);
+          return ']';
+        }
+
+<sect_eol>{SPACE}*$ {
+          BEGIN(INITIAL);
+          return EOL;
+        }
+
+<sect_eol>{XNWLN}+ {
+          yyerror("Unnecessary text in the \"%s\".%d ==> \"%s\"",
+                  state.lset_root.file_name, yylineno, yytext);
+          close_label_source();
+          exit(1);
+        }
+
+^{SPACE}*"<"{SPACE}* {
+          BEGIN(type_name);
+          return '<';
+        }
+
+<type_name>{SYM} {
+          BEGIN(type_start);
+          yylval.string = GP_Strdup(yytext);
+          return TYPE;
+        }
+
+<type_start>{SPACE}*">" {
+          BEGIN(type_body);
+          return '>';
+        }
+
+<type_body>[^{]+ {
+          yyerror("Unnecessary text in the \"%s\".%d ==> \"%s\"",
+                  state.lset_root.file_name, yylineno, yytext);
+          close_label_source();
+          exit(1);
+        }
+
+<type_body>{SPACE}*({NWLN}{SPACE}*)?"{"{SPACE}* {
+          BEGIN(INITIAL);
+
+          if (type_state != 0) {
+            yyerror("Another start of type in the \"%s\".%d ==> \"%s\"",
+                    state.lset_root.file_name, yylineno, yytext);
+            close_label_source();
+            exit(1);
           }
-        else
-          {
-          ++type_state;
-          return '{';
+          else {
+            ++type_state;
+            return '{';
           }
         }
 
 "}"     {
-        if (type_state <= 0)
-          {
-          yyerror("End of type without start in the \"%s\".%d ==> \"%s\"",
-                  state.lset_root.file_name, yylineno, yytext);
-          close_label_source();
-          exit(1);
+          if (type_state <= 0) {
+            yyerror("End of type without start in the \"%s\".%d ==> \"%s\"",
+                    state.lset_root.file_name, yylineno, yytext);
+            close_label_source();
+            exit(1);
           }
-        else
-          {
-          BEGIN(type_eol);
-          --type_state;
-          return '}';
+          else {
+            BEGIN(type_eol);
+            --type_state;
+            return '}';
           }
         }
 
 <type_eol>{SPACE}*$ {
-        BEGIN(INITIAL);
-        return EOL;
+          BEGIN(INITIAL);
+          return EOL;
         }
 
 <type_eol>{XNWLN}+ {
-        yyerror("Unnecessary text in the \"%s\".%d ==> \"%s\"",
-                state.lset_root.file_name, yylineno, yytext);
-        close_label_source();
-        exit(1);
+          yyerror("Unnecessary text in the \"%s\".%d ==> \"%s\"",
+                  state.lset_root.file_name, yylineno, yytext);
+          close_label_source();
+          exit(1);
         }
 
 {NUM}   {
-        char *endptr;
+          char *endptr;
 
-        yylval.value = strtol(yytext, &endptr, 10);
+          yylval.value = strtol(yytext, &endptr, 10);
 
-        if ((endptr == NULL) || (*endptr != '\0'))
-          {
-          bad_char(endptr);
+          if ((endptr == NULL) || (*endptr != '\0')) {
+            _bad_char(endptr);
           }
 
-        return NUMBER;
+          return NUMBER;
         }
 
 {HEX}   {
-        char *endptr;
+          char *endptr;
 
-        yylval.value = strtol(yytext + 2, &endptr, 16);
+          yylval.value = strtol(yytext + 2, &endptr, 16);
 
-        if ((endptr == NULL) || (*endptr != '\0'))
-          {
-          bad_char(endptr);
+          if ((endptr == NULL) || (*endptr != '\0')) {
+            _bad_char(endptr);
           }
 
-        return NUMBER;
+          return NUMBER;
         }
 
 {SYM}   {
-        yylval.string = GP_Strdup(yytext);
-        return SYMBOL;
+          yylval.string = GP_Strdup(yytext);
+          return SYMBOL;
         }
 
 "*"     { return MUL; }

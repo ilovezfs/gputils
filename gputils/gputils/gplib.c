@@ -81,10 +81,10 @@ _show_usage(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_select_mode(enum lib_modes mode)
+_select_mode(enum lib_modes Mode)
 {
   if (state.mode == AR_NULL) {
-    state.mode = mode;
+    state.mode = Mode;
   }
   else {
     gp_error("Multiple library operations selected!");
@@ -96,25 +96,25 @@ _select_mode(enum lib_modes mode)
 /* return the object name without the path */
 
 static char *
-_object_name(char *file_name)
+_object_name(char *File_name)
 {
   char *name;
 
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-  for (name = file_name + strlen(file_name) - 1; name >= file_name; --name) {
+  for (name = File_name + strlen(File_name) - 1; name >= File_name; --name) {
     if ((name[0] == UNIX_PATH_CHAR) || (name[0] == PATH_SEPARATOR_CHAR)) {
       return ++name;
     }
   }
 
-  return file_name;
+  return File_name;
 #else
-  name = strrchr(file_name, PATH_SEPARATOR_CHAR);
+  name = strrchr(File_name, PATH_SEPARATOR_CHAR);
   if (name != NULL) {
     return ++name;
   }
   else {
-    return file_name;
+    return File_name;
   }
 #endif
 }
@@ -122,14 +122,14 @@ _object_name(char *file_name)
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
-_has_path(const char *file_name)
+_has_path(const char *File_name)
 {
   char *name;
 
-  name = strrchr(file_name, PATH_SEPARATOR_CHAR);
+  name = strrchr(File_name, PATH_SEPARATOR_CHAR);
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
   if (name != NULL) {
-    name = strrchr(file_name, UNIX_PATH_CHAR);
+    name = strrchr(File_name, UNIX_PATH_CHAR);
   }
 #endif
 
