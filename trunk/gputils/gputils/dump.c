@@ -2,8 +2,7 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Scott Dattalo
    Copyright (C) 2012 Borut Razem
-
-    Copyright (C) 2016 Molnar Karoly
+   Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 

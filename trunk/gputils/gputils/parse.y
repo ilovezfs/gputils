@@ -37,9 +37,10 @@ extern int yylex(void);
 
 /*------------------------------------------------------------------------------------------------*/
 
-void yyerror(const char *Text, ...) {
+void
+yyerror(const char *Text, ...) {
   va_list ap;
-  char buf[BUFSIZ];
+  char    buf[BUFSIZ];
 
   snprintf(buf, sizeof(buf), "Error: %s\n", Text);
   va_start(ap, Text);
@@ -49,9 +50,9 @@ void yyerror(const char *Text, ...) {
 %}
 
 %union {
-  unsigned int code;
-  long value;
-  char *string;
+  unsigned int  code;
+  long          value;
+  char         *string;
 };
 
 %token <string> SECTION

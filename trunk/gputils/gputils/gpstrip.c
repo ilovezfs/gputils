@@ -82,16 +82,17 @@ _show_usage(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_conditional_remove(gp_symbol_t *symbol)
+_conditional_remove(gp_symbol_t *Symbol)
 {
   const symbol_t *sym;
 
-  sym = gp_sym_get_symbol(state.symbol_keep, symbol->name);
+  sym = gp_sym_get_symbol(state.symbol_keep, Symbol->name);
   if (sym == NULL) {
     if (verbose) {
-      gp_message("removing symbol \"%s\"", symbol->name);
+      gp_message("removing symbol \"%s\"", Symbol->name);
     }
-    gp_coffgen_del_symbol(state.object, symbol);
+
+    gp_coffgen_del_symbol(state.object, Symbol);
   }
 }
 
@@ -240,13 +241,13 @@ _discard_all(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void 
-_add_name(symbol_table_t *table, char *name)
+_add_name(symbol_table_t *Table, const char *Name)
 {
   const symbol_t *sym;
 
-  sym = gp_sym_get_symbol(table, name);
+  sym = gp_sym_get_symbol(Table, Name);
   if (sym == NULL) {
-    gp_sym_add_symbol(table, name);
+    gp_sym_add_symbol(Table, Name);
   }
 }
 

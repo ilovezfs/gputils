@@ -344,7 +344,7 @@ gp_find_highest_bit(uint64_t Bits)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_date_string(char *buffer, size_t sizeof_buffer)
+gp_date_string(char *Buffer, size_t Sizeof_buffer)
 {
   time_t           now;
   const struct tm *now_tm;
@@ -356,10 +356,10 @@ gp_date_string(char *buffer, size_t sizeof_buffer)
 #if defined(HAVE_LOCALE_H) && defined(HAVE_LANGINFO_H)
     setlocale(LC_ALL, "");
     snprintf(format, sizeof(format), "%s  %s", nl_langinfo(D_FMT), nl_langinfo(T_FMT));
-    strftime(buffer, sizeof_buffer, format, now_tm);
+    strftime(Buffer, Sizeof_buffer, format, now_tm);
     setlocale(LC_ALL, "C");
 #else
-    snprintf(buffer, sizeof_buffer,
+    snprintf(Buffer, Sizeof_buffer,
              "%d-%d-%d  %02d:%02d:%02d",
              now_tm->tm_mon + 1,
              now_tm->tm_mday,
@@ -369,8 +369,8 @@ gp_date_string(char *buffer, size_t sizeof_buffer)
              now_tm->tm_sec);
 #endif
   }
-  else if (sizeof_buffer > 0) {
-    buffer[0] = '\0';
+  else if (Sizeof_buffer > 0) {
+    Buffer[0] = '\0';
   }
 }
 
@@ -474,13 +474,13 @@ gp_strndup(const char *String, size_t Length, const char *File, size_t Line, con
 /*------------------------------------------------------------------------------------------------*/
 
 char *
-gp_strdup_lower_case(const char *name)
+gp_strdup_lower_case(const char *Name)
 {
   char  ch;
   char *new;
   char *ptr;
 
-  ptr = new = GP_Strdup(name);
+  ptr = new = GP_Strdup(Name);
 
   while ((ch = *ptr) != '\0') {
     *ptr = tolower(ch);
@@ -702,8 +702,9 @@ gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const 
 /*------------------------------------------------------------------------------------------------*/
 
 /* fetch the absolute path of the filename */
+
 char *
-gp_absolute_path(char *file_name)
+gp_absolute_path(char *File_name)
 {
 #ifdef HAVE_WINDOWS_H
 
@@ -716,22 +717,22 @@ gp_absolute_path(char *file_name)
   char *file_ptr;
   int   num_chars;
 
-  num_chars = GetFullPathName(file_name, FILE_BUFFER_SIZE, file_buffer, &file_ptr);
+  num_chars = GetFullPathName(File_name, FILE_BUFFER_SIZE, file_buffer, &file_ptr);
   if (num_chars == 0) {
-    gp_error("Can't fetch full path of %s.", file_name);
-    return file_name;
+    gp_error("Can't fetch full path of %s.", File_name);
+    return File_name;
   }
   else {
-    return GP_Strdup(file_buffer);
+    return GP_Strdup(File_buffer);
   }
 #else
   #ifdef HAVE_REALPATH
   char *resolved_name;
 
-  resolved_name = realpath(file_name, NULL);
+  resolved_name = realpath(File_name, NULL);
   if (resolved_name == NULL) {
-    gp_error("Can't fetch full path of \"%s\".", file_name);
-    return file_name;
+    gp_error("Can't fetch full path of \"%s\".", File_name);
+    return File_name;
   }
   else {
     return resolved_name;
@@ -744,7 +745,7 @@ gp_absolute_path(char *file_name)
     absolute_path_warning = false;
   }
   
-  return file_name;
+  return File_name;
 
   #endif
 #endif
@@ -753,25 +754,25 @@ gp_absolute_path(char *file_name)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int opt_index,
-                         const char *opt_string, int opt_char, const char *command)
+gp_exit_if_arg_an_option(const struct option *Options, int Opt_max_index, int Opt_index,
+                         const char *Opt_string, int Opt_char, const char *Command)
 {
   const struct option *opt;
   int                  i;
   char                 cmd[8];
 
-  if (opt_index < 0) {
+  if (Opt_index < 0) {
     /* This is likely a short option. */
-    opt = options;
+    opt = Options;
     i = 0;
 
     while (opt->name != NULL) {
-      if (opt->val == opt_char) {
-        opt_index = i;
+      if (opt->val == Opt_char) {
+        Opt_index = i;
         cmd[0] = '-';
-        cmd[1] = (char)opt_char;
+        cmd[1] = (char)Opt_char;
         cmd[2] = '\0';
-        command = cmd;
+        Command = cmd;
         break;
       }
 
@@ -780,43 +781,43 @@ gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int op
     }
   }
 
-  if (opt_index < 0) {
+  if (Opt_index < 0) {
     /* This not an option. */
     return;
   }
 
-  if (opt_index >= opt_max_index) {
+  if (Opt_index >= Opt_max_index) {
     fprintf(stderr, "%s() -- Fatal error: opt_index == %i (Only valid if opt_index < %i.)\n",
-            __func__, opt_index, opt_max_index);
+            __func__, Opt_index, Opt_max_index);
     exit(1);
   }
 
-  if (options[opt_index].has_arg == no_argument) {
+  if (Options[Opt_index].has_arg == no_argument) {
     return;
   }
 
-  if ((opt_string == NULL) || (opt_string[0] != '-') || (opt_string[1] == '\0')) {
+  if ((Opt_string == NULL) || (Opt_string[0] != '-') || (Opt_string[1] == '\0')) {
     /* This opt_string can not be option. */
     return;
   }
 
   /* opt_string == "-." */
-  opt = options;
+  opt = Options;
   while (opt->name != NULL) {
-    if ((opt_string[1] == '-') && (opt_string[2] != '\0')) {
-      /* opt_string == "--." This is a long option? */
-      if (strcmp(&opt_string[2], opt->name) == 0) {
+    if ((Opt_string[1] == '-') && (Opt_string[2] != '\0')) {
+      /* Opt_string == "--." This is a long option? */
+      if (strcmp(&Opt_string[2], opt->name) == 0) {
         fprintf(stderr, "Error: This option may not be parameter of the \"%s\" option: \"--%s\" (\"%s\")\n",
-                command, opt->name, opt_string);
+                Command, opt->name, Opt_string);
         exit(1);
       }
     }
 
     if (isalnum(opt->val)) {
-      /* opt_string == "-X" This is a short option? */
-      if (opt_string[1] == (char)opt->val) {
+      /* Opt_string == "-X" This is a short option? */
+      if (Opt_string[1] == (char)opt->val) {
         fprintf(stderr, "Error: This option may not be parameter of the \"%s\" option: \"-%c\" (\"%s\")\n",
-                command, (char)opt->val, opt_string);
+                Command, (char)opt->val, Opt_string);
         exit(1);
       }
     }

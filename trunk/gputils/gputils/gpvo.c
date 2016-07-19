@@ -299,54 +299,54 @@ _print_data(pic_processor_t Processor, const gp_section_t *Section)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_print_section_header(proc_class_t class, const gp_section_t *section)
+_print_section_header(proc_class_t Class, const gp_section_t *Section)
 {
   unsigned int org_to_byte_shift;
 
-  org_to_byte_shift = (section->flags & STYP_ROM_AREA) ? class->org_to_byte_shift : 0;
+  org_to_byte_shift = (Section->flags & STYP_ROM_AREA) ? Class->org_to_byte_shift : 0;
 
   printf("Section Header\n");
-  printf("Name                    %s\n",  section->name);
-  printf("Physical address        %#x\n", gp_insn_from_byte(org_to_byte_shift, section->address));
-  printf("Virtual address         %#x\n", gp_insn_from_byte(org_to_byte_shift, section->virtual_address));
-  printf("Size of Section         %u\n",  section->size);
-  printf("Number of Relocations   %zu\n", section->relocation_list.num_nodes);
-  printf("Number of Line Numbers  %zu\n", section->line_number_list.num_nodes);
-  printf("Flags                   %#x\n", section->flags);
+  printf("Name                    %s\n",  Section->name);
+  printf("Physical address        %#x\n", gp_insn_from_byte(org_to_byte_shift, Section->address));
+  printf("Virtual address         %#x\n", gp_insn_from_byte(org_to_byte_shift, Section->virtual_address));
+  printf("Size of Section         %u\n",  Section->size);
+  printf("Number of Relocations   %zu\n", Section->relocation_list.num_nodes);
+  printf("Number of Line Numbers  %zu\n", Section->line_number_list.num_nodes);
+  printf("Flags                   %#x\n", Section->flags);
 
-  if (section->flags & STYP_TEXT) {
+  if (Section->flags & STYP_TEXT) {
     printf("  Executable code.\n");
   }
 
-  if (section->flags & STYP_DATA) {
+  if (Section->flags & STYP_DATA) {
     printf("  Initialized data.\n");
   }
 
-  if (section->flags & STYP_BSS) {
+  if (Section->flags & STYP_BSS) {
     printf("  Uninitialized data.\n");
   }
 
-  if (section->flags & STYP_DATA_ROM) {
+  if (Section->flags & STYP_DATA_ROM) {
     printf("  Initialized data for ROM.\n");
   }
 
-  if (section->flags & STYP_ABS) {
+  if (Section->flags & STYP_ABS) {
     printf("  Absolute.\n");
   }
 
-  if (section->flags & STYP_SHARED) {
+  if (Section->flags & STYP_SHARED) {
     printf("  Shared across banks.\n");
   }
 
-  if (section->flags & STYP_OVERLAY) {
+  if (Section->flags & STYP_OVERLAY) {
     printf("  Overlaid with other sections from different objects modules.\n");
   }
 
-  if (section->flags & STYP_ACCESS) {
+  if (Section->flags & STYP_ACCESS) {
     printf("  Available using access bit.\n");
   }
 
-  if (section->flags & STYP_ACTREC) {
+  if (Section->flags & STYP_ACTREC) {
     printf("  Contains the activation record for a function.\n");
   }
 
