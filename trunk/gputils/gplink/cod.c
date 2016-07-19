@@ -268,11 +268,11 @@ cod_init(void)
   }
 
   if (!state.cod.enabled) {
+    main_dir = NULL;
     return;
   }
 
   main_dir = gp_cod_init_dir_block(state.cod_file_name, "gplink");
-
   _assign_file_id();
 }
 
@@ -286,13 +286,13 @@ void
 cod_lst_line(int line_type)
 {
   static DirBlockInfo *dbi = NULL;
-  static int           _64k_base = 0;
+  static unsigned int  _64k_base = 0;
 
   uint8_t              smod_flag;
   BlockList           *lb;
   gp_boolean           first_time;
-  int                  address;
-  int                  high_address;
+  unsigned int         address;
+  unsigned int         high_address;
   uint8_t             *record;
 
   if (!state.cod.enabled) {

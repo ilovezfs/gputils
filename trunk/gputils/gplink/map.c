@@ -42,10 +42,10 @@ struct syms_s {
   gp_symbol_t *file;
 };
 
-struct file_stack {
+typedef struct file_stack {
   gp_symbol_t       *symbol;
   struct file_stack *previous;
-};
+} file_stack_t;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -232,13 +232,13 @@ _write_program_memory(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static struct file_stack *
-_push_file(struct file_stack *Stack, gp_symbol_t *Symbol)
+static file_stack_t *
+_push_file(file_stack_t *Stack, gp_symbol_t *Symbol)
 {
-  struct file_stack *new;
+  file_stack_t *new;
 
   /* allocate memory for the new stack */
-  new = (struct file_stack *)GP_Malloc(sizeof(*new));
+  new = (file_stack_t *)GP_Malloc(sizeof(*new));
 
   new->previous = Stack;
   new->symbol   = Symbol;
@@ -248,10 +248,10 @@ _push_file(struct file_stack *Stack, gp_symbol_t *Symbol)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static struct file_stack *
-_pop_file(struct file_stack *Stack)
+static file_stack_t *
+_pop_file(file_stack_t *Stack)
 {
-  struct file_stack *old;
+  file_stack_t *old;
 
   if (Stack != NULL) {
     old   = Stack;
@@ -287,7 +287,7 @@ _write_symbols(void)
   const gp_symbol_t *sm;
   int                num_syms;
   int                i;
-  struct file_stack *stack = NULL;
+  file_stack_t      *stack = NULL;
   gp_symbol_t       *symbol = NULL;
 
   syms = GP_Malloc(sizeof(struct syms_s) * state.object->num_symbols);

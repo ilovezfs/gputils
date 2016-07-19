@@ -183,10 +183,11 @@ bad_char(const char *Character)
 void
 open_src(const char *Name, gp_boolean Is_include)
 {
-  extern FILE           *yyin;
-  struct source_context *new;
-  char                   tryname[BUFSIZ];
-  int                    i;
+  extern FILE      *yyin;
+
+  source_context_t *new;
+  char              tryname[BUFSIZ];
+  int               i;
 
   if (state.src != NULL) {
     state.src->yybuf = YY_CURRENT_BUFFER;
@@ -236,15 +237,16 @@ open_src(const char *Name, gp_boolean Is_include)
 gp_boolean
 close_file(void)
 {
-  struct source_context *old;
+  source_context_t *old;
 
-  old = state.src;
+  old       = state.src;
   state.src = state.src->prev;
 
   if (old->f != NULL) {
     fclose(old->f);
     free(old->name);
   }
+
   free(old);
 
   if (state.src != NULL) {

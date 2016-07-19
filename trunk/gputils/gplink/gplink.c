@@ -178,26 +178,22 @@ _object_append(gp_object_t *Object)
 static void
 _archive_append(gp_archive_t *Archive, const char *Name)
 {
-  struct archivelist *new;
+  archivelist_t *new;
 
   /* make the new entry */
-  new = (struct archivelist *)GP_Malloc(sizeof(*new));
+  new = (archivelist_t *)GP_Calloc(1, sizeof(*new));
   new->name    = GP_Strdup(Name);
   new->archive = Archive;
-  new->next    = NULL;
 
   /* append the entry to the list */
   if (state.archives == NULL) {
     state.archives = new;
   }
   else {
-    struct archivelist *list = state.archives;
-
-    while (list->next != NULL){
-      list = list->next;
-    }
-    list->next = new;
+    state.archives_tail->next = new;
   }
+
+  state.archives_tail = new;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -355,13 +351,13 @@ _search_idata(void)
 static void
 _build_tables(void)
 {
-  gp_object_t        *object;
-  struct archivelist *arlist;
-  gp_boolean          modified;
-  size_t              i;
-  const symbol_t     *sym;
-  const char         *name;
-  gp_coffsymbol_t    *var;
+  gp_object_t     *object;
+  archivelist_t   *arlist;
+  gp_boolean       modified;
+  size_t           i;
+  const symbol_t  *sym;
+  const char      *name;
+  gp_coffsymbol_t *var;
 
   /* Create the object file symbol tables. */
   object = state.object;
@@ -386,9 +382,9 @@ _build_tables(void)
       else if (arlist->next == NULL) {
         if (modified) {
           /* At least one object was loaded from an archive and there are
-             still missing symbols.  Scan all the archives again. */
+             still missing symbols. Scan all the archives again. */
           modified = false;
-          arlist = state.archives;
+          arlist   = state.archives;
         }
         else {
           /* Quit */
@@ -526,33 +522,20 @@ _init(void)
 {
   gp_init();
 
+  memset(&state, 0, sizeof(state));
   /* initialize */
   gp_date_string(state.start_date, sizeof(state.start_date));
   state.hex_format          = INHX32;
-  state.num_paths           = 0;
-  state.processor           = NULL;
   state.optimize.level      = OPTIMIZE_LEVEL_DEFAULT;
-  state.optimize.pagesel    = 0;
-  state.optimize.banksel    = 0;
   state.cod_file            = OUT_NORMAL;
   state.hex_file            = OUT_NORMAL;
   state.lst_file            = OUT_NORMAL;
   state.map_file            = OUT_SUPPRESS;
   state.obj_file            = OUT_SUPPRESS;
-  state.fill_enable         = false;
-  state.fill_value          = 0;
-  state.has_stack           = false;
-  state.stack_size          = 0;
-  state.has_idata           = false;
-  state.src_file_names      = NULL;
-  state.src_file_names_tail = NULL;
-  state.object              = NULL;
-  state.archives            = NULL;
 
   /* set default output filename to be a.o, a.hex, a.cod, a.map */
   strncpy(state.base_file_name, "a", sizeof(state.base_file_name));
 
-  state.ifdef = NULL;
   state.script_symbols     = gp_sym_push_table(NULL, false);
 
   /* The symbols are case sensitive. */

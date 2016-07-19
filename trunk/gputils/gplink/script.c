@@ -26,28 +26,6 @@ Boston, MA 02111-1307, USA.  */
 #include "scan.h"
 #include "script.h"
 
-#define NELEM(x)                (sizeof(x) / sizeof(x)[0])
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-script_error(const char *Messg, const char *Detail)
-{
-  gp_num_errors++;
-
-  if (!gp_quiet) {
-    if (state.src == NULL) {
-      printf("%s\n", Messg);
-    }
-    else if (Detail == NULL) {
-      printf("%s:%d:Error %s\n", state.src->name, state.src->line_number, Messg);
-    }
-    else {
-      printf("%s:%d:Error %s (%s)\n", state.src->name, state.src->line_number, Messg, Detail);
-    }
-  }
-}
-
 /*------------------------------------------------------------------------------------------------*/
 
 static gp_boolean
@@ -56,10 +34,9 @@ _enforce_simple(const pnode_t *Pnode)
   if (PnIsSymbol(Pnode)) {
     return true;
   }
-  else {
-    script_error("illegal argument", NULL);
-    return false;
-  }
+
+  script_error("illegal argument", NULL);
+  return false;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -117,68 +94,9 @@ _do_include(const char *Name, enum section_type Type, const pnode_t *Parms)
 
 /*------------------------------------------------------------------------------------------------*/
 
-int
-script_add_path(const pnode_t *Parms)
-{
-  const pnode_t *p;
-
-  for (; Parms != NULL; Parms = PnListTail(Parms)) {
-    p = PnListHead(Parms);
-
-    if (_enforce_simple(p)) {
-      /* gplink doesn't distinguish between lib pathes and lkr pathes.  There
-         is one pathes list.  This shouldn't cause any problems. */
-      gplink_add_path(PnSymbol(p));
-    }
-  }
-
-  return 0;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-script_add_macro(const char *Name, long Value)
-{
-  symbol_t *sym;
-  long     *val;
-
-  sym = gp_sym_add_symbol(state.script_symbols, Name);
-  val = gp_sym_get_symbol_annotation(sym);
-
-  if (val == NULL) {
-    val = GP_Malloc(sizeof(Value));
-    gp_sym_annotate_symbol(sym, val);
-  }
-
-  *val = Value;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-long
-script_get_macro(const char *Name)
-{
-  symbol_t *sym;
-  long     *val;
-
-  sym = gp_sym_get_symbol(state.script_symbols, Name);
-
-  if (sym == NULL) {
-    return 0;
-  }
-
-  val = gp_sym_get_symbol_annotation(sym);
-  assert(val != NULL);
-  return *val;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* FIXME:  These functions were written to allow the user the greatest
-   flexibility.  The arguments can appear in any order.  In hind sight
-   this may not have been necessary and resulted in overly complicated
-   code. */
+/* FIXME:  These functions were written to allow the user the greatest flexibility.
+           The arguments can appear in any order. In hind sight this may not have
+           been necessary and resulted in overly complicated code. */
 
 /* logical section definition */
 static int
@@ -207,8 +125,8 @@ _do_logsec(const char *Name, enum section_type Type, const pnode_t *Parms)
   char             *section_name = NULL;
   linker_section_t *section = NULL;
   symbol_t         *sym;
-  const char       *lhs;
-  int               i;
+  const char       *sym_name;
+  size_t            i;
 
   /* read the options */
   for (; Parms != NULL; Parms = PnListTail(Parms)) {
@@ -216,38 +134,42 @@ _do_logsec(const char *Name, enum section_type Type, const pnode_t *Parms)
 
     if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (_enforce_simple(PnBinOpP0(p))) {
-        lhs = PnSymbol(PnBinOpP0(p));
-        arg = ID_UNKNOWN;
-        for (i = 0; i < NELEM(arg_tbl); ++i) {
-          if (strcasecmp(arg_tbl[i].name, lhs) == 0) {
+        sym_name = PnSymbol(PnBinOpP0(p));
+        arg      = ID_UNKNOWN;
+        for (i = 0; i < ARRAY_SIZE(arg_tbl); ++i) {
+          if (strcasecmp(arg_tbl[i].name, sym_name) == 0) {
             arg = arg_tbl[i].id;
+            break;
           }
         }
 
         switch (arg) {
-          case ID_NAME:
+          case ID_NAME: {
             if (_enforce_simple(PnBinOpP1(p))) {
-              found_secname = true;
+              found_secname        = true;
               logical_section_name = PnSymbol(PnBinOpP1(p));
             }
             break;
+          }
 
-          case ID_RAM:
+          case ID_RAM: {
             if (_enforce_simple(PnBinOpP1(p))) {
-              found_ram = true;
+              found_ram    = true;
               section_name = GP_Strdup(PnSymbol(PnBinOpP1(p)));
             }
             break;
+          }
 
-          case ID_ROM:
+          case ID_ROM: {
             if (_enforce_simple(PnBinOpP1(p))) {
-              found_rom = true;
+              found_rom    = true;
               section_name = GP_Strdup(PnSymbol(PnBinOpP1(p)));
             }
             break;
+          }
 
           default:
-            script_error("illegal argument", lhs);
+            script_error("illegal argument", sym_name);
         }
       }
     }
@@ -297,6 +219,7 @@ _do_logsec(const char *Name, enum section_type Type, const pnode_t *Parms)
 /*------------------------------------------------------------------------------------------------*/
 
 /* general section definition processing */
+
 static int
 _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
 {
@@ -325,15 +248,17 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
   gp_boolean        found_fill = false;
   gp_boolean        found_protected = false;
   const char       *section_name = NULL;
-  const char        *shadow_sym = NULL;
+  const char       *shadow_sym = NULL;
+  long              shadow_val = 0;
   long              start = 0;
   long              end = 0;
   long              fill = 0;
-  long              shadow_val = 0;
   symbol_t         *sym;
   linker_section_t *section_def;
-  const char       *lhs;
-  int               i;
+  const char       *sym_name;
+  size_t            i;
+  const char       *s_begin;
+  char             *s_end;
 
   /* read the options */
   for (; Parms != NULL; Parms = PnListTail(Parms)) {
@@ -341,20 +266,22 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
 
     if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (_enforce_simple(PnBinOpP0(p))) {
-        lhs = PnSymbol(PnBinOpP0(p));
-        arg = ID_UNKNOWN;
-        for (i = 0; i < NELEM(arg_tbl); ++i) {
-          if (strcasecmp(arg_tbl[i].name, lhs) == 0) {
+        sym_name = PnSymbol(PnBinOpP0(p));
+        arg      = ID_UNKNOWN;
+        for (i = 0; i < ARRAY_SIZE(arg_tbl); ++i) {
+          if (strcasecmp(arg_tbl[i].name, sym_name) == 0) {
             arg = arg_tbl[i].id;
+            break;
           }
         }
 
         switch (arg) {
-          case ID_NAME:
+          case ID_NAME: {
             if (_enforce_simple(PnBinOpP1(p))) {
               section_name = PnSymbol(PnBinOpP1(p));
             }
             break;
+          }
 
           case ID_START:
             found_start = true;
@@ -373,37 +300,31 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
 
           case ID_SHADOW: {
             if (_enforce_simple(PnBinOpP1(p))) {
-              const char *begin;
-              char       *end;
+              s_begin = PnSymbol(PnBinOpP1(p));
 
-              begin = PnSymbol(PnBinOpP1(p));
-              if ((end = strchr(begin, ':')) != NULL) {
-                if (end == begin) {
-                  script_error("bad shadow symbol", lhs);
+              if ((s_end = strchr(s_begin, ':')) != NULL) {
+                if (s_end == s_begin) {
+                  script_error("bad shadow symbol", sym_name);
                 }
                 else {
-                  char *shsym = (char *)GP_Malloc(end - begin + 1);
+                  shadow_sym = GP_Strndup(s_begin, s_end - s_begin);
+                  s_begin    = ++s_end;
+                  shadow_val = strtol(s_begin, &s_end, 0);
 
-                  memcpy(shsym, begin, end - begin);
-                  shsym[end - begin] = '\0';
-                  shadow_sym = shsym;
-                  begin = ++end;
-                  shadow_val = strtol(begin, &end, 0);
-
-                  if (*end != '\0') {
-                    script_error("bad shadow value", lhs);
+                  if (*s_end != '\0') {
+                    script_error("bad shadow value", sym_name);
                   }
                 }
               }
               else {
-                script_error("bad shadow argument", lhs);
+                script_error("bad shadow argument", sym_name);
               }
             }
             break;
           }
 
           default:
-            script_error("illegal argument", lhs);
+            script_error("illegal argument", sym_name);
         }
       }
     }
@@ -438,11 +359,12 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
       gp_sym_annotate_symbol(sym, section_def);
 
       switch (Type) {
-        case SECT_ACCESSBANK:
+        case SECT_ACCESSBANK: {
           if (state.class != PROC_CLASS_PIC16E) {
             script_error("accessbank only valid with 18xx devices", Name);
           }
           break;
+        }
 
         case SECT_CODEPAGE:
           start = gp_processor_byte_from_insn_c(state.class, start);
@@ -510,7 +432,7 @@ _do_stack(const char *Name, enum section_type Type, const pnode_t *Parms)
   gp_boolean     found_size  = false;
   char          *ram_name = NULL;
   symbol_t      *sym;
-  const char    *lhs;
+  const char    *sym_name;
   int            i;
 
   if (state.has_stack) {
@@ -529,11 +451,12 @@ _do_stack(const char *Name, enum section_type Type, const pnode_t *Parms)
 
     if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (_enforce_simple(p->value.binop.p0)) {
-        lhs = PnSymbol(PnBinOpP0(p));
-        arg = ID_UNKNOWN;
-        for (i = 0; i < NELEM(arg_tbl); ++i) {
-          if (strcasecmp(arg_tbl[i].name, lhs) == 0) {
+        sym_name = PnSymbol(PnBinOpP0(p));
+        arg      = ID_UNKNOWN;
+        for (i = 0; i < ARRAY_SIZE(arg_tbl); ++i) {
+          if (strcasecmp(arg_tbl[i].name, sym_name) == 0) {
             arg = arg_tbl[i].id;
+            break;
           }
         }
 
@@ -543,14 +466,15 @@ _do_stack(const char *Name, enum section_type Type, const pnode_t *Parms)
             state.stack_size = _evaluate(PnBinOpP1(p));
             break;
 
-          case ID_RAM:
+          case ID_RAM: {
             if (_enforce_simple(PnBinOpP1(p))) {
               ram_name = GP_Strdup(PnSymbol(PnBinOpP1(p)));
             }
             break;
+          }
 
           default:
-            script_error("illegal argument", lhs);
+            script_error("illegal argument", sym_name);
         }
       }
     }
@@ -575,6 +499,83 @@ _do_stack(const char *Name, enum section_type Type, const pnode_t *Parms)
 
 /*------------------------------------------------------------------------------------------------*/
 
+void
+script_error(const char *Messg, const char *Detail)
+{
+  gp_num_errors++;
+
+  if (!gp_quiet) {
+    if (state.src == NULL) {
+      printf("%s\n", Messg);
+    }
+    else if (Detail == NULL) {
+      printf("%s:%d:Error %s\n", state.src->name, state.src->line_number, Messg);
+    }
+    else {
+      printf("%s:%d:Error %s (%s)\n", state.src->name, state.src->line_number, Messg, Detail);
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+int
+script_add_path(const pnode_t *Parms)
+{
+  const pnode_t *p;
+
+  for (; Parms != NULL; Parms = PnListTail(Parms)) {
+    p = PnListHead(Parms);
+
+    if (_enforce_simple(p)) {
+      /* The gplink doesn't distinguish between lib pathes and lkr pathes.
+         There is one pathes list. This shouldn't cause any problems. */
+      gplink_add_path(PnSymbol(p));
+    }
+  }
+
+  return 0;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+script_add_macro(const char *Name, long Value)
+{
+  symbol_t *sym;
+  long     *val;
+
+  sym = gp_sym_add_symbol(state.script_symbols, Name);
+  val = gp_sym_get_symbol_annotation(sym);
+
+  if (val == NULL) {
+    val = GP_Malloc(sizeof(Value));
+    gp_sym_annotate_symbol(sym, val);
+  }
+
+  *val = Value;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+long
+script_get_macro(const char *Name)
+{
+  const symbol_t *sym;
+  const long     *val;
+
+  sym = gp_sym_get_symbol(state.script_symbols, Name);
+  if (sym == NULL) {
+    return 0;
+  }
+
+  val = (const long *)gp_sym_get_symbol_annotation(sym);
+  assert(val != NULL);
+  return *val;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 int
 script_execute_command(const char *Name, const pnode_t *Parms)
 {
@@ -595,13 +596,12 @@ script_execute_command(const char *Name, const pnode_t *Parms)
   };
   size_t i;
 
-  for (i = 0; i < NELEM(commands); ++i) {
+  for (i = 0; i < ARRAY_SIZE(commands); ++i) {
     if (strcasecmp(Name, commands[i].name) == 0) {
       return (*commands[i].address)(Name, commands[i].type, Parms);
     }
   }
 
   script_error("invalid script command", Name);
-
   return 0;
 }

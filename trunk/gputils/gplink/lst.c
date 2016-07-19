@@ -41,10 +41,10 @@ static const gp_section_t *line_section;
 static void
 _open_source(const char *Name, gp_symbol_t *Symbol)
 {
-  char                 file_name[PATH_MAX + 1];
-  struct list_context *new;
-  int                  i;
-  const char          *p;
+  char            file_name[PATH_MAX + 1];
+  list_context_t *new;
+  int             i;
+  const char     *p;
 
   assert(Name != NULL);
 
@@ -101,7 +101,7 @@ _open_source(const char *Name, gp_symbol_t *Symbol)
 static void
 _close_source(void)
 {
-  struct list_context *old;
+  list_context_t *old;
 
   assert(state.lst.src != NULL);
 
