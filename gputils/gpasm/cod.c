@@ -60,11 +60,10 @@ _write_source_file_block(void)
       fb = gp_cod_block_append(&main_dir->src, gp_cod_block_new());
     }
 
-    /* The file id is used to define the index at which the file
-     * name is written within the file code block. (The id's are
-     * sequentially assigned when the files are opened.) If there
-     * are too many files, then gpasm will abort. Note: .cod files
-     * can handle larger file lists...
+    /* The file id is used to define the index at which the file name is written within
+     * the file code block. (The id's are sequentially assigned when the files are opened.)
+     * If there are too many files, then gpasm will abort. Note: .cod files can handle
+     * larger file lists...
      */
 
     gp_Pstr_from_str(&fb->block[main_dir->src.offset], COD_DIR_SOURCE_P_SIZE, fc->name);
@@ -100,6 +99,7 @@ cod_init(void)
   }
 
   if (!state.cod.enabled) {
+    main_dir = NULL;
     return;
   }
 

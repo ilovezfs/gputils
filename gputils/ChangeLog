@@ -1,4 +1,10 @@
 2016-07-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gplink/cod.c, gplink/gplink.c, gplink/gplink.h.in,
+    gplink/lst.c, gplink/map.c, gplink/parse.y, gplink/scan.l,
+    gplink/script.c:
+    Code optimization.
+
+2016-07-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gputils/gpdasm.c, gputils/gplib.c, gputils/gpstrip.c,
     gputils/gpvo.c, gputils/parse.y, gputils/scan.l,
     libgputils/gpprocessor.c, libgputils/gpprocessor.h,

@@ -24,15 +24,9 @@ Boston, MA 02111-1307, USA.  */
 #ifndef GPLINK_H
 #define GPLINK_H
 
-#define GPLINK_VERSION_STRING ("gplink-" VERSION " #" @REVISION@ " (" __DATE__ ")")
+#define GPLINK_VERSION_STRING       ("gplink-" VERSION " #" @REVISION@ " (" __DATE__ ")")
 
-#define MAX_PATHS 100
-
-struct archivelist {
-  char               *name;
-  gp_archive_t       *archive;
-  struct archivelist *next;
-};
+#define MAX_PATHS                   100
 
 enum outfile {
   OUT_NORMAL,
@@ -40,10 +34,40 @@ enum outfile {
   OUT_NAMED
 };
 
+typedef struct archivelist {
+  char               *name;
+  gp_archive_t       *archive;
+  struct archivelist *next;
+} archivelist_t;
+
 typedef struct srcfns {
-  char          *file_name;
   struct srcfns *next;
+  char          *file_name;
 } srcfns_t;
+
+typedef struct source_context {
+  struct source_context  *prev;
+  char                   *name;
+  FILE                   *f;
+  unsigned int            line_number;
+  struct yy_buffer_state *yybuf;
+  gp_boolean              last_char_is_nl;  /* If the last read character is a newline. */
+} source_context_t;
+
+typedef struct ifdef {
+  struct ifdef *prev;
+  gp_boolean    is_true;
+  gp_boolean    in_else;
+} ifdef_t;
+
+typedef struct list_context {
+  struct list_context *prev;
+  char                *name;
+  gp_symbol_t         *symbol;
+  FILE                *f;
+  gp_boolean           missing_source;
+  unsigned int         line_number;
+} list_context_t;
 
 extern struct gplink_state {
   gp_boolean       mplink_compatible;   /* MPLINK compatibility mode. */
@@ -84,9 +108,9 @@ extern struct gplink_state {
     map_file_name[BUFSIZ],              /* List (.map) file name. */
     obj_file_name[BUFSIZ];              /* Object (.o) file name. */
 
-  struct source_context *src;           /* Top of the stack of the script files. */
-  struct ifdef          *ifdef;         /* Top of the stack of ifdef nesting. */
-  symbol_table_t        *script_symbols;
+  source_context_t *src;                /* Top of the stack of the script files. */
+  ifdef_t          *ifdef;              /* Top of the stack of ifdef nesting. */
+  symbol_table_t   *script_symbols;
 
   struct {                              /* Map file state: */
     FILE *f;                            /*   Map file output. */
@@ -99,10 +123,10 @@ extern struct gplink_state {
   } cod;
 
   struct {                              /* List file state: */
-    FILE                *f;             /*   List file output. */
-    gp_boolean           enabled;       /*   List file is enabled. */
-    struct list_context *src;           /*   List file context. */
-    int                  was_byte_addr; /*   Last address that generated code. */
+    FILE           *f;                  /*   List file output. */
+    gp_boolean      enabled;            /*   List file is enabled. */
+    list_context_t *src;                /*   List file context. */
+    unsigned int    was_byte_addr;      /*   Last address that generated code. */
   } lst;
 
   struct {
@@ -111,39 +135,16 @@ extern struct gplink_state {
   } section;
 
   struct {
-    symbol_table_t *definition;         /* EExternal symbol definition. */
+    symbol_table_t *definition;         /* External symbol definition. */
     symbol_table_t *missing;            /* Missing external symbols. */
     symbol_table_t *archive;            /* Archive symbol index. */
   } symbol;
 
-  struct archivelist    *archives;
-  gp_object_t           *object;        /* Object files. */
-  MemBlock_t            *i_memory;      /* Instruction memory linked list. */
+  archivelist_t    *archives;
+  archivelist_t    *archives_tail;
+  gp_object_t      *object;             /* Object files. */
+  MemBlock_t       *i_memory;           /* Instruction memory linked list. */
 } state;
-
-struct source_context {
-  char                   *name;
-  FILE                   *f;
-  unsigned int            line_number;
-  struct yy_buffer_state *yybuf;
-  gp_boolean              last_char_is_nl;  /* If the last read character is a newline. */
-  struct source_context  *prev;
-};
-
-struct ifdef {
-  gp_boolean    is_true;
-  gp_boolean    in_else;
-  struct ifdef *prev;
-};
-
-struct list_context {
-  char                *name;
-  gp_symbol_t         *symbol;
-  FILE                *f;
-  gp_boolean           missing_source;
-  unsigned int         line_number;
-  struct list_context *prev;
-};
 
 extern void gplink_open_coff(const char *Name);
 extern void gplink_add_path(const char *Path);

@@ -202,8 +202,13 @@ line:
              to care if the macro has already been defined or if the
              parameters to the operation are undefined. */
           if ((state.ifdef == NULL) || (state.ifdef->is_true)) {
-            long newval = 0, lh = $3, rh = $5;
+            long newval;
+            long lh;
+            long rh;
 
+            newval = 0;
+            lh     = $3;
+            rh     = $5;
             switch ($4) {
               case '+': newval = lh + rh; break;
               case '-': newval = lh - rh; break;
@@ -224,12 +229,12 @@ line:
         |
         IFDEF SYMBOL
         {
-          struct ifdef *ifdef = GP_Malloc(sizeof *ifdef);
+          ifdef_t *ifdef = GP_Malloc(sizeof(*ifdef));
 
           ifdef->is_true = (((state.ifdef == NULL) || state.ifdef->is_true) &&
                             gp_sym_get_symbol(state.script_symbols, $2));
           ifdef->in_else = false;
-          ifdef->prev = state.ifdef;
+          ifdef->prev    = state.ifdef;
           state.ifdef = ifdef;
         }
         |
@@ -250,7 +255,7 @@ line:
           if (state.ifdef == NULL)
             yyerror("#FI without #IFDEF in linker script.");
           else {
-            struct ifdef *ifdef = state.ifdef;
+            ifdef_t *ifdef = state.ifdef;
 
             state.ifdef = state.ifdef->prev;
             free(ifdef);
