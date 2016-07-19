@@ -22,46 +22,12 @@ Boston, MA 02111-1307, USA.  */
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-/* Parse node: created by the parser, interpreted by the 'backend' */
+#include "libgputils.h"
 
-typedef struct pnode {
-  enum pnode_tag {
-    PTAG_CONSTANT,
-    PTAG_SYMBOL,
-    PTAG_STRING,
-    PTAG_LIST,
-    PTAG_BINOP,
-    PTAG_UNOP
-    } tag;
-
-  union {
-    long        constant;
-    const char *symbol;
-
-    struct {
-      struct pnode *head;
-      struct pnode *tail;
-    } list;
-
-    struct {
-      int           op;
-      struct pnode *p0;
-      struct pnode *p1;
-    } binop;
-
-    struct {
-      int           op;
-      struct pnode *p0;
-    } unop;
-
-    const char *string;
-  } value;
-} pnode_t;
-
-extern void script_error(const char *messg, const char *detail);
-extern int script_add_path(const pnode_t *parms);
-extern void script_add_macro(const char *name, long value);
-extern long script_get_macro(const char *name);
-extern int script_execute_command(const char *name, const pnode_t *parms);
+extern void script_error(const char *Messg, const char *Detail);
+extern int script_add_path(const pnode_t *Parms);
+extern void script_add_macro(const char *Name, long Value);
+extern long script_get_macro(const char *Name);
+extern int script_execute_command(const char *Name, const pnode_t *Parms);
 
 #endif

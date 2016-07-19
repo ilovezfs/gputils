@@ -3,7 +3,7 @@
    James Bowman, Craig Franklin
    Copyright (C) 2012 Borut Razem
 
-    Copyright (C) 2015-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2015-2016 Molnar Karoly
 
 This file is part of gputils.
 

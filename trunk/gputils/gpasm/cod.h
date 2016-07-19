@@ -1,6 +1,7 @@
 /* ".COD" file output for gpasm
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
+   Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 

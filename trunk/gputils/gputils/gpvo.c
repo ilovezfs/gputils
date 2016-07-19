@@ -2,7 +2,7 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
-    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -102,6 +102,7 @@ _print_header(const gp_object_t *Object)
 #ifdef HAVE_LOCALE_H
   setlocale(LC_ALL, "");
   strftime(time_str, sizeof(time_str), "%c", localtime(&time));
+  setlocale(LC_ALL, "C");
 #else
   time_str = ctime(&time);
   /* strip the newline from time */
@@ -171,8 +172,8 @@ _format_reloc_type(uint16_t Type, char *Buffer, size_t Sizeof_buffer)
 static void
 _print_relocation_list(proc_class_t Class, const gp_reloc_t *Relocation, const char *Column_gap)
 {
-  char        buffer[32];
-  int         addr_digits;
+  char buffer[32];
+  int  addr_digits;
 
   addr_digits = Class->addr_digits;
 
@@ -420,7 +421,7 @@ _coff_type(unsigned int Type, char *Buffer, size_t Sizeof_buffer)
     case T_STRUCT: str = "struct";              break; /* structure */
     case T_UNION:  str = "union";               break; /* union */
     case T_ENUM:   str = "enum";                break; /* enumeration */
-    case T_MOE:    str = "enum";                break; /* member of enumeration */
+    case T_MOE:    str = "enum member";         break; /* member of enumeration */
     case T_UCHAR:  str = "unsigned char";       break; /* unsigned character */
     case T_USHORT: str = "unsigned short";      break; /* unsigned short */
     case T_UINT:   str = "unsigned int";        break; /* unsigned integer */
@@ -494,22 +495,23 @@ _format_sym_class(unsigned int Class, char *Buffer, size_t Sizeof_buffer)
 static void
 _print_symbol_table(const gp_object_t *Object)
 {
-  static char  buf[64];
+  static char   buf[64];
 
-  gp_symbol_t *symbol;
-  gp_symbol_t *callee;
-  gp_aux_t    *aux;
-  const char  *section;
-  int          c;
-  int          i;
-  int          idx = 1;
-  char         buffer_type[8];
-  char         buffer_derived_type[8];
-  char         buffer_class[8];
+  gp_symbol_t  *symbol;
+  gp_symbol_t  *callee;
+  gp_aux_t     *aux;
+  const char   *section;
+  int           c;
+  size_t        i;
+  unsigned int  idx;
+  char          buffer_type[8];
+  char          buffer_derived_type[8];
+  char          buffer_class[8];
 
   printf("Symbol Table\n");
   printf("Idx  Name                     Section          Value      Type     DT           Class     NumAux\n");
 
+  idx = 1;
   symbol = Object->symbol_list.first;
   while (symbol != NULL) {
     if (symbol->section_number == N_DEBUG) {
@@ -531,7 +533,7 @@ _print_symbol_table(const gp_object_t *Object)
       }
     }
 
-    printf("%04d %-24s %-16s %#-10lx %-8s %-12s %-9s %-4zu\n",
+    printf("%04u %-24s %-16s %#-10lx %-8s %-12s %-9s %-4zu\n",
            idx,
            symbol->name,
            section,

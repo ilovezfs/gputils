@@ -2,7 +2,7 @@
    Copyright (C) 2004, 2005
    Craig Franklin
 
-    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -39,37 +39,37 @@ static const gp_section_t *line_section;
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_open_source(const char *name, gp_symbol_t *symbol)
+_open_source(const char *Name, gp_symbol_t *Symbol)
 {
   char                 file_name[PATH_MAX + 1];
   struct list_context *new;
   int                  i;
   const char          *p;
 
-  assert(name != NULL);
+  assert(Name != NULL);
 
   new = GP_Malloc(sizeof(*new));
-  new->f = fopen(name, "rt");
+  new->f = fopen(Name, "rt");
   if (new->f == NULL) {
     /* Try searching include pathes. */
     for (i = 0; i < state.num_paths; i++) {
-      snprintf(file_name, sizeof(file_name), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], name);
+      snprintf(file_name, sizeof(file_name), "%s" PATH_SEPARATOR_STR "%s", state.paths[i], Name);
       new->f = fopen(file_name, "rb");
       if (new->f != NULL) {
-        name = file_name;
+        Name = file_name;
         break;
       }
     }
     if (new->f == NULL) {
       /* The path may belong to a build procedure other than this. */
-      p = strrchr(name, PATH_SEPARATOR_CHAR);
+      p = strrchr(Name, PATH_SEPARATOR_CHAR);
 
       if (p != NULL) {
         for (i = 0; i < state.num_paths; i++) {
           snprintf(file_name, sizeof(file_name), "%s%s", state.paths[i], p);
           new->f = fopen(file_name, "rb");
           if (new->f != NULL) {
-            name = file_name;
+            Name = file_name;
             break;
           }
         }
@@ -78,18 +78,18 @@ _open_source(const char *name, gp_symbol_t *symbol)
   }
 
   if (new->f != NULL) {
-    new->name           = GP_Strdup(name);
+    new->name           = GP_Strdup(Name);
     new->missing_source = false;
   }
   else {
     new->missing_source = true;
 
     if (getenv("GPUTILS_WARN_MISSING_SRC") != NULL) {
-      gp_warning("Cannot find source file: \"%s\"", name);
+      gp_warning("Cannot find source file: \"%s\"", Name);
     }
   }
 
-  new->symbol      = symbol;
+  new->symbol      = Symbol;
   new->line_number = 1;
   new->prev        = state.lst.src;
 
@@ -113,13 +113,13 @@ _close_source(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_lst_line(const char *format, ...)
+_lst_line(const char *Format, ...)
 {
   va_list args;
 
   if (state.lst.f != NULL) {
-    va_start(args, format);
-    vfprintf(state.lst.f, format, args);
+    va_start(args, Format);
+    vfprintf(state.lst.f, Format, args);
     va_end(args);
     fputc('\n', state.lst.f);
   }
@@ -128,14 +128,14 @@ _lst_line(const char *format, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 static const gp_linenum_t *
-_find_line_number(const gp_symbol_t *symbol, unsigned int line_number)
+_find_line_number(const gp_symbol_t *Symbol, unsigned int Line_number)
 {
   const gp_section_t *section;
   const gp_linenum_t *linenum;
 
   section = state.object->section_list.first;
   while (section != NULL) {
-    linenum = gp_coffgen_find_linenum(section, symbol, line_number);
+    linenum = gp_coffgen_find_linenum(section, Symbol, Line_number);
 
     if (linenum != NULL) {
       if (section != line_section) {
@@ -156,7 +156,7 @@ _find_line_number(const gp_symbol_t *symbol, unsigned int line_number)
 /*------------------------------------------------------------------------------------------------*/
 
 static char *
-_expand_tabs(const char *buf)
+_expand_tabs(const char *Buffer)
 {
   static char  dest[LINESIZ];
 
@@ -165,11 +165,11 @@ _expand_tabs(const char *buf)
   char         c;
   unsigned int n;
 
-  for (is = 0, id = 0; ((c = buf[is]) != '\0') && (id < (sizeof(dest) - 2)); ++is) {
+  for (is = 0, id = 0; ((c = Buffer[is]) != '\0') && (id < (sizeof(dest) - 2)); ++is) {
     if (c == '\t') {
       n = TABULATOR_SIZE - (id % TABULATOR_SIZE);
 
-      while (n-- && (id < (sizeof(dest) - 2))) {
+      while ((n-- > 0) && (id < (sizeof(dest) - 2))) {
         dest[id++] = ' ';
       }
     }
@@ -185,7 +185,7 @@ _expand_tabs(const char *buf)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_write_source(int last_line)
+_write_source(int Last_line)
 {
   char                linebuf[LINESIZ];
   char                dasmbuf[LINESIZ];
@@ -207,7 +207,7 @@ _write_source(int last_line)
 
   while (true) {
     /* When last_line is 0 print all lines, else print to last_line. */
-    if ((last_line > 0) && (state.lst.src->line_number > last_line)) {
+    if ((Last_line > 0) && (state.lst.src->line_number > Last_line)) {
       break;
     }
 

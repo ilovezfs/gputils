@@ -23,7 +23,7 @@ Boston, MA 02111-1307, USA.  */
 #define __DEPS_H__
 
 extern void deps_init(void);
-extern void deps_add(const char *file_name);
+extern void deps_add(const char *File_name);
 extern void deps_close(void);
 
 #endif

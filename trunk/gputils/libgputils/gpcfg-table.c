@@ -1,7 +1,7 @@
 
 /* This file is generated automatically by the cfg-import.pl 2016-06-24 18:03:27 UTC. */
 
-/*  Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+/*  Copyright (C) 2014-2016 Molnar Karoly
 
 This file is part of gputils.
 

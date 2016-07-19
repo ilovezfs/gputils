@@ -2,6 +2,8 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
    
+   Copyright (C) 2016 Molnar Karoly
+
 This file is part of gputils.
  
 gputils is free software; you can redistribute it and/or modify

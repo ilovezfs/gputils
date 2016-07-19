@@ -102,66 +102,6 @@ typedef struct conf_mem_block {
 
 /************************************************************************/
 
-/* Parse node: created by the parser, interpreted by the 'backend' */
-
-typedef struct pnode {
-  enum pnode_tag {
-    PTAG_CONSTANT,
-    PTAG_SYMBOL,
-    PTAG_STRING,
-    PTAG_OFFSET,
-    PTAG_LIST,
-    PTAG_BINOP,
-    PTAG_UNOP
-  } tag;
-
-  union {
-    int             constant;
-    const char     *symbol;
-    char           *string;
-
-    struct pnode   *offset;
-
-    struct {
-      struct pnode *head;
-      struct pnode *tail;
-    } list;
-
-    struct {
-      int           op;
-      struct pnode *p0;
-      struct pnode *p1;
-    } binop;
-
-    struct {
-      int           op;
-      struct pnode *p0;
-    } unop;
-  } value;
-} pnode_t;
-
-#define PnIsConstant(Node)              ((Node)->tag == PTAG_CONSTANT)
-#define PnIsSymbol(Node)                ((Node)->tag == PTAG_SYMBOL)
-#define PnIsString(Node)                ((Node)->tag == PTAG_STRING)
-#define PnIsOffset(Node)                ((Node)->tag == PTAG_OFFSET)
-#define PnIsList(Node)                  ((Node)->tag == PTAG_LIST)
-#define PnIsBinOp(Node)                 ((Node)->tag == PTAG_BINOP)
-#define PnIsUnOp(Node)                  ((Node)->tag == PTAG_UNOP)
-
-#define PnConstant(Node)                ((Node)->value.constant)
-#define PnSymbol(Node)                  ((Node)->value.symbol)
-#define PnString(Node)                  ((Node)->value.string)
-#define PnOffset(Node)                  ((Node)->value.offset)
-#define PnListHead(Node)                ((Node)->value.list.head)
-#define PnListTail(Node)                ((Node)->value.list.tail)
-#define PnBinOpOp(Node)                 ((Node)->value.binop.op)
-#define PnBinOpP0(Node)                 ((Node)->value.binop.p0)
-#define PnBinOpP1(Node)                 ((Node)->value.binop.p1)
-#define PnUnOpOp(Node)                  ((Node)->value.unop.op)
-#define PnUnOpP0(Node)                  ((Node)->value.unop.p0)
-
-/************************************************************************/
-
 /* file_context: A structure to keep track of all files that have been opened.
                  Used to create the list of project files that can be found
                  in the .cod file. */
@@ -458,28 +398,28 @@ typedef struct variable {
 
 /************************************************************************/
 
-extern void yyerror(const char *s);
+extern void yyerror(const char *String);
 
 /* util.c */
-extern int stringtolong(const char *string, int radix);
+extern int stringtolong(const char *String, int Radix);
 extern gp_boolean find_hv_macro(const char *String, const char **Start, const char **End);
 extern int gpasm_magic(const char *);
-extern const char *convert_escape_chars(const char *ps, int *value);
-extern char *convert_escaped_char(char *str, char c);
-extern void coerce_str1(pnode_t *exp);
-extern gpasmVal do_or_append_insn(const char *op, pnode_t *parms);
+extern const char *convert_escape_chars(const char *Ps, int *Value);
+extern char *convert_escaped_char(char *Str, char Ch);
+extern void coerce_str1(pnode_t *Exp);
+extern gpasmVal do_or_append_insn(const char *Op, pnode_t *Parms);
 
-extern void set_global(const char *name, gpasmVal value, enum gpasmValTypes type,
-                       gp_boolean procDependent);
+extern void set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type,
+                       gp_boolean Proc_dependent);
 
 extern variable_t *get_global_constant(const char *Name);
 extern void purge_variable_symbols(symbol_table_t *Table);
 extern void purge_processor_variable_symbols(symbol_table_t *Table);
-extern void select_errorlevel(int level);
-extern void select_strictlevel(int level);
-extern void select_expand(const char *expand);
-extern void select_hexformat(const char *format_name);
-extern void select_radix(const char *name);
+extern void select_errorlevel(int Level);
+extern void select_strictlevel(int Level);
+extern void select_expand(const char *Expand);
+extern void select_hexformat(const char *Format_name);
+extern void select_radix(const char *Name);
 /* START OF DEBUG CODE LINES */
 extern void pnode_print(const pnode_t *Pnode, FILE *Out);
 extern void pnode_print_chain(const pnode_t *Pnode, unsigned int Level, FILE *Out);
@@ -493,15 +433,15 @@ extern void macro_append(void);
 extern void hex_init(void);
 
 /* gpasm.c */
-extern void add_path(const char *path);
+extern void add_path(const char *Path);
 
 /* parse.y */
-extern pnode_t *mk_constant(int value);
-extern pnode_t *mk_offset(pnode_t *p);
-extern pnode_t *mk_symbol(const char *value);
-extern pnode_t *mk_string(char *value);
-extern pnode_t *mk_list(pnode_t *head, pnode_t *tail);
-extern pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1);
-extern pnode_t *mk_1op(int op, pnode_t *p0);
+extern pnode_t *mk_constant(int Value);
+extern pnode_t *mk_offset(pnode_t *Pnode);
+extern pnode_t *mk_symbol(const char *String);
+extern pnode_t *mk_string(char *String);
+extern pnode_t *mk_list(pnode_t *Head, pnode_t *Tail);
+extern pnode_t *mk_2op(int Op, pnode_t *Pnode0, pnode_t *Pnode1);
+extern pnode_t *mk_1op(int Op, pnode_t *Pnode);
 
 #endif

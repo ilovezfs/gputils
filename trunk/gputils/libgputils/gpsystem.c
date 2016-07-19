@@ -2,7 +2,7 @@
    Copyright (C) 2003, 2004, 2005
    Craig Franklin
 
-    Copyright (C) 2015-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2015-2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -348,10 +348,17 @@ gp_date_string(char *buffer, size_t sizeof_buffer)
 {
   time_t           now;
   const struct tm *now_tm;
+  char             format[60];
 
   time(&now);
   now_tm = localtime(&now);
   if (now_tm != NULL) {
+#if defined(HAVE_LOCALE_H) && defined(HAVE_LANGINFO_H)
+    setlocale(LC_ALL, "");
+    snprintf(format, sizeof(format), "%s  %s", nl_langinfo(D_FMT), nl_langinfo(T_FMT));
+    strftime(buffer, sizeof_buffer, format, now_tm);
+    setlocale(LC_ALL, "C");
+#else
     snprintf(buffer, sizeof_buffer,
              "%d-%d-%d  %02d:%02d:%02d",
              now_tm->tm_mon + 1,
@@ -360,6 +367,7 @@ gp_date_string(char *buffer, size_t sizeof_buffer)
              now_tm->tm_hour,
              now_tm->tm_min,
              now_tm->tm_sec);
+#endif
   }
   else if (sizeof_buffer > 0) {
     buffer[0] = '\0';

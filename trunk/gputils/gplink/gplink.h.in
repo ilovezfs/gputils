@@ -2,7 +2,7 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
-    Copyright (C) 2015-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2015-2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -145,10 +145,7 @@ struct list_context {
   struct list_context *prev;
 };
 
-extern void gplink_error(char *messg);
-extern void gplink_warning(char *messg);
-extern void gplink_debug(char *messg);
-extern void gplink_open_coff(const char *name);
-extern void gplink_add_path(const char *path);
+extern void gplink_open_coff(const char *Name);
+extern void gplink_add_path(const char *Path);
 
 #endif

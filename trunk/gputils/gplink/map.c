@@ -2,7 +2,7 @@
    Copyright (C) 2003, 2004, 2005
    Craig Franklin
 
-    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -50,14 +50,14 @@ struct file_stack {
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_map_line(const char *format, ...)
+_map_line(const char *Format, ...)
 {
   va_list args;
 
   if (state.map.f != NULL) {
-    if (format != NULL) {
-      va_start(args, format);
-      vfprintf(state.map.f, format, args);
+    if (Format != NULL) {
+      va_start(args, Format);
+      vfprintf(state.map.f, Format, args);
       va_end(args);
     }
     putc('\n', state.map.f);
@@ -67,20 +67,20 @@ _map_line(const char *format, ...)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_section_value(gp_section_t *section)
+_section_value(const gp_section_t *Section)
 {
   unsigned int value = 0;
 
-  if (section->flags & STYP_TEXT) {
+  if (Section->flags & STYP_TEXT) {
     value = SECTION_CODE;
   }
-  else if (section->flags & STYP_DATA) {
+  else if (Section->flags & STYP_DATA) {
     value = SECTION_IDATA;
   }
-  else if (section->flags & (STYP_BSS | STYP_OVERLAY)) {
+  else if (Section->flags & (STYP_BSS | STYP_OVERLAY)) {
     value = SECTION_UDATA;
   }
-  else if (section->flags & STYP_DATA_ROM) {
+  else if (Section->flags & STYP_DATA_ROM) {
     value = SECTION_ROMDATA;
   }
   else {
@@ -93,10 +93,10 @@ _section_value(gp_section_t *section)
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_cmp_sections(const void *a, const void *b)
+_cmp_sections(const void *A, const void *B)
 {
-  gp_section_t *section_a = *((gp_section_t **)a);
-  gp_section_t *section_b = *((gp_section_t **)b);
+  gp_section_t *section_a = *((gp_section_t **)A);
+  gp_section_t *section_b = *((gp_section_t **)B);
   unsigned int  value_a   = _section_value(section_a);
   unsigned int  value_b   = _section_value(section_b);
 
@@ -233,15 +233,15 @@ _write_program_memory(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static struct file_stack *
-_push_file(struct file_stack *stack, gp_symbol_t *symbol)
+_push_file(struct file_stack *Stack, gp_symbol_t *Symbol)
 {
   struct file_stack *new;
 
   /* allocate memory for the new stack */
   new = (struct file_stack *)GP_Malloc(sizeof(*new));
 
-  new->previous = stack;
-  new->symbol   = symbol;
+  new->previous = Stack;
+  new->symbol   = Symbol;
 
   return new;
 }
@@ -249,33 +249,33 @@ _push_file(struct file_stack *stack, gp_symbol_t *symbol)
 /*------------------------------------------------------------------------------------------------*/
 
 static struct file_stack *
-_pop_file(struct file_stack *stack)
+_pop_file(struct file_stack *Stack)
 {
   struct file_stack *old;
 
-  if (stack != NULL) {
-    old   = stack;
-    stack = stack->previous;
+  if (Stack != NULL) {
+    old   = Stack;
+    Stack = Stack->previous;
     free(old);
   }
 
-  return stack;
+  return Stack;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_cmp_name(const void *p1, const void *p2)
+_cmp_name(const void *P1, const void *P2)
 {
-  return strcmp(((struct syms_s *)p1)->symbol->name, ((struct syms_s *)p2)->symbol->name);
+  return strcmp(((struct syms_s *)P1)->symbol->name, ((struct syms_s *)P2)->symbol->name);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-_cmp_address(const void *p1, const void *p2)
+_cmp_address(const void *P1, const void *P2)
 {
-  return ((struct syms_s *)p1)->symbol->value - ((struct syms_s *)p2)->symbol->value;
+  return ((struct syms_s *)P1)->symbol->value - ((struct syms_s *)P2)->symbol->value;
 }
 
 /*------------------------------------------------------------------------------------------------*/

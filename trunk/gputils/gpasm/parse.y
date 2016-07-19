@@ -40,7 +40,7 @@ Boston, MA 02111-1307, USA.  */
 
 int yydebug = 1;
 
-#define YYPRINT(file, type, value)   yyprint (file, type, value)
+#define YYPRINT(file, type, value)   yyprint(file, type, value)
 
 static void
 yyprint(FILE *File, int Type, YYSTYPE Value)

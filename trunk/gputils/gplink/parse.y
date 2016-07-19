@@ -27,9 +27,9 @@ Boston, MA 02111-1307, USA.  */
 #include "scan.h"
 #include "script.h"
 
-void yyerror(char *message)
+void yyerror(char *Message)
 {
-  script_error(message, NULL);
+  script_error(Message, NULL);
 }
 
 int yylex(void);
@@ -38,67 +38,74 @@ int yylex(void);
 
 /* Some simple functions for building parse trees */
 
-static pnode_t *mk_pnode(enum pnode_tag tag)
+static pnode_t *
+_mk_pnode(enum pnode_tag Tag)
 {
   pnode_t *new = GP_Malloc(sizeof(*new));
 
-  new->tag = tag;
+  new->tag = Tag;
   return new;
 }
 
-pnode_t *mk_constant(long value)
+static pnode_t *
+_mk_constant(long Value)
 {
-  pnode_t *new = mk_pnode(PTAG_CONSTANT);
+  pnode_t *new = _mk_pnode(PTAG_CONSTANT);
 
-  new->value.constant = value;
+  PnConstant(new) = Value;
   return new;
 }
 
-static pnode_t *mk_symbol(const char *value)
+static pnode_t *
+_mk_symbol(const char *String)
 {
-  pnode_t *new = mk_pnode(PTAG_SYMBOL);
+  pnode_t *new = _mk_pnode(PTAG_SYMBOL);
 
-  new->value.symbol = value;
+  PnSymbol(new) = String;
   return new;
 }
 
 /*
-static pnode_t *mk_string(const char *value)
+static pnode_t *
+_mk_string(const char *String)
 {
-  pnode_t *new = mk_pnode(PTAG_STRING);
+  pnode_t *new = _mk_pnode(PTAG_STRING);
 
-  new->value.string = value;
+  PnString(new) = String;
   return new;
 }
 
 */
 
-pnode_t *mk_list(pnode_t *head, pnode_t *tail)
+static pnode_t *
+_mk_list(pnode_t *Head, pnode_t *Tail)
 {
-  pnode_t *new = mk_pnode(PTAG_LIST);
+  pnode_t *new = _mk_pnode(PTAG_LIST);
 
-  new->value.list.head = head;
-  new->value.list.tail = tail;
+  PnListHead(new) = Head;
+  PnListTail(new) = Tail;
   return new;
 }
 
-static pnode_t *mk_2op(int op, pnode_t *p0, pnode_t *p1)
+static pnode_t *
+_mk_2op(int Op, pnode_t *Pnode0, pnode_t *Pnode1)
 {
-  pnode_t *new = mk_pnode(PTAG_BINOP);
+  pnode_t *new = _mk_pnode(PTAG_BINOP);
 
-  new->value.binop.op = op;
-  new->value.binop.p0 = p0;
-  new->value.binop.p1 = p1;
+  PnBinOpOp(new) = Op;
+  PnBinOpP0(new) = Pnode0;
+  PnBinOpP1(new) = Pnode1;
   return new;
 }
 
 /*
-static pnode_t *mk_1op(int op, pnode_t *p0)
+static pnode_t *
+_mk_1op(int Op, pnode_t *Pnode)
 {
-  pnode_t *new = mk_pnode(PTAG_UNOP);
+  pnode_t *new = _mk_pnode(PTAG_UNOP);
 
-  new->value.unop.op = op;
-  new->value.unop.p0 = p0;
+  PnUnOpOp(new) = Op;
+  PnUnOpP0(new) = Pnode;
   return new;
 }
 
@@ -254,34 +261,34 @@ line:
 path_list:
         SYMBOL
         {
-          $$ = mk_list(mk_symbol($1), NULL);
+          $$ = _mk_list(_mk_symbol($1), NULL);
         }
         |
         SYMBOL ';' path_list
         {
-          $$ = mk_list(mk_symbol($1), $3);
+          $$ = _mk_list(_mk_symbol($1), $3);
         }
         |
         STRING
         {
-          $$ = mk_list(mk_symbol($1), NULL);
+          $$ = _mk_list(_mk_symbol($1), NULL);
         }
         |
         STRING ';' path_list
         {
-          $$ = mk_list(mk_symbol($1), $3);
+          $$ = _mk_list(_mk_symbol($1), $3);
         }
         ;
 
 parameter_list:
         e1
         {
-          $$ = mk_list($1, NULL);
+          $$ = _mk_list($1, NULL);
         }
         |
         e1  parameter_list
         {
-          $$ = mk_list($1, $2);
+          $$ = _mk_list($1, $2);
         }
         ;
 
@@ -290,7 +297,7 @@ e1:
         |
         e1 e1op e0
         {
-          $$ = mk_2op($2, $1, $3);
+          $$ = _mk_2op($2, $1, $3);
         }
         ;
 
@@ -299,17 +306,17 @@ e1op:   '=' ;
 e0:
         SYMBOL
         {
-          $$ = mk_symbol($1);
+          $$ = _mk_symbol($1);
         }
         |
         STRING
         {
-          $$ = mk_symbol($1);
+          $$ = _mk_symbol($1);
         }
         |
         NUMBER
         {
-          $$ = mk_constant($1);
+          $$ = _mk_constant($1);
         }
         ;
 

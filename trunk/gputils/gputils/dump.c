@@ -3,7 +3,7 @@
    Scott Dattalo
    Copyright (C) 2012 Borut Razem
 
-    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -283,6 +283,7 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_LANGINFO_H)
   strftime(temp_buf, sizeof(temp_buf), nl_langinfo(T_FMT), &tm);
+  setlocale(LC_ALL, "C");
   printf("%03x - Time:                     %s\n",
          COD_DIR_TIME, temp_buf);
 #else
@@ -767,7 +768,7 @@ dump_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
           gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_P_SIZE);
           type  = record[COD_SSYMBOL_STYPE];
           value = gp_getu16(&record[COD_SSYMBOL_SVALUE]);
-          printf("%-12s = %04x, type = %s\n", name, value, SymbolType4[type]);
+          printf("%-12s = %04x (%6d), type = %s\n", name, value, value, SymbolType4[type]);
         }
       }
     }
@@ -870,8 +871,7 @@ dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 
         /* read big endian */
         value = gp_getb32(&sym[length + COD_LSYMBOL_VALUE]);
-
-        printf("%-*s = %08x, type = %s\n", symbol_align, name, value, SymbolType4[type]);
+        printf("%-*s = %08x (%11d), type = %s\n", symbol_align, name, value, value, SymbolType4[type]);
         i += length + COD_LSYMBOL_EXTRA;
       }
     }
@@ -1007,7 +1007,7 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
         read_block(Code_file, cod_block, j);
 
         for (i = 0, offset = 0; i < COD_MAX_LINE_SYM; offset += COD_LINE_SYM_SIZE, ++i) {
-          record = &cod_block[offset];
+          record       = &cod_block[offset];
           src_file_num = record[COD_LS_SFILE];
           src_mod_flag = record[COD_LS_SMOD];
           src_line_num = gp_getl16(&record[COD_LS_SLINE]);
@@ -1063,14 +1063,15 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 void
 dump_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
-  unsigned int start_block;
-  unsigned int end_block;
-  unsigned int i;
-  unsigned int j;
-  unsigned int address;
-  char         type;
-  unsigned int length;
-  char         message[COD_DEBUG_MSG_MAX_LEN + 1];
+  unsigned int   start_block;
+  unsigned int   end_block;
+  unsigned int   i;
+  unsigned int   j;
+  const uint8_t *record;
+  unsigned int   address;
+  char           type;
+  unsigned int   length;
+  char           message[COD_DEBUG_MSG_MAX_LEN + 1];
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_MESSTAB]);
 
@@ -1086,19 +1087,19 @@ dump_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
 
       for (j = 0; j < (COD_BLOCK_SIZE - COD_DEBUG_MIN_LEN); ) {
         /* read big endian */
-        address = gp_getb32(&cod_block[j + COD_DEBUG_ADDR]);
-        type    = cod_block[j + COD_DEBUG_CMD];
+        record  = &cod_block[j];
+        address = gp_getb32(&record[COD_DEBUG_ADDR]);
+        type    = record[COD_DEBUG_CMD];
 
         if (type == '\0') {
           break;
         }
 
         /* Pascal style string. */
-        length = cod_block[j + COD_DEBUG_MSG];
-        gp_str_from_Pstr(message, sizeof(message), &cod_block[j + COD_DEBUG_MSG], COD_DEBUG_MSG_MAX_LEN);
-        j += length + COD_DEBUG_EXTRA;
-
+        length = record[COD_DEBUG_MSG];
+        gp_str_from_Pstr(message, sizeof(message), &record[COD_DEBUG_MSG], COD_DEBUG_MSG_MAX_LEN);
         printf(" %8x    %c  %s\n", address, type, message);
+        j += length + COD_DEBUG_EXTRA;
       }
     }
   }
@@ -1159,7 +1160,7 @@ dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t proc
             gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_P_SIZE);
             type  = record[COD_SSYMBOL_STYPE];
             value = gp_getl16(&record[COD_SSYMBOL_SVALUE]);
-            printf("%-12s = %04x, type = %s\n", name, value, SymbolType4[type]);
+            printf("%-12s = %04x (%6d), type = %s\n", name, value, value, SymbolType4[type]);
           }
         }
       }

@@ -2,7 +2,7 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
-    Copyright (C) 2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -59,7 +59,7 @@ typedef struct linker_section {
 
 extern void gp_cofflink_add_symbol(symbol_table_t *Table, gp_symbol_t *Symbol, gp_object_t *File);
 
-extern void gp_cofflink_remove_symbol(symbol_table_t *Table, char *Name);
+extern void gp_cofflink_remove_symbol(symbol_table_t *Table, const char *Name);
 
 extern gp_boolean gp_cofflink_add_symbols(symbol_table_t *Table, symbol_table_t *Missing, gp_object_t *Object);
 

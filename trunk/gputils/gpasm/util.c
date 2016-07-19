@@ -2,7 +2,7 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
 
-    Copyright (C) 2015-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2015-2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -45,20 +45,20 @@ Boston, MA 02111-1307, USA.  */
  * platforms and 0x23456789 on 64 bit platforms. */
 
 static int
-_strtoi(const char *string, char **endptr, int radix)
+_strtoi(const char *String, char **Endptr, int Radix)
 {
   int value = 0;
   int sign  = 1;
   int digit = 0;
   int ch;
 
-  if (*string == '-') {
+  if (String[0] == '-') {
     sign = -1;
-    ++string;
+    ++String;
   }
 
   while (true) {
-    ch = *string;
+    ch = *String;
 
     if (isdigit(ch)) {
       digit = ch - '0';
@@ -73,31 +73,31 @@ _strtoi(const char *string, char **endptr, int radix)
       break;
     }
 
-    if (digit < radix) {
-      value = value * radix + digit;
+    if (digit < Radix) {
+      value = value * Radix + digit;
     }
     else {
       break;
     }
 
-    ++string;
+    ++String;
   }
 
-  *endptr = (char *)string;
+  *Endptr = (char *)String;
   return (value * sign);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 int
-stringtolong(const char *string, int radix)
+stringtolong(const char *String, int Radix)
 {
   char *endptr;
   int   value;
   char  ch;
   char  buf[80];
 
-  value = _strtoi(string, &endptr, radix);
+  value = _strtoi(String, &endptr, Radix);
   if ((endptr == NULL) || ((ch = *endptr) != '\0')) {
     snprintf(buf, sizeof(buf),
              isprint(ch) ? "Illegal character '%c' in numeric constant." :
@@ -249,10 +249,10 @@ find_hv_macro(const char *String, const char **Start, const char **End)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-gpasm_magic(const char *c)
+gpasm_magic(const char *Str)
 {
-  if (c[0] == '\\') {
-    switch (c[1]) {
+  if (Str[0] == '\\') {
+    switch (Str[1]) {
       case 'a': return '\a';
       case 'b': return '\b';
       case 'f': return '\f';
@@ -260,11 +260,11 @@ gpasm_magic(const char *c)
       case 'r': return '\r';
       case 't': return '\t';
       case 'v': return '\v';
-      default:  return c[1];
+      default:  return Str[1];
     }
   }
 
-  return c[0];
+  return Str[0];
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -284,25 +284,28 @@ gpasm_magic(const char *c)
 */
 
 char *
-convert_escaped_char(char *str, char c)
+convert_escaped_char(char *Str, char Ch)
 {
-  char *src  = str;
-  char *dest = str;
+  const char *src;
+  char       *dest;
 
-  if (str == NULL) {
-    return str;
+  if (Str == NULL) {
+    return Str;
   }
 
-  while (*src != '\0') {
-    if ((*src =='\\') && (src[1] == c)) {
+  src  = Str;
+  dest = Str;
+  while (src[0] != '\0') {
+    if ((src[0] =='\\') && (src[1] == Ch)) {
       src++;
     }
+
     *dest++ = *src++;
   }
 
   *dest = '\0';
 
-  return str;
+  return Str;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -311,17 +314,18 @@ convert_escaped_char(char *str, char c)
    to the next character. */
 
 const char *
-convert_escape_chars(const char *ps, int *value)
+convert_escape_chars(const char *Ps, int *Value)
 {
   int  count;
+  char ch;
   char buffer[3];
 
-  if (*ps != '\\') {
-    *value = *ps++;
+  if (*Ps != '\\') {
+    *Value = *Ps++;
   }
   else {
     /* escape char, convert its value and write to the new string */
-    switch (ps[1]) {
+    switch (Ps[1]) {
       case '0':
       case '1':
       case '2':
@@ -332,16 +336,17 @@ convert_escape_chars(const char *ps, int *value)
       case '7': {
         /* octal number */
         count = 0;
-        *value = 0;
-        ps++;
+        *Value = 0;
+        Ps++;
 
         while (count < 3) {
-          if ((*ps < '0') || (*ps > '7')) {
+          ch = *Ps;
+          if ((ch < '0') || (ch > '7')) {
             break;
           }
 
-          *value = (*value << 3) + *ps - '0';
-          ps++;
+          *Value = (*Value << 3) + ch - '0';
+          Ps++;
           count++;
         }
         break;
@@ -349,36 +354,36 @@ convert_escape_chars(const char *ps, int *value)
 
       case 'x': {
         /* hex number */
-        if ((ps[2] == '\0') || (ps[3] == '\0')) {
+        if ((Ps[2] == '\0') || (Ps[3] == '\0')) {
           gpmsg_error(GPE_UNKNOWN, "Missing hex value in \\x escape character.");
-          *value = 0;
+          *Value = 0;
           /* return a NULL character */
-          ps += 2;
+          Ps += 2;
 
-          if (*ps != '\0') {
-            ++ps;
+          if (*Ps != '\0') {
+            ++Ps;
           }
         }
         else {
-          buffer[0] = ps[2];
-          buffer[1] = ps[3];
+          buffer[0] = Ps[2];
+          buffer[1] = Ps[3];
           buffer[2] = '\0';
-          *value = stringtolong(buffer, 16);
-          ps += 4;
+          *Value = stringtolong(buffer, 16);
+          Ps += 4;
         }
         break;
       }
 
       default: {
-        if (ps[1] == '\0') {
+        if (Ps[1] == '\0') {
           gpmsg_error(GPE_UNKNOWN, "Missing value in \\ escape character.");
-          *value = 0;
+          *Value = 0;
           /* return a NIL character */
-          ps++;
+          Ps++;
         }
         else {
-          *value = gpasm_magic(ps);
-          ps += 2;
+          *Value = gpasm_magic(Ps);
+          Ps += 2;
         }
 
         break;
@@ -386,7 +391,7 @@ convert_escape_chars(const char *ps, int *value)
     }
   }
 
-  return ps;
+  return Ps;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -397,18 +402,18 @@ convert_escape_chars(const char *ps, int *value)
  * constant-type pnode in-place. */
 
 void
-coerce_str1(pnode_t *exp)
+coerce_str1(pnode_t *Exp)
 {
   int         value;
   const char *pc;
 
-  if ((exp != NULL) && PnIsString(exp)) {
-    pc = convert_escape_chars(PnString(exp), &value);
+  if ((Exp != NULL) && PnIsString(Exp)) {
+    pc = convert_escape_chars(PnString(Exp), &value);
 
     if (*pc == '\0') {
       /* castable string, make the conversion */
-      exp->tag = PTAG_CONSTANT;
-      PnConstant(exp) = value;
+      Exp->tag        = PTAG_CONSTANT;
+      PnConstant(Exp) = value;
     }
   }
 }
@@ -416,7 +421,7 @@ coerce_str1(pnode_t *exp)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-set_global(const char *name, gpasmVal value, enum gpasmValTypes type, gp_boolean procDependent)
+set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean Proc_dependent)
 {
   symbol_t   *sym;
   variable_t *var;
@@ -424,10 +429,10 @@ set_global(const char *name, gpasmVal value, enum gpasmValTypes type, gp_boolean
 
   /* Search the entire stack (i.e. include macro's local symbol tables) for the symbol.
      If not found, then add it to the global symbol table.  */
-  sym = gp_sym_get_symbol(state.stTop, name);
+  sym = gp_sym_get_symbol(state.stTop, Name);
 
   if (sym == NULL) {
-    sym = gp_sym_add_symbol(state.stGlobal, name);
+    sym = gp_sym_add_symbol(state.stGlobal, Name);
   }
 
   var = gp_sym_get_symbol_annotation(sym);
@@ -435,17 +440,17 @@ set_global(const char *name, gpasmVal value, enum gpasmValTypes type, gp_boolean
   if (var == NULL) {
     /* new symbol */
     var = GP_Malloc(sizeof(*var));
-    var->value              = value;
+    var->value              = Value;
     var->coff_symbol_num    = state.obj.symbol_num;
     var->coff_section_num   = state.obj.section_num;
     var->coff_section_flags = state.obj.new_sect_flags;
-    var->type               = type;
-    var->previous_type      = type;     /* coff symbols can be changed to global */
-    var->flags              = (procDependent) ? VATRR_PROC_DEPENDENT : 0;
+    var->type               = Type;
+    var->previous_type      = Type;     /* coff symbols can be changed to global */
+    var->flags              = (Proc_dependent) ? VATRR_PROC_DEPENDENT : 0;
     gp_sym_annotate_symbol(sym, var);
 
     /* increment the index into the coff symbol table for the relocations */
-    switch (type) {
+    switch (Type) {
       case VAL_EXTERNAL:
       case VAL_GLOBAL:
       case VAL_STATIC:
@@ -459,7 +464,7 @@ set_global(const char *name, gpasmVal value, enum gpasmValTypes type, gp_boolean
         break;
     }
   }
-  else if (type == VAL_VARIABLE) {
+  else if (Type == VAL_VARIABLE) {
     /*
      * TSD - the following embarrassing piece of code is a hack
      *       to fix a problem when global variables are changed
@@ -471,16 +476,16 @@ set_global(const char *name, gpasmVal value, enum gpasmValTypes type, gp_boolean
      *       makes sure that the value is assigned on the second
      *       pass only in the macro. Jeez this really sucks....
      */
-     var->value = value;
+     var->value = Value;
 
   }
   else if (state.pass == 2) {
-    if (var->value != value) {
-      gpmsg_verror(GPE_DIFFLAB, NULL, name);
+    if (var->value != Value) {
+      gpmsg_verror(GPE_DIFFLAB, NULL, Name);
     }
 
-    coff_name = coff_local_name(name);
-    coff_add_sym(coff_name, value, var->type);
+    coff_name = coff_local_name(Name);
+    coff_add_sym(coff_name, Value, var->type);
 
     if (coff_name != NULL) {
       free(coff_name);
@@ -568,13 +573,13 @@ purge_processor_variable_symbols(symbol_table_t *Table)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-select_errorlevel(int level)
+select_errorlevel(int Level)
 {
   if (state.cmd_line.error_level) {
     gpmsg_vmessage(GPM_SUPVAL, NULL);
   }
   else {
-    if ((level >= 0) && (level <= 2)) {
+    if ((Level >= 0) && (Level <= 2)) {
       if (state.cmd_line.strict_level && (state.strict_level > 0)) {
         /*
         The "strict messages" more important than the other messages, therefore
@@ -583,12 +588,12 @@ select_errorlevel(int level)
         state.error_level = 0;
       }
       else {
-        state.error_level = level;
+        state.error_level = Level;
       }
     }
     else {
       if (state.pass == 0) {
-        fprintf(stderr, "Error: Invalid warning level \"%i\".\n", level);
+        fprintf(stderr, "Error: Invalid warning level \"%i\".\n", Level);
       }
       else {
         gpmsg_error(GPE_ILLEGAL_ARGU, "Expected w= 0, 1, 2");
@@ -600,23 +605,23 @@ select_errorlevel(int level)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-select_strictlevel(int level)
+select_strictlevel(int Level)
 {
   if (state.cmd_line.strict_level) {
     gpmsg_vmessage(GPM_SUPVAL, NULL);
   }
   else {
-    if ((level >= 0) && (level <= 2)) {
-      state.strict_level = level;
+    if ((Level >= 0) && (Level <= 2)) {
+      state.strict_level = Level;
 
-      if ((level > 0) && state.cmd_line.error_level) {
+      if ((Level > 0) && state.cmd_line.error_level) {
         /* Enable each messages. */
         state.error_level = 0;
       }
     }
     else {
       if (state.pass == 0) {
-        fprintf(stderr, "Error: Invalid strict level \"%i\".\n", level);
+        fprintf(stderr, "Error: Invalid strict level \"%i\".\n", Level);
       }
       else {
         gpmsg_error(GPE_ILLEGAL_ARGU, "Expected S= 0, 1, 2");
@@ -628,23 +633,23 @@ select_strictlevel(int level)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-select_expand(const char *expand)
+select_expand(const char *Expand)
 {
   if (state.cmd_line.macro_expand) {
     gpmsg_vmessage(GPM_SUPLIN, NULL);
   }
   else {
-    if (strcasecmp(expand, "on") == 0) {
+    if (strcasecmp(Expand, "on") == 0) {
       state.lst.expand = true;
     }
-    else if (strcasecmp(expand, "off") == 0) {
+    else if (strcasecmp(Expand, "off") == 0) {
       state.lst.expand = false;
     }
     else {
       state.lst.expand = true;
 
       if (state.pass == 0) {
-        fprintf(stderr, "Error: Invalid option \"%s\".\n", expand);
+        fprintf(stderr, "Error: Invalid option: \"%s\"\n", Expand);
       }
       else {
         gpmsg_error(GPE_ILLEGAL_ARGU, "Expected ON or OFF.");
@@ -656,29 +661,29 @@ select_expand(const char *expand)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-select_hexformat(const char *format_name)
+select_hexformat(const char *Format_name)
 {
   if (state.cmd_line.hex_format) {
     gpmsg_vwarning(GPW_CMDLINE_HEXFMT, NULL);
   }
   else {
-    if (strcasecmp(format_name, STR_INHX8M) == 0) {
+    if (strcasecmp(Format_name, STR_INHX8M) == 0) {
       state.hex_format = INHX8M;
     }
-    else if (strcasecmp(format_name, STR_INHX8S) == 0) {
+    else if (strcasecmp(Format_name, STR_INHX8S) == 0) {
       state.hex_format = INHX8S;
     }
-    else if (strcasecmp(format_name, STR_INHX16) == 0) {
+    else if (strcasecmp(Format_name, STR_INHX16) == 0) {
       state.hex_format = INHX16;
     }
-    else if (strcasecmp(format_name, STR_INHX32) == 0) {
+    else if (strcasecmp(Format_name, STR_INHX32) == 0) {
       state.hex_format = INHX32;
     }
     else {
       state.hex_format = INHX8M;
 
       if (state.pass == 0) {
-        fprintf(stderr, "Error: Invalid format \"%s\".\n", format_name);
+        fprintf(stderr, "Error: Invalid format: \"%s\"\n", Format_name);
       }
       else {
         gpmsg_error(GPE_ILLEGAL_ARGU, "Expected " STR_INHX8M ", " STR_INHX8S ", " STR_INHX16 ", or " STR_INHX32 ".");
@@ -690,32 +695,32 @@ select_hexformat(const char *format_name)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-select_radix(const char *radix_name)
+select_radix(const char *Radix_name)
 {
   if (state.cmd_line.radix) {
     gpmsg_vwarning(GPW_CMDLINE_RADIX, NULL);
   }
   else {
-    if ((strcasecmp(radix_name, "h") == 0) ||
-        (strcasecmp(radix_name, "hex") == 0) ||
-        (strcasecmp(radix_name, "hexadecimal") == 0)) {
+    if ((strcasecmp(Radix_name, "h") == 0) ||
+        (strcasecmp(Radix_name, "hex") == 0) ||
+        (strcasecmp(Radix_name, "hexadecimal") == 0)) {
       state.radix = 16;
     }
-    else if ((strcasecmp(radix_name, "d") == 0) ||
-             (strcasecmp(radix_name, "dec") == 0) ||
-             (strcasecmp(radix_name, "decimal") == 0)) {
+    else if ((strcasecmp(Radix_name, "d") == 0) ||
+             (strcasecmp(Radix_name, "dec") == 0) ||
+             (strcasecmp(Radix_name, "decimal") == 0)) {
       state.radix = 10;
     }
-    else if ((strcasecmp(radix_name, "o") == 0) ||
-             (strcasecmp(radix_name, "oct") == 0) ||
-             (strcasecmp(radix_name, "octal") == 0)) {
+    else if ((strcasecmp(Radix_name, "o") == 0) ||
+             (strcasecmp(Radix_name, "oct") == 0) ||
+             (strcasecmp(Radix_name, "octal") == 0)) {
       state.radix = 8;
     }
     else {
       state.radix = 16;
 
       if (state.pass == 0) {
-        fprintf(stderr, "Error: Invalid radix \"%s\", will use hex.\n", radix_name);
+        fprintf(stderr, "Error: Invalid radix \"%s\", will use hex.\n", Radix_name);
       }
       else {
         gpmsg_vwarning(GPW_RADIX, NULL);
@@ -744,21 +749,21 @@ macro_append(void)
 /*------------------------------------------------------------------------------------------------*/
 
 gpasmVal
-do_or_append_insn(const char *op, pnode_t *parms)
+do_or_append_insn(const char *Op, pnode_t *Parms)
 {
   if (IN_MACRO_WHILE_DEFINITION) {
-    if (strcasecmp(op, "endm") == 0) {
-      return do_insn(op, parms);
+    if (strcasecmp(Op, "endm") == 0) {
+      return do_insn(Op, Parms);
     }
     else if (IN_WHILE_DEFINITION) {
-      if (strcasecmp(op, "while") == 0) {
+      if (strcasecmp(Op, "while") == 0) {
         assert(state.while_depth != 0);
         ++state.while_depth;
       }
-      else if ((state.while_head != NULL) && (strcasecmp(op, "endw") == 0)) {
+      else if ((state.while_head != NULL) && (strcasecmp(Op, "endw") == 0)) {
         assert(state.while_depth != 0);
         if (--state.while_depth == 0) {
-          return do_insn(op, parms);
+          return do_insn(Op, Parms);
         }
       }
     }
@@ -767,7 +772,7 @@ do_or_append_insn(const char *op, pnode_t *parms)
     return 0;
   }
   else {
-    return do_insn(op, parms);
+    return do_insn(Op, Parms);
   }
 }
 

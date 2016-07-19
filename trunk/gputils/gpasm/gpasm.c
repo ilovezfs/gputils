@@ -2,7 +2,7 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
 
-    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -232,43 +232,44 @@ init(void)
 /* This is a sdcc specific helper function. */
 
 static void
-_pic14_lister(pic_processor_t processor)
+_pic14_lister(pic_processor_t Processor)
 {
+  proc_class_t           class;
   const gp_cfg_device_t *dev;
-  proc_class_t class;
-  const int *pair;
-  int tmp, bank_mask;
+  const int             *pair;
+  int                    tmp;
+  int                    bank_mask;
 
-  if ((processor == NULL) || ((class = processor->class) == NULL)) {
+  if ((Processor == NULL) || ((class = Processor->class) == NULL)) {
     fprintf(stderr, "Warning: The processor not selected!\n");
     return;
   }
 
   if ((class != PROC_CLASS_PIC14) && (class != PROC_CLASS_PIC14E) && (class != PROC_CLASS_PIC14EX)) {
     fprintf(stderr, "Warning: The type of the %s processor is not PIC14, not PIC14E and not PIC14EX!\n",
-            processor->names[2]);
+            Processor->names[2]);
     return;
   }
 
-  dev = gp_cfg_find_pic_multi_name(processor->names, ARRAY_SIZE(processor->names));
+  dev = gp_cfg_find_pic_multi_name(Processor->names, ARRAY_SIZE(Processor->names));
 
   if (dev == NULL) {
-    fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", processor->names[2]);
+    fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", Processor->names[2]);
     return;
   }
 
-  printf("processor %s\n", processor->names[2]);
+  printf("processor %s\n", Processor->names[2]);
 
-  if (processor->prog_mem_size < 1024) {
-    printf("\tprogram\t\t%i\n", processor->prog_mem_size);
+  if (Processor->prog_mem_size < 1024) {
+    printf("\tprogram\t\t%i\n", Processor->prog_mem_size);
   }
   else {
-    printf("\tprogram\t\t%iK\n", processor->prog_mem_size / 1024);
+    printf("\tprogram\t\t%iK\n", Processor->prog_mem_size / 1024);
   }
 
   printf("\tdata\t\t???\n");
 
-  if ((pair = gp_processor_eeprom_exist(processor)) != NULL) {
+  if ((pair = gp_processor_eeprom_exist(Processor)) != NULL) {
     tmp = pair[1] - pair[0] + 1;
   }
   else {
@@ -277,7 +278,7 @@ _pic14_lister(pic_processor_t processor)
 
   printf("\teeprom\t\t%i\n", tmp);
   printf("\tio\t\t???\n");
-  bank_mask = (processor->num_banks - 1) << class->addr_bits_in_bank;
+  bank_mask = (Processor->num_banks - 1) << class->addr_bits_in_bank;
 
   if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
     printf("\tenhanced\t1\n"
@@ -295,7 +296,7 @@ _pic14_lister(pic_processor_t processor)
     printf("\tbankmsk\t\t0x%03x\n", bank_mask);
   }
 
-  if ((pair = gp_processor_config_exist(processor)) != NULL) {
+  if ((pair = gp_processor_config_exist(Processor)) != NULL) {
     if (pair[0] < pair[1]) {
       printf("\tconfig\t\t0x%04x 0x%04x\n", pair[0], pair[1]);
     }
@@ -317,48 +318,48 @@ _pic14_lister(pic_processor_t processor)
 /* This is a sdcc specific helper function. */
 
 static void
-_pic16e_lister(pic_processor_t processor)
+_pic16e_lister(pic_processor_t Processor)
 {
-  const gp_cfg_device_t *dev;
   proc_class_t           class;
+  const gp_cfg_device_t *dev;
   const int             *pair;
   int                    addr0;
   int                    addr1;
 
-  if ((processor == NULL) || ((class = processor->class) == NULL)) {
+  if ((Processor == NULL) || ((class = Processor->class) == NULL)) {
     fprintf(stderr, "Warning: The processor not selected!\n");
     return;
   }
 
   if (class != PROC_CLASS_PIC16E) {
-    fprintf(stderr, "Warning: The type of the %s processor is not PIC16E!\n", processor->names[2]);
+    fprintf(stderr, "Warning: The type of the %s processor is not PIC16E!\n", Processor->names[2]);
     return;
   }
 
-  dev = gp_cfg_find_pic_multi_name(processor->names, ARRAY_SIZE(processor->names));
+  dev = gp_cfg_find_pic_multi_name(Processor->names, ARRAY_SIZE(Processor->names));
 
   if (dev == NULL) {
-    fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", processor->names[2]);
+    fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", Processor->names[2]);
     return;
   }
 
-  printf("name        %s\n", processor->names[2]);
+  printf("name        %s\n", Processor->names[2]);
   printf("ramsize     ???\n");
-  printf("split       0x%02X\n", gp_processor_bsr_boundary(processor));
+  printf("split       0x%02X\n", gp_processor_bsr_boundary(Processor));
 
   gp_cfg_real_config_boundaries(dev, &addr0, &addr1);
 
   if ((addr0 > 0) && (addr1 >= addr0)) {
     printf("configrange 0x%06X 0x%06X\n", addr0, addr1);
     gp_cfg_brief_device(dev, "configword  ", class->addr_digits, class->config_digits,
-                        (processor->pic16e_flags & PIC16E_FLAG_J_SUBFAMILY) ? true : false);
+                        (Processor->pic16e_flags & PIC16E_FLAG_J_SUBFAMILY) ? true : false);
   }
 
-  if (processor->pic16e_flags & PIC16E_FLAG_HAVE_EXTINST) {
+  if (Processor->pic16e_flags & PIC16E_FLAG_HAVE_EXTINST) {
     printf("XINST       1\n");
   }
 
-  if ((pair = gp_processor_idlocs_exist(processor)) != NULL) {
+  if ((pair = gp_processor_idlocs_exist(Processor)) != NULL) {
     printf("idlocrange  0x%06X 0x%06X\n", pair[0], pair[1]);
   }
 
@@ -368,63 +369,63 @@ _pic16e_lister(pic_processor_t processor)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_lister_of_devices(pic_processor_t processor)
+_lister_of_devices(pic_processor_t Processor)
 {
-  const gp_cfg_device_t *dev;
   proc_class_t           class;
+  const gp_cfg_device_t *dev;
   const int             *pair;
   int                    addr_digits;
   const char            *txt;
 
-  if ((processor == NULL) || ((class = processor->class) == NULL)) {
+  if ((Processor == NULL) || ((class = Processor->class) == NULL)) {
     fprintf(stderr, "Warning: The processor not selected!\n");
     return;
   }
 
-  dev = gp_cfg_find_pic_multi_name(processor->names, ARRAY_SIZE(processor->names));
+  dev = gp_cfg_find_pic_multi_name(Processor->names, ARRAY_SIZE(Processor->names));
 
   if (dev == NULL) {
-    fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", processor->names[2]);
+    fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", Processor->names[2]);
     return;
   }
 
   addr_digits = class->addr_digits;
-  printf("Names          : %s, %s, %s\n", processor->names[0], processor->names[1], processor->names[2]);
+  printf("Names          : %s, %s, %s\n", Processor->names[0], Processor->names[1], Processor->names[2]);
   printf("Class          : %s\n", gp_processor_class_to_str(class));
   printf("Bank Size      : %i bytes\n", class->bank_size);
 
   if (class == PROC_CLASS_PIC16E) {
-    printf("Access Split   : 0x%02X\n", gp_processor_bsr_boundary(processor));
+    printf("Access Split   : 0x%02X\n", gp_processor_bsr_boundary(Processor));
   }
   else {
-    printf("Bank Number    : %i\n", processor->num_banks);
-    printf("Bank Mask      : 0x%03X\n", processor->bank_bits);
+    printf("Bank Number    : %i\n", Processor->num_banks);
+    printf("Bank Mask      : 0x%03X\n", Processor->bank_bits);
   }
 
-  if ((pair = gp_processor_common_ram_exist(processor)) != NULL) {
+  if ((pair = gp_processor_common_ram_exist(Processor)) != NULL) {
     printf("Common RAM     : 0x%02X - 0x%02X\n", pair[0], pair[1]);
   }
 
-  if (processor->common_ram_max > 0) {
-    printf("Max. Common RAM: 0x%02X\n", processor->common_ram_max);
+  if (Processor->common_ram_max > 0) {
+    printf("Max. Common RAM: 0x%02X\n", Processor->common_ram_max);
   }
 
-  if ((pair = gp_processor_linear_ram_exist(processor)) != NULL) {
+  if ((pair = gp_processor_linear_ram_exist(Processor)) != NULL) {
     printf("Linear RAM     : 0x%04X - 0x%04X\n", pair[0], pair[1]);
   }
 
-  printf("Max. RAM Addr. : 0x%03X\n", processor->maxram);
+  printf("Max. RAM Addr. : 0x%03X\n", Processor->maxram);
 
-  txt = (processor->class == PROC_CLASS_PIC16E) ? "bytes" : "words";
+  txt = (Processor->class == PROC_CLASS_PIC16E) ? "bytes" : "words";
 
   if (class->page_size > 0) {
     printf("Page Size      : %i %s\n", class->page_size, txt);
-    printf("Page Number    : %i\n", processor->num_pages);
+    printf("Page Number    : %i\n", Processor->num_pages);
   }
 
-  printf("Program Size   : %i %s\n", processor->prog_mem_size, txt);
+  printf("Program Size   : %i %s\n", Processor->prog_mem_size, txt);
 
-  if ((pair = gp_processor_idlocs_exist(processor)) != NULL) {
+  if ((pair = gp_processor_idlocs_exist(Processor)) != NULL) {
     if (pair[0] < pair[1]) {
       printf("Idlocs Range   : 0x%0*X - 0x%0*X\n", addr_digits, pair[0], addr_digits, pair[1]);
     }
@@ -432,11 +433,11 @@ _lister_of_devices(pic_processor_t processor)
       printf("Idlocs         : 0x%0*X\n", addr_digits, pair[0]);
     }
     if (class != PROC_CLASS_PIC16E) {
-      printf("Idlocs OR Mask : 0x%0*X\n", addr_digits, processor->idlocs_mask);
+      printf("Idlocs OR Mask : 0x%0*X\n", addr_digits, Processor->idlocs_mask);
     }
   }
 
-  if ((pair = gp_processor_config_exist(processor)) != NULL) {
+  if ((pair = gp_processor_config_exist(Processor)) != NULL) {
     if (pair[0] < pair[1]) {
       printf("Config Range   : 0x%0*X - 0x%0*X\n", addr_digits, pair[0], addr_digits, pair[1]);
     }
@@ -447,18 +448,18 @@ _lister_of_devices(pic_processor_t processor)
     gp_cfg_full_list_device(dev, "  Config Word  : ", addr_digits, class->config_digits);
   }
 
-  if ((pair = gp_processor_eeprom_exist(processor)) != NULL) {
+  if ((pair = gp_processor_eeprom_exist(Processor)) != NULL) {
     printf("EEPROM Range   : 0x%0*X - 0x%0*X\n", addr_digits, pair[0], addr_digits, pair[1]);
   }
 
-  printf("Max. ROM Addr. : 0x%0*X\n", addr_digits, processor->maxrom);
+  printf("Max. ROM Addr. : 0x%0*X\n", addr_digits, Processor->maxrom);
 
-  if (processor->header != NULL) {
-    printf("Header File    : %s\n", processor->header);
+  if (Processor->header != NULL) {
+    printf("Header File    : %s\n", Processor->header);
   }
 
-  if (processor->script != NULL) {
-    printf("Linker Script  : %s\n", processor->script);
+  if (Processor->script != NULL) {
+    printf("Linker Script  : %s\n", Processor->script);
   }
 
   printf("\n");
@@ -467,15 +468,15 @@ _lister_of_devices(pic_processor_t processor)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_add_path(const char *path)
+_add_path(const char *Path)
 {
-  if (path[0] == '\0') {
+  if (Path[0] == '\0') {
     /* This is an empty path. */
     return;
   }
 
   if (state.num_paths < MAX_PATHS) {
-    state.paths[state.num_paths++] = GP_Strdup(path);
+    state.paths[state.num_paths++] = GP_Strdup(Path);
   }
   else {
     fprintf(stderr, "Too many -I paths.\n");

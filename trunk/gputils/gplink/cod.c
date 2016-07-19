@@ -2,6 +2,7 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Scott Dattalo
    Copyright (C) 2012 Borut Razem
+   Copyright (C) 2016 Molnar Karoly
 
 This file is part of gputils.
 
@@ -121,7 +122,7 @@ _write_source_file_block(void)
  */
 
 static void
-_write_symbols(const symbol_t **symbol_list, size_t num_symbols)
+_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 {
   size_t                 i;
   unsigned int           length;
@@ -133,14 +134,14 @@ _write_symbols(const symbol_t **symbol_list, size_t num_symbols)
   BlockList             *sb;
   uint8_t               *record;
 
-  if ((symbol_list == NULL) || (num_symbols == 0)) {
+  if ((Symbol_list == NULL) || (Num_symbols == 0)) {
     return;
   }
 
   sb = NULL;
-  for (i = 0; i < num_symbols; i++) {
-    name   = gp_sym_get_symbol_name(symbol_list[i]);
-    var    = gp_sym_get_symbol_annotation(symbol_list[i]);
+  for (i = 0; i < Num_symbols; i++) {
+    name   = gp_sym_get_symbol_name(Symbol_list[i]);
+    var    = gp_sym_get_symbol_annotation(Symbol_list[i]);
     length = strlen(name);
 
     /* If this symbol extends past the end of the cod block then write this block out. */
@@ -165,7 +166,7 @@ _write_symbols(const symbol_t **symbol_list, size_t num_symbols)
     }
 
     record = &sb->block[main_dir->sym.offset];
-    gp_Pstr_from_str(record, COD_LSYMBOL_NAME_MAX_LEN, name);
+    gp_Pstr_from_str(&record[COD_LSYMBOL_NAME], COD_LSYMBOL_NAME_MAX_LEN, name);
     gp_putl16(&record[length + COD_LSYMBOL_TYPE], type);
 
     /* write 32 bits, big endian */

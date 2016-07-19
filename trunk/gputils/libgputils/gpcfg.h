@@ -8,7 +8,7 @@
    Copyright (C) 2006
    Michael Ballbach */
 
-/*  Copyright (C) 2014-2016 Molnar Karoly <molnarkaroly@users.sf.net>
+/*  Copyright (C) 2014-2016 Molnar Karoly
 
 This file is part of gputils.
 
