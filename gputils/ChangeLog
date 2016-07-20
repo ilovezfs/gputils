@@ -1,4 +1,8 @@
 2016-07-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpsystem.c:
+    bugfix
+
+2016-07-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gplink/cod.c, gplink/gplink.c,
     gplink/gplink.h.in, libgputils/gpcod.c, libgputils/gpcod.h:
     New command option: "-j" or "--save-local"

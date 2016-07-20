@@ -743,7 +743,7 @@ gp_absolute_path(char *File_name)
     return File_name;
   }
   else {
-    return GP_Strdup(File_buffer);
+    return GP_Strdup(file_buffer);
   }
 #else
   #ifdef HAVE_REALPATH
