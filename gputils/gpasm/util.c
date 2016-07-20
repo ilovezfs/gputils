@@ -111,6 +111,47 @@ stringtolong(const char *String, int Radix)
 
 /*------------------------------------------------------------------------------------------------*/
 
+long
+dec_strtol(const char *String, gp_boolean *Flag)
+{
+  char *end;
+  long  val;
+
+  assert(String != NULL);
+  assert(Flag != NULL);
+
+  val   = strtol(String, &end, 10);
+  *Flag = ((end > String) && (*end == '\0')) ? true : false;
+  return val;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+long
+hex_strtol(const char *String, gp_boolean *Flag)
+{
+  char  ch;
+  char *end;
+  long  val;
+
+  assert(String != NULL);
+  assert(Flag != NULL);
+
+  if (String[0] == '0') {
+    ch = String[1];
+
+    if ((ch == 'x') || (ch == 'X')) {
+      String += 2;
+    }
+  }
+
+  val   = strtol(String, &end, 16);
+  *Flag = ((end > String) && (*end == '\0')) ? true : false;
+  return val;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 #define HVM_NONE	0
 #define HVM_BEGIN	1
 #define HVM_NAME	2

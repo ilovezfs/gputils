@@ -194,7 +194,7 @@ main(int argc, char *argv[])
   }
 
   if (display_flags & DISPLAY_MESS) {
-    dump_message_area(code_file, main_dir);
+    dump_debug_message_area(code_file, main_dir);
   }
 
   fclose(code_file);

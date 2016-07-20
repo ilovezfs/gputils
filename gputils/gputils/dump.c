@@ -861,7 +861,7 @@ dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
           break;
         }
 
-        gp_str_from_Pstr(name, sizeof(name), sym, COD_LSYMBOL_NAME_MAX_LEN);
+        gp_str_from_Pstr(name, sizeof(name), sym, COD_LSYMBOL_PSTRING_MAX_LEN);
         type = gp_getl16(&sym[length + COD_LSYMBOL_TYPE]);
 
         if (type > 128) {
@@ -910,7 +910,7 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
     for (j = start_block; j <= end_block; j++) {
       read_block(Code_file, cod_block, j);
 
-      for (i = 0, offset = 0; i < FILES_PER_BLOCK; offset += COD_DIR_SOURCE_P_SIZE, ++i) {
+      for (i = 0, offset = 0; i < COD_FILES_PER_BLOCK; offset += COD_DIR_SOURCE_P_SIZE, ++i) {
         gp_str_from_Pstr(buf_name, sizeof(buf_name), &cod_block[offset], COD_DIR_SOURCE_P_SIZE);
 
         if (cod_block[offset] != 0) {
@@ -1060,7 +1060,7 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
  */
 
 void
-dump_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
+dump_debug_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
   unsigned int   start_block;
   unsigned int   end_block;
@@ -1096,7 +1096,7 @@ dump_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
 
         /* Pascal style string. */
         length = record[COD_DEBUG_MSG];
-        gp_str_from_Pstr(message, sizeof(message), &record[COD_DEBUG_MSG], COD_DEBUG_MSG_MAX_LEN);
+        gp_str_from_Pstr(message, sizeof(message), &record[COD_DEBUG_MSG], COD_DEBUG_PSTRING_MAX_LEN);
         printf(" %8x    %c  %s\n", address, type, message);
         j += length + COD_DEBUG_EXTRA;
       }

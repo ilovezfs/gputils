@@ -56,8 +56,8 @@ _write_source_file_block(void)
   fb = NULL;
   fc = state.file_list.first;
   while (fc != NULL) {
-    if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
-      fb = gp_cod_block_append(&main_dir->src, gp_cod_block_new());
+    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
+      fb = gp_cod_block_append(&main_dir->file, gp_cod_block_new());
     }
 
     /* The file id is used to define the index at which the file name is written within
@@ -66,8 +66,8 @@ _write_source_file_block(void)
      * larger file lists...
      */
 
-    gp_Pstr_from_str(&fb->block[main_dir->src.offset], COD_DIR_SOURCE_P_SIZE, fc->name);
-    main_dir->src.offset += COD_DIR_SOURCE_P_SIZE;
+    gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_DIR_SOURCE_P_SIZE, fc->name);
+    main_dir->file.offset += COD_DIR_SOURCE_P_SIZE;
 
     fc = fc->next;
   }
@@ -153,12 +153,12 @@ cod_lst_line(unsigned int List_line)
     dbi       = gp_cod_find_dir_block_by_high_addr(main_dir, _64k_base);
   }
 
-  first_time = (gp_cod_block_get_last(&dbi->lst) == NULL) ? true : false;
+  first_time = (gp_cod_block_get_last(&dbi->list) == NULL) ? true : false;
 
-  lb = gp_cod_block_get_last_or_new(&dbi->lst);
+  lb = gp_cod_block_get_last_or_new(&dbi->list);
 
-  if (dbi->lst.offset >= (COD_MAX_LINE_SYM * COD_LINE_SYM_SIZE)) {
-    lb = gp_cod_block_append(&dbi->lst, gp_cod_block_new());
+  if (dbi->list.offset >= (COD_MAX_LINE_SYM * COD_LINE_SYM_SIZE)) {
+    lb = gp_cod_block_append(&dbi->list, gp_cod_block_new());
   }
 
   assert(ctx->fc != NULL);
@@ -167,7 +167,7 @@ cod_lst_line(unsigned int List_line)
                              ((state.cod.emitting != 0) ? COD_LS_SMOD_FLAG_C1 :
                                                           (COD_LS_SMOD_FLAG_C1 | COD_LS_SMOD_FLAG_D));
 
-  record = &lb->block[dbi->lst.offset];
+  record = &lb->block[dbi->list.offset];
   record[COD_LS_SFILE] = ctx->fc->id;
   record[COD_LS_SMOD]  = smod_flag;
 
@@ -177,7 +177,7 @@ cod_lst_line(unsigned int List_line)
   /* Write the address of the opcode. */
   gp_putl16(&record[COD_LS_SLOC], address);
 
-  dbi->lst.offset += COD_LINE_SYM_SIZE;
+  dbi->list.offset += COD_LINE_SYM_SIZE;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -213,12 +213,12 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
   for (i = 0; i < Num_symbols; i++) {
     name   = gp_sym_get_symbol_name(Symbol_list[i]);
     var    = gp_sym_get_symbol_annotation(Symbol_list[i]);
-    length = strlen(name);
+    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN);
 
     /* If this symbol extends past the end of the cod block then write this block out. */
 
-    if ((sb == NULL) || ((main_dir->sym.offset + length + COD_LSYMBOL_EXTRA) >= COD_BLOCK_SIZE)) {
-      sb = gp_cod_block_append(&main_dir->sym, gp_cod_block_new());
+    if ((sb == NULL) || ((main_dir->lsym.offset + length + COD_LSYMBOL_EXTRA) >= COD_BLOCK_SIZE)) {
+      sb = gp_cod_block_append(&main_dir->lsym, gp_cod_block_new());
     }
 
     switch (var->type) {
@@ -236,14 +236,14 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
         type = COD_ST_CONSTANT;
     }
 
-    record = &sb->block[main_dir->sym.offset];
-    gp_Pstr_from_str(&record[COD_LSYMBOL_NAME], COD_LSYMBOL_NAME_MAX_LEN, name);
+    record = &sb->block[main_dir->lsym.offset];
+    gp_Pstr_from_str(&record[COD_LSYMBOL_NAME], COD_LSYMBOL_PSTRING_MAX_LEN, name);
     gp_putl16(&record[length + COD_LSYMBOL_TYPE], type);
 
     /* write 32 bits, big endian */
     gp_putb32(&record[length + COD_LSYMBOL_VALUE], var->value);
 
-    main_dir->sym.offset += length + COD_LSYMBOL_EXTRA;
+    main_dir->lsym.offset += length + COD_LSYMBOL_EXTRA;
   }
 }
 

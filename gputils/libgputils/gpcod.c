@@ -212,24 +212,24 @@ gp_cod_write_code(proc_class_t Class, const MemBlock_t *Mem, DirBlockInfo *Main)
         /* No code at address i, but we need to check if this is the
            first empty address after a range of address. */
         if (used_flag) {
-          rb = gp_cod_block_get_last_or_new(&dbi->rng);
+          rb = gp_cod_block_get_last_or_new(&dbi->range);
 
-          if ((rb == NULL) || ((dbi->rng.offset + COD_MAPENTRY_SIZE) >= COD_BLOCK_SIZE)) {
+          if ((rb == NULL) || ((dbi->range.offset + COD_MAPENTRY_SIZE) >= COD_BLOCK_SIZE)) {
             /* If there are a whole bunch of non-contiguous pieces of
                code then we'll get here. But most pic apps will only need
                one directory block (that will give you 64 ranges or non-
                contiguous chunks of pic code). */
-            rb = gp_cod_block_append(&dbi->rng, gp_cod_block_new());
+            rb = gp_cod_block_append(&dbi->range, gp_cod_block_new());
           }
           /* We need to update dir map indicating a range of memory that is needed.
              This is done by writing the start and end address to the directory map. */
-          record = &rb->block[dbi->rng.offset];
+          record = &rb->block[dbi->range.offset];
           gp_putl16(&record[COD_MAPTAB_START], start_address);
           gp_putl16(&record[COD_MAPTAB_LAST], i - 1);
 
           used_flag = false;
 
-          dbi->rng.offset += COD_MAPENTRY_SIZE;
+          dbi->range.offset += COD_MAPENTRY_SIZE;
         }
       }
     }
@@ -338,27 +338,27 @@ gp_cod_enumerate_directory(DirBlockInfo *Main_dir)
 
   /* enumerate surce files blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_enumerate(dbi, COD_DIR_NAMTAB, &dbi->src, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_NAMTAB, &dbi->file, &block_num);
   }
 
   /* enumerate list lines blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_enumerate(dbi, COD_DIR_LSTTAB, &dbi->lst, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_LSTTAB, &dbi->list, &block_num);
   }
 
   /* enumerate memory map blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_enumerate(dbi, COD_DIR_MEMMAP, &dbi->rng, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_MEMMAP, &dbi->range, &block_num);
   }
 
   /* enumerate long symbol table blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_enumerate(dbi, COD_DIR_LSYMTAB, &dbi->sym, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_LSYMTAB, &dbi->lsym, &block_num);
   }
 
   /* enumerate debug messages table blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_enumerate(dbi, COD_DIR_MESSTAB, &dbi->dbg, &block_num);
+    gp_cod_block_enumerate(dbi, COD_DIR_MESSTAB, &dbi->debug, &block_num);
   }
 }
 
@@ -410,27 +410,27 @@ gp_cod_write_directory(FILE *F, const DirBlockInfo *Main_dir)
 
   /* write source files blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_write(F, &dbi->src);
+    gp_cod_block_write(F, &dbi->file);
   }
 
   /* write list lines blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_write(F, &dbi->lst);
+    gp_cod_block_write(F, &dbi->list);
   }
 
   /* write memory map blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_write(F, &dbi->rng);
+    gp_cod_block_write(F, &dbi->range);
   }
 
   /* write long symbol table blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_write(F, &dbi->sym);
+    gp_cod_block_write(F, &dbi->lsym);
   }
 
   /* write debug messages table blocks */
   for (dbi = Main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_cod_block_write(F, &dbi->dbg);
+    gp_cod_block_write(F, &dbi->debug);
   }
 }
 
@@ -474,19 +474,19 @@ gp_cod_free_directory(DirBlockInfo *Main_dir)
     }
 
     /* free surce files blocks */
-    gp_cod_block_free(&dbi->src);
+    gp_cod_block_free(&dbi->file);
 
     /* free list lines blocks */
-    gp_cod_block_free(&dbi->lst);
+    gp_cod_block_free(&dbi->list);
 
     /* free memory map blocks */
-    gp_cod_block_free(&dbi->rng);
+    gp_cod_block_free(&dbi->range);
 
     /* free long symbol table blocks */
-    gp_cod_block_free(&dbi->sym);
+    gp_cod_block_free(&dbi->lsym);
 
     /* free debug messages table blocks */
-    gp_cod_block_free(&dbi->dbg);
+    gp_cod_block_free(&dbi->debug);
 
     next = dbi->next;
     /* free directory blocks */

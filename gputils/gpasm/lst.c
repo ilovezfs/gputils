@@ -1219,6 +1219,9 @@ lst_symbol_table(void)
   size_t           i;
   const char      *name;
   const void      *ptr;
+  gp_boolean       dec_ok;
+  gp_boolean       hex_ok;
+  long             val;
 
   state.lst.lst_state = LST_IN_SYMTAB;
   _symbol_table_header();
@@ -1321,12 +1324,29 @@ lst_symbol_table(void)
 
         if (!state.mpasm_compatible) {
           if (string != NULL) {
-            lst_line("%-32s  %-10s    %s", name, "DEFINITION", string);
+            val = dec_strtol(string, &dec_ok);
+
+            if (!dec_ok) {
+              val = hex_strtol(string, &hex_ok);
+            }
+
+            if (dec_ok) {
+              /* This definition contains is just a decimal number. */
+              lst_line("%-32s  %-10s    %08lX    '%s'", name, "DEFINITION", val, string);
+            }
+            else if (hex_ok) {
+              /* This definition contains is just a hexadecimal number. */
+              lst_line("%-32s  %-10s    '%s'    %11ld", name, "DEFINITION", string, val);
+            }
+            else {
+              /* This definition contains a general text (not just number). */
+              lst_line("%-32s  %-10s    '%s'", name, "DEFINITION", string);
+            }
           }
           else {
             lst_line("%-32s  %-10s", name, "DEFINITION");
           }
-        }
+        } /* if (!state.mpasm_compatible) */
         else {
           lst_line("%-32s  %s", name, (string != NULL) ? string : "");
         }

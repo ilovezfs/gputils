@@ -402,6 +402,8 @@ extern void yyerror(const char *String);
 
 /* util.c */
 extern int stringtolong(const char *String, int Radix);
+extern long dec_strtol(const char *String, gp_boolean *Flag);
+extern long hex_strtol(const char *String, gp_boolean *Flag);
 extern gp_boolean find_hv_macro(const char *String, const char **Start, const char **End);
 extern int gpasm_magic(const char *);
 extern const char *convert_escape_chars(const char *Ps, int *Value);

@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 14
+2016 Jul 20
 \end_layout
 
 \begin_layout Standard
@@ -6103,9 +6103,7 @@ mpasm compatible
 \begin_inset Quotes erd
 \end_inset
 
- mode! 
-\series bold
-This directive for now experimental.
+ mode!
 \end_layout
 
 \begin_layout Subsection*
@@ -12866,7 +12864,7 @@ Where options can be one of:
 \begin_layout Standard
 \noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="23" columns="3">
+<lyxtabular version="3" rows="24" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -13130,6 +13128,35 @@ Show the help message.
 
 \begin_layout Plain Layout
 Specify an include directory.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-j
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--save-local
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Write local registers to COD file.
 \end_layout
 
 \end_inset
