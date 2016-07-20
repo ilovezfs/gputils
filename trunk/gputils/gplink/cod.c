@@ -75,44 +75,6 @@ _assign_file_id(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* _write_source_file_block - Write a code block that contains a list of the source files. */
-
-static void
-_write_source_file_block(void)
-{
-  const gp_symbol_t *symbol;
-  BlockList         *fb = NULL;
-  int                file_id = 0;
-
-  symbol = state.object->symbol_list.first;
-  while (symbol != NULL) {
-    if ((fb == NULL) || (main_dir->src.offset >= (FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
-      fb = gp_cod_block_append(&main_dir->src, gp_cod_block_new());
-    }
-
-    if ((symbol->class == C_FILE) && (symbol->number == file_id)) {
-      /* skip the duplicate file symbols */
-      file_id++;
-
-      /* The file id is used to define the index at which the file
-       * name is written within the file code block. (The id's are
-       * sequentially assigned when the files are opened.) If there
-       * are too many files, then gpasm will abort. note: .cod files
-       * can handle larger file lists...
-       */
-
-      gp_Pstr_from_str(&fb->block[main_dir->src.offset], COD_DIR_SOURCE_P_SIZE,
-                       symbol->aux_list.first->_aux_symbol._aux_file.filename);
-
-      main_dir->src.offset += COD_DIR_SOURCE_P_SIZE;
-    }
-
-    symbol = symbol->next;
-  }
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 /* cod_write_symbols - write the symbol table to the .cod file
  *
  * This routine will read the symbol table that gplink has created
@@ -141,13 +103,14 @@ _write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
   sb = NULL;
   for (i = 0; i < Num_symbols; i++) {
     name   = gp_sym_get_symbol_name(Symbol_list[i]);
-    var    = gp_sym_get_symbol_annotation(Symbol_list[i]);
-    length = strlen(name);
+    var    = (const gp_coffsymbol_t *)gp_sym_get_symbol_annotation(Symbol_list[i]);
+    assert(var != NULL);
+    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN);
 
     /* If this symbol extends past the end of the cod block then write this block out. */
 
-    if ((sb == NULL) || ((main_dir->sym.offset + length + COD_LSYMBOL_EXTRA) >= COD_BLOCK_SIZE)) {
-      sb = gp_cod_block_append(&main_dir->sym, gp_cod_block_new());
+    if ((sb == NULL) || ((main_dir->lsym.offset + length + COD_LSYMBOL_EXTRA) >= COD_BLOCK_SIZE)) {
+      sb = gp_cod_block_append(&main_dir->lsym, gp_cod_block_new());
     }
 
     symbol = var->symbol;
@@ -165,14 +128,14 @@ _write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
       type = COD_ST_CONSTANT;
     }
 
-    record = &sb->block[main_dir->sym.offset];
-    gp_Pstr_from_str(&record[COD_LSYMBOL_NAME], COD_LSYMBOL_NAME_MAX_LEN, name);
+    record = &sb->block[main_dir->lsym.offset];
+    gp_Pstr_from_str(&record[COD_LSYMBOL_NAME], COD_LSYMBOL_PSTRING_MAX_LEN, name);
     gp_putl16(&record[length + COD_LSYMBOL_TYPE], type);
 
     /* write 32 bits, big endian */
     gp_putb32(&record[length + COD_LSYMBOL_VALUE], symbol->value);
 
-    main_dir->sym.offset += length + COD_LSYMBOL_EXTRA;
+    main_dir->lsym.offset += length + COD_LSYMBOL_EXTRA;
   }
 }
 
@@ -193,6 +156,43 @@ _write_symbol_table(const symbol_table_t *Table)
   lst = gp_sym_clone_symbol_array(Table, gp_sym_compare_fn);
   _write_symbols(lst, sym_count);
   free(lst);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* _write_source_file_block - Write a code block that contains a list of the source files. */
+
+static void
+_write_source_file_block(void)
+{
+  const gp_symbol_t *symbol;
+  BlockList         *fb = NULL;
+  int                file_id = 0;
+
+  symbol = state.object->symbol_list.first;
+  while (symbol != NULL) {
+    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
+      fb = gp_cod_block_append(&main_dir->file, gp_cod_block_new());
+    }
+
+    if ((symbol->class == C_FILE) && (symbol->number == file_id)) {
+      /* skip the duplicate file symbols */
+      file_id++;
+
+      /* The file id is used to define the index at which the file name is written within
+       * the file code block. (The id's are sequentially assigned when the files are opened.)
+       * If there are too many files, then gpasm will abort.
+       * Note: The .cod files can handle larger file lists...
+       */
+
+      gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_DIR_SOURCE_P_SIZE,
+                       symbol->aux_list.first->_aux_symbol._aux_file.filename);
+
+      main_dir->file.offset += COD_DIR_SOURCE_P_SIZE;
+    }
+
+    symbol = symbol->next;
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -220,22 +220,22 @@ _write_debug(void)
 
       command = aux->_aux_symbol._aux_direct.command;
       string  = aux->_aux_symbol._aux_direct.string;
-      length  = strlen(string);
+      length  = gp_strlen_Plimit(string, COD_DEBUG_PSTRING_MAX_LEN);
 
       /* If this message extends past the end of the cod block then write this block out. */
 
-      if ((db == NULL) || ((main_dir->dbg.offset + length + COD_DEBUG_EXTRA) >= COD_BLOCK_SIZE)) {
-        db = gp_cod_block_append(&main_dir->dbg, gp_cod_block_new());
+      if ((db == NULL) || ((main_dir->debug.offset + length + COD_DEBUG_EXTRA) >= COD_BLOCK_SIZE)) {
+        db = gp_cod_block_append(&main_dir->debug, gp_cod_block_new());
       }
 
-      record = &db->block[main_dir->dbg.offset];
+      record = &db->block[main_dir->debug.offset];
       /* write 32 bits, big endian */
       gp_putb32(&record[COD_DEBUG_ADDR], symbol->value);
 
       record[COD_DEBUG_CMD] = command;
-      gp_Pstr_from_str(&record[COD_DEBUG_MSG], COD_DEBUG_MSG_MAX_LEN, string);
+      gp_Pstr_from_str(&record[COD_DEBUG_MSG], COD_DEBUG_PSTRING_MAX_LEN, string);
 
-      main_dir->dbg.offset += length + COD_DEBUG_EXTRA;
+      main_dir->debug.offset += length + COD_DEBUG_EXTRA;
     }
     symbol = symbol->next;
   }
@@ -307,12 +307,12 @@ cod_lst_line(int line_type)
     dbi       = gp_cod_find_dir_block_by_high_addr(main_dir, _64k_base);
   }
 
-  first_time = (gp_cod_block_get_last(&dbi->lst) == NULL) ? true : false;
+  first_time = (gp_cod_block_get_last(&dbi->list) == NULL) ? true : false;
 
-  lb = gp_cod_block_get_last_or_new(&dbi->lst);
+  lb = gp_cod_block_get_last_or_new(&dbi->list);
 
-  if (dbi->lst.offset >= (COD_MAX_LINE_SYM * COD_LINE_SYM_SIZE)) {
-    lb = gp_cod_block_append(&dbi->lst, gp_cod_block_new());
+  if (dbi->list.offset >= (COD_MAX_LINE_SYM * COD_LINE_SYM_SIZE)) {
+    lb = gp_cod_block_append(&dbi->list, gp_cod_block_new());
   }
 
   assert(state.lst.src != NULL);
@@ -322,7 +322,7 @@ cod_lst_line(int line_type)
                              ((state.cod.emitting) ? COD_LS_SMOD_FLAG_C1 :
                                                      (COD_LS_SMOD_FLAG_C1 | COD_LS_SMOD_FLAG_D));
 
-  record = &lb->block[dbi->lst.offset];
+  record = &lb->block[dbi->list.offset];
 
   record[COD_LS_SFILE] = state.lst.src->symbol->number;
   record[COD_LS_SMOD]  = smod_flag;
@@ -333,7 +333,7 @@ cod_lst_line(int line_type)
   /* Write the address of the opcode. */
   gp_putl16(&record[COD_LS_SLOC], address);
 
-  dbi->lst.offset += COD_LINE_SYM_SIZE;
+  dbi->list.offset += COD_LINE_SYM_SIZE;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -350,8 +350,10 @@ cod_close_file(void)
   gp_Pstr_from_str(&main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_P_SIZE,
                    gp_processor_name(state.processor, 2));
 
-  /* All the global symbols are written. Need to figure out what to do about the local symbols. */
-  _write_symbol_table(state.symbol.definition);
+  /* All external and global symbols are written. */
+  _write_symbol_table(state.symbol.extern_global);
+  /* All local symbols are written. */
+  _write_symbol_table(state.symbol.local);
   _write_source_file_block();
   gp_cod_write_code(state.class, state.i_memory, main_dir);
   _write_debug();

@@ -1,3 +1,22 @@
+2016-07-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gplink/cod.c, gplink/gplink.c,
+    gplink/gplink.h.in, libgputils/gpcod.c, libgputils/gpcod.h:
+    New command option: "-j" or "--save-local"
+    The gplink save the local register names to COD file.
+    The solution is based on the patch:
+	"#68 gplink - save local symbols to cod file"
+    Thanks to Juan for the patch.
+
+  * gpasm/cod.c, gplink/cod.c, libgputils/gpsystem.c,
+    libgputils/gpsystem.h:
+    Long symbol length limit bugfix.
+
+  * gpasm/gpasm.h.in, gpasm/lst.c, gpasm/util.c:
+    More information case of definitions.
+
+  * gputils/dump.c, gputils/dump.h, gputils/gpvc.c:
+    Minor code optimization.
+
 2016-07-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gplink/cod.c, gplink/gplink.c, gplink/gplink.h.in,
     gplink/lst.c, gplink/map.c, gplink/parse.y, gplink/scan.l,

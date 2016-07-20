@@ -120,6 +120,7 @@ extern struct gplink_state {
     FILE       *f;                      /*   Symbol file output. */
     gp_boolean  enabled;                /*   Symbol file is enabled. */
     gp_boolean  emitting;               /*   Flag indicating when an opcode is emitted. */
+    gp_boolean  save_local_symbols;     /*   Enable saving the local symbols. */
   } cod;
 
   struct {                              /* List file state: */
@@ -135,7 +136,8 @@ extern struct gplink_state {
   } section;
 
   struct {
-    symbol_table_t *definition;         /* External symbol definition. */
+    symbol_table_t *extern_global;      /* External and global symbol definition. */
+    symbol_table_t *local;              /* Local symbol definition. */
     symbol_table_t *missing;            /* Missing external symbols. */
     symbol_table_t *archive;            /* Archive symbol index. */
   } symbol;

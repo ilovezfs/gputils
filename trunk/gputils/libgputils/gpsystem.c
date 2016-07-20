@@ -622,7 +622,7 @@ gp_str_from_Pstr(char *C_str, size_t C_max_size, const uint8_t *Pascal_str, size
   }
 
   if (length >= C_max_size) {
-    /* Too little the storage area. */
+    /* The storage area too little. */
     length = C_max_size - 1;
   }
 
@@ -639,7 +639,7 @@ gp_str_from_Pstr(char *C_str, size_t C_max_size, const uint8_t *Pascal_str, size
     C_str          : Beginning address of C style string area.
 */
 
-void
+size_t
 gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str)
 {
   size_t length;
@@ -659,6 +659,25 @@ gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str)
   /* The real beginning of string. */
   ++Pascal_str;
   memcpy(Pascal_str, C_str, length);
+  return length;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+    C_str          : Beginning address of C style string area.
+    Pascal_max_size: Size of Pascal style string area, included the string length.
+*/
+
+size_t
+gp_strlen_Plimit(const char *C_str, size_t Pascal_max_size)
+{
+  size_t length;
+
+  assert(C_str != NULL);
+
+  length = strlen(C_str);
+  return ((length >= Pascal_max_size) ? (Pascal_max_size - 1) : length);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -666,18 +685,19 @@ gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str)
 size_t
 gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length)
 {
-  size_t len;
+  int    lp;
+  size_t length;
 
   if ((Current_length < (Buffer_length - 1)) && (Aligned_to_length > Current_length)) {
     Buffer_length -= Current_length;
-    len = Aligned_to_length - Current_length;
+    length = Aligned_to_length - Current_length;
 
-    if (len >= Buffer_length) {
-      len = Buffer_length - 1;
+    if (length >= Buffer_length) {
+      length = Buffer_length - 1;
     }
 
-    len = snprintf(&Buffer[Current_length], Buffer_length - Current_length, "%*s", (int)len, " ");
-    return ((len > 0) ? (Current_length + len) : Current_length);
+    lp = snprintf(&Buffer[Current_length], Buffer_length - Current_length, "%*s", (int)length, " ");
+    return ((lp > 0) ? (Current_length + lp) : Current_length);
   }
 
   return Current_length;
@@ -688,15 +708,15 @@ gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t 
 size_t
 gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...)
 {
-  size_t  l;
+  int     lp;
   size_t  length;
   va_list ap;
 
   length = gp_align_text(Buffer, Buffer_length, Current_length, EXPLANATION_DISTANCE);
   va_start(ap, Format);
-  l = vsnprintf(&Buffer[length], Buffer_length - length, Format, ap);
+  lp = vsnprintf(&Buffer[length], Buffer_length - length, Format, ap);
   va_end(ap);
-  return ((l >= 0) ? (length + l) : Current_length);
+  return ((lp >= 0) ? (length + lp) : Current_length);
 }
 
 /*------------------------------------------------------------------------------------------------*/

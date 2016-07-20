@@ -40,7 +40,7 @@ struct gplink_state state;
 static gp_boolean   processor_mismatch_warning;
 static gp_boolean   enable_cinit_wanings;
 
-#define GET_OPTIONS "a:b:cCdf:hI:lmo:O:p:qrs:t:u:vw"
+#define GET_OPTIONS "a:b:cCdf:hI:jlmo:O:p:qrs:t:u:vw"
 
 enum {
   OPT_MPLINK_COMPATIBLE = 0x100,
@@ -57,6 +57,7 @@ static struct option longopts[] =
   { "fill",               required_argument, NULL, 'f' },
   { "help",               no_argument,       NULL, 'h' },
   { "include",            required_argument, NULL, 'I' },
+  { "save-local",         no_argument,       NULL, 'j' },
   { "no-list",            no_argument,       NULL, 'l' },
   { "map",                no_argument,       NULL, 'm' },
   { "output",             required_argument, NULL, 'o' },
@@ -90,6 +91,7 @@ _show_usage(void)
   printf("  -f VALUE, --fill VALUE         Fill unused program memory with value.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
+  printf("  -j, --save-local               Write local registers to COD file.\n");
   printf("  -l, --no-list                  Disable list file output.\n");
   printf("  -m, --map                      Output a map file.\n");
   printf("      --mplink-compatible        MPLINK compatibility mode.\n");
@@ -235,7 +237,7 @@ _scan_index(symbol_table_t *Table)
         object_name = gp_archive_member_name(member);
         object      = gp_convert_file(object_name, &member->data);
         _object_append(object);
-        gp_cofflink_add_symbols(state.symbol.definition, state.symbol.missing, object);
+        gp_cofflink_add_symbols(state.symbol.extern_global, state.symbol.missing, object);
         /* The symbol tables have been modified. Need to take another
            pass to make sure we get everything. */
         num_added++;
@@ -317,7 +319,29 @@ _add_linker_symbol(const char *Name)
   }
 
   assert(found != NULL);
-  gp_cofflink_add_symbol(state.symbol.definition, found, NULL);
+  gp_cofflink_add_symbol(state.symbol.extern_global, found, NULL);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+_add_local_ram_symbols(void)
+{
+  gp_symbol_t *symbol;
+
+  symbol = state.object->symbol_list.first;
+  while (symbol != NULL) {
+    if (symbol->section != NULL) {
+      if (FlagIsSet(symbol->section->flags, STYP_RAM_AREA)) {
+        if (symbol->class == C_STAT) {
+//          gp_cofflink_add_symbol(state.symbol.local, symbol, NULL);
+          gp_cofflink_add_symbol(state.symbol.local, symbol, state.object);
+        }
+      }
+    }
+
+    symbol = symbol->next;
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -362,7 +386,7 @@ _build_tables(void)
   /* Create the object file symbol tables. */
   object = state.object;
   while (object != NULL) {
-    gp_cofflink_add_symbols(state.symbol.definition, state.symbol.missing, object);
+    gp_cofflink_add_symbols(state.symbol.extern_global, state.symbol.missing, object);
     object = object->next;
   }
 
@@ -499,19 +523,19 @@ _set_optimize_level(void)
   state.optimize.weak_symbols  = false;
 
   switch(state.optimize.level) {
-  case 3:
-    /* fall through */
-  case 2:
-    state.optimize.dead_sections = true;
-    /* fall through */
-  case 1:
-    state.optimize.weak_symbols  = true;
-    /* fall through */
-  case 0:
-    break;
+    case 3:
+      /* fall through */
+    case 2:
+      state.optimize.dead_sections = true;
+      /* fall through */
+    case 1:
+      state.optimize.weak_symbols  = true;
+      /* fall through */
+    case 0:
+      break;
 
-  default:
-    gp_error("Invalid optimization level: %i", state.optimize.level);
+    default:
+      gp_error("Invalid optimization level: %i", state.optimize.level);
   }
 }
 
@@ -525,13 +549,13 @@ _init(void)
   memset(&state, 0, sizeof(state));
   /* initialize */
   gp_date_string(state.start_date, sizeof(state.start_date));
-  state.hex_format          = INHX32;
-  state.optimize.level      = OPTIMIZE_LEVEL_DEFAULT;
-  state.cod_file            = OUT_NORMAL;
-  state.hex_file            = OUT_NORMAL;
-  state.lst_file            = OUT_NORMAL;
-  state.map_file            = OUT_SUPPRESS;
-  state.obj_file            = OUT_SUPPRESS;
+  state.hex_format         = INHX32;
+  state.optimize.level     = OPTIMIZE_LEVEL_DEFAULT;
+  state.cod_file           = OUT_NORMAL;
+  state.hex_file           = OUT_NORMAL;
+  state.lst_file           = OUT_NORMAL;
+  state.map_file           = OUT_SUPPRESS;
+  state.obj_file           = OUT_SUPPRESS;
 
   /* set default output filename to be a.o, a.hex, a.cod, a.map */
   strncpy(state.base_file_name, "a", sizeof(state.base_file_name));
@@ -539,7 +563,8 @@ _init(void)
   state.script_symbols     = gp_sym_push_table(NULL, false);
 
   /* The symbols are case sensitive. */
-  state.symbol.definition  = gp_sym_push_table(NULL, false);
+  state.symbol.extern_global  = gp_sym_push_table(NULL, false);
+  state.symbol.local       = gp_sym_push_table(NULL, false);
   state.symbol.missing     = gp_sym_push_table(NULL, false);
   state.section.definition = gp_sym_push_table(NULL, false);
   state.section.logical    = gp_sym_push_table(NULL, false);
@@ -588,6 +613,7 @@ _process_args(int Argc, char *Argv[])
   const char *command;
   gp_boolean  strict_options;
   gp_boolean  usage;
+  srcfns_t   *fn;
   char       *pc;
 
   strict_options             = false;
@@ -633,105 +659,112 @@ _process_args(int Argc, char *Argv[])
   /* third pass through options */
   while ((c = getopt_long(Argc, Argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
-    case 'a':
-      if (strcasecmp(optarg, "inhx8m") == 0) {
-        state.hex_format = INHX8M;
+      case 'a': {
+        if (strcasecmp(optarg, "inhx8m") == 0) {
+          state.hex_format = INHX8M;
+        }
+        else if (strcasecmp(optarg, "inhx16") == 0) {
+          state.hex_format = INHX16;
+        }
+        else if (strcasecmp(optarg, "inhx32") == 0) {
+          state.hex_format = INHX32;
+        }
+        else {
+          gp_error("Invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32.", optarg);
+        }
+        break;
       }
-      else if (strcasecmp(optarg, "inhx16") == 0) {
-        state.hex_format = INHX16;
+
+      case 'b': {
+        state.optimize.banksel = (unsigned int)strtol(optarg, &pc, 10);
+
+        if ((pc == NULL) || (*pc != '\0')) {
+          gp_error("Invalid character %#x in number constant.", *pc);
+        }
+        break;
       }
-      else if (strcasecmp(optarg, "inhx32") == 0) {
-        state.hex_format = INHX32;
+
+      case 'c':
+        state.obj_file = OUT_NORMAL;
+        break;
+
+      case 'C':
+        enable_cinit_wanings = false;
+        break;
+
+      case 'd':
+        gp_debug_disable = false;
+        yydebug = 1;
+        break;
+
+      case 'f': {
+        state.fill_value = strtol(optarg, &pc, 16);
+
+        if ((pc == NULL) || (*pc != '\0')) {
+          gp_error("Invalid character %#x in number constant.", *pc);
+        }
+        else if (state.fill_value > 0xffff) {
+          gp_error("Fill value exceeds 0xffff: %#x", *pc);
+        }
+        else {
+          state.fill_enable = true;
+        }
+        break;
       }
-      else {
-        gp_error("Invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32.", optarg);
+
+      case '?':
+      case 'h':
+        usage = true;
+        break;
+
+      case 'I':
+        gplink_add_path(optarg);
+        break;
+
+      case 'j':
+        state.cod.save_local_symbols = true;
+        break;
+
+      case 'l':
+        state.lst_file = OUT_SUPPRESS;
+        break;
+
+      case 'm':
+        state.map_file = OUT_NORMAL;
+        break;
+
+      case 'o': {
+        strncpy(state.base_file_name, optarg, sizeof(state.base_file_name));
+        pc = strrchr(state.base_file_name, '.');
+
+        if (pc != NULL) {
+          *pc = '\0';
+        }
+        break;
       }
-      break;
 
-    case 'b':
-      state.optimize.banksel = (unsigned int)strtol(optarg, &pc, 10);
+      case 'O':
+        /* do nothing */
+        break;
 
-      if ((pc == NULL) || (*pc != '\0')) {
-        gp_error("Invalid character %#x in number constant.", *pc);
+      case 'p': {
+        state.optimize.pagesel = (unsigned int)strtol(optarg, &pc, 10);
+
+        if ((pc == NULL) || (*pc != '\0')) {
+          gp_error("Invalid character %#x in number constant.", *pc);
+        }
+        break;
       }
-      break;
 
-    case 'c':
-      state.obj_file = OUT_NORMAL;
-      break;
+      case 'q':
+        gp_quiet = true;
+        break;
 
-    case 'C':
-      enable_cinit_wanings = false;
-      break;
+      case 'r':
+        gp_relocate_to_shared = true;
+        break;
 
-    case 'd':
-      gp_debug_disable = false;
-      yydebug = 1;
-      break;
-
-    case 'f':
-      state.fill_value = strtol(optarg, &pc, 16);
-      if ((pc == NULL) || (*pc != '\0')) {
-        gp_error("Invalid character %#x in number constant.", *pc);
-      }
-      else if (state.fill_value > 0xffff) {
-        gp_error("Fill value exceeds 0xffff: %#x", *pc);
-      }
-      else {
-        state.fill_enable = true;
-      }
-      break;
-
-    case '?':
-    case 'h':
-      usage = true;
-      break;
-
-    case 'I':
-      gplink_add_path(optarg);
-      break;
-
-    case 'l':
-      state.lst_file = OUT_SUPPRESS;
-      break;
-
-    case 'm':
-      state.map_file = OUT_NORMAL;
-      break;
-
-    case 'o':
-      strncpy(state.base_file_name, optarg, sizeof(state.base_file_name));
-      pc = strrchr(state.base_file_name, '.');
-
-      if (pc != NULL) {
-        *pc = '\0';
-      }
-      break;
-
-    case 'O':
-      /* do nothing */
-      break;
-
-    case 'p':
-      state.optimize.pagesel = (unsigned int)strtol(optarg, &pc, 10);
-
-      if ((pc == NULL) || (*pc != '\0')) {
-        gp_error("Invalid character %#x in number constant.", *pc);
-      }
-      break;
-
-    case 'q':
-      gp_quiet = true;
-      break;
-
-    case 'r':
-      gp_relocate_to_shared = true;
-      break;
-
-    case 's':
-      {
-        srcfns_t *fn;
-
+      case 's': {
         fn = GP_Malloc(sizeof(srcfns_t));
         fn->file_name = GP_Strdup(optarg);
         fn->next      = NULL;
@@ -740,46 +773,47 @@ _process_args(int Argc, char *Argv[])
           state.src_file_names = fn;
         }
         else {
-          state.src_file_names_tail->next = fn;
+         state.src_file_names_tail->next = fn;
         }
 
         state.src_file_names_tail = fn;
+        break;
       }
-      break;
 
-    case 't': {
-      state.stack_size = strtol(optarg, &pc, 10);
+      case 't': {
+        state.stack_size = strtol(optarg, &pc, 10);
 
-      if ((pc == NULL) || (*pc != '\0')) {
-        gp_error("Invalid character %#x in number constant.", *pc);
+        if ((pc == NULL) || (*pc != '\0')) {
+          gp_error("Invalid character %#x in number constant.", *pc);
+        }
+        else {
+          state.has_stack = true;
+        }
+
+        break;
       }
-      else {
-        state.has_stack = true;
-      }
-      break;
-    }
 
-    case 'u':
-      _parse_define(optarg, script_add_macro);
-      break;
+      case 'u':
+        _parse_define(optarg, script_add_macro);
+        break;
 
-    case 'v':
-      fprintf(stderr, "%s\n", GPLINK_VERSION_STRING);
-      exit(0);
-      break;
+      case 'v':
+        fprintf(stderr, "%s\n", GPLINK_VERSION_STRING);
+        exit(0);
+        break;
 
-    case 'w':
-      processor_mismatch_warning = false;
-      break;
+      case 'w':
+        processor_mismatch_warning = false;
+        break;
 
-    case OPT_MPLINK_COMPATIBLE:
-      state.mplink_compatible = true;
-      break;
+      case OPT_MPLINK_COMPATIBLE:
+        state.mplink_compatible = true;
+        break;
 
-    case OPT_STRICT_OPTIONS:
-      /* do nothing */
-      break;
-    }
+      case OPT_STRICT_OPTIONS:
+        /* do nothing */
+        break;
+    } /* switch (c) */
 
     if (usage) {
       break;
@@ -916,7 +950,7 @@ _linker(void)
   }
 
   /* clean up symbol table */
-  gp_cofflink_clean_table(state.object, state.symbol.definition);
+  gp_cofflink_clean_table(state.object, state.symbol.extern_global);
   gp_coffgen_check_relocations(state.object, (enable_cinit_wanings) ? RELOC_ENABLE_CINIT_WARN : 0);
 
   if (state.optimize.dead_sections) {
@@ -1035,6 +1069,11 @@ _linker(void)
   /* convert the executable object into a cod file and list file */
   cod_init();
   lst_write();
+
+  if (state.cod.save_local_symbols) {
+    _add_local_ram_symbols();
+  }
+
   cod_close_file();
 
   /* write map file */

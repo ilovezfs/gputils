@@ -165,7 +165,7 @@ Boston, MA 02111-1307, USA.  */
 /*
  * Source File Name
  */
-#define FILES_PER_BLOCK                 (COD_BLOCK_SIZE / COD_DIR_SOURCE_P_SIZE)
+#define COD_FILES_PER_BLOCK             (COD_BLOCK_SIZE / COD_DIR_SOURCE_P_SIZE)
 
 /*
  * Line number info
@@ -217,6 +217,7 @@ Boston, MA 02111-1307, USA.  */
     /* The name of symbol is a Pascal style string. */
 #define COD_LSYMBOL_NAME                0           /* Symbol name in a Pascal style string. */
 #define COD_LSYMBOL_NAME_MAX_LEN        255         /* Maximum length of a symbol name. */
+#define COD_LSYMBOL_PSTRING_MAX_LEN     (COD_LSYMBOL_NAME_MAX_LEN + 1)
 
 #define COD_LSYMBOL_TYPE                1           /* Type info is 1 byte after the length. */
 #define COD_LSYMBOL_VALUE               3           /* Value info is 3 bytes after the length. */
@@ -243,6 +244,7 @@ Boston, MA 02111-1307, USA.  */
     /* The "COD_DEBUG_MSG" is a Pascal style string. */
 #define COD_DEBUG_MSG                   5           /* Message is 5 bytes after the address. */
 #define COD_DEBUG_MSG_MAX_LEN           255         /* Maximum length of a debug message. */
+#define COD_DEBUG_PSTRING_MAX_LEN       (COD_DEBUG_MSG_MAX_LEN + 1)
 #define COD_DEBUG_EXTRA                 6           /* Symbol name length + 6 is total structure size. */
 #define COD_DEBUG_MIN_LEN               (COD_DEBUG_EXTRA + 1) /* Extra bytes + one character length. */
 
@@ -267,11 +269,11 @@ typedef struct {
 typedef struct dir_block_info {
   uint8_t                dir[COD_BLOCK_SIZE];
   Block                  cod_image_blocks[COD_CODE_IMAGE_BLOCKS];
-  Blocks                 src;   /* pointer to the list of source files blocks */
-  Blocks                 lst;   /* pointer to the list of line number information blocks */
-  Blocks                 sym;   /* pointer to the list of long symbol blocks */
-  Blocks                 rng;   /* pointer to the list of range blocks */
-  Blocks                 dbg;   /* pointer to the list of debug messages blocks */
+  Blocks                 file;  /* pointer to the list of source files blocks */
+  Blocks                 list;  /* pointer to the list of source line number information blocks */
+  Blocks                 range; /* pointer to the list of ROM range blocks */
+  Blocks                 lsym;  /* pointer to the list of long symbol blocks */
+  Blocks                 debug; /* pointer to the list of debug messages blocks */
   struct dir_block_info *next;  /* pointer to the next directory info block */
 } DirBlockInfo;
 
