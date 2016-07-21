@@ -98,67 +98,67 @@ NUMCHAR [0-9a-z]
                            return IDENTIFIER;
                          }
 <hv>0x{NUMCHAR}+         {
-                           pplval.i = stringtolong(yytext + 2, 16);
+                           pplval.i = string_to_int(yytext + 2, 16);
                            return NUMBER;
                          }
 <hv>{NUMCHAR}+b          {
                            if (state.radix == 16) {
-                             pplval.i = stringtolong(yytext, 16);
+                             pplval.i = string_to_int(yytext, 16);
                              return NUMBER;
                            }
                            else {
                              yytext[yyleng - 1] = '\0';
-                             pplval.i = stringtolong(yytext, 2);
+                             pplval.i = string_to_int(yytext, 2);
                              return NUMBER;
                            }
                          }
 <hv>b'-?{NUMCHAR}+'      {
                            yytext[yyleng - 1] = '\0';
-                           pplval.i = stringtolong(yytext + 2, 2);
+                           pplval.i = string_to_int(yytext + 2, 2);
                            return NUMBER;
                          }
 <hv>{NUMCHAR}+[oq]       {
                            yytext[yyleng - 1] = '\0';
-                           pplval.i = stringtolong(yytext, 8);
+                           pplval.i = string_to_int(yytext, 8);
                            return NUMBER;
                          }
 <hv>[oq]'-?{NUMCHAR}+'   {
                            yytext[yyleng - 1] = '\0';
-                           pplval.i = stringtolong(yytext + 2, 8);
+                           pplval.i = string_to_int(yytext + 2, 8);
                            return NUMBER;
                          }
 <hv>{NUMCHAR}+d          {
                            if (state.radix == 16) {
-                             pplval.i = stringtolong(yytext, 16);
+                             pplval.i = string_to_int(yytext, 16);
                              return NUMBER;
                            }
                            else {
                              yytext[yyleng - 1] = '\0';
-                             pplval.i = stringtolong(yytext, 10);
+                             pplval.i = string_to_int(yytext, 10);
                              return NUMBER;
                            }
                          }
 <hv>d'-?[0-9]+'          {
                            yytext[yyleng - 1] = '\0';
-                           pplval.i = stringtolong(yytext + 2, 10);
+                           pplval.i = string_to_int(yytext + 2, 10);
                            return NUMBER;
                          }
 <hv>"."[0-9]+            {
-                           pplval.i = stringtolong(yytext + 1, 10);
+                           pplval.i = string_to_int(yytext + 1, 10);
                            return NUMBER;
                          }
 <hv>{NUMCHAR}+h          {
                            yytext[yyleng - 1] = '\0';
-                           pplval.i = stringtolong(yytext, 16);
+                           pplval.i = string_to_int(yytext, 16);
                            return NUMBER;
                          }
 <hv>h'-?{NUMCHAR}+'      {
                            yytext[yyleng - 1] = '\0';
-                           pplval.i = stringtolong(yytext + 2, 16);
+                           pplval.i = string_to_int(yytext + 2, 16);
                            return NUMBER;
                          }
 <hv>{NUMCHAR}+           {
-                           pplval.i = stringtolong(yytext, state.radix);
+                           pplval.i = string_to_int(yytext, state.radix);
                            return NUMBER;
                          }
 <hv>\"{STR_QCHAR}*\"?|<hv>'{STR_QCHAR}*'? {

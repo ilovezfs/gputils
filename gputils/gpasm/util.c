@@ -90,7 +90,7 @@ _strtoi(const char *String, char **Endptr, int Radix)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-stringtolong(const char *String, int Radix)
+string_to_int(const char *String, int Radix)
 {
   char *endptr;
   int   value;
@@ -409,7 +409,7 @@ convert_escape_chars(const char *Ps, int *Value)
           buffer[0] = Ps[2];
           buffer[1] = Ps[3];
           buffer[2] = '\0';
-          *Value = stringtolong(buffer, 16);
+          *Value = string_to_int(buffer, 16);
           Ps += 4;
         }
         break;
@@ -462,11 +462,13 @@ coerce_str1(pnode_t *Exp)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean Proc_dependent)
+set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean Proc_dependent,
+           gp_boolean Has_no_value)
 {
-  symbol_t   *sym;
-  variable_t *var;
-  char       *coff_name;
+  symbol_t     *sym;
+  variable_t   *var;
+  char         *coff_name;
+  unsigned int  flags;
 
   /* Search the entire stack (i.e. include macro's local symbol tables) for the symbol.
      If not found, then add it to the global symbol table.  */
@@ -476,10 +478,13 @@ set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean
     sym = gp_sym_add_symbol(state.stGlobal, Name);
   }
 
-  var = gp_sym_get_symbol_annotation(sym);
+  var = (variable_t *)gp_sym_get_symbol_annotation(sym);
 
   if (var == NULL) {
     /* new symbol */
+    flags  = (Proc_dependent) ? VATRR_PROC_DEPENDENT : 0;
+    flags |= (Has_no_value)   ? VATRR_HAS_NO_VALUE   : 0;
+
     var = GP_Malloc(sizeof(*var));
     var->value              = Value;
     var->coff_symbol_num    = state.obj.symbol_num;
@@ -487,7 +492,7 @@ set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean
     var->coff_section_flags = state.obj.new_sect_flags;
     var->type               = Type;
     var->previous_type      = Type;     /* coff symbols can be changed to global */
-    var->flags              = (Proc_dependent) ? VATRR_PROC_DEPENDENT : 0;
+    var->flags              = flags;
     gp_sym_annotate_symbol(sym, var);
 
     /* increment the index into the coff symbol table for the relocations */
@@ -518,9 +523,12 @@ set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean
      *       pass only in the macro. Jeez this really sucks....
      */
      var->value = Value;
-
+     FlagClr(var->flags, VATRR_HAS_NO_VALUE);
   }
   else if (state.pass == 2) {
+    if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
+      gpmsg_verror(GPE_SYM_NO_VALUE, NULL, Name);
+    }
     if (var->value != Value) {
       gpmsg_verror(GPE_DIFFLAB, NULL, Name);
     }
@@ -545,6 +553,11 @@ get_global_constant(const char *Name)
   if (((sym = gp_sym_get_symbol(state.stGlobal, Name)) != NULL) &&
       ((var = gp_sym_get_symbol_annotation(sym)) != NULL) &&
       ((var->type == VAL_CONSTANT) || (var->type == VAL_VARIABLE))) {
+
+    if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
+      gpmsg_vwarning(GPW_SYM_NO_VALUE, NULL, Name);
+    }
+
     return var;
   }
 
@@ -556,9 +569,9 @@ get_global_constant(const char *Name)
 void
 purge_variable_symbols(symbol_table_t *Table)
 {
-  size_t      i;
-  symbol_t   *sym;
-  variable_t *var;
+  size_t            i;
+  symbol_t         *sym;
+  const variable_t *var;
 
   if (Table == NULL) {
     return;
@@ -568,7 +581,7 @@ purge_variable_symbols(symbol_table_t *Table)
     sym = gp_sym_get_symbol_with_index(Table, i);
     assert(sym != NULL);
 
-    var = (variable_t *)gp_sym_get_symbol_annotation(sym);
+    var = (const variable_t *)gp_sym_get_symbol_annotation(sym);
 
     if ((var != NULL) && (var->type == VAL_VARIABLE)) {
       gp_sym_remove_symbol_with_index(Table, i);
@@ -586,9 +599,9 @@ purge_variable_symbols(symbol_table_t *Table)
 void
 purge_processor_variable_symbols(symbol_table_t *Table)
 {
-  size_t      i;
-  symbol_t   *sym;
-  variable_t *var;
+  size_t            i;
+  symbol_t         *sym;
+  const variable_t *var;
 
   if (Table == NULL) {
     return;
@@ -598,7 +611,7 @@ purge_processor_variable_symbols(symbol_table_t *Table)
     sym = gp_sym_get_symbol_with_index(Table, i);
     assert(sym != NULL);
 
-    var = (variable_t *)gp_sym_get_symbol_annotation(sym);
+    var = (const variable_t *)gp_sym_get_symbol_annotation(sym);
 
     if ((var != NULL) && (var->type == VAL_VARIABLE) && FlagIsSet(var->flags, VATRR_PROC_DEPENDENT)) {
       gp_sym_remove_symbol_with_index(Table, i);
@@ -772,23 +785,6 @@ select_radix(const char *Radix_name)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* Function to append a line to an ongoing macro definition. */
-
-void
-macro_append(void)
-{
-  macro_body_t *body = GP_Malloc(sizeof(*body));
-
-  body->src_line = NULL;
-  body->next     = NULL;            /* make sure it's terminated */
-
-  *state.mac_prev = body;           /* append this to the chain */
-  state.mac_prev  = &body->next;    /* this is the new end of the chain */
-  state.mac_body  = body;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 gpasmVal
 do_or_append_insn(const char *Op, pnode_t *Parms)
 {
@@ -891,6 +887,22 @@ pnode_string(const pnode_t *Pnode)
 
 /*------------------------------------------------------------------------------------------------*/
 
+void
+msg_has_no_value(const char *Optional_text, const char *Symbol_name)
+{
+  switch (state.strict_level) {
+    case 1:
+      gpmsg_vwarning(GPW_SYM_NO_VALUE, Optional_text, Symbol_name);
+      break;
+
+    case 2:
+      gpmsg_verror(GPE_SYM_NO_VALUE, Optional_text, Symbol_name);
+      break;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /*
 static void
 print_macro_node(const macro_body_t *mac)
@@ -912,6 +924,23 @@ print_macro_body(const macro_body_t *mac)
   }
   printf("}\n");
 }*/
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Function to append a line to an ongoing macro definition. */
+
+void
+macro_append(void)
+{
+  macro_body_t *body = GP_Malloc(sizeof(*body));
+
+  body->src_line = NULL;
+  body->next     = NULL;            /* make sure it's terminated */
+
+  *state.mac_prev = body;           /* append this to the chain */
+  state.mac_prev  = &body->next;    /* this is the new end of the chain */
+  state.mac_body  = body;
+}
 
 /*------------------------------------------------------------------------------------------------*/
 

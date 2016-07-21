@@ -209,7 +209,7 @@ set_label(const char *Label, pnode_t *Parms)
 
     value = do_or_append_insn("set", Parms);
     if (!IN_MACRO_WHILE_DEFINITION) {
-      set_global(Label, value, VAL_VARIABLE, false);
+      set_global(Label, value, VAL_VARIABLE, false, false);
     }
   }
 
@@ -547,12 +547,12 @@ line:
                   break;
 
                 case LTY_SET:
-                  set_global($1, $2, VAL_VARIABLE, false);
+                  set_global($1, $2, VAL_VARIABLE, false, false);
                   break;
 
                 case LTY_ORG:
                 case LTY_EQU:
-                  set_global($1, $2, VAL_CONSTANT, false);
+                  set_global($1, $2, VAL_CONSTANT, false, false);
                   break;
 
                 case LTY_INSN:
@@ -564,10 +564,10 @@ line:
                   }
 
                   if (IS_RAM_ORG) {
-                    set_global($1, $2, VAL_STATIC, false);
+                    set_global($1, $2, VAL_STATIC, false, false);
                   }
                   else {
-                    set_global($1, $2, VAL_ADDRESS, false);
+                    set_global($1, $2, VAL_ADDRESS, false, false);
                   }
                   break;
                 }

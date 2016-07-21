@@ -375,13 +375,13 @@ _search_idata(void)
 static void
 _build_tables(void)
 {
-  gp_object_t     *object;
-  archivelist_t   *arlist;
-  gp_boolean       modified;
-  size_t           i;
-  const symbol_t  *sym;
-  const char      *name;
-  gp_coffsymbol_t *var;
+  gp_object_t           *object;
+  archivelist_t         *arlist;
+  gp_boolean             modified;
+  size_t                 i;
+  const symbol_t        *sym;
+  const char            *name;
+  const gp_coffsymbol_t *var;
 
   /* Create the object file symbol tables. */
   object = state.object;
@@ -439,10 +439,11 @@ _build_tables(void)
       sym  = gp_sym_get_symbol_with_index(state.symbol.missing, i);
       name = gp_sym_get_symbol_name(sym);
       assert(name != NULL);
-      var = gp_sym_get_symbol_annotation(sym);
+      var = (const gp_coffsymbol_t *)gp_sym_get_symbol_annotation(sym);
       assert(var != NULL);
       gp_error("Missing definition for symbol \"%s\", required by \"%s\".", name, var->file->filename);
     }
+
     exit(1);
   }
 }

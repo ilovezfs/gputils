@@ -215,9 +215,14 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
     name   = gp_sym_get_symbol_name(Symbol_list[i]);
     var    = (const variable_t *)gp_sym_get_symbol_annotation(Symbol_list[i]);
     assert(var != NULL);
+
+    if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
+      msg_has_no_value("(.COD)", name);
+    }
+
     length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, &truncated);
 
-    if (truncated) {
+    if (truncated && (state.strict_level > 0)) {
       gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", name, COD_LSYMBOL_PSTRING_MAX_LEN - 1);
     }
 

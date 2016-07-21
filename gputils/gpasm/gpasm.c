@@ -188,11 +188,11 @@ static void
 _set_global_constants(void)
 {
   if (!state.mpasm_compatible) {
-    set_global("__GPUTILS_SVN_VERSION",   GPUTILS_SVN_VERSION,   VAL_CONSTANT, false);
-    set_global("__GPUTILS_VERSION_MAJOR", GPUTILS_VERSION_MAJOR, VAL_CONSTANT, false);
-    set_global("__GPUTILS_VERSION_MINOR", GPUTILS_VERSION_MINOR, VAL_CONSTANT, false);
-    set_global("__GPUTILS_VERSION_MICRO", GPUTILS_VERSION_MICRO, VAL_CONSTANT, false);
-    set_global("__WHILE_LOOP_COUNT_MAX",  WHILE_LOOP_COUNT_MAX,  VAL_CONSTANT, false);
+    set_global("__GPUTILS_SVN_VERSION",   GPUTILS_SVN_VERSION,   VAL_CONSTANT, false, false);
+    set_global("__GPUTILS_VERSION_MAJOR", GPUTILS_VERSION_MAJOR, VAL_CONSTANT, false, false);
+    set_global("__GPUTILS_VERSION_MINOR", GPUTILS_VERSION_MINOR, VAL_CONSTANT, false, false);
+    set_global("__GPUTILS_VERSION_MICRO", GPUTILS_VERSION_MICRO, VAL_CONSTANT, false, false);
+    set_global("__WHILE_LOOP_COUNT_MAX",  WHILE_LOOP_COUNT_MAX,  VAL_CONSTANT, false, false);
   }
 }
 

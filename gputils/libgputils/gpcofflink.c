@@ -83,9 +83,9 @@ gp_cofflink_remove_symbol(symbol_table_t *Table, const char *Name)
 gp_boolean
 gp_cofflink_add_symbols(symbol_table_t *Definition, symbol_table_t *Missing, gp_object_t *Object)
 {
-  gp_symbol_t     *symbol;
-  symbol_t        *sym;
-  gp_coffsymbol_t *var;
+  gp_symbol_t           *symbol;
+  const symbol_t        *sym;
+  const gp_coffsymbol_t *var;
 
   if ((Definition == NULL) || (Object == NULL)) {
     return false;
@@ -116,7 +116,7 @@ gp_cofflink_add_symbols(symbol_table_t *Definition, symbol_table_t *Missing, gp_
 
         if (sym != NULL) {
           /* duplicate symbol */
-          var = gp_sym_get_symbol_annotation(sym);
+          var = (const gp_coffsymbol_t *)gp_sym_get_symbol_annotation(sym);
           gp_error("Duplicate symbol \"%s\" defined in \"%s\" and \"%s\".",
                    symbol->name, var->file->filename, Object->filename);
         }
@@ -168,12 +168,12 @@ gp_cofflink_combine_objects(gp_object_t *Object)
 void
 gp_cofflink_clean_table(gp_object_t *Object, symbol_table_t *Symbols)
 {
-  gp_section_t    *section;
-  gp_reloc_t      *relocation;
-  gp_symbol_t     *symbol;
-  gp_coffsymbol_t *var;
-  const symbol_t  *sym;
-  gp_symbol_t     *next;
+  gp_section_t          *section;
+  gp_reloc_t            *relocation;
+  gp_symbol_t           *symbol;
+  const gp_coffsymbol_t *var;
+  const symbol_t        *sym;
+  gp_symbol_t           *next;
 
   gp_debug("Cleaning symbol table.");
 
@@ -184,11 +184,11 @@ gp_cofflink_clean_table(gp_object_t *Object, symbol_table_t *Symbols)
     while (relocation != NULL) {
       symbol = relocation->symbol;
 
-      if ((symbol->class == C_EXT) && (symbol->section_number == N_UNDEF)) {
+      if (gp_coffgen_is_external_symbol(symbol)) {
         /* This is an external symbol defined elsewhere. */
-        sym = gp_sym_get_symbol(Symbols, symbol->name);
+        sym    = gp_sym_get_symbol(Symbols, symbol->name);
         assert(sym != NULL);
-        var = gp_sym_get_symbol_annotation(sym);
+        var    = (const gp_coffsymbol_t *)gp_sym_get_symbol_annotation(sym);
         assert(var != NULL);
         symbol = var->symbol;
         assert(symbol != NULL);
@@ -204,10 +204,12 @@ gp_cofflink_clean_table(gp_object_t *Object, symbol_table_t *Symbols)
   symbol = Object->symbol_list.first;
   while (symbol != NULL) {
     next = symbol->next;
-    if ((symbol->class == C_EXT) && (symbol->section_number == N_UNDEF)) {
+
+    if (gp_coffgen_is_external_symbol(symbol)) {
       gp_debug("  removed symbol \"%s\"", symbol->name);
       gp_coffgen_del_symbol(Object, symbol);
     }
+
     symbol = next;
   }
 }
@@ -240,7 +242,7 @@ gp_cofflink_combine_overlay(gp_object_t *Object, gp_boolean Remove_symbol)
   addr_digits = Object->class->addr_digits;
   first       = Object->section_list.first;
   while (first != NULL) {
-    if (first->flags & STYP_OVERLAY) {
+    if (FlagIsSet(first->flags, STYP_OVERLAY)) {
       second = gp_coffgen_find_section(Object, first->next, first->name);
 
       if (second != NULL) {
@@ -249,7 +251,7 @@ gp_cofflink_combine_overlay(gp_object_t *Object, gp_boolean Remove_symbol)
           gp_error("Section types for \"%s\" do not match.", first->name);
           continue;
         }
-        else if ((first->flags & STYP_ABS) && (first->address != second->address)) {
+        else if (FlagIsSet(first->flags, STYP_ABS) && (first->address != second->address)) {
           gp_error("Different addresses for absolute overlay sections \"%s\" (0x%0*X != 0x%0*X).",
                    first->name, addr_digits, first->address, addr_digits, second->address);
           continue;
@@ -312,7 +314,7 @@ gp_cofflink_make_stack(gp_object_t *Object, unsigned int Num_bytes)
   /* create the symbol for the start address of the stack */
   symbol = gp_coffgen_find_symbol(Object, "_stack");
   if ((symbol != NULL) && (symbol->section_number > N_UNDEF)) {
-    gp_error("_stack symbol already exists");
+    gp_error("The \"_stack\" symbol already exists.");
   }
   else {
     symbol = gp_coffgen_add_symbol(Object, "_stack");
@@ -326,7 +328,7 @@ gp_cofflink_make_stack(gp_object_t *Object, unsigned int Num_bytes)
   /* create the symbol for the end of the stack */
   symbol = gp_coffgen_find_symbol(Object, "_stack_end");
   if ((symbol != NULL) && (symbol->section_number > N_UNDEF)) {
-    gp_error("_stack_end symbol already exists.");
+    gp_error("The \"_stack_end\" symbol already exists.");
   }
   else {
     symbol = gp_coffgen_add_symbol(Object, "_stack_end");
@@ -366,8 +368,8 @@ gp_cofflink_merge_sections(gp_object_t *Object)
 
     if (second != NULL) {
       /* The sections must have the same properties or they can't be combined. */
-      if ((first->flags & STYP_ABS) ||
-          (second->flags & STYP_ABS) ||
+      if (FlagIsSet(first->flags, STYP_ABS) ||
+          FlagIsSet(second->flags, STYP_ABS) ||
           (strcmp(first->name, ".config") == 0) ||
           (strcmp(first->name, ".idlocs") == 0)) {
         gp_error("File \"%s\", section \"%s\" (0x%0*X) is absolute but occurs in more than one file.",
@@ -407,7 +409,7 @@ gp_cofflink_merge_sections(gp_object_t *Object)
       /* Update the line number offsets. */
       _update_line_numbers(second->line_number_list.first, first->size);
 
-      if (first->flags & STYP_ROM_AREA) {
+      if (FlagIsSet(first->flags, STYP_ROM_AREA)) {
         section_org = gp_processor_insn_from_byte_c(Object->class, first->size);
       }
       else {
@@ -521,7 +523,7 @@ _create_rom_section(gp_object_t *Object, gp_section_t *Section)
     /* Force the section size to be an even number of bytes. */
     if (Section->size & 1) {
       gp_mem_b_put(new->data, Section->size, 0, Object->filename, "adjust");
-      new->size++;
+      (new->size)++;
     }
   }
   else {
@@ -622,7 +624,7 @@ gp_cofflink_make_idata(gp_object_t *Object, gp_boolean Force_cinit)
   count_sections = 0;
   section        = Object->section_list.first;
   while (section != NULL) {
-    if (section->flags & STYP_DATA) {
+    if (FlagIsSet(section->flags, STYP_DATA)) {
       _create_rom_section(Object, section);
       count_sections++;
     }
@@ -709,7 +711,7 @@ gp_cofflink_add_cinit_section(gp_object_t *Object)
 
     section = Object->section_list.first;
     while (section != NULL) {
-      if (section->flags & STYP_DATA) {
+      if (FlagIsSet(section->flags, STYP_DATA)) {
         /* locate the rom table */
         prog_name    = _create_i_section_name(section->name);
         prog_section = gp_coffgen_find_section(Object, Object->section_list.first, prog_name);
@@ -742,7 +744,7 @@ gp_cofflink_add_cinit_section(gp_object_t *Object)
 
         count_sections++;
         base_address += 12;
-      } /* if (section->flags & STYP_DATA) */
+      } /* if (FlagIsSet(section->flags, STYP_DATA)) */
 
       section = section->next;
     } /* while (section != NULL) */
@@ -824,13 +826,13 @@ gp_cofflink_reloc_abs(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_by
 
   section = Object->section_list.first;
   while (section != NULL) {
-    if ((section->flags & STYP_ABS) && (section->flags & Flags)) {
+    if (FlagIsSet(section->flags, STYP_ABS) && FlagIsSet(section->flags, Flags)) {
       /* Workaround for the "odd size memory problem" in the PIC16E class.
          code_pack --> STYP_BPACK */
       p16e_align_needed = false;
 
       if ((Object->class == PROC_CLASS_PIC16E) &&
-          (section->flags & STYP_ROM_AREA) &&
+          FlagIsSet(section->flags, STYP_ROM_AREA) &&
           (section->size & 1)) {
         org = gp_processor_insn_from_byte_p(Object->processor, section->address);
 
@@ -845,7 +847,7 @@ gp_cofflink_reloc_abs(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_by
                 section->name, p16e_align_needed);
 
       /* Set the relocated flag. */
-      section->flags |= STYP_RELOC;
+      FlagSet(section->flags, STYP_RELOC);
     }
     section = section->next;
   }
@@ -866,7 +868,7 @@ _find_big_assigned(gp_section_t *Section, uint32_t Flags, symbol_table_t *Logica
   while (Section != NULL) {
     sym = gp_sym_get_symbol(Logical_sections, Section->name);
 
-    if ((sym != NULL) && (Section->flags & Flags) && !(Section->flags & STYP_RELOC)) {
+    if ((sym != NULL) && FlagIsSet(Section->flags, Flags) && FlagIsClr(Section->flags, STYP_RELOC)) {
       /* This section has not been relocated. */
       if ((biggest == NULL) || (Section->size > biggest->size)) {
         biggest = Section;
@@ -890,7 +892,7 @@ _find_big_section(gp_section_t *Section, uint32_t Flags)
 
   biggest = NULL;
   while (Section != NULL) {
-    if ((Section->flags & Flags) && !(Section->flags & STYP_RELOC)) {
+    if (FlagIsSet(Section->flags, Flags) && FlagIsClr(Section->flags, STYP_RELOC)) {
       /* This section has not been relocated. */
       if ((biggest == NULL) || (Section->size > biggest->size)) {
         biggest = Section;
@@ -1129,9 +1131,9 @@ gp_cofflink_reloc_assigned(gp_object_t *Object, MemBlock_t *M, unsigned int Org_
     /* Workaround for the "odd size memory problem" in the PIC16E class.
        code_pack --> STYP_BPACK */
     if ((Object->class == PROC_CLASS_PIC16E) &&
-        (current->flags & Flags) &&
-        (current->flags & STYP_ABS) &&
-        (current->flags & STYP_ROM_AREA) &&
+        FlagIsSet(current->flags, Flags) &&
+        FlagIsSet(current->flags, STYP_ABS) &&
+        FlagIsSet(current->flags, STYP_ROM_AREA) &&
         (current->size & 1)) {
       org = gp_processor_insn_from_byte_p(Object->processor, current->address);
 
@@ -1165,7 +1167,7 @@ gp_cofflink_reloc_assigned(gp_object_t *Object, MemBlock_t *M, unsigned int Org_
       _update_line_numbers(current->line_number_list.first, current->address);
 
       /* Set the relocated flag. */
-      current->flags |= STYP_RELOC;
+      FlagSet(current->flags, STYP_RELOC);
     }
     else {
       gp_error("No target memory available for section \"%s\".", current->name);
@@ -1195,7 +1197,7 @@ gp_cofflink_reloc_cinit(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_
   size_t             sym_count;
   linker_section_t  *section_def;
 
-  if ((Cinit_section == NULL) || (Cinit_section->flags & STYP_RELOC)) {
+  if ((Cinit_section == NULL) || FlagIsSet(Cinit_section->flags, STYP_RELOC)) {
     return;
   }
 
@@ -1261,7 +1263,7 @@ gp_cofflink_reloc_cinit(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_
     _update_line_numbers(Cinit_section->line_number_list.first, Cinit_section->address);
 
     /* Set the relocated flag. */
-    Cinit_section->flags |= STYP_RELOC;
+    FlagSet(Cinit_section->flags, STYP_RELOC);
   }
   else if (!type_avail) {
     gp_error("Linker script has no definition that matches the type of section \"%s\".",
@@ -1313,17 +1315,17 @@ gp_cofflink_reloc_unassigned(gp_object_t *Object, MemBlock_t *M, unsigned int Or
     p16e_align_needed = false;
 
     /* determine what type of sections are being relocated */
-    if (current->flags & STYP_ROM_AREA) {
+    if (FlagIsSet(current->flags, STYP_ROM_AREA)) {
       type = SECT_CODEPAGE;
       msg  = "relocating codepage";
       gp_debug("  relocating code");
     }
-    else if (current->flags & STYP_ACCESS) {
+    else if (FlagIsSet(current->flags, STYP_ACCESS)) {
       type = SECT_ACCESSBANK;
       msg  = "relocating accessbank";
       gp_debug("  relocating accessbank");
     }
-    else if (current->flags & STYP_SHARED) {
+    else if (FlagIsSet(current->flags, STYP_SHARED)) {
       type = SECT_SHAREBANK;
       msg  = "relocating sharebank";
       gp_debug("  relocating sharebank");
@@ -1412,7 +1414,7 @@ next_pass:
       _update_line_numbers(current->line_number_list.first, current->address);
 
       /* Set the relocated flag */
-      current->flags |= STYP_RELOC;
+      FlagSet(current->flags, STYP_RELOC);
     }
     else if (gp_relocate_to_shared && first_time && (type == SECT_DATABANK)) {
       first_time = false;
@@ -1451,10 +1453,10 @@ gp_cofflink_update_table(gp_object_t *Object, unsigned int Org_to_byte_shift)
       sym_sect = symbol->section;
       assert(sym_sect != NULL);
 
-      if (!(sym_sect->flags & STYP_ABS)) {
+      if (FlagIsClr(sym_sect->flags, STYP_ABS)) {
         offset = sym_sect->address;
 
-        if (sym_sect->flags & STYP_ROM_AREA) {
+        if (FlagIsSet(sym_sect->flags, STYP_ROM_AREA)) {
           offset = gp_insn_from_byte(Org_to_byte_shift, offset);
         }
 
@@ -1469,7 +1471,7 @@ gp_cofflink_update_table(gp_object_t *Object, unsigned int Org_to_byte_shift)
 
   section = Object->section_list.first;
   while (section != NULL) {
-    section->flags &= ~(STYP_RELOC);
+    FlagClr(section->flags, STYP_RELOC);
     section = section->next;
   }
 }
@@ -1620,7 +1622,7 @@ _patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Reloca
       break;
 
     case RELOCT_HIGH:
-      data = class->reloc_high((symbol->section->flags & STYP_ROM_AREA), value);
+      data = class->reloc_high(FlagIsSet(symbol->section->flags, STYP_ROM_AREA), value);
       break;
 
     case RELOCT_UPPER:
@@ -1775,8 +1777,8 @@ gp_cofflink_patch(gp_object_t *Object)
       }
 
       /* update the rom with the patched idata sections */
-      if ((section->flags & STYP_DATA) && (section->relocation_list.first != NULL)) {
-        assert(section->next->flags & STYP_DATA_ROM);
+      if (FlagIsSet(section->flags, STYP_DATA) && (section->relocation_list.first != NULL)) {
+        assert(FlagIsSet(section->next->flags, STYP_DATA_ROM));
         _copy_rom_section(Object, section, section->next);
       }
 
@@ -1825,7 +1827,7 @@ gp_cofflink_make_memory(gp_object_t *Object)
   }
 
   while (section != NULL) {
-    if (section->flags & STYP_ROM_AREA) {
+    if (FlagIsSet(section->flags, STYP_ROM_AREA)) {
       addr = section->address;
       stop = addr + section->size;
       gp_debug("   make memory: section \"%s\" (0x%0*X - 0x%0*X)", section->name,

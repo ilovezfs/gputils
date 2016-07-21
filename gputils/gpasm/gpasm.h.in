@@ -385,6 +385,7 @@ extern struct gpasm_state {
 } state;
 
 #define VATRR_PROC_DEPENDENT    (1 << 0)  /* Depend on the type of processor. */
+#define VATRR_HAS_NO_VALUE      (1 << 1)  /* The variable has no value. */
 
 typedef struct variable {
   gpasmVal            value;
@@ -401,7 +402,7 @@ typedef struct variable {
 extern void yyerror(const char *String);
 
 /* util.c */
-extern int stringtolong(const char *String, int Radix);
+extern int string_to_int(const char *String, int Radix);
 extern long dec_strtol(const char *String, gp_boolean *Flag);
 extern long hex_strtol(const char *String, gp_boolean *Flag);
 extern gp_boolean find_hv_macro(const char *String, const char **Start, const char **End);
@@ -412,7 +413,7 @@ extern void coerce_str1(pnode_t *Exp);
 extern gpasmVal do_or_append_insn(const char *Op, pnode_t *Parms);
 
 extern void set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type,
-                       gp_boolean Proc_dependent);
+                       gp_boolean Proc_dependent, gp_boolean Has_no_value);
 
 extern variable_t *get_global_constant(const char *Name);
 extern void purge_variable_symbols(symbol_table_t *Table);
@@ -431,6 +432,7 @@ extern const char *value_type_to_str(const variable_t *Variable, gp_boolean Prev
 extern const char *pnode_symbol_name(const pnode_t *Pnode);
 extern gpasmVal pnode_symbol_value(const pnode_t *Pnode);
 extern const char *pnode_string(const pnode_t *Pnode);
+extern void msg_has_no_value(const char *Optional_text, const char *Symbol_name);
 extern void macro_append(void);
 extern void hex_init(void);
 

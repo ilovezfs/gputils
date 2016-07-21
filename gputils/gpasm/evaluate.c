@@ -93,6 +93,7 @@ eval_can_evaluate(const pnode_t *Pnode)
   char              buf[BUFSIZ];
   const symbol_t   *sym;
   const variable_t *var;
+  const char       *name;
 
   switch (Pnode->tag) {
     case PTAG_CONSTANT:
@@ -109,29 +110,31 @@ eval_can_evaluate(const pnode_t *Pnode)
     }
 
     case PTAG_SYMBOL: {
+      name = PnSymbol(Pnode);
+
       /* '$' means current org, which we can always evaluate */
-      if (strcmp(PnSymbol(Pnode), "$") == 0) {
+      if (strcmp(name, "$") == 0) {
         return true;
       }
 
       /* Otherwise look it up. */
-      sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      sym = gp_sym_get_symbol(state.stTop, name);
 
       if (sym == NULL) {
         var = NULL;
 
-        if (PnSymbol(Pnode)[0] == '\0') {
+        if (name[0] == '\0') {
           gpmsg_verror(GPE_MISSING_ARGU, NULL);
         }
         else {
-          gpmsg_verror(GPE_SYM_NOT_DEFINED, NULL, PnSymbol(Pnode));
+          gpmsg_verror(GPE_SYM_NOT_DEFINED, NULL, name);
         }
       }
       else {
-        var = gp_sym_get_symbol_annotation(sym);
+        var = (const variable_t *)gp_sym_get_symbol_annotation(sym);
 
         if (var == NULL) {
-          snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", PnSymbol(Pnode));
+          snprintf(buf, sizeof(buf), "Symbol not assigned a value: \"%s\"", name);
           gpmsg_warning(GPW_UNKNOWN, buf);
         }
       }
@@ -167,6 +170,7 @@ eval_can_evaluate_value(const pnode_t *Pnode)
 {
   const symbol_t   *sym;
   const variable_t *var;
+  const char       *name;
 
   switch (Pnode->tag) {
     case PTAG_CONSTANT:
@@ -183,13 +187,15 @@ eval_can_evaluate_value(const pnode_t *Pnode)
     }
 
     case PTAG_SYMBOL: {
+      name = PnSymbol(Pnode);
+
       /* '$' means current org, which we can evaluate if section at absolute address */
-      if (strcmp(PnSymbol(Pnode), "$") == 0) {
-        return (((state.obj.new_sect_flags & STYP_ABS) != 0) ? true : false);
+      if (strcmp(name, "$") == 0) {
+        return (FlagIsSet(state.obj.new_sect_flags, STYP_ABS) ? true : false);
       }
 
       /* Otherwise look it up */
-      sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      sym = gp_sym_get_symbol(state.stTop, name);
 
       if (sym == NULL) {
         return false;
@@ -199,6 +205,10 @@ eval_can_evaluate_value(const pnode_t *Pnode)
 
       if (var == NULL) {
         return false;
+      }
+
+      if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
+        msg_has_no_value(NULL, name);
       }
 
       switch (var->type) {
@@ -250,6 +260,11 @@ _is_program_segment(const pnode_t *Pnode)
 
     var = gp_sym_get_symbol_annotation(sym);
     assert(var != NULL);
+
+    if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
+      msg_has_no_value(NULL, PnSymbol(Pnode));
+    }
+
     return ((var->type == VAL_ADDRESS) ? true : false);
   }
 
@@ -263,6 +278,7 @@ eval_evaluate(const pnode_t *Pnode)
 {
   const symbol_t   *sym;
   const variable_t *var;
+  const char       *name;
   gpasmVal          p0;
   gpasmVal          p1;
   gpasmVal          val;
@@ -277,16 +293,22 @@ eval_evaluate(const pnode_t *Pnode)
       break;
 
     case PTAG_SYMBOL: {
-      if (strcmp(PnSymbol(Pnode), "$") == 0) {
+      name = PnSymbol(Pnode);
+
+      if (strcmp(name, "$") == 0) {
         return (IS_RAM_ORG ? state.byte_addr :
                              gp_processor_insn_from_byte_p(state.processor, state.byte_addr));
       }
 
-      sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      sym = gp_sym_get_symbol(state.stTop, name);
       assert(sym != NULL);
 
       var = gp_sym_get_symbol_annotation(sym);
       assert(var != NULL);
+
+      if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
+        msg_has_no_value(NULL, name);
+      }
 
       return var->value;
       break;
@@ -501,6 +523,7 @@ eval_count_reloc(const pnode_t *Pnode)
 {
   const symbol_t   *sym;
   const variable_t *var;
+  const char       *name;
 
   if (state.mode == MODE_ABSOLUTE) {
     return 0;
@@ -516,16 +539,22 @@ eval_count_reloc(const pnode_t *Pnode)
       break;
 
     case PTAG_SYMBOL: {
-      if (strcmp(PnSymbol(Pnode), "$") == 0) {
+      name = PnSymbol(Pnode);
+
+      if (strcmp(name, "$") == 0) {
         return 1;
       }
 
-      sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
+      sym = gp_sym_get_symbol(state.stTop, name);
 
       if (sym != NULL) {
         var = gp_sym_get_symbol_annotation(sym);
 
         if (var != NULL) {
+          if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
+            msg_has_no_value(NULL, name);
+          }
+
           switch (var->type) {
             case VAL_EXTERNAL:
             case VAL_GLOBAL:
@@ -569,6 +598,7 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type, gp_boolean Add_cof
 {
   const symbol_t     *sym;
   const variable_t   *var;
+  const char         *name;
   char                buffer[BUFSIZ];
   int                 digits;
   unsigned int        org;
@@ -580,7 +610,9 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type, gp_boolean Add_cof
       break;
 
     case PTAG_SYMBOL: {
-      if (strcmp(PnSymbol(Pnode), "$") == 0) {
+      name = PnSymbol(Pnode);
+
+      if (strcmp(name, "$") == 0) {
         if (IS_RAM_ORG) {
           digits = state.device.class->word_digits;
           org    = state.byte_addr;
@@ -595,19 +627,23 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type, gp_boolean Add_cof
         snprintf(buffer, sizeof(buffer), "_%s_%0*X", state.obj.new_sect_name, digits, org);
         /* RELOCT_ACCESS has always also RELOCT_F, which has already created this symbol. */
         if (Type != RELOCT_ACCESS) {
-          set_global(buffer, org, type, false);
+          set_global(buffer, org, type, false, false);
         }
 
         sym = gp_sym_get_symbol(state.stTop, buffer);
       }
       else {
-        sym = gp_sym_get_symbol(state.stTop, PnSymbol(Pnode));
+        sym = gp_sym_get_symbol(state.stTop, name);
       }
 
       if (sym != NULL) {
         var = gp_sym_get_symbol_annotation(sym);
 
         if (var != NULL) {
+          if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
+            msg_has_no_value(NULL, name);
+          }
+
           switch (var->type) {
             case VAL_EXTERNAL:
             case VAL_GLOBAL:
