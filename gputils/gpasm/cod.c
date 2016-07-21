@@ -199,7 +199,6 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
   const variable_t *var;
   const char       *name;
   BlockList        *sb;
-  uint8_t          *record;
 
   if ((Symbol_list == NULL) || (Num_symbols == 0)) {
     return;
@@ -212,8 +211,9 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
   sb = NULL;
   for (i = 0; i < Num_symbols; i++) {
     name   = gp_sym_get_symbol_name(Symbol_list[i]);
-    var    = gp_sym_get_symbol_annotation(Symbol_list[i]);
-    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN);
+    var    = (const variable_t *)gp_sym_get_symbol_annotation(Symbol_list[i]);
+    assert(var != NULL);
+    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, NULL);
 
     /* If this symbol extends past the end of the cod block then write this block out. */
 
@@ -236,13 +236,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
         type = COD_ST_CONSTANT;
     }
 
-    record = &sb->block[main_dir->lsym.offset];
-    gp_Pstr_from_str(&record[COD_LSYMBOL_NAME], COD_LSYMBOL_PSTRING_MAX_LEN, name);
-    gp_putl16(&record[length + COD_LSYMBOL_TYPE], type);
-
-    /* write 32 bits, big endian */
-    gp_putb32(&record[length + COD_LSYMBOL_VALUE], var->value);
-
+    gp_cod_put_long_symbol(&sb->block[main_dir->lsym.offset], name, var->value, type);
     main_dir->lsym.offset += length + COD_LSYMBOL_EXTRA;
   }
 }

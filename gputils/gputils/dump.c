@@ -1116,7 +1116,7 @@ dump_debug_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
  */
 
 void
-dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t proc_class)
+dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Class)
 {
   unsigned int   start_block;
   unsigned int   end_block;
@@ -1152,8 +1152,8 @@ dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t proc
             stop  = gp_getl32(&record[COD_SSYMBOL_STOP]);
 
             printf("Local symbols between %06x and %06x:  ",
-                   gp_processor_insn_from_byte_c(proc_class, start),
-                   gp_processor_insn_from_byte_c(proc_class, stop + 1) - 1);
+                   gp_processor_insn_from_byte_c(Class, start),
+                   gp_processor_insn_from_byte_c(Class, stop + 1) - 1);
           }
           else {
             gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_P_SIZE);

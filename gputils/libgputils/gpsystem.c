@@ -665,19 +665,34 @@ gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str)
 /*------------------------------------------------------------------------------------------------*/
 
 /*
-    C_str          : Beginning address of C style string area.
-    Pascal_max_size: Size of Pascal style string area, included the string length.
+    C_str            : Beginning address of C style string area.
+    Pascal_max_size  : Size of Pascal style string area, included the string length.
+    Is_limited_length: This a pointer wherewith the function indicates that limitation occurred.
 */
 
 size_t
-gp_strlen_Plimit(const char *C_str, size_t Pascal_max_size)
+gp_strlen_Plimit(const char *C_str, size_t Pascal_max_size, gp_boolean *Is_limited_length)
 {
-  size_t length;
+  size_t     length;
+  gp_boolean limit;
 
   assert(C_str != NULL);
 
   length = strlen(C_str);
-  return ((length >= Pascal_max_size) ? (Pascal_max_size - 1) : length);
+
+  if (length >= Pascal_max_size) {
+    length = Pascal_max_size - 1;
+    limit = true;
+  }
+  else {
+    limit = false;
+  }
+
+  if (Is_limited_length != NULL) {
+    *Is_limited_length = limit;
+  }
+
+  return length;
 }
 
 /*------------------------------------------------------------------------------------------------*/

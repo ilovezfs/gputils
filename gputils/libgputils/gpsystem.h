@@ -85,7 +85,7 @@ extern char *gp_stptoupper(char *Dest, const char *Src, size_t Maxlen);
 
 extern char *gp_str_from_Pstr(char *C_str, size_t C_max_size, const uint8_t *Pascal_str, size_t Pascal_max_size);
 extern size_t gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str);
-extern size_t gp_strlen_Plimit(const char *C_str, size_t Pascal_max_size);
+extern size_t gp_strlen_Plimit(const char *C_str, size_t Pascal_max_size, gp_boolean *Is_limited_length);
 
 extern size_t gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length);
 extern size_t gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...);
