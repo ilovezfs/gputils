@@ -25,6 +25,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpasm.h"
+#include "gpmsg.h"
 #include "lst.h"
 #include "cod.h"
 
@@ -199,6 +200,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
   const variable_t *var;
   const char       *name;
   BlockList        *sb;
+  gp_boolean        truncated;
 
   if ((Symbol_list == NULL) || (Num_symbols == 0)) {
     return;
@@ -213,7 +215,11 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
     name   = gp_sym_get_symbol_name(Symbol_list[i]);
     var    = (const variable_t *)gp_sym_get_symbol_annotation(Symbol_list[i]);
     assert(var != NULL);
-    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, NULL);
+    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, &truncated);
+
+    if (truncated) {
+      gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", name, COD_LSYMBOL_PSTRING_MAX_LEN - 1);
+    }
 
     /* If this symbol extends past the end of the cod block then write this block out. */
 

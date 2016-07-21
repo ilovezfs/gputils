@@ -74,7 +74,7 @@
 \begin_body
 
 \begin_layout Title
-gputils 1.4.6
+gputils 1.4.7
 \end_layout
 
 \begin_layout Author
@@ -2666,8 +2666,8 @@ MPASM(X) compatibility mode
 \end_layout
 
 \begin_layout Standard
-When the –mpasm-compatibe command line option is specified gpasm tries to
- mimic MPASM(X) behaviour:
+When the –mpasm-compatible command line option is specified gpasm tries
+ to mimic MPASM(X) behaviour:
 \end_layout
 
 \begin_layout Itemize
@@ -2678,6 +2678,34 @@ code_pack section doesn't generate line symbols in coff file; the consequence
 \begin_layout Itemize
 x << n is actually x << (n % (sizeof(int) * 8)) * on x86 architectures,
  so 0x1234 << 32 results 0x1234 which is wrong but compatible with MPASM(X)
+\end_layout
+
+\begin_layout Itemize
+Can not use these directives: ASSUME, ELIF, ELIFNDEF, ELIFDEF
+\end_layout
+
+\begin_layout Itemize
+Can not use almost all the 
+\begin_inset Quotes eld
+\end_inset
+
+Predefined constants
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Can not use the 
+\begin_inset Quotes eld
+\end_inset
+
+Built-in variables
+\begin_inset Quotes erd
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -2952,6 +2980,14 @@ loop    sleep                 ; Label and operation
 \end_inset
 
         goto    loop          ; Operation with 1 parameter
+\end_layout
+
+\begin_layout Standard
+The length of the label and symbol names it is recommended to restrict less
+ than 256 characters.
+ This is is mainly worth doing because of the .COD files built-in limitations
+ (e.g.
+ Long Symbol Table).
 \end_layout
 
 \begin_layout Subsection
@@ -5252,8 +5288,9 @@ Conditional assembly
 \end_layout
 
 \begin_layout Standard
-The IF, IFNDEF, IFDEF, ELSE and ENDIF directives enable you to assemble
- certain sections of code only if a condition is met.
+The IF, IFNDEF, IFDEF, ELIF, ELIFNDEF, ELIFDEF, ELSE and ENDIF directives
+ enable you to assemble certain sections of code only if a condition is
+ met.
  In themselves, they do not cause gpasm to emit any PIC code.
  The example in section 
 \begin_inset CommandInset ref
@@ -5594,6 +5631,38 @@ Nested IF operations can quickly become confusing.
 
 \begin_layout LyX-Code
         IF (this) ; {
+\begin_inset Newline newline
+\end_inset
+
+          ...
+\begin_inset Newline newline
+\end_inset
+
+        ELSE      ; }{
+\begin_inset Newline newline
+\end_inset
+
+          ...
+\begin_inset Newline newline
+\end_inset
+
+        ENDIF     ; }
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+        IF (this) ; {
+\begin_inset Newline newline
+\end_inset
+
+          ...
+\begin_inset Newline newline
+\end_inset
+
+        ELIF      ; }{
 \begin_inset Newline newline
 \end_inset
 
@@ -12671,6 +12740,10 @@ Accessing a register outside of bank 0.
 \end_layout
 
 \begin_layout Description
+1207 A string too long, will be truncated.
+\end_layout
+
+\begin_layout Description
 1299 A user-generated warning.
 \end_layout
 
@@ -15895,7 +15968,7 @@ Print gpvc version information and exit.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Show code table in wider view.
+Show code table in wider (16 columns) view.
 \end_layout
 
 \end_inset
