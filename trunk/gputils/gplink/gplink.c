@@ -57,7 +57,7 @@ static struct option longopts[] =
   { "fill",               required_argument, NULL, 'f' },
   { "help",               no_argument,       NULL, 'h' },
   { "include",            required_argument, NULL, 'I' },
-  { "save-local",         no_argument,       NULL, 'j' },
+  { "no-save-local",      no_argument,       NULL, 'j' },
   { "no-list",            no_argument,       NULL, 'l' },
   { "map",                no_argument,       NULL, 'm' },
   { "output",             required_argument, NULL, 'o' },
@@ -91,7 +91,7 @@ _show_usage(void)
   printf("  -f VALUE, --fill VALUE         Fill unused program memory with value.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
-  printf("  -j, --save-local               Write local registers to COD file.\n");
+  printf("  -j, --no-save-local            Disable the save of local registers to COD file.\n");
   printf("  -l, --no-list                  Disable list file output.\n");
   printf("  -m, --map                      Output a map file.\n");
   printf("      --mplink-compatible        MPLINK compatibility mode.\n");
@@ -549,25 +549,25 @@ _init(void)
   memset(&state, 0, sizeof(state));
   /* initialize */
   gp_date_string(state.start_date, sizeof(state.start_date));
-  state.hex_format         = INHX32;
-  state.optimize.level     = OPTIMIZE_LEVEL_DEFAULT;
-  state.cod_file           = OUT_NORMAL;
-  state.hex_file           = OUT_NORMAL;
-  state.lst_file           = OUT_NORMAL;
-  state.map_file           = OUT_SUPPRESS;
-  state.obj_file           = OUT_SUPPRESS;
+  state.hex_format           = INHX32;
+  state.optimize.level       = OPTIMIZE_LEVEL_DEFAULT;
+  state.cod_file             = OUT_NORMAL;
+  state.hex_file             = OUT_NORMAL;
+  state.lst_file             = OUT_NORMAL;
+  state.map_file             = OUT_SUPPRESS;
+  state.obj_file             = OUT_SUPPRESS;
 
   /* set default output filename to be a.o, a.hex, a.cod, a.map */
   strncpy(state.base_file_name, "a", sizeof(state.base_file_name));
 
-  state.script_symbols     = gp_sym_push_table(NULL, false);
+  state.script_symbols       = gp_sym_push_table(NULL, false);
 
   /* The symbols are case sensitive. */
-  state.symbol.extern_global  = gp_sym_push_table(NULL, false);
-  state.symbol.local       = gp_sym_push_table(NULL, false);
-  state.symbol.missing     = gp_sym_push_table(NULL, false);
-  state.section.definition = gp_sym_push_table(NULL, false);
-  state.section.logical    = gp_sym_push_table(NULL, false);
+  state.symbol.extern_global = gp_sym_push_table(NULL, false);
+  state.symbol.local         = gp_sym_push_table(NULL, false);
+  state.symbol.missing       = gp_sym_push_table(NULL, false);
+  state.section.definition   = gp_sym_push_table(NULL, false);
+  state.section.logical      = gp_sym_push_table(NULL, false);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -722,7 +722,7 @@ _process_args(int Argc, char *Argv[])
         break;
 
       case 'j':
-        state.cod.save_local_symbols = true;
+        state.cod.no_save_local = true;
         break;
 
       case 'l':
@@ -1070,7 +1070,7 @@ _linker(void)
   cod_init();
   lst_write();
 
-  if (state.cod.save_local_symbols) {
+  if (!state.cod.no_save_local) {
     _add_local_ram_symbols();
   }
 

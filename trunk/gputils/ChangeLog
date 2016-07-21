@@ -1,3 +1,17 @@
+2016-07-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gplink/gplink.c, gplink/gplink.h.in:
+    Save the local registers the default behavior. Changed
+    the relevant option from "--save-local" to "--no-save-local".
+
+  * gpasm/cod.c, gplink/cod.c, libgputils/gpcod.c, libgputils/gpcod.h:
+    Use the gp_cod_put_debug_symbol function.
+
+  * libgputils/gpsystem.c, libgputils/gpsystem.h:
+    The gp_strlen_Plimit function got a new parameter.
+
+  * gputils/dump.c:
+    Code formatting.
+
 2016-07-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpsystem.c:
     bugfix

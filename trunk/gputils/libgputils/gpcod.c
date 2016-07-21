@@ -240,6 +240,31 @@ gp_cod_write_code(proc_class_t Class, const MemBlock_t *Mem, DirBlockInfo *Main)
 
 /*------------------------------------------------------------------------------------------------*/
 
+size_t
+gp_cod_put_long_symbol(uint8_t *Record, const char *Name, gp_symvalue_t Value, unsigned int Type)
+{
+  size_t length;
+
+  length = gp_Pstr_from_str(&Record[COD_LSYMBOL_NAME], COD_LSYMBOL_PSTRING_MAX_LEN, Name);
+  gp_putl16(&Record[length + COD_LSYMBOL_TYPE], Type);
+  /* write 32 bits, big endian */
+  gp_putb32(&Record[length + COD_LSYMBOL_VALUE], Value);
+  return length;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+size_t
+gp_cod_put_debug_symbol(uint8_t *Record, const char *String, gp_symvalue_t Value, char Command)
+{
+  /* write 32 bits, big endian */
+  gp_putb32(&Record[COD_DEBUG_ADDR], Value);
+  Record[COD_DEBUG_CMD] = Command;
+  return gp_Pstr_from_str(&Record[COD_DEBUG_MSG], COD_DEBUG_PSTRING_MAX_LEN, String);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 BlockList *
 gp_cod_block_new(void)
 {

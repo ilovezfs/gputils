@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 20
+2016 Jul 21
 \end_layout
 
 \begin_layout Standard
@@ -13147,7 +13147,7 @@ Specify an include directory.
 \begin_inset Text
 
 \begin_layout Plain Layout
---save-local
+--no-save-local
 \end_layout
 
 \end_inset
@@ -13156,7 +13156,7 @@ Specify an include directory.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Write local registers to COD file.
+Disable the save of local registers to COD file.
 \end_layout
 
 \end_inset

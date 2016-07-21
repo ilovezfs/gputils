@@ -64,12 +64,14 @@ _assign_file_id(void)
         sym = gp_sym_add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
         gp_sym_annotate_symbol(sym, value);
       }
+
       symbol->number = *value;
     }
+
     symbol = symbol->next;
   }
 
-  /* destory the table */
+  /* destroy the table */
   file_table = gp_sym_pop_table(file_table);
 }
 
@@ -94,7 +96,6 @@ _write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
   const gp_section_t    *section;
   const char            *name;
   BlockList             *sb;
-  uint8_t               *record;
 
   if ((Symbol_list == NULL) || (Num_symbols == 0)) {
     return;
@@ -105,7 +106,7 @@ _write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
     name   = gp_sym_get_symbol_name(Symbol_list[i]);
     var    = (const gp_coffsymbol_t *)gp_sym_get_symbol_annotation(Symbol_list[i]);
     assert(var != NULL);
-    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN);
+    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, NULL);
 
     /* If this symbol extends past the end of the cod block then write this block out. */
 
@@ -128,13 +129,7 @@ _write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
       type = COD_ST_CONSTANT;
     }
 
-    record = &sb->block[main_dir->lsym.offset];
-    gp_Pstr_from_str(&record[COD_LSYMBOL_NAME], COD_LSYMBOL_PSTRING_MAX_LEN, name);
-    gp_putl16(&record[length + COD_LSYMBOL_TYPE], type);
-
-    /* write 32 bits, big endian */
-    gp_putb32(&record[length + COD_LSYMBOL_VALUE], symbol->value);
-
+    gp_cod_put_long_symbol(&sb->block[main_dir->lsym.offset], name, symbol->value, type);
     main_dir->lsym.offset += length + COD_LSYMBOL_EXTRA;
   }
 }
@@ -208,7 +203,6 @@ _write_debug(void)
   BlockList         *db;
   char               command;
   const char        *string;
-  uint8_t           *record;
 
   db     = NULL;
   symbol = state.object->symbol_list.first;
@@ -220,7 +214,7 @@ _write_debug(void)
 
       command = aux->_aux_symbol._aux_direct.command;
       string  = aux->_aux_symbol._aux_direct.string;
-      length  = gp_strlen_Plimit(string, COD_DEBUG_PSTRING_MAX_LEN);
+      length  = gp_strlen_Plimit(string, COD_DEBUG_PSTRING_MAX_LEN, NULL);
 
       /* If this message extends past the end of the cod block then write this block out. */
 
@@ -228,15 +222,10 @@ _write_debug(void)
         db = gp_cod_block_append(&main_dir->debug, gp_cod_block_new());
       }
 
-      record = &db->block[main_dir->debug.offset];
-      /* write 32 bits, big endian */
-      gp_putb32(&record[COD_DEBUG_ADDR], symbol->value);
-
-      record[COD_DEBUG_CMD] = command;
-      gp_Pstr_from_str(&record[COD_DEBUG_MSG], COD_DEBUG_PSTRING_MAX_LEN, string);
-
+      gp_cod_put_debug_symbol(&db->block[main_dir->debug.offset], string, symbol->value, command);
       main_dir->debug.offset += length + COD_DEBUG_EXTRA;
     }
+
     symbol = symbol->next;
   }
 }

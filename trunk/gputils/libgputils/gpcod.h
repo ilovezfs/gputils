@@ -257,7 +257,7 @@ typedef struct block_list_struct {
   struct block_list_struct *next;
 } BlockList;
 
-#define COD_CODE_IMAGE_BLOCKS           128      /* Max # of blocks for the opcodes. */
+#define COD_CODE_IMAGE_BLOCKS           128         /* Max # of blocks for the opcodes. */
 
 typedef struct {
   BlockList    *first;          /* pointer to the first element of list of blocks */
@@ -285,6 +285,8 @@ extern DirBlockInfo *gp_cod_init_dir_block(const char *File_name, const char *Co
 extern DirBlockInfo *gp_cod_find_dir_block_by_high_addr(DirBlockInfo *Main, unsigned int High_addr);
 extern void gp_cod_emit_opcode(DirBlockInfo *Dbi, unsigned int Address, unsigned int Opcode);
 extern void gp_cod_write_code(proc_class_t Class, const MemBlock_t *Mem, DirBlockInfo *Main);
+extern size_t gp_cod_put_long_symbol(uint8_t *Record, const char *Name, gp_symvalue_t Value, unsigned int Type);
+extern size_t gp_cod_put_debug_symbol(uint8_t *Record, const char *String, gp_symvalue_t Value, char Command);
 
 extern BlockList *gp_cod_block_new(void);
 extern BlockList *gp_cod_block_append(Blocks *Bl, BlockList *B);
