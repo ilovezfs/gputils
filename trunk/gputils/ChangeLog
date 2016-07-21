@@ -1,4 +1,21 @@
 2016-07-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/cod.c, gpasm/directive.c,
+    gpasm/evaluate.c, gpasm/gpasm.c, gpasm/gpasm.h.in,
+    gpasm/gpmsg.c, gpasm/gpmsg.h, gpasm/lst.c, gpasm/parse.y,
+    gpasm/ppparse.y, gpasm/processor.c, gpasm/util.c:
+    Inspect that the variable directive really give value.
+    New error and warning messages.
+
+  * libgputils/gpcofflink.c:
+    Code optimization.
+
+  * gpasm/ppscan.l, gpasm/scan.l, gpasm/util.c:
+    Renamed a function from stringtolong to string_to_int.
+
+  * gpasm/directive.h, gplink/gplink.c:
+    Code formatting.
+
+2016-07-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, configure, configure.ac, gpasm/cod.c,
     gpasm/gpmsg.c, gpasm/gpmsg.h:
     Changed the gputils version from 1.4.6 to 1.4.7.

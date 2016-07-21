@@ -28,7 +28,7 @@ Boston, MA 02111-1307, USA.  */
 #define BANKED              1
 
 extern gpasmVal do_insn(const char *Op_name, struct pnode *Parms);
-extern void opcode_init(int stage);
+extern void opcode_init(int Stage);
 extern void begin_cblock(const struct pnode *Cblock);
 extern void continue_cblock(void);
 extern void cblock_expr(const struct pnode *Expr);

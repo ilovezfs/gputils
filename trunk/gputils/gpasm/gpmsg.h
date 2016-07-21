@@ -102,7 +102,8 @@ enum GPE_codes {
   GPE_OUT_OF_BANK      = 1507,
   GPE_INVALID_RAM      = 1508,
   GPE_INVALID_ROM      = 1509,
-  GPE_EXCEED_ROM       = 1510
+  GPE_EXCEED_ROM       = 1510,
+  GPE_SYM_NO_VALUE     = 1511
 };
 
 #define GMSG_ERR_LEVEL0_MIN     GPE_USER
@@ -149,6 +150,7 @@ enum GPW_codes {
   GPW_NO_DEST          = 1205, /* The destination of the storage is not selected. */
   GPW_OUT_OF_BANK      = 1206,
   GPW_STRING_TRUNCATE  = 1207,
+  GPW_SYM_NO_VALUE     = 1208,
   GPW_USER             = 1299
 };
 

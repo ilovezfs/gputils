@@ -1208,20 +1208,21 @@ _lst_symbol_cmp(const void *P0, const void *P1)
 void
 lst_symbol_table(void)
 {
-  const pnode_t   *list;
-  const pnode_t   *head;
-  const char      *string;
-  const symbol_t **clone;
-  size_t           sym_count;
-  lst_symbol_t    *lst;
-  lst_symbol_t    *ps;
-  size_t           count;
-  size_t           i;
-  const char      *name;
-  const void      *ptr;
-  gp_boolean       dec_ok;
-  gp_boolean       hex_ok;
-  long             val;
+  const pnode_t    *list;
+  const pnode_t    *head;
+  const char       *string;
+  const symbol_t  **clone;
+  size_t            sym_count;
+  lst_symbol_t     *lst;
+  lst_symbol_t     *ps;
+  size_t            count;
+  size_t            i;
+  const char       *name;
+  const void       *ptr;
+  const variable_t *var;
+  gp_boolean        dec_ok;
+  gp_boolean        hex_ok;
+  long              val;
 
   state.lst.lst_state = LST_IN_SYMTAB;
   _symbol_table_header();
@@ -1289,13 +1290,16 @@ lst_symbol_table(void)
     switch (lst[i].type) {
       case LST_SYMBOL: {
         /* symbol */
-        const variable_t *var;
-
         var = (const variable_t *)ptr;
 
         if (!state.mpasm_compatible) {
           if (var != NULL) {
-            lst_line("%-32s  %-10s    %08X    %11d", name, value_type_to_str(var, false), var->value, var->value);
+            if (FlagIsClr(var->flags, VATRR_HAS_NO_VALUE)) {
+              lst_line("%-32s  %-10s    %08X    %11d", name, value_type_to_str(var, false), var->value, var->value);
+            }
+            else {
+              lst_line("%-32s  %-10s    %8s    %-11s", name, value_type_to_str(var, false), "HAS NO", "HAS NO");
+            }
           }
           else {
             lst_line("%-32s", name);

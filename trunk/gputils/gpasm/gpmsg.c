@@ -239,6 +239,8 @@ _get_error(int Code)
       return "Invalid ROM location specified.";
     case GPE_EXCEED_ROM:
       return "Address exceeds maximum range for this processor.";
+    case GPE_SYM_NO_VALUE:
+      return "This symbol has no value: \"%s\"";
 
     default:
       return "UNKNOWN ERROR";
@@ -307,6 +309,8 @@ _get_warning(int Code)
       return "Register in operand not located in RAM Bank %d. Ensure that Bank bits are correct:";
     case GPW_STRING_TRUNCATE:
       return "This string (\"%s\") too long, it will be truncated to %u bytes length.";
+    case GPW_SYM_NO_VALUE:
+      return "This symbol has no value: \"%s\"";
     case GPW_USER:
       return "WARNING: (%s)";
 

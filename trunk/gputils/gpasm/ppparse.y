@@ -75,6 +75,11 @@ exp:
     if ((sym = gp_sym_get_symbol(state.stTop, $1)) != NULL) {
       var = gp_sym_get_symbol_annotation(sym);
       assert(var != NULL);
+
+      if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
+        msg_has_no_value(NULL, $1);
+      }
+
       $$ = var->value;
     }
     else {

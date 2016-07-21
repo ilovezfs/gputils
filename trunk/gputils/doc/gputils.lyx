@@ -12544,6 +12544,10 @@ gpasm encountered an invalid ROM location as specified by the __MAXROM and
 Data emitted past maximum ROM address.
 \end_layout
 
+\begin_layout Description
+1511 A symbol has no value.
+\end_layout
+
 \begin_layout Subsection
 Warnings
 \end_layout
@@ -12741,6 +12745,10 @@ Accessing a register outside of bank 0.
 
 \begin_layout Description
 1207 A string too long, will be truncated.
+\end_layout
+
+\begin_layout Description
+1208 A symbol has no value.
 \end_layout
 
 \begin_layout Description

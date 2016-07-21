@@ -378,7 +378,7 @@ processor                {
                            return IDENTIFIER;
                          }
 0x{NUMCHAR}+             {
-                           yylval.i = stringtolong(yytext + 2, 16);
+                           yylval.i = string_to_int(yytext + 2, 16);
                            return NUMBER;
                          }
 {NUMCHAR}+b              {
@@ -387,18 +387,18 @@ processor                {
                              return IDENTIFIER;
                            }
                            else if (state.radix == 16) {
-                             yylval.i = stringtolong(yytext, 16);
+                             yylval.i = string_to_int(yytext, 16);
                              return NUMBER;
                            }
                            else {
                              yytext[yyleng - 1] = '\0';
-                             yylval.i = stringtolong(yytext, 2);
+                             yylval.i = string_to_int(yytext, 2);
                              return NUMBER;
                            }
                          }
 b'-?{NUMCHAR}+'          {
                            yytext[yyleng - 1] = '\0';
-                           yylval.i = stringtolong(yytext + 2, 2);
+                           yylval.i = string_to_int(yytext + 2, 2);
                            return NUMBER;
                          }
 {NUMCHAR}+[oq]           {
@@ -408,13 +408,13 @@ b'-?{NUMCHAR}+'          {
                            }
                            else {
                              yytext[yyleng - 1] = '\0';
-                             yylval.i = stringtolong(yytext, 8);
+                             yylval.i = string_to_int(yytext, 8);
                              return NUMBER;
                            }
                          }
 [oq]'-?{NUMCHAR}+'       {
                            yytext[yyleng - 1] = '\0';
-                           yylval.i = stringtolong(yytext + 2, 8);
+                           yylval.i = string_to_int(yytext + 2, 8);
                            return NUMBER;
                          }
 {NUMCHAR}+d              {
@@ -423,22 +423,22 @@ b'-?{NUMCHAR}+'          {
                              return IDENTIFIER;
                            }
                            else if (state.radix == 16) {
-                             yylval.i = stringtolong(yytext, 16);
+                             yylval.i = string_to_int(yytext, 16);
                              return NUMBER;
                            }
                            else {
                              yytext[yyleng - 1] = '\0';
-                             yylval.i = stringtolong(yytext, 10);
+                             yylval.i = string_to_int(yytext, 10);
                              return NUMBER;
                            }
                          }
 d'-?[0-9]+'              {
                            yytext[yyleng - 1] = '\0';
-                           yylval.i = stringtolong(yytext + 2, 10);
+                           yylval.i = string_to_int(yytext + 2, 10);
                            return NUMBER;
                          }
 "."[0-9]+                {
-                           yylval.i = stringtolong(yytext + 1, 10);
+                           yylval.i = string_to_int(yytext + 1, 10);
                            return NUMBER;
                          }
 {NUMCHAR}+h              {
@@ -448,13 +448,13 @@ d'-?[0-9]+'              {
                            }
                            else {
                              yytext[yyleng - 1] = '\0';
-                             yylval.i = stringtolong(yytext, 16);
+                             yylval.i = string_to_int(yytext, 16);
                              return NUMBER;
                            }
                          }
 h'-?{NUMCHAR}+'          {
                            yytext[yyleng - 1] = '\0';
-                           yylval.i = stringtolong(yytext + 2, 16);
+                           yylval.i = string_to_int(yytext + 2, 16);
                            return NUMBER;
                          }
 {NUMCHAR}+               {
@@ -463,11 +463,11 @@ h'-?{NUMCHAR}+'          {
                              return IDENTIFIER;
                            } 
                            else if (force_decimal) {
-                             yylval.i = stringtolong(yytext, 10);
+                             yylval.i = string_to_int(yytext, 10);
                              return NUMBER;
                            }
                            else {
-                             yylval.i = stringtolong(yytext, state.radix);
+                             yylval.i = string_to_int(yytext, state.radix);
                              return NUMBER;
                            }
                          }
