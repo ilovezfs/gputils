@@ -148,6 +148,7 @@ enum GPW_codes {
   GPW_OUT_OF_ACCRAM    = 1204, /* A register is not located on the Access RAM. */
   GPW_NO_DEST          = 1205, /* The destination of the storage is not selected. */
   GPW_OUT_OF_BANK      = 1206,
+  GPW_STRING_TRUNCATE  = 1207,
   GPW_USER             = 1299
 };
 

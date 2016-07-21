@@ -96,6 +96,7 @@ _write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
   const gp_section_t    *section;
   const char            *name;
   BlockList             *sb;
+  gp_boolean             truncated;
 
   if ((Symbol_list == NULL) || (Num_symbols == 0)) {
     return;
@@ -106,7 +107,12 @@ _write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
     name   = gp_sym_get_symbol_name(Symbol_list[i]);
     var    = (const gp_coffsymbol_t *)gp_sym_get_symbol_annotation(Symbol_list[i]);
     assert(var != NULL);
-    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, NULL);
+    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, &truncated);
+
+    if (truncated) {
+      gp_warning("This .COD symbol name (\"%s\") too long, it will be truncated to %u bytes length.",
+                 name, COD_LSYMBOL_PSTRING_MAX_LEN - 1);
+    }
 
     /* If this symbol extends past the end of the cod block then write this block out. */
 

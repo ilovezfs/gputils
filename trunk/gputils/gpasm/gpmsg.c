@@ -226,7 +226,7 @@ _get_error(int Code)
     case GPE_NO_ACC:
       return "The access of RAM is not selected, use A or B:";
     case GPE_TOO_LONG:
-      return "The string (\"%s\") too length (%zu bytes). It cannot be more than %zu bytes.";
+      return "The string (\"%s\") too long (%zu bytes). It cannot be more than %zu bytes.";
     case GPE_IN_OF_ACCRAM:
       return "This register is located on the Access RAM:";
     case GPE_OUT_OF_ACCRAM:
@@ -305,6 +305,8 @@ _get_warning(int Code)
       return "The destination of the storage is not selected, use W or F.";
     case GPW_OUT_OF_BANK:
       return "Register in operand not located in RAM Bank %d. Ensure that Bank bits are correct:";
+    case GPW_STRING_TRUNCATE:
+      return "This string (\"%s\") too long, it will be truncated to %u bytes length.";
     case GPW_USER:
       return "WARNING: (%s)";
 

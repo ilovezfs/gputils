@@ -1,4 +1,13 @@
 2016-07-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, configure, configure.ac, gpasm/cod.c,
+    gpasm/gpmsg.c, gpasm/gpmsg.h:
+    Changed the gputils version from 1.4.6 to 1.4.7.
+    Added a new warning message.
+
+  * gplink/cod.c:
+    Added a warning message.
+
+2016-07-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gplink/gplink.c, gplink/gplink.h.in:
     Save the local registers the default behavior. Changed
     the relevant option from "--save-local" to "--no-save-local".
