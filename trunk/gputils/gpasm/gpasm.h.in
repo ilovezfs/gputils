@@ -401,10 +401,20 @@ typedef struct variable {
 
 extern void yyerror(const char *String);
 
+/* gpasm.c */
+extern void add_path(const char *Path);
+
 /* util.c */
+typedef enum numstring_types {
+  NUM_STR_UNKNOWN = 0,
+  NUM_STR_BIN,
+  NUM_STR_OCT,
+  NUM_STR_DEC,
+  NUM_STR_HEX
+} numstring_t;
+
 extern int string_to_int(const char *String, int Radix);
-extern long dec_strtol(const char *String, gp_boolean *Flag);
-extern long hex_strtol(const char *String, gp_boolean *Flag);
+extern long gp_strtol(const char *String, numstring_t *Type);
 extern gp_boolean find_hv_macro(const char *String, const char **Start, const char **End);
 extern int gpasm_magic(const char *);
 extern const char *convert_escape_chars(const char *Ps, int *Value);
@@ -435,9 +445,6 @@ extern const char *pnode_string(const pnode_t *Pnode);
 extern void msg_has_no_value(const char *Optional_text, const char *Symbol_name);
 extern void macro_append(void);
 extern void hex_init(void);
-
-/* gpasm.c */
-extern void add_path(const char *Path);
 
 /* parse.y */
 extern pnode_t *mk_constant(int Value);

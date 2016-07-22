@@ -766,8 +766,8 @@ _symbol_table_header(void)
   lst_line("SYMBOL TABLE");
 
   if (!state.mpasm_compatible) {
-    lst_line("%-32s  %-10s  %-8s    %-11s", "  LABEL", "   TYPE", "   VALUE", "     VALUE");
-    lst_line("%-32s  %-10s  %-8s    %-11s", "",        "",        "   (hex)", "     (dec)");
+    lst_line("%-32s  %-10s  %-8s    %-11s    %s", "  LABEL", "   TYPE", "   VALUE", "     VALUE", "     VALUE");
+    lst_line("%-32s  %-10s  %-8s    %-11s    %s", "",        "",        "   (hex)", "     (dec)", "     (text)");
   }
   else {
     lst_line("%-32s  %-8s", "  LABEL", " VALUE");
@@ -1220,8 +1220,7 @@ lst_symbol_table(void)
   const char       *name;
   const void       *ptr;
   const variable_t *var;
-  gp_boolean        dec_ok;
-  gp_boolean        hex_ok;
+  numstring_t       num_type;
   long              val;
 
   state.lst.lst_state = LST_IN_SYMTAB;
@@ -1328,23 +1327,15 @@ lst_symbol_table(void)
 
         if (!state.mpasm_compatible) {
           if (string != NULL) {
-            val = dec_strtol(string, &dec_ok);
+            val = gp_strtol(string, &num_type);
 
-            if (!dec_ok) {
-              val = hex_strtol(string, &hex_ok);
-            }
-
-            if (dec_ok) {
+            if (num_type != NUM_STR_UNKNOWN) {
               /* This definition contains is just a decimal number. */
-              lst_line("%-32s  %-10s    %08lX    '%s'", name, "DEFINITION", val, string);
-            }
-            else if (hex_ok) {
-              /* This definition contains is just a hexadecimal number. */
-              lst_line("%-32s  %-10s    '%s'    %11ld", name, "DEFINITION", string, val);
+              lst_line("%-32s  %-10s    %08lX    %11ld    %s", name, "DEFINITION", val, val, string);
             }
             else {
               /* This definition contains a general text (not just number). */
-              lst_line("%-32s  %-10s    '%s'", name, "DEFINITION", string);
+              lst_line("%-32s  %-10s    %8s    %11s    %s", name, "DEFINITION", "", "", string);
             }
           }
           else {

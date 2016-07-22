@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 21
+2016 Jul 22
 \end_layout
 
 \begin_layout Standard
@@ -4322,7 +4322,7 @@ decimal
 \begin_inset Text
 
 \begin_layout Plain Layout
-0-9]*d
+[0-9]*d
 \end_layout
 
 \end_inset
