@@ -1,4 +1,4 @@
-/* Some helpful utility functions for gpasm
+/* Some helpful utility functions for gpasm.
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
 
@@ -29,17 +29,21 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "coff.h"
 
-#define STR_INHX8M              "inhx8m"
-#define STR_INHX8S              "inhx8s"
-#define STR_INHX16              "inhx16"
-#define STR_INHX32              "inhx32"
+#define STR_INHX8M                  "inhx8m"
+#define STR_INHX8S                  "inhx8s"
+#define STR_INHX16                  "inhx16"
+#define STR_INHX32                  "inhx32"
+
+#define HVM_NONE	            0
+#define HVM_BEGIN	            1
+#define HVM_NAME	            2
 
 /*------------------------------------------------------------------------------------------------*/
 
 /* MPASM compatible stripped version of strtoul:
- * gp_strtoi returns low sizeof(int) * 8 bits of the value:
+ * The _strtoi returns low sizeof(int) * 8 bits of the value:
  * value & ((2 ^ (sizeof(int) * 8)) - 1);
- * strtoul returns ULONG_MAX if the correct value is outside the range
+ * The strtoul returns ULONG_MAX if the correct value is outside the range
  * of representable values (see man strtoul). The behavior is also
  * platform dependent: (int)strtoul("123456789", 16) returns -1 on 32 bit
  * platforms and 0x23456789 on 64 bit platforms. */
@@ -111,50 +115,187 @@ string_to_int(const char *String, int Radix)
 
 /*------------------------------------------------------------------------------------------------*/
 
-long
-dec_strtol(const char *String, gp_boolean *Flag)
-{
-  char *end;
-  long  val;
-
-  assert(String != NULL);
-  assert(Flag != NULL);
-
-  val   = strtol(String, &end, 10);
-  *Flag = ((end > String) && (*end == '\0')) ? true : false;
-  return val;
-}
-
-/*------------------------------------------------------------------------------------------------*/
+/*
+    String: An text which is probably represents a number.
+    Type  : An address of type of number: bin, dec, oct or hex
+*/
 
 long
-hex_strtol(const char *String, gp_boolean *Flag)
+gp_strtol(const char *String, numstring_t *Type)
 {
-  char  ch;
-  char *end;
-  long  val;
+  char    ch0;
+  char    ch1;
+  char    ch_last;
+  char   *end;
+  long    val;
+  size_t  length;
 
   assert(String != NULL);
-  assert(Flag != NULL);
+  assert(Type != NULL);
 
-  if (String[0] == '0') {
-    ch = String[1];
+  *Type  = NUM_STR_UNKNOWN;
+  length = strlen(String);
 
-    if ((ch == 'x') || (ch == 'X')) {
+  if (length == 0) {
+    return 0;
+  }
+
+  ch0     = String[0];
+  ch1     = String[1];
+  ch_last = String[length - 1];
+
+  if ((ch0 == 'b') || (ch0 == 'B')) {
+    if (ch1 == '\'') {
       String += 2;
+      /* b'___' OR B'___' */
+      val = strtol(String, &end, 2);
+
+      if ((end > String) && (end[0] == '\'') && (end[1] == '\0')) {
+        *Type = NUM_STR_BIN;
+        return val;
+      }
     }
   }
 
-  val   = strtol(String, &end, 16);
-  *Flag = ((end > String) && (*end == '\0')) ? true : false;
+  if ((ch0 == 'o') || (ch0 == 'O') || (ch0 == 'q') || (ch0 == 'Q')) {
+    if (ch1 == '\'') {
+      String += 2;
+      /* o'___' OR O'___' OR q'___' OR Q'___' */
+      val = strtol(String, &end, 8);
+
+      if ((end > String) && (end[0] == '\'') && (end[1] == '\0')) {
+        *Type = NUM_STR_OCT;
+        return val;
+      }
+    }
+  }
+
+  if ((ch0 == 'd') || (ch0 == 'D')) {
+    if (ch1 == '\'') {
+      String += 2;
+      /* d'___' OR D'___' */
+      val = strtol(String, &end, 10);
+
+      if ((end > String) && (end[0] == '\'') && (end[1] == '\0')) {
+        *Type = NUM_STR_DEC;
+        return val;
+      }
+    }
+  }
+
+  if ((ch0 == 'h') || (ch0 == 'H')) {
+    if (ch1 == '\'') {
+      String += 2;
+      /* h'___' OR H'___' */
+      val = strtol(String, &end, 16);
+
+      if ((end > String) && (end[0] == '\'') && (end[1] == '\0')) {
+        *Type = NUM_STR_HEX;
+        return val;
+      }
+    }
+  }
+
+  if (ch0 == '.') {
+    String += 1;
+    /* .___ */
+    val = strtol(String, &end, 10);
+
+    if ((end > String) && (*end == '\0')) {
+      *Type = NUM_STR_DEC;
+      return val;
+    }
+  }
+
+  if (ch0 == '0') {
+    if ((ch1 == 'x') || (ch1 == 'X')) {
+      String += 2;
+      /* 0x___ OR 0X___ */
+      val = strtol(String, &end, 16);
+
+      if ((end > String) && (*end == '\0')) {
+        *Type = NUM_STR_HEX;
+        return val;
+      }
+    }
+  }
+
+  if ((ch_last == 'b') || (ch_last == 'B')) {
+    /* ___b OR ___B */
+    val = strtol(String, &end, 2);
+
+    if ((end > String) && ((end[0] == 'b') || (end[0] == 'B')) && (end[1] == '\0')) {
+      *Type = NUM_STR_BIN;
+      return val;
+    }
+  }
+
+  if ((ch_last == 'o') || (ch_last == 'O')) {
+    /* ___o OR ___O */
+    val = strtol(String, &end, 8);
+
+    if ((end > String) && ((end[0] == 'o') || (end[0] == 'O')) && (end[1] == '\0')) {
+      *Type = NUM_STR_OCT;
+      return val;
+    }
+  }
+
+  if ((ch_last == 'q') || (ch_last == 'Q')) {
+    /* ___q OR ___Q */
+    val = strtol(String, &end, 8);
+
+    if ((end > String) && ((end[0] == 'q') || (end[0] == 'Q')) && (end[1] == '\0')) {
+      *Type = NUM_STR_OCT;
+      return val;
+    }
+  }
+
+  if ((ch_last == 'd') || (ch_last == 'D')) {
+    /* ___d OR ___D */
+    val = strtol(String, &end, 10);
+
+    if ((end > String) && ((end[0] == 'd') || (end[0] == 'D')) && (end[1] == '\0')) {
+      *Type = NUM_STR_DEC;
+      return val;
+    }
+  }
+
+  if ((ch_last == 'h') || (ch_last == 'H')) {
+    /* ___h OR ___H */
+    val = strtol(String, &end, 16);
+
+    if ((end > String) && ((end[0] == 'h') || (end[0] == 'H')) && (end[1] == '\0')) {
+      *Type = NUM_STR_HEX;
+      return val;
+    }
+  }
+
+  /* ___ */
+  val = strtol(String, &end, state.radix);
+
+  if ((end > String) && (*end == '\0')) {
+    switch (state.radix) {
+      case 8:
+        *Type = NUM_STR_OCT;
+        break;
+
+      case 10:
+        *Type = NUM_STR_DEC;
+        break;
+
+      case 16:
+        *Type = NUM_STR_HEX;
+        break;
+
+      default:
+        *Type = NUM_STR_UNKNOWN;
+    }
+  }
+
   return val;
 }
 
 /*------------------------------------------------------------------------------------------------*/
-
-#define HVM_NONE	0
-#define HVM_BEGIN	1
-#define HVM_NAME	2
 
 static gp_boolean
 _find_hv_macro_start(const char *String, const char **Start, const char **Body)

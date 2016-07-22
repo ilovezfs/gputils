@@ -150,11 +150,11 @@ gp_yyinput(char *Buf, size_t Max_size)
 #define YY_INPUT(buf, result, max_size) result = gp_yyinput(buf, max_size)
 %}
 
-IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
-ESCCH  \\([0abfnrtv\\?'"]|0[0-7]{2}|x[0-9a-f]{2})
-STR_QCHAR  ([^"\r\n]|{ESCCH})
-STR_BCHAR  ([^>\r\n]|{ESCCH})
-NUMCHAR [0-9a-z]
+IDENT       [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
+ESCCH       \\([0abfnrtv\\?'"]|0[0-7]{2}|x[0-9a-f]{2})
+STR_QCHAR   ([^"\r\n]|{ESCCH})
+STR_BCHAR   ([^>\r\n]|{ESCCH})
+NUMCHAR     [0-9a-z]
 
 %%
 ^[ \t]*#?include[ \t]+   {

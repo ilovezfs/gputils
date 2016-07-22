@@ -513,7 +513,7 @@ line:
               macro_head_t *head;
 
               mac  = gp_sym_get_symbol(state.stMacros, $1);
-              head = (mac != NULL) ? gp_sym_get_symbol_annotation(mac) : NULL;
+              head = (mac != NULL) ? (macro_head_t *)gp_sym_get_symbol_annotation(mac) : NULL;
 
               /* It's not an error if macro was defined on pass 1 and we're in pass 2. */
               if ((head != NULL) && !((head->pass == 1) && (state.pass == 2))) {
