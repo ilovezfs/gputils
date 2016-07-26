@@ -55,12 +55,11 @@ lit8    macro i
     i   $
     i   $+1
     i   $-1
-    ;; gpasm bugs prevent these
-    ;i  $-$
-    ;i  c1-$
-    ;i  $-c1
-    ;i  c2-$
-    ;i  $-c2
+    i  $-$
+    i  c1-$
+    i  $-c1
+    i  c2-$
+    i  $-c2
     i   d1-d1b
     i   d1b-d1
     endm

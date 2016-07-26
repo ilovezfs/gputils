@@ -670,7 +670,7 @@ set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean
     if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
       gpmsg_verror(GPE_SYM_NO_VALUE, NULL, Name);
     }
-    if (var->value != Value) {
+    else if (var->value != Value) {
       gpmsg_verror(GPE_DIFFLAB, NULL, Name);
     }
 
@@ -953,7 +953,6 @@ do_or_append_insn(const char *Op, pnode_t *Parms)
     return do_insn(Op, Parms);
   }
 }
-
 
 /*------------------------------------------------------------------------------------------------*/
 

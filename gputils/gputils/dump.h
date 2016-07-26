@@ -32,5 +32,6 @@ extern void dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir);
 extern void dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir);
 extern void dump_debug_message_area(FILE *Code_file, const DirBlockInfo *Main_dir);
 extern void dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Class);
+extern void dump_free(void);
 
 #endif

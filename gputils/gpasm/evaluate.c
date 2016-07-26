@@ -189,12 +189,12 @@ eval_can_evaluate_value(const pnode_t *Pnode)
     case PTAG_SYMBOL: {
       name = PnSymbol(Pnode);
 
-      /* '$' means current org, which we can evaluate if section at absolute address */
+      /* '$' means current org, which we can evaluate if section at absolute address. */
       if (strcmp(name, "$") == 0) {
         return (FlagIsSet(state.obj.new_sect_flags, STYP_ABS) ? true : false);
       }
 
-      /* Otherwise look it up */
+      /* Otherwise look it up. */
       sym = gp_sym_get_symbol(state.stTop, name);
 
       if (sym == NULL) {
@@ -594,7 +594,7 @@ eval_count_reloc(const pnode_t *Pnode)
    [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offs>]) */
 
 static gpasmVal
-_add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type, gp_boolean Add_coff)
+_add_reloc(const pnode_t *Pnode, int16_t Offset, uint16_t Type, gp_boolean Add_coff)
 {
   const symbol_t     *sym;
   const variable_t   *var;
@@ -650,7 +650,7 @@ _add_reloc(const pnode_t *Pnode, short Offset, uint16_t Type, gp_boolean Add_cof
             case VAL_STATIC:
             case VAL_ADDRESS: {
               if (Add_coff) {
-                coff_reloc(var->coff_symbol_num, Offset, Type);
+                coff_add_reloc(var->coff_symbol_num, Offset, Type);
               }
               return ((var->coff_section_flags & STYP_ABS) ? var->value : -1);
               break;
@@ -773,6 +773,10 @@ _same_section(const pnode_t *Pnode)
   const symbol_t   *sym1;
   const variable_t *var0;
   const variable_t *var1;
+  const char       *name0;
+  const char       *name1;
+  unsigned int      section_num0;
+  unsigned int      section_num1;
 
   if (!state.obj.enabled) {
     return false;
@@ -794,17 +798,35 @@ _same_section(const pnode_t *Pnode)
     return false;
   }
 
-  sym0 = gp_sym_get_symbol(state.stTop, PnSymbol(p0));
-  sym1 = gp_sym_get_symbol(state.stTop, PnSymbol(p1));
-  var0 = gp_sym_get_symbol_annotation(sym0);
-  var1 = gp_sym_get_symbol_annotation(sym1);
+  name0 = PnSymbol(p0);
+  name1 = PnSymbol(p1);
+
+  if (strcmp(name0, "$") == 0) {
+    section_num0 = state.obj.section_num;
+  }
+  else {
+    sym0 = gp_sym_get_symbol(state.stTop, name0);
+    assert(sym0 != NULL);
+
+    var0 = gp_sym_get_symbol_annotation(sym0);
+    section_num0 = var0->coff_section_num;
+  }
+
+  if (strcmp(name1, "$") == 0) {
+    section_num1 = state.obj.section_num;
+  }
+  else {
+    sym1 = gp_sym_get_symbol(state.stTop, name1);
+    assert(sym1 != NULL);
+
+    var1 = gp_sym_get_symbol_annotation(sym1);
+    section_num1 = var1->coff_section_num;
+  }
 
   /* They must come from the same section. Debug symbols are not placed
      in the global symbol table, so don't worry about symbol type.
      Fail if sections are not known (== 0) or not the same. */
-  if ((var0->coff_section_num == 0) ||
-      (var1->coff_section_num == 0) ||
-      (var0->coff_section_num != var1->coff_section_num)) {
+  if ((section_num0 == 0) || (section_num1 == 0) || (section_num0 != section_num1)) {
     return false;
   }
 

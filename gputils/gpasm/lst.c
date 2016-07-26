@@ -1034,7 +1034,7 @@ lst_format_line(const char *Src_line, unsigned int Value)
       break;
   }
 
-  coff_linenum(emitted_lines);
+  coff_add_linenum(emitted_lines);
 
   /* Don't write to file if list is disabled with NOLIST directive */
   if (!state.lst.enabled) {

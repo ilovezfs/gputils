@@ -156,48 +156,48 @@ int main(int argc, char *argv[])
 
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
-    case '?':
-    case 'h':
-      usage = true;
-      break;
+      case '?':
+      case 'h':
+        usage = true;
+        break;
 
-    case 'c':
-      _select_mode(AR_CREATE);
-      break;
+      case 'c':
+        _select_mode(AR_CREATE);
+        break;
 
-    case 'd':
-      _select_mode(AR_DELETE);
-      break;
+      case 'd':
+        _select_mode(AR_DELETE);
+        break;
 
-    case 'n':
-      no_index = true;
-      break;
+      case 'n':
+        no_index = true;
+        break;
 
-    case 'q':
-      gp_quiet = true;
-      break;
+      case 'q':
+        gp_quiet = true;
+        break;
 
-    case 'r':
-      _select_mode(AR_REPLACE);
-      break;
+      case 'r':
+        _select_mode(AR_REPLACE);
+        break;
 
-    case 's':
-      _select_mode(AR_SYMBOLS);
-      break;
+      case 's':
+        _select_mode(AR_SYMBOLS);
+        break;
 
-    case 't':
-      _select_mode(AR_LIST);
-      break;
+      case 't':
+        _select_mode(AR_LIST);
+        break;
 
-    case 'v':
-      fprintf(stderr, "%s\n", GPLIB_VERSION_STRING);
-      exit(0);
-      break;
+      case 'v':
+        fprintf(stderr, "%s\n", GPLIB_VERSION_STRING);
+        exit(0);
+        break;
 
-    case 'x':
-      _select_mode(AR_EXTRACT);
-      break;
-    }
+      case 'x':
+        _select_mode(AR_EXTRACT);
+        break;
+    } /* switch (c) */
 
     if (usage) {
       break;
@@ -249,88 +249,88 @@ int main(int argc, char *argv[])
   /* process the option */
   i = 0;
   switch (state.mode) {
-  case AR_CREATE:
-  case AR_REPLACE: {
-    while (i < state.numobjects) {
-      type = gp_identify_coff_file(state.objectname[i]);
+    case AR_CREATE:
+    case AR_REPLACE: {
+      while (i < state.numobjects) {
+        type = gp_identify_coff_file(state.objectname[i]);
 
-      if ((type != GP_COFF_OBJECT_V2) && (type != GP_COFF_OBJECT)) {
-        gp_error("\"%s\" is not a valid object file.", state.objectname[i]);
-        break;
-      }
-      else {
-        state.archive = gp_archive_add_member(state.archive, state.objectname[i],
-                                              _object_name(state.objectname[i]));
-      }
-      i++;
-    }
-    update_archive = true;
-    break;
-  }
-
-  case AR_DELETE: {
-    while (i < state.numobjects) {
-      if (_has_path(state.objectname[i])) {
-        gp_error("Invalid object name: \"%s\"", state.objectname[i]);
-        break;
-      }
-
-      object = gp_archive_find_member(state.archive, state.objectname[i]);
-      if (object == NULL) {
-        gp_error("Object \"%s\" not found.", state.objectname[i]);
-        break;
-      }
-      else {
-        state.archive = gp_archive_delete_member(state.archive, state.objectname[i]);
-      }
-      i++;
-    }
-    update_archive = true;
-    break;
-  }
-
-  case AR_EXTRACT: {
-    while (i < state.numobjects) {
-      if (_has_path(state.objectname[i])) {
-        gp_error("Invalid object name: \"%s\"", state.objectname[i]);
-        break;
-      }
-
-      object = gp_archive_find_member(state.archive, state.objectname[i]);
-      if (object == NULL) {
-        gp_error("Object \"%s\" not found.", state.objectname[i]);
-        break;
-      }
-      else {
-        if (!gp_archive_extract_member(state.archive, state.objectname[i])) {
-          gp_error("Can't write this file: \"%s\"", state.objectname[i]);
-          exit(1);
+        if ((type != GP_COFF_OBJECT_V2) && (type != GP_COFF_OBJECT)) {
+          gp_error("\"%s\" is not a valid object file.", state.objectname[i]);
           break;
         }
+        else {
+          state.archive = gp_archive_add_member(state.archive, state.objectname[i],
+                                                _object_name(state.objectname[i]));
+        }
+        i++;
       }
-      i++;
+      update_archive = true;
+      break;
     }
-    break;
-  }
 
-  case AR_LIST:
-    gp_archive_list_members(state.archive);
-    break;
+    case AR_DELETE: {
+      while (i < state.numobjects) {
+        if (_has_path(state.objectname[i])) {
+          gp_error("Invalid object name: \"%s\"", state.objectname[i]);
+          break;
+        }
 
-  case AR_SYMBOLS: {
-    if (gp_archive_have_index(state.archive) == 0) {
-      gp_error("This archive has no symbol index.");
+        object = gp_archive_find_member(state.archive, state.objectname[i]);
+        if (object == NULL) {
+          gp_error("Object \"%s\" not found.", state.objectname[i]);
+          break;
+        }
+        else {
+          state.archive = gp_archive_delete_member(state.archive, state.objectname[i]);
+        }
+        i++;
+      }
+      update_archive = true;
+      break;
     }
-    else {
-      gp_archive_read_index(symbol_index, state.archive);
-      gp_archive_print_table(symbol_index);
-    }
-    break;
-  }
 
-  case AR_NULL:
-  default:
-    assert(0);
+    case AR_EXTRACT: {
+      while (i < state.numobjects) {
+        if (_has_path(state.objectname[i])) {
+          gp_error("Invalid object name: \"%s\"", state.objectname[i]);
+          break;
+        }
+
+        object = gp_archive_find_member(state.archive, state.objectname[i]);
+        if (object == NULL) {
+          gp_error("Object \"%s\" not found.", state.objectname[i]);
+          break;
+        }
+        else {
+          if (!gp_archive_extract_member(state.archive, state.objectname[i])) {
+            gp_error("Can't write this file: \"%s\"", state.objectname[i]);
+            exit(1);
+            break;
+          }
+        }
+        i++;
+      }
+      break;
+    }
+
+    case AR_LIST:
+      gp_archive_list_members(state.archive);
+      break;
+
+    case AR_SYMBOLS: {
+      if (gp_archive_have_index(state.archive) == 0) {
+        gp_error("This archive has no symbol index.");
+      }
+      else {
+        gp_archive_read_index(symbol_index, state.archive);
+        gp_archive_print_table(symbol_index);
+      }
+      break;
+    }
+
+    case AR_NULL:
+    default:
+      assert(0);
   }
 
   /* If the archive is being modified remove the old symbol index. */

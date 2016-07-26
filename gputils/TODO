@@ -7,12 +7,11 @@ gputils
   * Use dejagnu for testing.
 
 gpasm
-  * Clean up the byte verses word, data memory/program memory stuff.
   * Move opcode generator from /gpasm/directive.c to /libgputils/gpopcode.c.
   * Undefined coff symbols are always at the end of the coff table.
   * Add relocations for the difference between symbols in the same section.
   * Allow multiple symbols with the same name in different sections of COFF asm files.
-  * Allow expressions in .direct.  Reduce to operators, numbers, and controls.
+  * Allow expressions in .direct. Reduce to operators, numbers, and controls.
 
 gplink
   * Peep-like optimization. Consider using pcode from sdcc-pic14.

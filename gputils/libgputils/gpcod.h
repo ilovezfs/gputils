@@ -59,6 +59,8 @@ Boston, MA 02111-1307, USA.  */
 /* Number of words in one cod block. */
 #define COD_BLOCK_N_WORDS               (COD_BLOCK_SIZE / WORD_SIZE)
 
+#define MemOffsFromBlock(Block)         ((Block) << COD_BLOCK_BITS)
+
 /*
  * Here's a list of the offsets for the directory block. In each case the
  * offset is the number of bytes from the beginning of the block. Note that

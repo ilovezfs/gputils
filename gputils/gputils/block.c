@@ -39,7 +39,7 @@ read_block(FILE *Code_file, uint8_t *Block, unsigned int Block_number)
   n = fread(Block, 1, COD_BLOCK_SIZE, Code_file);
 
   if (n != COD_BLOCK_SIZE) {
-    gp_error("bad block number %u", Block_number);
+    gp_error("Bad block number: %u", Block_number);
   }
 }
 
@@ -48,30 +48,30 @@ read_block(FILE *Code_file, uint8_t *Block, unsigned int Block_number)
 DirBlockInfo *
 read_directory(FILE *Code_file)
 {
+  DirBlockInfo *head;
+  DirBlockInfo *tail;
   DirBlockInfo *dbi;
-  DirBlockInfo *start;
-  DirBlockInfo *p;
-  uint16_t      next_dir_block;
+  unsigned int  next_dir_block;
 
-  dbi            = NULL;
-  start          = NULL;
-  next_dir_block = 0;
+  head = NULL;
+  tail = NULL;
   do {
-    p = GP_Malloc(sizeof(DirBlockInfo));
+    dbi = GP_Malloc(sizeof(DirBlockInfo));
 
-    if (dbi == NULL) {
-      start = p;
-      dbi   = p;
+    if (head == NULL) {
+      head = dbi;
     }
     else {
-      dbi->next = p;
-      dbi       = p;
+      tail->next = dbi;
     }
 
+    tail = dbi;
+
     read_block(Code_file, dbi->dir, next_dir_block);
-  } while ((next_dir_block = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR])) != 0);
+    next_dir_block = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR]);
+  } while (next_dir_block != 0);
 
-  dbi->next = NULL;
+  tail->next = NULL;
 
-  return start;
+  return head;
 }

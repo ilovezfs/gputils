@@ -710,52 +710,52 @@ int main(int argc, char *argv[])
     }
 
     switch (c) {
-    case '?':
-    case 'h':
-      usage = true;
-      break;
+      case '?':
+      case 'h':
+        usage = true;
+        break;
 
-    case 'b':
-      state.dump_flags |= PRINT_BINARY;
-      break;
+      case 'b':
+        state.dump_flags |= PRINT_BINARY;
+        break;
 
-    case 'c':
-      gp_decode_mnemonics = true;
-      break;
+      case 'c':
+        gp_decode_mnemonics = true;
+        break;
 
-    case 'f':
-      state.dump_flags |= PRINT_HEADER;
-      break;
+      case 'f':
+        state.dump_flags |= PRINT_HEADER;
+        break;
 
-    case 'n':
-      state.suppress_names = true;
-      break;
+      case 'n':
+        state.suppress_names = true;
+        break;
 
-    case 's':
-      state.dump_flags |= PRINT_SECTIONS;
-      break;
+      case 's':
+        state.dump_flags |= PRINT_SECTIONS;
+        break;
 
-    case 't':
-      state.dump_flags |= PRINT_SYMTBL;
-      break;
+      case 't':
+        state.dump_flags |= PRINT_SYMTBL;
+        break;
 
-    case 'y':
-      gp_decode_extended = true;
-      break;
+      case 'y':
+        gp_decode_extended = true;
+        break;
 
-    case 'x':
-      state.export.enabled = true;
-      state.export.filename = optarg;
-      break;
+      case 'x':
+        state.export.enabled = true;
+        state.export.filename = optarg;
+        break;
 
-    case 'v':
-      fprintf(stderr, "%s\n", GPVO_VERSION_STRING);
-      exit(0);
+      case 'v':
+        fprintf(stderr, "%s\n", GPVO_VERSION_STRING);
+        exit(0);
 
-    case OPT_STRICT_OPTIONS:
-      /* do nothing */
-      break;
-    }
+      case OPT_STRICT_OPTIONS:
+        /* do nothing */
+        break;
+    } /* switch (c) */
 
     if (usage)
       break;
