@@ -45,6 +45,7 @@ _update_reloc_ptr(void)
   gp_section_t *section;
   gp_symbol_t  *symbol;
   gp_reloc_t   *reloc;
+  char          buffer[BUFSIZ];
 
   section = state.obj.object->section_list.first;
   while (section != NULL) {
@@ -54,15 +55,19 @@ _update_reloc_ptr(void)
       while (symbol != NULL) {
         if (reloc->symbol_number == symbol->number) {
           reloc->symbol = symbol;
-          goto l1;
+          goto rel_next;
         }
         symbol = symbol->next;
       }
-/*      assert(0);*/
+
+      snprintf(buffer, sizeof(buffer), "%s() -- Unknown relocation symbol number: %u\n", __func__, reloc->symbol_number);
+      gpmsg_error(GPE_INTERNAL, buffer);
       exit(1);
-l1:
+
+rel_next:
       reloc = reloc->next;
     }
+
     section = section->next;
   }
 }
@@ -91,16 +96,15 @@ _new_config_section(const char *Name, unsigned int Address, unsigned int Flags, 
   assert(state.obj.object != NULL);
 
   state.obj.section                 = gp_coffgen_add_section(state.obj.object, Name, Data);
-  state.obj.section->shadow_address = state.obj.section->address = Address;
+  state.obj.section->address        = Address;
+  state.obj.section->shadow_address = Address;
   state.obj.section->flags          = Flags;
 
-  /* add a section symbol */
-  new = gp_coffgen_add_symbol(state.obj.object, Name);
-  new->value          = IS_RAM_ORG ? Address : gp_processor_insn_from_byte_c(state.device.class, Address);
-  new->section_number = state.obj.section_num;  /* Modified later. */
-  new->section        = state.obj.section;
-//  new->type           = T_NULL;
-  new->class          = C_SECTION;
+  /* Add a section symbol, the section number modified later. */
+  new = gp_coffgen_add_symbol(state.obj.object, Name, state.obj.section_num);
+  new->value   = IS_RAM_ORG ? Address : gp_processor_insn_from_byte_c(state.device.class, Address);
+  new->section = state.obj.section;
+  new->class   = C_SECTION;
 
   state.obj.section->symbol = new;
 
@@ -118,7 +122,8 @@ _create_config_sections(void)
   char                    section_name[BUFSIZ];
   char                   *upper;
 
-  for (conf_sec_mem = state.conf_sec_mem; conf_sec_mem != NULL; conf_sec_mem = conf_sec_mem->next) {
+  conf_sec_mem = state.conf_sec_mem;
+  while (conf_sec_mem != NULL) {
     upper = gp_strdup_upper_case(state.obj_file_name);
     snprintf(section_name, sizeof(section_name), ".config_%0*X_%s", state.device.class->addr_digits,
              gp_processor_insn_from_byte_c(state.device.class, conf_sec_mem->addr), upper);
@@ -135,10 +140,6 @@ _create_config_sections(void)
     state.obj.section->size      = (conf_sec_mem->new_config) ? gp_processor_byte_from_insn_c(state.device.class, 1) : 2;
     state.lst.line.was_byte_addr = conf_sec_mem->addr;
 
-    if ((!state.obj.enabled) || (state.obj.section == NULL)) {
-      return;
-    }
-
     if (state.debug_info && (state.obj.debug_file == NULL)) {
       gpmsg_error(GPE_UNKNOWN, "The .file directive required to generate debug info.");
       return;
@@ -151,6 +152,7 @@ _create_config_sections(void)
     linenum->address     = conf_sec_mem->addr;
 
     _update_section_symbol(state.obj.section);
+    conf_sec_mem = conf_sec_mem->next;
   }
 }
 
@@ -179,19 +181,6 @@ coff_init(void)
       state.obj.enabled           = true;
     }
   }
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-coff_close_section(void)
-{
-  if (state.obj.section == NULL) {
-    return;
-  }
-
-  state.obj.section->size = state.byte_addr - state.obj.section->address;
-  _update_section_symbol(state.obj.section);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -264,7 +253,7 @@ coff_new_section(const char *Name, unsigned int Address, unsigned int Flags)
 
   found = gp_coffgen_find_section(state.obj.object, state.obj.object->section_list.first, Name);
   if (found != NULL) {
-    if ((Flags & STYP_OVERLAY) && (found->flags & STYP_OVERLAY)) {
+    if (FlagIsSet(Flags, STYP_OVERLAY) && FlagIsSet(found->flags, STYP_OVERLAY)) {
       /* Overlayed sections can be duplicated. This allows multiple code
          sections in the same source file to share the same data memory. */
       if ((Flags != found->flags) || (Address != found->address)) {
@@ -283,13 +272,11 @@ coff_new_section(const char *Name, unsigned int Address, unsigned int Flags)
   state.obj.section->shadow_address = Address;
   state.obj.section->flags          = Flags;
 
-  /* add a section symbol */
-  new = gp_coffgen_add_symbol(state.obj.object, Name);
-  new->value          = IS_RAM_ORG ? Address : gp_processor_insn_from_byte_c(state.device.class, Address);
-  new->section_number = state.obj.section_num;  /* Modified later. */
-  new->section        = state.obj.section;
-//  new->type           = T_NULL;
-  new->class          = C_SECTION;
+  /* Add a section symbol, the section number modified later. */
+  new = gp_coffgen_add_symbol(state.obj.object, Name, state.obj.section_num);
+  new->value   = IS_RAM_ORG ? Address : gp_processor_insn_from_byte_c(state.device.class, Address);
+  new->section = state.obj.section;
+  new->class   = C_SECTION;
 
   state.obj.section->symbol = new;
 
@@ -302,77 +289,15 @@ coff_new_section(const char *Name, unsigned int Address, unsigned int Flags)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* All coff data is generated on the second pass. To support forward
-   references to symbols in the relocation table, the symbol index
-   is stored in relocations instead of a pointer to the symbol. Before
-   the coff is written the symbol pointer is updated. */
-
 void
-coff_reloc(unsigned int Symbol_number, int16_t Offset, enum gpasmValTypes Type)
+coff_close_section(void)
 {
-  gp_reloc_t   *new;
-  unsigned int  origin;
-
-  if ((!state.obj.enabled) || (state.obj.section == NULL)) {
+  if (state.obj.section == NULL) {
     return;
   }
 
-  origin = state.byte_addr - state.obj.section->address;
-
-  new = gp_coffgen_add_reloc(state.obj.section);
-  new->address       = origin;
-  new->symbol_number = Symbol_number;
-  new->offset        = Offset;
-  new->type          = Type;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-coff_linenum(unsigned int Emitted)
-{
-  static gp_boolean  show_bad_debug = true;
-
-  gp_linenum_t      *new;
-  unsigned int       end;
-  unsigned int       origin;
-
-  if ((!state.obj.enabled) || (state.obj.section == NULL)) {
-    return;
-  }
-
-  /* If the section is absolute, use the abolute address. */
-  origin = state.lst.line.was_byte_addr;
-  if ((state.obj.section->flags & STYP_ABS) == 0) {
-    /* else use the relative address */
-    origin -= state.obj.section->address;
-  }
-
-  if (state.debug_info && (state.obj.debug_file == NULL)) {
-    if (show_bad_debug) {
-      gpmsg_error(GPE_UNKNOWN, "The .file directive required to generate debug info.");
-      show_bad_debug = false;
-    }
-    return;
-  }
-
-  end = origin + Emitted;
-  while (origin < end) {
-    new = gp_coffgen_add_linenum(state.obj.section);
-
-    if (state.debug_info) {
-      new->symbol      = state.obj.debug_file;
-      new->line_number = state.obj.debug_line;
-    }
-     else {
-      new->symbol      = state.src_list.last->file_symbol;
-      new->line_number = state.src_list.last->line_number;
-    }
-
-    new->address = origin;
-
-    origin += (origin & 1) ? 1 : 2;
-  }
+  state.obj.section->size = state.byte_addr - state.obj.section->address;
+  _update_section_symbol(state.obj.section);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -384,7 +309,7 @@ gp_symbol_t *
 coff_add_sym(const char *Name, gp_symvalue_t Value, enum gpasmValTypes Type)
 {
   gp_symbol_t  *new;
-  unsigned int  section_number;
+  int           section_number;
   unsigned int  class;
   char          message[BUFSIZ];
 
@@ -433,26 +358,99 @@ coff_add_sym(const char *Name, gp_symvalue_t Value, enum gpasmValTypes Type)
   if ((new != NULL) && (Type == VAL_EXTERNAL))  {
     if ((new->type != Type) || (new->class != class) || (new->section_number != section_number)) {
       snprintf(message, sizeof(message),
-               "Duplicate label or redefining symbol that cannot be redefined. (%s)", Name);
+               "Duplicate label or redefining symbol that cannot be redefined: \"%s\"", Name);
       gpmsg_error(GPE_UNKNOWN, message);
     }
   }
 
   if ((new != NULL) && (Type != VAL_EXTERNAL) && (Type != VAL_DEBUG))  {
     snprintf(message, sizeof(message),
-             "Duplicate label or redefining symbol that cannot be redefined. (%s)", Name);
+             "Duplicate label or redefining symbol that cannot be redefined: \"%s\"", Name);
     gpmsg_error(GPE_DUPLAB, message);
   }
   else {
-    new = gp_coffgen_add_symbol(state.obj.object, Name);
-    new->value          = Value;
-    new->section_number = section_number;
-    new->section        = state.obj.section;
-//    new->type           = T_NULL;
-    new->class          = class;
+    new = gp_coffgen_add_symbol(state.obj.object, Name, section_number);
+    new->value   = Value;
+    new->section = state.obj.section;
+    new->class   = class;
   }
 
   return new;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* All coff data is generated on the second pass. To support forward
+   references to symbols in the relocation table, the symbol index
+   is stored in relocations instead of a pointer to the symbol. Before
+   the coff is written the symbol pointer is updated. */
+
+void
+coff_add_reloc(unsigned int Symbol_number, int16_t Offset, uint16_t Type)
+{
+  gp_reloc_t   *new;
+  unsigned int  origin;
+
+  if ((!state.obj.enabled) || (state.obj.section == NULL)) {
+    return;
+  }
+
+  origin = state.byte_addr - state.obj.section->address;
+
+  new = gp_coffgen_add_reloc(state.obj.section);
+  new->address       = origin;
+  new->symbol_number = Symbol_number;
+  new->offset        = Offset;
+  new->type          = Type;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+coff_add_linenum(unsigned int Emitted)
+{
+  static gp_boolean  show_bad_debug = true;
+
+  gp_linenum_t      *new;
+  unsigned int       end;
+  unsigned int       origin;
+
+  if ((!state.obj.enabled) || (state.obj.section == NULL)) {
+    return;
+  }
+
+  /* If the section is absolute, use the abolute address. */
+  origin = state.lst.line.was_byte_addr;
+  if (FlagIsClr(state.obj.section->flags, STYP_ABS)) {
+    /* else use the relative address */
+    origin -= state.obj.section->address;
+  }
+
+  if (state.debug_info && (state.obj.debug_file == NULL)) {
+    if (show_bad_debug) {
+      gpmsg_error(GPE_UNKNOWN, "The .file directive required to generate debug info.");
+      show_bad_debug = false;
+    }
+    return;
+  }
+
+  end = origin + Emitted;
+  while (origin < end) {
+    new = gp_coffgen_add_linenum(state.obj.section);
+
+    if (state.debug_info) {
+      new->symbol      = state.obj.debug_file;
+      new->line_number = state.obj.debug_line;
+    }
+     else {
+      new->symbol      = state.src_list.last->file_symbol;
+      new->line_number = state.src_list.last->line_number;
+    }
+
+    new->address = origin;
+
+    origin += (origin & 1) ? 1 : 2;
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -472,11 +470,8 @@ coff_add_file_sym(const char *Name, gp_boolean Is_include)
   }
 
   /* add .file symbol */
-  new = gp_coffgen_add_symbol(state.obj.object, ".file");
-//  new->value          = 0;
-  new->section_number = N_DEBUG;
-//  new->type           = T_NULL;
-  new->class          = C_FILE;
+  new = gp_coffgen_add_symbol(state.obj.object, ".file", N_DEBUG);
+  new->class = C_FILE;
 
   new_aux = gp_coffgen_add_aux(state.obj.object, new);
   new_aux->type                           = AUX_FILE;
@@ -509,11 +504,8 @@ coff_add_eof_sym(void)
   }
 
   /* add .eof symbol */
-  new = gp_coffgen_add_symbol(state.obj.object, ".eof");
-//  new->value          = 0;
-  new->section_number = N_DEBUG;
-//  new->type           = T_NULL;
-  new->class          = C_EOF;
+  new = gp_coffgen_add_symbol(state.obj.object, ".eof", N_DEBUG);
+  new->class = C_EOF;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -536,11 +528,9 @@ coff_add_list_sym(void)
   }
 
   /* add .list symbol */
-  new = gp_coffgen_add_symbol(state.obj.object, ".list");
-  new->value          = state.src_list.last->line_number;
-  new->section_number = N_DEBUG;
-//  new->type           = T_NULL;
-  new->class          = C_LIST;
+  new = gp_coffgen_add_symbol(state.obj.object, ".list", N_DEBUG);
+  new->value = state.src_list.last->line_number;
+  new->class = C_LIST;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -563,11 +553,9 @@ coff_add_nolist_sym(void)
   }
 
   /* add .nolist symbol */
-  new = gp_coffgen_add_symbol(state.obj.object, ".nolist");
-  new->value          = state.src_list.last->line_number;
-  new->section_number = N_DEBUG;
-//  new->type           = T_NULL;
-  new->class          = C_LIST;
+  new = gp_coffgen_add_symbol(state.obj.object, ".nolist", N_DEBUG);
+  new->value = state.src_list.last->line_number;
+  new->class = C_LIST;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -587,12 +575,9 @@ coff_add_direct_sym(uint8_t Command, const char *String)
   }
 
   /* add .direct symbol */
-  new = gp_coffgen_add_symbol(state.obj.object, ".direct");
-  new->value          = gp_processor_insn_from_byte_c(state.device.class, state.byte_addr);
-  new->section_number = state.obj.section_num;
-  new->section        = state.obj.section;
-/*  new->type           = T_NULL;
-  new->class          = C_NULL;*/
+  new = gp_coffgen_add_symbol(state.obj.object, ".direct", state.obj.section_num);
+  new->value   = gp_processor_insn_from_byte_c(state.device.class, state.byte_addr);
+  new->section = state.obj.section;
 
   new_aux = gp_coffgen_add_aux(state.obj.object, new);
   new_aux->type                            = AUX_DIRECT;
@@ -617,11 +602,7 @@ coff_add_ident_sym(const char *String)
   }
 
   /* add .ident symbol */
-  new = gp_coffgen_add_symbol(state.obj.object, ".ident");
-//  new->value          = 0;
-  new->section_number = N_DEBUG;
-/*  new->type           = T_NULL;
-  new->class          = C_NULL;*/
+  new = gp_coffgen_add_symbol(state.obj.object, ".ident", N_DEBUG);
 
   new_aux = gp_coffgen_add_aux(state.obj.object, new);
   new_aux->type                          = AUX_IDENT;

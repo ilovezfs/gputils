@@ -1,4 +1,4 @@
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE  1
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00051     i   low c1
                       00052     i   high c1
                       00053     i   low c2
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE  2
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -67,41 +67,40 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00055     i   $
                       00056     i   $+1
                       00057     i   $-1
-                      00058     ;; gpasm bugs prevent these
-                      00059     ;i  $-$
-                      00060     ;i  c1-$
-                      00061     ;i  $-c1
-                      00062     ;i  c2-$
-                      00063     ;i  $-c2
-                      00064     i   d1-d1b
-                      00065     i   d1b-d1
-                      00066     endm
-                      00067 
-                      00068 lit11   macro i
-                      00069     i   0
-                      00070     ;; MPASM (correctly) gives error on these for a CALL
-                      00071     ;i  01FF
-                      00072     i   0200
-                      00073     ;i  07FF
-                      00074     i   c1
-                      00075     i   c2
-                      00076     i   $
-                      00077     i   $+1
-                      00078     i   $-1
-                      00079     endm
-                      00080 
-  00000006            00081 p6  equ     6
-                      00082 
-                      00083     cblock  0x11
-  00000011            00084     d1
-  00000012            00085     d1b
-                      00086     endc
-                      00087 
-0020                  00088     org     0x20
-0020   0000           00089     nop
-0021                  00090 c1
-                      00091 
-                      00092     opwf5   ADDWF
+                      00058     i  $-$
+                      00059     i  c1-$
+                      00060     i  $-c1
+                      00061     i  c2-$
+                      00062     i  $-c2
+                      00063     i   d1-d1b
+                      00064     i   d1b-d1
+                      00065     endm
+                      00066 
+                      00067 lit11   macro i
+                      00068     i   0
+                      00069     ;; MPASM (correctly) gives error on these for a CALL
+                      00070     ;i  01FF
+                      00071     i   0200
+                      00072     ;i  07FF
+                      00073     i   c1
+                      00074     i   c2
+                      00075     i   $
+                      00076     i   $+1
+                      00077     i   $-1
+                      00078     endm
+                      00079 
+  00000006            00080 p6  equ     6
+                      00081 
+                      00082     cblock  0x11
+  00000011            00083     d1
+  00000012            00084     d1b
+                      00085     endc
+                      00086 
+0020                  00087     org     0x20
+0020   0000           00088     nop
+0021                  00089 c1
+                      00090 
+                      00091     opwf5   ADDWF
 Message[305]: Using default destination of 1 (file).
 0021   01E0               M     ADDWF   0
 0022   01E0               M     ADDWF   0,F
@@ -116,13 +115,13 @@ Message[305]: Using default destination of 1 (file).
 0029   01D1               M     ADDWF   d1,W
 Message[305]: Using default destination of 1 (file).
 002A   01F9               M     ADDWF   d2
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE  3
+002B   01F9               M     ADDWF   d2,F
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-002B   01F9               M     ADDWF   d2,F
 002C   01D9               M     ADDWF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
@@ -133,7 +132,7 @@ Message[305]: Using default destination of 1 (file).
 002F   01F2               M     ADDWF   d1+1
 Message[305]: Using default destination of 1 (file).
 0030   01F8               M     ADDWF   d2-1
-                      00093     lit8    ANDLW
+                      00092     lit8    ANDLW
 0031   0E00               M     ANDLW   0
 0032   0E41               M     ANDLW   'A'
 0033   0E41               M     ANDLW   "A"
@@ -142,628 +141,627 @@ Message[305]: Using default destination of 1 (file).
 0036   0E00               M     ANDLW   high $
 0037   0E21               M     ANDLW   low c1
 0038   0E00               M     ANDLW   high c1
-0039   0EB8               M     ANDLW   low c2
+0039   0EBD               M     ANDLW   low c2
 003A   0E00               M     ANDLW   high c2
 003B   0E3B               M     ANDLW   $
 003C   0E3D               M     ANDLW   $+1
 003D   0E3C               M     ANDLW   $-1
-                          M     ;; gpasm bugs prevent these
-                          M     ;i  $-$
-                          M     ;i  c1-$
-                          M     ;i  $-c1
-                          M     ;i  c2-$
-                          M     ;i  $-c2
-003E   0EFF               M     ANDLW   d1-d1b
-003F   0E01               M     ANDLW   d1b-d1
-                      00094     opwf5   ANDWF
+003E   0E00               M     ANDLW  $-$
+003F   0EE2               M     ANDLW  c1-$
+0040   0E1F               M     ANDLW  $-c1
+0041   0E7C               M     ANDLW  c2-$
+0042   0E85               M     ANDLW  $-c2
+0043   0EFF               M     ANDLW   d1-d1b
+0044   0E01               M     ANDLW   d1b-d1
+                      00093     opwf5   ANDWF
 Message[305]: Using default destination of 1 (file).
-0040   0160               M     ANDWF   0
-0041   0160               M     ANDWF   0,F
-0042   0140               M     ANDWF   0,W
+0045   0160               M     ANDWF   0
+0046   0160               M     ANDWF   0,F
+0047   0140               M     ANDWF   0,W
 Message[305]: Using default destination of 1 (file).
-0043   017F               M     ANDWF   01F
-0044   017F               M     ANDWF   01F,F
-0045   015F               M     ANDWF   01F,W
+0048   017F               M     ANDWF   01F
+0049   017F               M     ANDWF   01F,F
+004A   015F               M     ANDWF   01F,W
 Message[305]: Using default destination of 1 (file).
-0046   0171               M     ANDWF   d1
-0047   0171               M     ANDWF   d1,F
-0048   0151               M     ANDWF   d1,W
+004B   0171               M     ANDWF   d1
+004C   0171               M     ANDWF   d1,F
+004D   0151               M     ANDWF   d1,W
 Message[305]: Using default destination of 1 (file).
-0049   0179               M     ANDWF   d2
-004A   0179               M     ANDWF   d2,F
-004B   0159               M     ANDWF   d2,W
+004E   0179               M     ANDWF   d2
+004F   0179               M     ANDWF   d2,F
+0050   0159               M     ANDWF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-004C   017F               M     ANDWF   d1-d1b
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE  4
+0051   017F               M     ANDWF   d1-d1b
+Message[305]: Using default destination of 1 (file).
+0052   0161               M     ANDWF   d1b-d1
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
 Message[305]: Using default destination of 1 (file).
-004D   0161               M     ANDWF   d1b-d1
+0053   0172               M     ANDWF   d1+1
 Message[305]: Using default destination of 1 (file).
-004E   0172               M     ANDWF   d1+1
-Message[305]: Using default destination of 1 (file).
-004F   0178               M     ANDWF   d2-1
-                      00095     b5      BCF
-0050   0400               M     BCF   0,0
-0051   04E0               M     BCF   0,7
-0052   041F               M     BCF   01F,0
-0053   04FF               M     BCF   01F,7
-0054   0411               M     BCF   d1,0
-0055   04F1               M     BCF   d1,7
-0056   0419               M     BCF   d2,0
-0057   04F9               M     BCF   d2,7
-                      00096     b5      BSF
-0058   0500               M     BSF   0,0
-0059   05E0               M     BSF   0,7
-005A   051F               M     BSF   01F,0
-005B   05FF               M     BSF   01F,7
-005C   0511               M     BSF   d1,0
-005D   05F1               M     BSF   d1,7
-005E   0519               M     BSF   d2,0
-005F   05F9               M     BSF   d2,7
-                      00097     b5      BTFSC
-0060   0600               M     BTFSC   0,0
-0061   06E0               M     BTFSC   0,7
-0062   061F               M     BTFSC   01F,0
-0063   06FF               M     BTFSC   01F,7
-0064   0611               M     BTFSC   d1,0
-0065   06F1               M     BTFSC   d1,7
-0066   0619               M     BTFSC   d2,0
-0067   06F9               M     BTFSC   d2,7
-                      00098     b5      BTFSS
-0068   0700               M     BTFSS   0,0
-0069   07E0               M     BTFSS   0,7
-006A   071F               M     BTFSS   01F,0
-006B   07FF               M     BTFSS   01F,7
-006C   0711               M     BTFSS   d1,0
-006D   07F1               M     BTFSS   d1,7
-006E   0719               M     BTFSS   d2,0
-006F   07F9               M     BTFSS   d2,7
-                      00099     lit11   CALL
-0070   0900               M     CALL   0
+0054   0178               M     ANDWF   d2-1
+                      00094     b5      BCF
+0055   0400               M     BCF   0,0
+0056   04E0               M     BCF   0,7
+0057   041F               M     BCF   01F,0
+0058   04FF               M     BCF   01F,7
+0059   0411               M     BCF   d1,0
+005A   04F1               M     BCF   d1,7
+005B   0419               M     BCF   d2,0
+005C   04F9               M     BCF   d2,7
+                      00095     b5      BSF
+005D   0500               M     BSF   0,0
+005E   05E0               M     BSF   0,7
+005F   051F               M     BSF   01F,0
+0060   05FF               M     BSF   01F,7
+0061   0511               M     BSF   d1,0
+0062   05F1               M     BSF   d1,7
+0063   0519               M     BSF   d2,0
+0064   05F9               M     BSF   d2,7
+                      00096     b5      BTFSC
+0065   0600               M     BTFSC   0,0
+0066   06E0               M     BTFSC   0,7
+0067   061F               M     BTFSC   01F,0
+0068   06FF               M     BTFSC   01F,7
+0069   0611               M     BTFSC   d1,0
+006A   06F1               M     BTFSC   d1,7
+006B   0619               M     BTFSC   d2,0
+006C   06F9               M     BTFSC   d2,7
+                      00097     b5      BTFSS
+006D   0700               M     BTFSS   0,0
+006E   07E0               M     BTFSS   0,7
+006F   071F               M     BTFSS   01F,0
+0070   07FF               M     BTFSS   01F,7
+0071   0711               M     BTFSS   d1,0
+0072   07F1               M     BTFSS   d1,7
+0073   0719               M     BTFSS   d2,0
+0074   07F9               M     BTFSS   d2,7
+                      00098     lit11   CALL
+0075   0900               M     CALL   0
                           M     ;; MPASM (correctly) gives error on these for a CALL
                           M     ;i  01FF
 Message[306]: Crossing page boundary -- ensure page bits are set.
-0071   0900               M     CALL   0200
+0076   0900               M     CALL   0200
                           M     ;i  07FF
-0072   0921               M     CALL   c1
-0073   09B8               M     CALL   c2
-0074   0974               M     CALL   $
-0075   0976               M     CALL   $+1
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE  5
+0077   0921               M     CALL   c1
+0078   09BD               M     CALL   c2
+0079   0979               M     CALL   $
+007A   097B               M     CALL   $+1
+007B   097A               M     CALL   $-1
+                      00099     opf5    CLRF
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0076   0975               M     CALL   $-1
-                      00100     opf5    CLRF
-0077   0060               M     CLRF   0
-0078   007F               M     CLRF   01F
-0079   0071               M     CLRF   d1
-007A   0079               M     CLRF   d2
+007C   0060               M     CLRF   0
+007D   007F               M     CLRF   01F
+007E   0071               M     CLRF   d1
+007F   0079               M     CLRF   d2
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-007B   007F               M     CLRF   d1-d1b
-007C   0061               M     CLRF   d1b-d1
-007D   0072               M     CLRF   d1+1
-007E   0078               M     CLRF   d2-1
-007F   0040           00101     CLRW
-0080   0004           00102     CLRWDT
-                      00103     opwf5   COMF
+0080   007F               M     CLRF   d1-d1b
+0081   0061               M     CLRF   d1b-d1
+0082   0072               M     CLRF   d1+1
+0083   0078               M     CLRF   d2-1
+0084   0040           00100     CLRW
+0085   0004           00101     CLRWDT
+                      00102     opwf5   COMF
 Message[305]: Using default destination of 1 (file).
-0081   0260               M     COMF   0
-0082   0260               M     COMF   0,F
-0083   0240               M     COMF   0,W
+0086   0260               M     COMF   0
+0087   0260               M     COMF   0,F
+0088   0240               M     COMF   0,W
 Message[305]: Using default destination of 1 (file).
-0084   027F               M     COMF   01F
-0085   027F               M     COMF   01F,F
-0086   025F               M     COMF   01F,W
+0089   027F               M     COMF   01F
+008A   027F               M     COMF   01F,F
+008B   025F               M     COMF   01F,W
 Message[305]: Using default destination of 1 (file).
-0087   0271               M     COMF   d1
-0088   0271               M     COMF   d1,F
-0089   0251               M     COMF   d1,W
+008C   0271               M     COMF   d1
+008D   0271               M     COMF   d1,F
+008E   0251               M     COMF   d1,W
 Message[305]: Using default destination of 1 (file).
-008A   0279               M     COMF   d2
-008B   0279               M     COMF   d2,F
-008C   0259               M     COMF   d2,W
+008F   0279               M     COMF   d2
+0090   0279               M     COMF   d2,F
+0091   0259               M     COMF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-008D   027F               M     COMF   d1-d1b
+0092   027F               M     COMF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-008E   0261               M     COMF   d1b-d1
+0093   0261               M     COMF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-008F   0272               M     COMF   d1+1
+0094   0272               M     COMF   d1+1
 Message[305]: Using default destination of 1 (file).
-0090   0278               M     COMF   d2-1
-                      00104     opwf5   DECF
+0095   0278               M     COMF   d2-1
+                      00103     opwf5   DECF
 Message[305]: Using default destination of 1 (file).
-0091   00E0               M     DECF   0
-0092   00E0               M     DECF   0,F
-0093   00C0               M     DECF   0,W
+0096   00E0               M     DECF   0
+0097   00E0               M     DECF   0,F
+0098   00C0               M     DECF   0,W
 Message[305]: Using default destination of 1 (file).
-0094   00FF               M     DECF   01F
-0095   00FF               M     DECF   01F,F
-0096   00DF               M     DECF   01F,W
+0099   00FF               M     DECF   01F
+009A   00FF               M     DECF   01F,F
+009B   00DF               M     DECF   01F,W
 Message[305]: Using default destination of 1 (file).
-0097   00F1               M     DECF   d1
-0098   00F1               M     DECF   d1,F
-0099   00D1               M     DECF   d1,W
+009C   00F1               M     DECF   d1
+009D   00F1               M     DECF   d1,F
+009E   00D1               M     DECF   d1,W
 Message[305]: Using default destination of 1 (file).
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE  6
+009F   00F9               M     DECF   d2
+00A0   00F9               M     DECF   d2,F
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-009A   00F9               M     DECF   d2
-009B   00F9               M     DECF   d2,F
-009C   00D9               M     DECF   d2,W
+00A1   00D9               M     DECF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-009D   00FF               M     DECF   d1-d1b
+00A2   00FF               M     DECF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-009E   00E1               M     DECF   d1b-d1
+00A3   00E1               M     DECF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-009F   00F2               M     DECF   d1+1
+00A4   00F2               M     DECF   d1+1
 Message[305]: Using default destination of 1 (file).
-00A0   00F8               M     DECF   d2-1
-                      00105     opwf5   DECFSZ
+00A5   00F8               M     DECF   d2-1
+                      00104     opwf5   DECFSZ
 Message[305]: Using default destination of 1 (file).
-00A1   02E0               M     DECFSZ   0
-00A2   02E0               M     DECFSZ   0,F
-00A3   02C0               M     DECFSZ   0,W
+00A6   02E0               M     DECFSZ   0
+00A7   02E0               M     DECFSZ   0,F
+00A8   02C0               M     DECFSZ   0,W
 Message[305]: Using default destination of 1 (file).
-00A4   02FF               M     DECFSZ   01F
-00A5   02FF               M     DECFSZ   01F,F
-00A6   02DF               M     DECFSZ   01F,W
+00A9   02FF               M     DECFSZ   01F
+00AA   02FF               M     DECFSZ   01F,F
+00AB   02DF               M     DECFSZ   01F,W
 Message[305]: Using default destination of 1 (file).
-00A7   02F1               M     DECFSZ   d1
-00A8   02F1               M     DECFSZ   d1,F
-00A9   02D1               M     DECFSZ   d1,W
+00AC   02F1               M     DECFSZ   d1
+00AD   02F1               M     DECFSZ   d1,F
+00AE   02D1               M     DECFSZ   d1,W
 Message[305]: Using default destination of 1 (file).
-00AA   02F9               M     DECFSZ   d2
-00AB   02F9               M     DECFSZ   d2,F
-00AC   02D9               M     DECFSZ   d2,W
+00AF   02F9               M     DECFSZ   d2
+00B0   02F9               M     DECFSZ   d2,F
+00B1   02D9               M     DECFSZ   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-00AD   02FF               M     DECFSZ   d1-d1b
+00B2   02FF               M     DECFSZ   d1-d1b
 Message[305]: Using default destination of 1 (file).
-00AE   02E1               M     DECFSZ   d1b-d1
+00B3   02E1               M     DECFSZ   d1b-d1
 Message[305]: Using default destination of 1 (file).
-00AF   02F2               M     DECFSZ   d1+1
+00B4   02F2               M     DECFSZ   d1+1
 Message[305]: Using default destination of 1 (file).
-00B0   02F8               M     DECFSZ   d2-1
-                      00106     lit11   GOTO
-00B1   0A00               M     GOTO   0
+00B5   02F8               M     DECFSZ   d2-1
+                      00105     lit11   GOTO
+00B6   0A00               M     GOTO   0
                           M     ;; MPASM (correctly) gives error on these for a CALL
                           M     ;i  01FF
 Message[306]: Crossing page boundary -- ensure page bits are set.
-00B2   0A00               M     GOTO   0200
+00B7   0A00               M     GOTO   0200
                           M     ;i  07FF
-00B3   0A21               M     GOTO   c1
-00B4   0AB8               M     GOTO   c2
-00B5   0AB5               M     GOTO   $
-00B6   0AB7               M     GOTO   $+1
-00B7   0AB6               M     GOTO   $-1
-00B8                  00107 c2
-                      00108     opwf5   INCF
+00B8   0A21               M     GOTO   c1
+00B9   0ABD               M     GOTO   c2
+00BA   0ABA               M     GOTO   $
+00BB   0ABC               M     GOTO   $+1
+00BC   0ABB               M     GOTO   $-1
+00BD                  00106 c2
+                      00107     opwf5   INCF
 Message[305]: Using default destination of 1 (file).
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE  7
+00BD   02A0               M     INCF   0
+00BE   02A0               M     INCF   0,F
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-00B8   02A0               M     INCF   0
-00B9   02A0               M     INCF   0,F
-00BA   0280               M     INCF   0,W
+00BF   0280               M     INCF   0,W
 Message[305]: Using default destination of 1 (file).
-00BB   02BF               M     INCF   01F
-00BC   02BF               M     INCF   01F,F
-00BD   029F               M     INCF   01F,W
+00C0   02BF               M     INCF   01F
+00C1   02BF               M     INCF   01F,F
+00C2   029F               M     INCF   01F,W
 Message[305]: Using default destination of 1 (file).
-00BE   02B1               M     INCF   d1
-00BF   02B1               M     INCF   d1,F
-00C0   0291               M     INCF   d1,W
+00C3   02B1               M     INCF   d1
+00C4   02B1               M     INCF   d1,F
+00C5   0291               M     INCF   d1,W
 Message[305]: Using default destination of 1 (file).
-00C1   02B9               M     INCF   d2
-00C2   02B9               M     INCF   d2,F
-00C3   0299               M     INCF   d2,W
+00C6   02B9               M     INCF   d2
+00C7   02B9               M     INCF   d2,F
+00C8   0299               M     INCF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-00C4   02BF               M     INCF   d1-d1b
+00C9   02BF               M     INCF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-00C5   02A1               M     INCF   d1b-d1
+00CA   02A1               M     INCF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-00C6   02B2               M     INCF   d1+1
+00CB   02B2               M     INCF   d1+1
 Message[305]: Using default destination of 1 (file).
-00C7   02B8               M     INCF   d2-1
-                      00109     opwf5   INCFSZ
+00CC   02B8               M     INCF   d2-1
+                      00108     opwf5   INCFSZ
 Message[305]: Using default destination of 1 (file).
-00C8   03E0               M     INCFSZ   0
-00C9   03E0               M     INCFSZ   0,F
-00CA   03C0               M     INCFSZ   0,W
+00CD   03E0               M     INCFSZ   0
+00CE   03E0               M     INCFSZ   0,F
+00CF   03C0               M     INCFSZ   0,W
 Message[305]: Using default destination of 1 (file).
-00CB   03FF               M     INCFSZ   01F
-00CC   03FF               M     INCFSZ   01F,F
-00CD   03DF               M     INCFSZ   01F,W
+00D0   03FF               M     INCFSZ   01F
+00D1   03FF               M     INCFSZ   01F,F
+00D2   03DF               M     INCFSZ   01F,W
 Message[305]: Using default destination of 1 (file).
-00CE   03F1               M     INCFSZ   d1
-00CF   03F1               M     INCFSZ   d1,F
-00D0   03D1               M     INCFSZ   d1,W
+00D3   03F1               M     INCFSZ   d1
+00D4   03F1               M     INCFSZ   d1,F
+00D5   03D1               M     INCFSZ   d1,W
 Message[305]: Using default destination of 1 (file).
-00D1   03F9               M     INCFSZ   d2
-00D2   03F9               M     INCFSZ   d2,F
-00D3   03D9               M     INCFSZ   d2,W
+00D6   03F9               M     INCFSZ   d2
+00D7   03F9               M     INCFSZ   d2,F
+00D8   03D9               M     INCFSZ   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-00D4   03FF               M     INCFSZ   d1-d1b
+00D9   03FF               M     INCFSZ   d1-d1b
 Message[305]: Using default destination of 1 (file).
-00D5   03E1               M     INCFSZ   d1b-d1
+00DA   03E1               M     INCFSZ   d1b-d1
 Message[305]: Using default destination of 1 (file).
-00D6   03F2               M     INCFSZ   d1+1
+00DB   03F2               M     INCFSZ   d1+1
 Message[305]: Using default destination of 1 (file).
-00D7   03F8               M     INCFSZ   d2-1
-                      00110     lit8    IORLW
-00D8   0D00               M     IORLW   0
-00D9   0D41               M     IORLW   'A'
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE  8
+00DC   03F8               M     INCFSZ   d2-1
+                      00109     lit8    IORLW
+00DD   0D00               M     IORLW   0
+00DE   0D41               M     IORLW   'A'
+00DF   0D41               M     IORLW   "A"
+00E0   0DFF               M     IORLW   0FF
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-00DA   0D41               M     IORLW   "A"
-00DB   0DFF               M     IORLW   0FF
-00DC   0DDC               M     IORLW   low $
-00DD   0D00               M     IORLW   high $
-00DE   0D21               M     IORLW   low c1
-00DF   0D00               M     IORLW   high c1
-00E0   0DB8               M     IORLW   low c2
-00E1   0D00               M     IORLW   high c2
-00E2   0DE2               M     IORLW   $
-00E3   0DE4               M     IORLW   $+1
-00E4   0DE3               M     IORLW   $-1
-                          M     ;; gpasm bugs prevent these
-                          M     ;i  $-$
-                          M     ;i  c1-$
-                          M     ;i  $-c1
-                          M     ;i  c2-$
-                          M     ;i  $-c2
-00E5   0DFF               M     IORLW   d1-d1b
-00E6   0D01               M     IORLW   d1b-d1
-                      00111     opwf5   IORWF
+00E1   0DE1               M     IORLW   low $
+00E2   0D00               M     IORLW   high $
+00E3   0D21               M     IORLW   low c1
+00E4   0D00               M     IORLW   high c1
+00E5   0DBD               M     IORLW   low c2
+00E6   0D00               M     IORLW   high c2
+00E7   0DE7               M     IORLW   $
+00E8   0DE9               M     IORLW   $+1
+00E9   0DE8               M     IORLW   $-1
+00EA   0D00               M     IORLW  $-$
+00EB   0D36               M     IORLW  c1-$
+00EC   0DCB               M     IORLW  $-c1
+00ED   0DD0               M     IORLW  c2-$
+00EE   0D31               M     IORLW  $-c2
+00EF   0DFF               M     IORLW   d1-d1b
+00F0   0D01               M     IORLW   d1b-d1
+                      00110     opwf5   IORWF
 Message[305]: Using default destination of 1 (file).
-00E7   0120               M     IORWF   0
-00E8   0120               M     IORWF   0,F
-00E9   0100               M     IORWF   0,W
+00F1   0120               M     IORWF   0
+00F2   0120               M     IORWF   0,F
+00F3   0100               M     IORWF   0,W
 Message[305]: Using default destination of 1 (file).
-00EA   013F               M     IORWF   01F
-00EB   013F               M     IORWF   01F,F
-00EC   011F               M     IORWF   01F,W
+00F4   013F               M     IORWF   01F
+00F5   013F               M     IORWF   01F,F
+00F6   011F               M     IORWF   01F,W
 Message[305]: Using default destination of 1 (file).
-00ED   0131               M     IORWF   d1
-00EE   0131               M     IORWF   d1,F
-00EF   0111               M     IORWF   d1,W
+00F7   0131               M     IORWF   d1
+00F8   0131               M     IORWF   d1,F
+00F9   0111               M     IORWF   d1,W
 Message[305]: Using default destination of 1 (file).
-00F0   0139               M     IORWF   d2
-00F1   0139               M     IORWF   d2,F
-00F2   0119               M     IORWF   d2,W
+00FA   0139               M     IORWF   d2
+00FB   0139               M     IORWF   d2,F
+00FC   0119               M     IORWF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-00F3   013F               M     IORWF   d1-d1b
+00FD   013F               M     IORWF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-00F4   0121               M     IORWF   d1b-d1
+00FE   0121               M     IORWF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-00F5   0132               M     IORWF   d1+1
+00FF   0132               M     IORWF   d1+1
 Message[305]: Using default destination of 1 (file).
-00F6   0138               M     IORWF   d2-1
-                      00112     opwf5   MOVF
+0100   0138               M     IORWF   d2-1
+                      00111     opwf5   MOVF
 Message[305]: Using default destination of 1 (file).
-00F7   0220               M     MOVF   0
-00F8   0220               M     MOVF   0,F
-00F9   0200               M     MOVF   0,W
+0101   0220               M     MOVF   0
+0102   0220               M     MOVF   0,F
+0103   0200               M     MOVF   0,W
 Message[305]: Using default destination of 1 (file).
-00FA   023F               M     MOVF   01F
-00FB   023F               M     MOVF   01F,F
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE  9
+0104   023F               M     MOVF   01F
+0105   023F               M     MOVF   01F,F
+0106   021F               M     MOVF   01F,W
+Message[305]: Using default destination of 1 (file).
+0107   0231               M     MOVF   d1
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-00FC   021F               M     MOVF   01F,W
+0108   0231               M     MOVF   d1,F
+0109   0211               M     MOVF   d1,W
 Message[305]: Using default destination of 1 (file).
-00FD   0231               M     MOVF   d1
-00FE   0231               M     MOVF   d1,F
-00FF   0211               M     MOVF   d1,W
-Message[305]: Using default destination of 1 (file).
-0100   0239               M     MOVF   d2
-0101   0239               M     MOVF   d2,F
-0102   0219               M     MOVF   d2,W
+010A   0239               M     MOVF   d2
+010B   0239               M     MOVF   d2,F
+010C   0219               M     MOVF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0103   023F               M     MOVF   d1-d1b
+010D   023F               M     MOVF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-0104   0221               M     MOVF   d1b-d1
+010E   0221               M     MOVF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-0105   0232               M     MOVF   d1+1
+010F   0232               M     MOVF   d1+1
 Message[305]: Using default destination of 1 (file).
-0106   0238               M     MOVF   d2-1
-                      00113     lit8    MOVLW
-0107   0C00               M     MOVLW   0
-0108   0C41               M     MOVLW   'A'
-0109   0C41               M     MOVLW   "A"
-010A   0CFF               M     MOVLW   0FF
-010B   0C0B               M     MOVLW   low $
-010C   0C01               M     MOVLW   high $
-010D   0C21               M     MOVLW   low c1
-010E   0C00               M     MOVLW   high c1
-010F   0CB8               M     MOVLW   low c2
-0110   0C00               M     MOVLW   high c2
+0110   0238               M     MOVF   d2-1
+                      00112     lit8    MOVLW
+0111   0C00               M     MOVLW   0
+0112   0C41               M     MOVLW   'A'
+0113   0C41               M     MOVLW   "A"
+0114   0CFF               M     MOVLW   0FF
+0115   0C15               M     MOVLW   low $
+0116   0C01               M     MOVLW   high $
+0117   0C21               M     MOVLW   low c1
+0118   0C00               M     MOVLW   high c1
+0119   0CBD               M     MOVLW   low c2
+011A   0C00               M     MOVLW   high c2
 Warning[202]: Argument out of range.  Least significant bits used.
-0111   0C11               M     MOVLW   $
+011B   0C1B               M     MOVLW   $
 Warning[202]: Argument out of range.  Least significant bits used.
-0112   0C13               M     MOVLW   $+1
+011C   0C1D               M     MOVLW   $+1
 Warning[202]: Argument out of range.  Least significant bits used.
-0113   0C12               M     MOVLW   $-1
-                          M     ;; gpasm bugs prevent these
-                          M     ;i  $-$
-                          M     ;i  c1-$
-                          M     ;i  $-c1
-                          M     ;i  c2-$
-                          M     ;i  $-c2
-0114   0CFF               M     MOVLW   d1-d1b
-0115   0C01               M     MOVLW   d1b-d1
-                      00114     opf5    MOVWF
-0116   0020               M     MOVWF   0
-0117   003F               M     MOVWF   01F
-0118   0031               M     MOVWF   d1
-0119   0039               M     MOVWF   d2
+011D   0C1C               M     MOVLW   $-1
+011E   0C00               M     MOVLW  $-$
+011F   0C02               M     MOVLW  c1-$
+0120   0CFF               M     MOVLW  $-c1
+0121   0C9C               M     MOVLW  c2-$
+0122   0C65               M     MOVLW  $-c2
+0123   0CFF               M     MOVLW   d1-d1b
+0124   0C01               M     MOVLW   d1b-d1
+                      00113     opf5    MOVWF
+0125   0020               M     MOVWF   0
+0126   003F               M     MOVWF   01F
+0127   0031               M     MOVWF   d1
+0128   0039               M     MOVWF   d2
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-011A   003F               M     MOVWF   d1-d1b
-011B   0021               M     MOVWF   d1b-d1
-011C   0032               M     MOVWF   d1+1
-011D   0038               M     MOVWF   d2-1
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE 10
+0129   003F               M     MOVWF   d1-d1b
+012A   0021               M     MOVWF   d1b-d1
+012B   0032               M     MOVWF   d1+1
+012C   0038               M     MOVWF   d2-1
+012D   0000           00114     NOP
+012E   0002           00115     OPTION
+                      00116     lit8    RETLW
+012F   0800               M     RETLW   0
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE 10
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-011E   0000           00115     NOP
-011F   0002           00116     OPTION
-                      00117     lit8    RETLW
-0120   0800               M     RETLW   0
-0121   0841               M     RETLW   'A'
-0122   0841               M     RETLW   "A"
-0123   08FF               M     RETLW   0FF
-0124   0824               M     RETLW   low $
-0125   0801               M     RETLW   high $
-0126   0821               M     RETLW   low c1
-0127   0800               M     RETLW   high c1
-0128   08B8               M     RETLW   low c2
-0129   0800               M     RETLW   high c2
+0130   0841               M     RETLW   'A'
+0131   0841               M     RETLW   "A"
+0132   08FF               M     RETLW   0FF
+0133   0833               M     RETLW   low $
+0134   0801               M     RETLW   high $
+0135   0821               M     RETLW   low c1
+0136   0800               M     RETLW   high c1
+0137   08BD               M     RETLW   low c2
+0138   0800               M     RETLW   high c2
 Warning[202]: Argument out of range.  Least significant bits used.
-012A   082A               M     RETLW   $
+0139   0839               M     RETLW   $
 Warning[202]: Argument out of range.  Least significant bits used.
-012B   082C               M     RETLW   $+1
+013A   083B               M     RETLW   $+1
 Warning[202]: Argument out of range.  Least significant bits used.
-012C   082B               M     RETLW   $-1
-                          M     ;; gpasm bugs prevent these
-                          M     ;i  $-$
-                          M     ;i  c1-$
-                          M     ;i  $-c1
-                          M     ;i  c2-$
-                          M     ;i  $-c2
-012D   08FF               M     RETLW   d1-d1b
-012E   0801               M     RETLW   d1b-d1
-                      00118     opwf5   RLF
+013B   083A               M     RETLW   $-1
+013C   0800               M     RETLW  $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+013D   08E4               M     RETLW  c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+013E   081D               M     RETLW  $-c1
+013F   087E               M     RETLW  c2-$
+0140   0883               M     RETLW  $-c2
+0141   08FF               M     RETLW   d1-d1b
+0142   0801               M     RETLW   d1b-d1
+                      00117     opwf5   RLF
 Message[305]: Using default destination of 1 (file).
-012F   0360               M     RLF   0
-0130   0360               M     RLF   0,F
-0131   0340               M     RLF   0,W
+0143   0360               M     RLF   0
+0144   0360               M     RLF   0,F
+0145   0340               M     RLF   0,W
 Message[305]: Using default destination of 1 (file).
-0132   037F               M     RLF   01F
-0133   037F               M     RLF   01F,F
-0134   035F               M     RLF   01F,W
+0146   037F               M     RLF   01F
+0147   037F               M     RLF   01F,F
+0148   035F               M     RLF   01F,W
 Message[305]: Using default destination of 1 (file).
-0135   0371               M     RLF   d1
-0136   0371               M     RLF   d1,F
-0137   0351               M     RLF   d1,W
+0149   0371               M     RLF   d1
+014A   0371               M     RLF   d1,F
+014B   0351               M     RLF   d1,W
 Message[305]: Using default destination of 1 (file).
-0138   0379               M     RLF   d2
-0139   0379               M     RLF   d2,F
-013A   0359               M     RLF   d2,W
+014C   0379               M     RLF   d2
+014D   0379               M     RLF   d2,F
+014E   0359               M     RLF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-013B   037F               M     RLF   d1-d1b
+014F   037F               M     RLF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-013C   0361               M     RLF   d1b-d1
+0150   0361               M     RLF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-013D   0372               M     RLF   d1+1
+0151   0372               M     RLF   d1+1
 Message[305]: Using default destination of 1 (file).
-013E   0378               M     RLF   d2-1
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE 11
+0152   0378               M     RLF   d2-1
+                      00118     opwf5   RRF
+Message[305]: Using default destination of 1 (file).
+0153   0320               M     RRF   0
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE 11
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00119     opwf5   RRF
+0154   0320               M     RRF   0,F
+0155   0300               M     RRF   0,W
 Message[305]: Using default destination of 1 (file).
-013F   0320               M     RRF   0
-0140   0320               M     RRF   0,F
-0141   0300               M     RRF   0,W
+0156   033F               M     RRF   01F
+0157   033F               M     RRF   01F,F
+0158   031F               M     RRF   01F,W
 Message[305]: Using default destination of 1 (file).
-0142   033F               M     RRF   01F
-0143   033F               M     RRF   01F,F
-0144   031F               M     RRF   01F,W
+0159   0331               M     RRF   d1
+015A   0331               M     RRF   d1,F
+015B   0311               M     RRF   d1,W
 Message[305]: Using default destination of 1 (file).
-0145   0331               M     RRF   d1
-0146   0331               M     RRF   d1,F
-0147   0311               M     RRF   d1,W
-Message[305]: Using default destination of 1 (file).
-0148   0339               M     RRF   d2
-0149   0339               M     RRF   d2,F
-014A   0319               M     RRF   d2,W
+015C   0339               M     RRF   d2
+015D   0339               M     RRF   d2,F
+015E   0319               M     RRF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-014B   033F               M     RRF   d1-d1b
+015F   033F               M     RRF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-014C   0321               M     RRF   d1b-d1
+0160   0321               M     RRF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-014D   0332               M     RRF   d1+1
+0161   0332               M     RRF   d1+1
 Message[305]: Using default destination of 1 (file).
-014E   0338               M     RRF   d2-1
-014F   0003           00120     SLEEP
-                      00121     opwf5   SUBWF
+0162   0338               M     RRF   d2-1
+0163   0003           00119     SLEEP
+                      00120     opwf5   SUBWF
 Message[305]: Using default destination of 1 (file).
-0150   00A0               M     SUBWF   0
-0151   00A0               M     SUBWF   0,F
-0152   0080               M     SUBWF   0,W
+0164   00A0               M     SUBWF   0
+0165   00A0               M     SUBWF   0,F
+0166   0080               M     SUBWF   0,W
 Message[305]: Using default destination of 1 (file).
-0153   00BF               M     SUBWF   01F
-0154   00BF               M     SUBWF   01F,F
-0155   009F               M     SUBWF   01F,W
+0167   00BF               M     SUBWF   01F
+0168   00BF               M     SUBWF   01F,F
+0169   009F               M     SUBWF   01F,W
 Message[305]: Using default destination of 1 (file).
-0156   00B1               M     SUBWF   d1
-0157   00B1               M     SUBWF   d1,F
-0158   0091               M     SUBWF   d1,W
+016A   00B1               M     SUBWF   d1
+016B   00B1               M     SUBWF   d1,F
+016C   0091               M     SUBWF   d1,W
 Message[305]: Using default destination of 1 (file).
-0159   00B9               M     SUBWF   d2
-015A   00B9               M     SUBWF   d2,F
-015B   0099               M     SUBWF   d2,W
+016D   00B9               M     SUBWF   d2
+016E   00B9               M     SUBWF   d2,F
+016F   0099               M     SUBWF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-015C   00BF               M     SUBWF   d1-d1b
+0170   00BF               M     SUBWF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-015D   00A1               M     SUBWF   d1b-d1
+0171   00A1               M     SUBWF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-015E   00B2               M     SUBWF   d1+1
+0172   00B2               M     SUBWF   d1+1
 Message[305]: Using default destination of 1 (file).
-015F   00B8               M     SUBWF   d2-1
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE 12
+0173   00B8               M     SUBWF   d2-1
+                      00121     opwf5   SWAPF
+Message[305]: Using default destination of 1 (file).
+0174   03A0               M     SWAPF   0
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE 12
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00122     opwf5   SWAPF
+0175   03A0               M     SWAPF   0,F
+0176   0380               M     SWAPF   0,W
 Message[305]: Using default destination of 1 (file).
-0160   03A0               M     SWAPF   0
-0161   03A0               M     SWAPF   0,F
-0162   0380               M     SWAPF   0,W
+0177   03BF               M     SWAPF   01F
+0178   03BF               M     SWAPF   01F,F
+0179   039F               M     SWAPF   01F,W
 Message[305]: Using default destination of 1 (file).
-0163   03BF               M     SWAPF   01F
-0164   03BF               M     SWAPF   01F,F
-0165   039F               M     SWAPF   01F,W
+017A   03B1               M     SWAPF   d1
+017B   03B1               M     SWAPF   d1,F
+017C   0391               M     SWAPF   d1,W
 Message[305]: Using default destination of 1 (file).
-0166   03B1               M     SWAPF   d1
-0167   03B1               M     SWAPF   d1,F
-0168   0391               M     SWAPF   d1,W
-Message[305]: Using default destination of 1 (file).
-0169   03B9               M     SWAPF   d2
-016A   03B9               M     SWAPF   d2,F
-016B   0399               M     SWAPF   d2,W
+017D   03B9               M     SWAPF   d2
+017E   03B9               M     SWAPF   d2,F
+017F   0399               M     SWAPF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-016C   03BF               M     SWAPF   d1-d1b
+0180   03BF               M     SWAPF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-016D   03A1               M     SWAPF   d1b-d1
+0181   03A1               M     SWAPF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-016E   03B2               M     SWAPF   d1+1
+0182   03B2               M     SWAPF   d1+1
 Message[305]: Using default destination of 1 (file).
-016F   03B8               M     SWAPF   d2-1
-0170   0006           00123     TRIS    6
-0171   0007           00124     TRIS    7
-0172   0006           00125     TRIS    p6
-0173   0007           00126     TRIS    p7
-                      00127     lit8    XORLW
-0174   0F00               M     XORLW   0
-0175   0F41               M     XORLW   'A'
-0176   0F41               M     XORLW   "A"
-0177   0FFF               M     XORLW   0FF
-0178   0F78               M     XORLW   low $
-0179   0F01               M     XORLW   high $
-017A   0F21               M     XORLW   low c1
-017B   0F00               M     XORLW   high c1
-017C   0FB8               M     XORLW   low c2
-017D   0F00               M     XORLW   high c2
+0183   03B8               M     SWAPF   d2-1
+0184   0006           00122     TRIS    6
+0185   0007           00123     TRIS    7
+0186   0006           00124     TRIS    p6
+0187   0007           00125     TRIS    p7
+                      00126     lit8    XORLW
+0188   0F00               M     XORLW   0
+0189   0F41               M     XORLW   'A'
+018A   0F41               M     XORLW   "A"
+018B   0FFF               M     XORLW   0FF
+018C   0F8C               M     XORLW   low $
+018D   0F01               M     XORLW   high $
+018E   0F21               M     XORLW   low c1
+018F   0F00               M     XORLW   high c1
+0190   0FBD               M     XORLW   low c2
+0191   0F00               M     XORLW   high c2
 Warning[202]: Argument out of range.  Least significant bits used.
-017E   0F7E               M     XORLW   $
+0192   0F92               M     XORLW   $
 Warning[202]: Argument out of range.  Least significant bits used.
-017F   0F80               M     XORLW   $+1
+0193   0F94               M     XORLW   $+1
 Warning[202]: Argument out of range.  Least significant bits used.
-0180   0F7F               M     XORLW   $-1
-                          M     ;; gpasm bugs prevent these
-                          M     ;i  $-$
-                          M     ;i  c1-$
-                          M     ;i  $-c1
-                          M     ;i  c2-$
-                          M     ;i  $-c2
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE 13
+0194   0F93               M     XORLW   $-1
+0195   0F00               M     XORLW  $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+0196   0F8B               M     XORLW  c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+0197   0F76               M     XORLW  $-c1
+0198   0F25               M     XORLW  c2-$
+0199   0FDC               M     XORLW  $-c2
+019A   0FFF               M     XORLW   d1-d1b
+019B   0F01               M     XORLW   d1b-d1
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE 13
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0181   0FFF               M     XORLW   d1-d1b
-0182   0F01               M     XORLW   d1b-d1
-                      00128     opwf5   XORWF
+                      00127     opwf5   XORWF
 Message[305]: Using default destination of 1 (file).
-0183   01A0               M     XORWF   0
-0184   01A0               M     XORWF   0,F
-0185   0180               M     XORWF   0,W
+019C   01A0               M     XORWF   0
+019D   01A0               M     XORWF   0,F
+019E   0180               M     XORWF   0,W
 Message[305]: Using default destination of 1 (file).
-0186   01BF               M     XORWF   01F
-0187   01BF               M     XORWF   01F,F
-0188   019F               M     XORWF   01F,W
+019F   01BF               M     XORWF   01F
+01A0   01BF               M     XORWF   01F,F
+01A1   019F               M     XORWF   01F,W
 Message[305]: Using default destination of 1 (file).
-0189   01B1               M     XORWF   d1
-018A   01B1               M     XORWF   d1,F
-018B   0191               M     XORWF   d1,W
+01A2   01B1               M     XORWF   d1
+01A3   01B1               M     XORWF   d1,F
+01A4   0191               M     XORWF   d1,W
 Message[305]: Using default destination of 1 (file).
-018C   01B9               M     XORWF   d2
-018D   01B9               M     XORWF   d2,F
-018E   0199               M     XORWF   d2,W
+01A5   01B9               M     XORWF   d2
+01A6   01B9               M     XORWF   d2,F
+01A7   0199               M     XORWF   d2,W
 Message[305]: Using default destination of 1 (file).
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-018F   01BF               M     XORWF   d1-d1b
+01A8   01BF               M     XORWF   d1-d1b
 Message[305]: Using default destination of 1 (file).
-0190   01A1               M     XORWF   d1b-d1
+01A9   01A1               M     XORWF   d1b-d1
 Message[305]: Using default destination of 1 (file).
-0191   01B2               M     XORWF   d1+1
+01AA   01B2               M     XORWF   d1+1
 Message[305]: Using default destination of 1 (file).
-0192   01B8               M     XORWF   d2-1
-                      00129 
-0193   0010           00130     banksel d1
-0194   0010           00131     banksel d2
-                      00132 
-0195   04A3 04C3      00133     pagesel c1
-0197   04A3 04C3      00134     pagesel c2
-                      00135 
-0199   0021 00B8      00136     DW      c1,c2
-                      00137 
-                      00138     cblock  0x19
-  00000019            00139     d2
-                      00140     endc
-                      00141 
-                      00142     cblock  7
-  00000007            00143     p7
-                      00144     endc
-                      00145 
-019B   0010           00146     movlb   0
-019C   0011           00147     movlb   1
-019D   0016           00148     movlb   6
-019E   0017           00149     movlb   7
-                      00150 
-                      00151     end
-MPASM  5.49  /HOME/BORUTR/TMP/GPUTILS_BUGS/BU   3-8-2013  13:47:26         PAGE 14
+01AB   01B8               M     XORWF   d2-1
+                      00128 
+01AC   0010           00129     banksel d1
+01AD   0010           00130     banksel d2
+                      00131 
+01AE   04A3 04C3      00132     pagesel c1
+01B0   04A3 04C3      00133     pagesel c2
+                      00134 
+01B2   0021 00BD      00135     DW      c1,c2
+                      00136 
+                      00137     cblock  0x19
+  00000019            00138     d2
+                      00139     endc
+                      00140 
+                      00141     cblock  7
+  00000007            00142     p7
+                      00143     endc
+                      00144 
+01B4   0010           00145     movlb   0
+01B5   0011           00146     movlb   1
+01B6   0016           00147     movlb   6
+01B7   0017           00148     movlb   7
+                      00149 
+                      00150     end
+MPASM 5.68             /TMP/OP12E_12F529.ASM   7-25-2016  11:12:25         PAGE 14
 
 
 SYMBOL TABLE
@@ -772,7 +770,7 @@ SYMBOL TABLE
 __12F529T39A                      00000001
 b5                                
 c1                                00000021
-c2                                000000B8
+c2                                000000BD
 d1                                00000011
 d1b                               00000012
 d2                                00000019
@@ -792,16 +790,16 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXX- ---------------- ----------------
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXX--------
 
 All other memory blocks unused.
 
-Program Memory Words Used:   383
-Program Memory Words Free:  1153
+Program Memory Words Used:   408
+Program Memory Words Free:  1128
 
 
 Errors   :     0
-Warnings :     9 reported,     0 suppressed
+Warnings :    13 reported,     0 suppressed
 Messages :   130 reported,     0 suppressed
 
 

@@ -641,15 +641,16 @@ gp_coffgen_make_block_symbol(gp_object_t *Object)
 /* Add a new symbol to the object. */
 
 gp_symbol_t *
-gp_coffgen_add_symbol(gp_object_t *Object, const char *Name)
+gp_coffgen_add_symbol(gp_object_t *Object, const char *Name, int16_t Section_number)
 {
   gp_symbol_t *new;
 
   /* allocate memory for the symbol */
   new = (gp_symbol_t *)gp_list_node_append(&Object->symbol_list, gp_list_node_new(sizeof(gp_symbol_t)));
-  new->name      = GP_Strdup(Name);
-  new->number    = Object->num_symbols;
-  new->object_id = Object->serial_id;
+  new->name           = GP_Strdup(Name);
+  new->number         = Object->num_symbols;
+  new->section_number = Section_number;
+  new->object_id      = Object->serial_id;
   (Object->num_symbols)++;
 
   return new;

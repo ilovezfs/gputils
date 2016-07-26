@@ -298,59 +298,59 @@ int main(int argc, char *argv[])
     }
 
     switch (c) {
-    case '?':
-    case 'h':
-      usage = true;
-      break;
+      case '?':
+      case 'h':
+        usage = true;
+        break;
 
-    case 'g':
-      state.strip_debug = true;
-      break;
+      case 'g':
+        state.strip_debug = true;
+        break;
 
-    case 'k':
-      _add_name(state.symbol_keep, optarg);
-      break;
+      case 'k':
+        _add_name(state.symbol_keep, optarg);
+        break;
 
-    case 'n':
-      _add_name(state.symbol_remove, optarg);
-      break;
+      case 'n':
+        _add_name(state.symbol_remove, optarg);
+        break;
 
-    case 'o':
-      state.output_file = optarg;
-      break;
+      case 'o':
+        state.output_file = optarg;
+        break;
 
-    case 'p':
-      state.preserve_dates = true;
-      break;
+      case 'p':
+        state.preserve_dates = true;
+        break;
 
-    case 'r':
-      _add_name(state.section_remove, optarg);
-      break;
+      case 'r':
+        _add_name(state.section_remove, optarg);
+        break;
 
-    case 's':
-      state.strip_all = true;
-      break;
+      case 's':
+        state.strip_all = true;
+        break;
 
-    case 'u':
-      state.strip_unneeded = true;
-      break;
+      case 'u':
+        state.strip_unneeded = true;
+        break;
 
-    case 'x':
-      state.discard_all = true;
-      break;
+      case 'x':
+        state.discard_all = true;
+        break;
 
-    case 'V':
-      verbose = true;
-      break;
+      case 'V':
+        verbose = true;
+        break;
 
-    case 'v':
-      fprintf(stderr, "%s\n", GPSTRIP_VERSION_STRING);
-      exit(0);
+      case 'v':
+        fprintf(stderr, "%s\n", GPSTRIP_VERSION_STRING);
+        exit(0);
 
-    case OPT_STRICT_OPTIONS:
-      /* do nothing */
-      break;
-    }
+      case OPT_STRICT_OPTIONS:
+        /* do nothing */
+        break;
+    } /* switch (c) */
 
     if (usage)
       break;
@@ -422,8 +422,7 @@ int main(int argc, char *argv[])
         }
       }
       else if (state.output_file) {
-        /* a new file is being written, but errors have occurred, delete
-           the file if it exists */
+        /* A new file is being written, but errors have occurred, delete the file if it exists. */
         unlink(state.output_file);
       }
 

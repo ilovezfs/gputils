@@ -237,7 +237,7 @@ _check_processor_select(const char *Name)
 static void
 _emit(uint16_t Value, const char *Name)
 {
-  /* only write the program data to memory on the second pass */
+  /* Only write the program data to memory on the second pass. */
   if (state.pass == 2) {
     Value = _check_write(Value);
     state.device.class->i_memory_put(state.i_memory, state.byte_addr, Value, Name, NULL);
@@ -305,7 +305,7 @@ _emit_byte(uint16_t Value, const char *Name)
           (*msg)(code, "Address{0x%0*X} > MAXROM{0x%0*X}", addr_digits, org, addr_digits, state.maxrom);
         }
         else {
-          /* check if current org is within a bad address range */
+          /* Check if current org is within a bad address range. */
           if (gp_bitarray_read(&state.badrom, org)) {
             start = 0;
             end   = 0;
@@ -358,12 +358,11 @@ _off_or_on(pnode_t *Pnode)
 /*------------------------------------------------------------------------------------------------*/
 
 /* Convert an expression list which may consist of strings, constants, labels,
- * etc. into instruction memory.
- * This is called by the da,data, and dw directives.
+ * etc. into instruction memory. This is called by the da, data, and dw directives.
  *
- * pnode *L                -  A pointer to a doubly-linked list containing all of the
+ * pnode *List             -  A pointer to a doubly-linked list containing all of the
  *                            expressions.
- * unsigned int char_shift -  Character width in bits (8 but 7 for da on 14-bit PIC).
+ * unsigned int Char_shift -  Character width in bits (8 but 7 for da on 14-bit PIC).
  */
 
 static unsigned int
@@ -627,7 +626,7 @@ _do_assume(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
     if (state.mode == MODE_ABSOLUTE) {
       address            = eval_maybe_evaluate(p);
-      state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
+      state.assumed_bank = gp_processor_bank_addr(proc, address);
     }
     else {
       /* state.mode == MODE_RELOCATABLE */
@@ -636,41 +635,41 @@ _do_assume(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       if (num_reloc == 0) {
         /* It is an absolute address, generate the banksel but no relocation. */
         address            = eval_maybe_evaluate(p);
-        state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
+        state.assumed_bank = gp_processor_bank_addr(proc, address);
       }
       else if (num_reloc != 1) {
         gpmsg_verror(GPE_UNRESOLVABLE, "\"%s\"", Name);
       }
       else if (IS_PIC12E_CORE || IS_PIC12I_CORE) {
         address            = _eval_update_reloc_value(p, RELOCT_MOVLB, false);
-        state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
+        state.assumed_bank = gp_processor_bank_addr(proc, address);
       }
       else if (IS_PIC14E_CORE) {
         address            = _eval_update_reloc_value(p, RELOCT_MOVLB, false);
-        state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
+        state.assumed_bank = gp_processor_bank_addr(proc, address);
       }
       else if (IS_PIC14EX_CORE) {
         address            = _eval_update_reloc_value(p, RELOCT_MOVLB, false);
-        state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
+        state.assumed_bank = gp_processor_bank_addr(proc, address);
       }
       else if (IS_PIC16_CORE) {
         address            = _eval_update_reloc_value(p, RELOCT_BANKSEL, false);
-        state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
+        state.assumed_bank = gp_processor_bank_addr(proc, address);
       }
       else if (IS_PIC16E_CORE) {
         address            = _eval_update_reloc_value(p, RELOCT_BANKSEL, false);
-        state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
+        state.assumed_bank = gp_processor_bank_addr(proc, address);
       }
       else {
         switch (proc->num_banks) {
           case 2:
             address            = _eval_update_reloc_value(p, RELOCT_BANKSEL, false);
-            state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
+            state.assumed_bank = gp_processor_bank_addr(proc, address);
             break;
 
           case 4:
             address            = _eval_update_reloc_value(p, RELOCT_BANKSEL, false);
-            state.assumed_bank = (address >= 0) ? gp_processor_bank_addr(proc, address) : __ACTIVE_BANK_INV;
+            state.assumed_bank = gp_processor_bank_addr(proc, address);
             break;
         }
       }
@@ -3443,7 +3442,7 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg);
         gp_mem_b_put(m, idreg, val, buf, NULL);
         state.lst.line.was_byte_addr = idreg;
-        coff_linenum(1);
+        coff_add_linenum(1);
 
         if (state.mode == MODE_RELOCATABLE) {
           state.byte_addr += 1;
@@ -3472,7 +3471,7 @@ _do_idlocs(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       snprintf(buf, sizeof(buf), "IDLOCS_%0*X", addr_digits, idreg + 6);
       class->i_memory_put(m, idreg + 6, (val & 0x000f),       buf, NULL);
       state.lst.line.was_byte_addr = idreg;
-      coff_linenum(8);
+      coff_add_linenum(8);
 
       if (state.mode == MODE_RELOCATABLE) {
         state.byte_addr += 8;
@@ -3643,7 +3642,7 @@ constant:
 warning:
 
     if (n > 0) {
-      coff_linenum(n);
+      coff_add_linenum(n);
     }
   } /* if (state.pass == 2) */
 
@@ -3939,7 +3938,7 @@ static gpasmVal
 _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 {
   const pnode_t *p;
-  const char    *lhs;
+  const char    *str;
   int            value;
   char           message[BUFSIZ];
 
@@ -3951,16 +3950,16 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
 
     if (PnIsBinOp(p) && (PnBinOpOp(p) == '=')) {
       if (eval_enforce_simple(PnBinOpP0(p))) {
-        lhs = PnSymbol(PnBinOpP0(p));
+        str = PnSymbol(PnBinOpP0(p));
 
-        if (strcasecmp(lhs, "b") == 0) {
+        if (strcasecmp(str, "b") == 0) {
           value = eval_maybe_evaluate(PnBinOpP1(p));
 
           if (value != 0) {
             state.lst.tabstop = value;
           }
         }
-        else if (strcasecmp(lhs, "c") == 0) {
+        else if (strcasecmp(str, "c") == 0) {
           value = eval_maybe_evaluate(PnBinOpP1(p));
 
           if (value > LST_SRC_POS) {
@@ -3972,15 +3971,15 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
             gpmsg_error(GPE_OUT_OF_RANGE, message);
           }
         }
-        else if (strcasecmp(lhs, "f") == 0) {
+        else if (strcasecmp(str, "f") == 0) {
           if (eval_enforce_simple(PnBinOpP1(p))) {
             select_hexformat(PnSymbol(PnBinOpP1(p)));
           }
         }
-        else if (strcasecmp(lhs, "l") == 0) {
+        else if (strcasecmp(str, "l") == 0) {
           ; /* Ignore this for now: Page length. */
         }
-        else if (strcasecmp(lhs, "m") == 0) {
+        else if (strcasecmp(str, "m") == 0) {
           /* Undocumented, only found in MEMORY.INC and MCP250XX.INC. */
           if (eval_can_evaluate(PnBinOpP1(p))) {
             value = eval_evaluate(PnBinOpP1(p));
@@ -3995,10 +3994,10 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
             }
           }
         }
-        else if (strcasecmp(lhs, "mm") == 0) {
+        else if (strcasecmp(str, "mm") == 0) {
           state.lst.memory_map = _off_or_on(PnBinOpP1(p));
         }
-        else if (strcasecmp(lhs, "n") == 0) {
+        else if (strcasecmp(str, "n") == 0) {
           if (eval_can_evaluate(PnBinOpP1(p))) {
             int number = eval_evaluate(PnBinOpP1(p));
 
@@ -4010,39 +4009,39 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
             }
           }
         }
-        else if (strcasecmp(lhs, "p") == 0) {
+        else if (strcasecmp(str, "p") == 0) {
           if (eval_enforce_simple(PnBinOpP1(p))) {
             select_processor(PnSymbol(PnBinOpP1(p)));
           }
         }
-        else if (strcasecmp(lhs, "pe") == 0) {
+        else if (strcasecmp(str, "pe") == 0) {
           state.extended_pic16e = true;
 
           if (eval_enforce_simple(PnBinOpP1(p))) {
             select_processor(PnSymbol(PnBinOpP1(p)));
           }
         }
-        else if (strcasecmp(lhs, "r") == 0) {
+        else if (strcasecmp(str, "r") == 0) {
           if (eval_enforce_simple(PnBinOpP1(p))) {
             select_radix(PnSymbol(PnBinOpP1(p)));
           }
         }
-        else if (strcasecmp(lhs, "st") == 0) {
+        else if (strcasecmp(str, "st") == 0) {
           state.lst.symbol_table = _off_or_on(PnBinOpP1(p));
         }
-        else if (strcasecmp(lhs, "t") == 0) {
+        else if (strcasecmp(str, "t") == 0) {
           ; /* Ignore this for now: Always wrap long list lines. */
         }
-        else if (strcasecmp(lhs, "w") == 0) {
+        else if (strcasecmp(str, "w") == 0) {
           select_errorlevel(eval_maybe_evaluate(PnBinOpP1(p)));
         }
-        else if (strcasecmp(lhs, "x") == 0) {
+        else if (strcasecmp(str, "x") == 0) {
           if (eval_enforce_simple(PnBinOpP1(p))) {
             select_expand(PnSymbol(PnBinOpP1(p)));
           }
         }
         else {
-          gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, lhs);
+          gpmsg_verror(GPE_ILLEGAL_ARGU, NULL, str);
         }
       }
     }
@@ -5566,7 +5565,7 @@ _reg_addr_check_reloc(int Reg_address, const char *Reg_name, unsigned int Insn_f
         if (bank_assume >= 0) {
           bank_assume     = gp_processor_bank_addr(state.processor, bank_assume);
           bank_assume_num = gp_processor_bank_num(state.processor, bank_assume);
-          bank_addr       = (Reg_address >= 0) ? gp_processor_bank_addr(state.processor, Reg_address) : -1;
+          bank_addr       = gp_processor_bank_addr(state.processor, Reg_address);
 
           if (bank_assume != bank_addr) {
             _msg_ram_bank(Reg_address, Reg_name, bank_assume_num);

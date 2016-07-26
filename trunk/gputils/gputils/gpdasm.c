@@ -419,7 +419,7 @@ _mark_false_addresses(MemBlock_t *Memory)
 
   m = Memory;
   while (m != NULL) {
-    i = IMemAddrFromBase(m->base);
+    i       = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
 
     insn_size = 2;
@@ -491,7 +491,7 @@ _recognize_labels_and_spec_words(MemBlock_t *Memory)
   idlocs_pack.number   = 0;
   idlocs_pack.is_print = true;
   while (m != NULL) {
-    i = IMemAddrFromBase(m->base);
+    i       = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
 
     insn_size = 2;
@@ -676,7 +676,7 @@ _recognize_registers(MemBlock_t *Memory)
   fstate.bsr_boundary = gp_processor_bsr_boundary(state.processor);
   fstate.need_sfr_equ = false;
   while (m != NULL) {
-    i = IMemAddrFromBase(m->base);
+    i       = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
 
     insn_size = 2;
@@ -725,7 +725,7 @@ _denominate_labels(MemBlock_t *Memory)
   func_idx  = 0;
   label_idx = 0;
   while (m != NULL) {
-    i = IMemAddrFromBase(m->base);
+    i       = IMemAddrFromBase(m->base);
     maximum = i + I_MEM_MAX;
 
     while (i < maximum) {
@@ -826,7 +826,7 @@ _show_idlocs(void)
         aligned = act_exist;
       }
 
-      if ((prev_exist == false) && (act_exist == true)) {
+      if ((!prev_exist) && act_exist) {
         ++word;
 
         if (word > 1) {
@@ -887,12 +887,12 @@ _show_idlocs(void)
           act_exist = false;
         }
 
-      if ((prev_exist == true) && (act_exist == false)) {
-        /* Indicates the break. */
-        _ux_print(true, "");
-      }
+        if (prev_exist && (!act_exist)) {
+          /* Indicates the break. */
+          _ux_print(true, "");
+        }
 
-      prev_exist = act_exist;
+        prev_exist = act_exist;
       }
     }
   } /* if (state.class == PROC_CLASS_PIC16E) */
@@ -1514,73 +1514,73 @@ int main(int argc, char *argv[])
     }
 
     switch (c) {
-    case '?':
-    case 'h':
-      usage = true;
-      break;
+      case '?':
+      case 'h':
+        usage = true;
+        break;
 
-    case 'c':
-      gp_decode_mnemonics = true;
-      break;
+      case 'c':
+        gp_decode_mnemonics = true;
+        break;
 
-    case 'i':
-      print_hex_info = true;
-      break;
+      case 'i':
+        print_hex_info = true;
+        break;
 
-    case 'j':
-      state.show_fsrn = true;
-      break;
+      case 'j':
+        state.show_fsrn = true;
+        break;
 
-    case 'k':
-      label_list_name = optarg;
-      break;
+      case 'k':
+        label_list_name = optarg;
+        break;
 
-    case 'l':
-      gp_dump_processor_list(true, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN);
-      exit(0);
-      break;
+      case 'l':
+        gp_dump_processor_list(true, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN);
+        exit(0);
+        break;
 
-    case 'm':
-      memory_dump = true;
-      break;
+      case 'm':
+        memory_dump = true;
+        break;
 
-    case 'n':
-      state.show_names = true;
-      break;
+      case 'n':
+        state.show_names = true;
+        break;
 
-    case 'o':
-      state.show_config = true;
-      break;
+      case 'o':
+        state.show_config = true;
+        break;
 
-    case 'p':
-      processor_name = optarg;
-      break;
+      case 'p':
+        processor_name = optarg;
+        break;
 
-    case 's':
-      state.format = 0;
-      break;
+      case 's':
+        state.format = 0;
+        break;
 
-    case 't':
-      state.use_tab = true;
-      break;
+      case 't':
+        state.use_tab = true;
+        break;
 
-    case 'v':
-      fprintf(stderr, "%s\n", GPDASM_VERSION_STRING);
-      exit(0);
-      break;
+      case 'v':
+        fprintf(stderr, "%s\n", GPDASM_VERSION_STRING);
+        exit(0);
+        break;
 
-    case 'y':
-      gp_decode_extended = true;
-      break;
+      case 'y':
+        gp_decode_extended = true;
+        break;
 
-    case OPT_STRICT:
-      strict = true;
-      break;
+      case OPT_STRICT:
+        strict = true;
+        break;
 
-    case OPT_STRICT_OPTIONS:
-      /* do nothing */
-      break;
-    }
+      case OPT_STRICT_OPTIONS:
+        /* do nothing */
+        break;
+    } /* switch (c) */
 
     if (usage) {
       break;

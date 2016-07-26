@@ -1,6 +1,7 @@
 	processor 18f2420
 
-	__maxrom 0xfffff
+; The mpasmx indicates this error: "Error[126]  : Argument out of range (must be less than 32768)"
+;	__maxrom 0xfffff
 
 opfa8	macro i
 	;; Low access memory
@@ -33,12 +34,11 @@ opfa8	macro i
 	i	$-1
 	i	$-1,0
 	i	$-1,1
-	;; gpasm bugs prevent these tests
-	;i	$-$
-	;i	c1-$
-	;i	$-c1
-	;i	c2-$
-	;i	$-c2
+	i	$-$
+	i	c1-$
+	i	$-c1
+	i	c2-$
+	i	$-c2
 	i	d1-d1b
 	i	d1b-d1
 	i	d1+1
@@ -110,11 +110,11 @@ opwfa8	macro i
 	i	$-1,W
 	i	$-1,W,0
 	i	$-1,W,1
-	;i	$-$
-	;i	c1-$
-	;i	$-c1
-	;i	c2-$
-	;i	$-c2
+	i	$-$
+	i	c1-$
+	i	$-c1
+	i	c2-$
+	i	$-c2
 	i	d1-d1b
 	i	d1b-d1
 	i	d1+1
@@ -182,18 +182,19 @@ lit8	macro i
 	i	$
 	i	$+1
 	i	$-1
-	;i	$-$
-	;i	c1-$
-	;i	$-c1
-	;i	c2-$
-	;i	$-c2
+	i	$-$
+	i	c1-$
+	i	$-c1
+	i	c2-$
+	i	$-c2
 	i	d1-d1b
 	i	d1b-d1
 	endm
 
 addr	macro i
 	i	0
-	i	0x80000
+; The mpasmx indicates this error: "Error[126]  : Argument out of range (0000 not between 0000 and 3FFF)"
+;	i	0x80000
 	i	c1
 	i	c2
 	i	$
@@ -288,8 +289,10 @@ c1
 	ba8	BTG
 	rbra8	BZ
 	addr	CALL
-	CALL	0x12346,0
-	CALL	0x12346,1
+; The mpasmx indicates this error: "Error[126]  : Argument out of range (2346 not between 0000 and 3FFF)"
+;	CALL	0x12346,0
+; The mpasmx indicates this error: "Error[126]  : Argument out of range (2346 not between 0000 and 3FFF)"
+;	CALL	0x12346,1
 	opfa8	CLRF
 	CLRWDT     
 	opwfa8	COMF

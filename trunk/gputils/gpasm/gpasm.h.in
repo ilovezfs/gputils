@@ -350,7 +350,7 @@ extern struct gpasm_state {
   struct {                              /* Object file state: */
     gp_object_t  *object;               /*   Object file. */
     gp_section_t *section;              /*   Current section. */
-    unsigned int  section_num;          /*   Current section number. */
+    int           section_num;          /*   Current section number. */
     gp_boolean    enabled;              /*   True if object file is enabled. */
     char          new_sect_name[80];    /*   new section name */
     unsigned int  new_sect_addr;        /*   new section adress */

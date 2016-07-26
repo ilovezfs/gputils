@@ -545,302 +545,304 @@ process_args(int argc, char *argv[])
 
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
-    case '?':
-      usage_code = 1;
+      case '?':
+        usage_code = 1;
+      case 'h':
+        usage = true;
+        break;
 
-    case 'h':
-      usage = true;
-      break;
+      case 'a':
+        select_hexformat(optarg);
+        state.cmd_line.hex_format = true;
+        break;
 
-    case 'a':
-      select_hexformat(optarg);
-      state.cmd_line.hex_format = true;
-      break;
+      case 'c':
+        state.mode     = MODE_RELOCATABLE;
+        state.cod_file = OUT_SUPPRESS;
+        state.hex_file = OUT_SUPPRESS;
+        state.lst_file = OUT_NORMAL;
+        state.obj_file = OUT_NORMAL;
+        break;
 
-    case 'c':
-      state.mode     = MODE_RELOCATABLE;
-      state.cod_file = OUT_SUPPRESS;
-      state.hex_file = OUT_SUPPRESS;
-      state.lst_file = OUT_NORMAL;
-      state.obj_file = OUT_NORMAL;
-      break;
+      case 'C':
+        state.obj.newcoff = false;
+        break;
 
-    case 'C':
-      state.obj.newcoff = false;
-      break;
+      case 'd':
+        gp_debug_disable = false;
+        break;
 
-    case 'd':
-      gp_debug_disable = false;
-      break;
+      case 'D': {
+        if ((optarg != NULL) && (strlen(optarg) > 0)) {
+          symbol_t *sym;
+          char     *lhs;
+          char     *rhs;
 
-    case 'D':
-      if ((optarg != NULL) && (strlen(optarg) > 0)) {
-        symbol_t *sym;
-        char *lhs, *rhs;
+          lhs = GP_Strdup(optarg);
+          rhs = strchr(lhs, '=');
 
-        lhs = GP_Strdup(optarg);
-        rhs = strchr(lhs, '=');
+          if (rhs != NULL) {
+            *rhs = '\0';  /* Terminate the left-hand side */
+            rhs++;        /* right-hand side begins after the '=' */
+          }
 
-        if (rhs != NULL) {
-          *rhs = '\0';  /* Terminate the left-hand side */
-          rhs++;        /* right-hand side begins after the '=' */
+          sym = gp_sym_get_symbol(state.stDefines, lhs);
+
+          if (sym == NULL) {
+            sym = gp_sym_add_symbol(state.stDefines, lhs);
+          }
+
+          if (rhs != NULL) {
+            gp_sym_annotate_symbol(sym, mk_list(mk_string(rhs), NULL));
+          }
+        }
+        break;
+      }
+
+      case 'e':
+        select_expand(optarg);
+        state.cmd_line.macro_expand = true;
+        break;
+
+      case 'f':
+        state.show_full_addr = true;
+        break;
+
+      case 'g':
+        state.debug_info = true;
+        break;
+
+      case 'I':
+        _add_path(optarg);
+        break;
+
+      case 'i':
+        state.case_insensitive = true;
+        break;
+
+      case 'j':
+        sdcc_dev16 = true;
+        break;
+
+      case 'k':
+        state.err_file = OUT_NORMAL;
+        break;
+
+      case 'L':
+        state.cmd_line.lst_force = true;
+        break;
+
+      case 'l': {
+        gp_boolean all;
+
+        pic_family = -1;
+
+        if (optarg != NULL) {
+          pic_family = strtol(optarg, NULL, 16);
         }
 
-        sym = gp_sym_get_symbol(state.stDefines, lhs);
+        all = false;
 
-        if (sym == NULL) {
-          sym = gp_sym_add_symbol(state.stDefines, lhs);
+        switch (pic_family) {
+          case 0x12:
+            list_options.class0 = PROC_CLASS_PIC12;
+            list_options.class1 = PROC_CLASS_PIC12E;
+            list_options.class2 = PROC_CLASS_PIC12I;
+            break;
+
+          case 0x12C:
+            list_options.class0 = PROC_CLASS_PIC12;
+            break;
+
+          case 0x12E:
+            list_options.class0 = PROC_CLASS_PIC12E;
+            list_options.class1 = PROC_CLASS_PIC12I;
+            break;
+
+          case 0x14:
+            list_options.class0 = PROC_CLASS_PIC14;
+            list_options.class1 = PROC_CLASS_PIC14E;
+            list_options.class2 = PROC_CLASS_PIC14EX;
+            break;
+
+          case 0x14C:
+            list_options.class0 = PROC_CLASS_PIC14;
+            break;
+
+          case 0x14E:
+            list_options.class0 = PROC_CLASS_PIC14E;
+            break;
+
+          case 0x14F:
+            list_options.class0 = PROC_CLASS_PIC14EX;
+            break;
+
+          case 0x16:
+            list_options.class0 = PROC_CLASS_PIC16;
+            list_options.class1 = PROC_CLASS_PIC16E;
+            break;
+
+          case 0x16C:
+            list_options.class0 = PROC_CLASS_PIC16;
+            break;
+
+          case 0x16E:
+            list_options.class0 = PROC_CLASS_PIC16E;
+            break;
+
+          default:
+            all = true;
+          }
+
+        gp_dump_processor_list(all, list_options.class0, list_options.class1, list_options.class2);
+        exit(0);
+        break;
+      }
+
+      case 'M':
+        state.dep_file = OUT_NORMAL;
+        break;
+
+      case 'm':
+        state.memory_dump = true;
+        break;
+
+      case 'n':
+        #ifndef HAVE_DOS_BASED_FILE_SYSTEM
+          state.dos_newlines = true;
+        #endif
+        break;
+
+      case 'o': {
+        gp_strncpy(state.obj_file_name, optarg, sizeof(state.obj_file_name));
+        gp_strncpy(state.base_file_name, optarg, sizeof(state.base_file_name));
+        pc = strrchr(state.base_file_name, '.');
+
+        if (pc != NULL) {
+          *pc = '\0';
+        }
+        break;
+      }
+
+      case 'p':
+        cmd_processor = true;
+        processor_name = optarg;
+        break;
+
+      case 'P':
+        state.preproc.preproc_file_name = optarg;
+        break;
+
+      case 'q':
+        state.quiet = true;
+        break;
+
+      case 'r':
+        select_radix(optarg);
+        state.cmd_line.radix = true;
+        break;
+
+      case 's': {
+        pic_family = -1;
+
+        if (optarg != NULL) {
+          pic_family = strtol(optarg, NULL, 16);
         }
 
-        if (rhs != NULL) {
-          gp_sym_annotate_symbol(sym, mk_list(mk_string(rhs), NULL));
-        }
-      }
-      break;
+        switch (pic_family) {
+          case 0x12:
+            list_options.class0 = PROC_CLASS_PIC12;
+            list_options.class1 = PROC_CLASS_PIC12E;
+            list_options.class2 = PROC_CLASS_PIC12I;
+            break;
 
-    case 'e':
-      select_expand(optarg);
-      state.cmd_line.macro_expand = true;
-      break;
+          case 0x12C:
+            list_options.class0 = PROC_CLASS_PIC12;
+            break;
 
-    case 'f':
-      state.show_full_addr = true;
-      break;
+          case 0x12E:
+            list_options.class0 = PROC_CLASS_PIC12E;
+            list_options.class1 = PROC_CLASS_PIC12I;
+            break;
 
-    case 'g':
-      state.debug_info = true;
-      break;
+          case 0x14:
+            list_options.class0 = PROC_CLASS_PIC14;
+            list_options.class1 = PROC_CLASS_PIC14E;
+            list_options.class2 = PROC_CLASS_PIC14EX;
+            break;
 
-    case 'I':
-      _add_path(optarg);
-      break;
+          case 0x14C:
+            list_options.class0 = PROC_CLASS_PIC14;
+            break;
 
-    case 'i':
-      state.case_insensitive = true;
-      break;
+          case 0x14E:
+            list_options.class0 = PROC_CLASS_PIC14E;
+            break;
 
-    case 'j':
-      sdcc_dev16 = true;
-      break;
+          case 0x14F:
+            list_options.class0 = PROC_CLASS_PIC14EX;
+            break;
 
-    case 'k':
-      state.err_file = OUT_NORMAL;
-      break;
+          case 0x16:
+            list_options.class0 = PROC_CLASS_PIC16;
+            list_options.class1 = PROC_CLASS_PIC16E;
+            break;
 
-    case 'L':
-      state.cmd_line.lst_force = true;
-      break;
+          case 0x16C:
+            list_options.class0 = PROC_CLASS_PIC16;
+            break;
 
-    case 'l': {
-      gp_boolean all;
+          case 0x16E:
+            list_options.class0 = PROC_CLASS_PIC16E;
+            break;
 
-      pic_family = -1;
+          default:
+            list_options.class0 = PROC_CLASS_UNKNOWN;
+            list_options.class1 = PROC_CLASS_UNKNOWN;
+            list_options.class2 = PROC_CLASS_UNKNOWN;
+          }
 
-      if (optarg != NULL) {
-        pic_family = strtol(optarg, NULL, 16);
-      }
-
-      all = false;
-
-      switch (pic_family) {
-        case 0x12:
-          list_options.class0 = PROC_CLASS_PIC12;
-          list_options.class1 = PROC_CLASS_PIC12E;
-          list_options.class2 = PROC_CLASS_PIC12I;
-          break;
-
-        case 0x12C:
-          list_options.class0 = PROC_CLASS_PIC12;
-          break;
-
-        case 0x12E:
-          list_options.class0 = PROC_CLASS_PIC12E;
-          list_options.class1 = PROC_CLASS_PIC12I;
-          break;
-
-        case 0x14:
-          list_options.class0 = PROC_CLASS_PIC14;
-          list_options.class1 = PROC_CLASS_PIC14E;
-          list_options.class2 = PROC_CLASS_PIC14EX;
-          break;
-
-        case 0x14C:
-          list_options.class0 = PROC_CLASS_PIC14;
-          break;
-
-        case 0x14E:
-          list_options.class0 = PROC_CLASS_PIC14E;
-          break;
-
-        case 0x14F:
-          list_options.class0 = PROC_CLASS_PIC14EX;
-          break;
-
-        case 0x16:
-          list_options.class0 = PROC_CLASS_PIC16;
-          list_options.class1 = PROC_CLASS_PIC16E;
-          break;
-
-        case 0x16C:
-          list_options.class0 = PROC_CLASS_PIC16;
-          break;
-
-        case 0x16E:
-          list_options.class0 = PROC_CLASS_PIC16E;
-          break;
-
-        default:
-          all = true;
-        }
-
-      gp_dump_processor_list(all, list_options.class0, list_options.class1, list_options.class2);
-      exit(0);
-      break;
+        properties = true;
+        break;
       }
 
-    case 'M':
-      state.dep_file = OUT_NORMAL;
-      break;
+      case 'S':
+        select_strictlevel(atoi(optarg));
+        state.cmd_line.strict_level = true;
+        break;
 
-    case 'm':
-      state.memory_dump = true;
-      break;
+      case 't':
+        sdcc_dev14 = true;
+        break;
 
-    case 'n':
-      #ifndef HAVE_DOS_BASED_FILE_SYSTEM
-        state.dos_newlines = true;
-      #endif
-      break;
+      case 'u':
+        state.use_absolute_path = true;
+        break;
 
-    case 'o':
-      gp_strncpy(state.obj_file_name, optarg, sizeof(state.obj_file_name));
-      gp_strncpy(state.base_file_name, optarg, sizeof(state.base_file_name));
-      pc = strrchr(state.base_file_name, '.');
+      case 'w':
+        select_errorlevel(atoi(optarg));
+        state.cmd_line.error_level = true;
+        break;
 
-      if (pc != NULL) {
-        *pc = '\0';
-      }
-      break;
+      case 'X':
+        state.macro_dereference = true;
+        break;
 
-    case 'p':
-      cmd_processor = true;
-      processor_name = optarg;
-      break;
+      case 'y':
+        state.extended_pic16e = true;
+        break;
 
-    case 'P':
-      state.preproc.preproc_file_name = optarg;
-      break;
+      case 'v':
+        fprintf(stderr, "%s\n", GPASM_VERSION_STRING);
+        exit(0);
 
-    case 'q':
-      state.quiet = true;
-      break;
+      case OPT_MPASM_COMPATIBLE:
+        state.mpasm_compatible = true;
+        break;
 
-    case 'r':
-      select_radix(optarg);
-      state.cmd_line.radix = true;
-      break;
-
-    case 's': {
-      pic_family = -1;
-
-      if (optarg != NULL) {
-        pic_family = strtol(optarg, NULL, 16);
-      }
-
-      switch (pic_family) {
-        case 0x12:
-          list_options.class0 = PROC_CLASS_PIC12;
-          list_options.class1 = PROC_CLASS_PIC12E;
-          list_options.class2 = PROC_CLASS_PIC12I;
-          break;
-
-        case 0x12C:
-          list_options.class0 = PROC_CLASS_PIC12;
-          break;
-
-        case 0x12E:
-          list_options.class0 = PROC_CLASS_PIC12E;
-          list_options.class1 = PROC_CLASS_PIC12I;
-          break;
-
-        case 0x14:
-          list_options.class0 = PROC_CLASS_PIC14;
-          list_options.class1 = PROC_CLASS_PIC14E;
-          list_options.class2 = PROC_CLASS_PIC14EX;
-          break;
-
-        case 0x14C:
-          list_options.class0 = PROC_CLASS_PIC14;
-          break;
-
-        case 0x14E:
-          list_options.class0 = PROC_CLASS_PIC14E;
-          break;
-
-        case 0x14F:
-          list_options.class0 = PROC_CLASS_PIC14EX;
-          break;
-
-        case 0x16:
-          list_options.class0 = PROC_CLASS_PIC16;
-          list_options.class1 = PROC_CLASS_PIC16E;
-          break;
-
-        case 0x16C:
-          list_options.class0 = PROC_CLASS_PIC16;
-          break;
-
-        case 0x16E:
-          list_options.class0 = PROC_CLASS_PIC16E;
-          break;
-
-        default:
-          list_options.class0 = PROC_CLASS_UNKNOWN;
-          list_options.class1 = PROC_CLASS_UNKNOWN;
-          list_options.class2 = PROC_CLASS_UNKNOWN;
-        }
-
-      properties = true;
-      break;
-      }
-
-    case 'S':
-      select_strictlevel(atoi(optarg));
-      state.cmd_line.strict_level = true;
-      break;
-
-    case 't':
-      sdcc_dev14 = true;
-      break;
-
-    case 'u':
-      state.use_absolute_path = true;
-      break;
-
-    case 'w':
-      select_errorlevel(atoi(optarg));
-      state.cmd_line.error_level = true;
-      break;
-
-    case 'X':
-      state.macro_dereference = true;
-      break;
-
-    case 'y':
-      state.extended_pic16e = true;
-      break;
-
-    case 'v':
-      fprintf(stderr, "%s\n", GPASM_VERSION_STRING);
-      exit(0);
-
-    case OPT_MPASM_COMPATIBLE:
-      state.mpasm_compatible = true;
-      break;
-
-    case OPT_STRICT_OPTIONS:
-      break;
-    }
+      case OPT_STRICT_OPTIONS:
+        break;
+    } /* switch (c) */
 
     if (usage) {
       break;

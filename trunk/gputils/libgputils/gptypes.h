@@ -59,7 +59,7 @@ typedef struct __attribute__ ((packed))
 
 typedef struct pnode {
   enum pnode_tag {
-    PTAG_CONSTANT,
+    PTAG_CONSTANT = 0,
     PTAG_SYMBOL,
     PTAG_STRING,
     PTAG_OFFSET,

@@ -36,58 +36,72 @@ typedef struct memmap_info {
   struct memmap_info *next;
 } memmap_info_t;
 
-static uint8_t  cod_block[COD_BLOCK_SIZE];
-static uint8_t  used_map[COD_BLOCK_SIZE];
+static uint8_t       cod_block[COD_BLOCK_SIZE];
+static uint8_t       used_map[COD_BLOCK_SIZE];
 
-static int      number_of_source_files = 0;
-static char    *source_file_names[MAX_SOURCE_FILES];
-static FILE    *source_files[MAX_SOURCE_FILES];
+static unsigned int  number_of_source_files              = 0;
+static char         *source_file_names[MAX_SOURCE_FILES] = { NULL, };
+static FILE         *source_files[MAX_SOURCE_FILES]      = { NULL, };
 
-static const char *SymbolType4[154] = {
-  "a_reg          ",   "x_reg          ",   "c_short        ",   "c_long         ",
-  "c_ushort       ",   "c_ulong        ",   "c_pointer      ",   "c_upointer     ",
-  "table          ",   "m_byte         ",   "m_boolean      ",   "m_index        ",
-  "byte_array     ",   "u_byte_array   ",   "word_array     ",   "u_word_array   ",
-  "func_void_none ",   "func_void_byte ",   "funcVoidTwobyte",   "func_void_long ",
-  "func_void_undef",   "func_int_none  ",   "func_int_byte  ",   "func_int_twobyt",
-  "func_int_long  ",   "func_int_undef ",   "func_long_none ",   "func_long_byte ",
-  "funcLongTwobyte",   "func_long_long ",   "func_long_undef",   "pfun_void_none ",
-  "pfun_void_byte ",   "pfunVoidTwobyte",   "pfun_void_long ",   "pfun_void_undef",
-  "pfun_int_none  ",   "pfun_int_byte  ",   "pfunIntTwobyte ",   "pfun_int_long  ",
-  "pfun_int_undef ",   "pfun_long_none ",   "pfun_long_byte ",   "pfun_long_twoby",
-  "pfun_long_long ",   "pfun_long_undef",   "address        ",   "constant       ",
-  "bad_und        ",   "br_und         ",   "upper_und      ",   "byte_und       ",
-  "add_und        ",   "m_keyword      ",   "add_mi_und     ",   "vector         ",
-  "port_w         ",   "port_r         ",   "port_rw        ",   "port_rmw       ",
-  "endif          ",   "exundef        ",   "macro_t        ",   "macro_s        ",
-  "macro_a        ",   "macro_c        ",   "c_keyword      ",   "void           ",
-  "c_enum         ",   "c_typedef1     ",   "c_utypedef1    ",   "c_typedef2     ",
-  "c_utypedef2    ",   "cp_typedef1    ",   "cp_utypedef1   ",   "cp_typedef2    ",
-  "cp_utypedef2   ",   "c_struct       ",   "i_struct       ",   "l_const        ",
-  "s_short        ",   "s_ushort       ",   "s_long         ",   "s_ulong        ",
-  "sa_short       ",   "sa_ushort      ",   "sa_long        ",   "sa_ulong       ",
-  "sp_short       ",   "sp_ushort      ",   "sp_long        ",   "sp_ulong       ",
-  "FixedPointer   ",   "PointerFunction",   "cc_reg         ",   "PtrF_void_none ",
-  "PtrF_void_byte ",   "PtrF_void_twobyt",  "PtrF_void_long ",   "PtrF_void_undef",
-  "PtrF_int_none  ",   "PtrF_int_byte  ",   "PtrF_int_twobyte",  "PtrF_int_long  ",
-  "PtrF_int_undef ",   "PtrF_long_none ",   "PtrF_long_byte ",
-  "PtrF_long_twobyte", "PtrF_long_long ",   "PtrF_long_undef",
-  "PfAR_void_none ",   "PfAR_void_byte ",   "PfAR_void_twobyte",
-  "PfAR_void_long ",   "PfAR_void_undef",   "PfAR_int_none  ",   "PfAR_int_byte  ",
-  "PfAR_int_twobyte",  "PfAR_int_long  ",   "PfAR_int_undef ",   "PfAR_long_none ",
-  "PfAR_long_byte ",   "PfAR_long_twobyte", "PfAR_long_long ",
-  "PfAR_long_undef",   "FWDlit         ",   "Pfunc          ",   "mgoto          ",
-  "mcgoto         ",   "mcgoto2        ",   "mcgoto3        ",   "mcgoto4        ",
-  "mcgoto74       ",   "mcgoto17       ",   "mccall17       ",   "mcall          ",
-  "mc_call        ",   "res_word       ",   "local          ",   "unknown        ",
-  "varlabel       ",   "external       ",   "global         ",   "segment        ",
-  "Bankaddr       ",   "bit_0          ",   "bit_1          ",   "bit_2          ",
-  "bit_3          ",   "bit_4          ",   "bit_5          ",   "bit_6          ",
-  "bit_7          ",   "debug          "
+static const char *symbol_type_str[] = {
+  "a_reg"            , "x_reg"            , "c_short"          , "c_long"           ,
+  "c_ushort"         , "c_ulong"          , "c_pointer"        , "c_upointer"       ,
+  "table"            , "m_byte"           , "m_boolean"        , "m_index"          ,
+  "byte_array"       , "u_byte_array"     , "word_array"       , "u_word_array"     ,
+  "func_void_none"   , "func_void_byte"   , "funcVoidTwobyte"  , "func_void_long"   ,
+  "func_void_undef"  , "func_int_none"    , "func_int_byte"    , "func_int_twobyt"  ,
+  "func_int_long"    , "func_int_undef"   , "func_long_none"   , "func_long_byte"   ,
+  "funcLongTwobyte"  , "func_long_long"   , "func_long_undef"  , "pfun_void_none"   ,
+  "pfun_void_byte"   , "pfunVoidTwobyte"  , "pfun_void_long"   , "pfun_void_undef"  ,
+  "pfun_int_none"    , "pfun_int_byte"    , "pfunIntTwobyte"   , "pfun_int_long"    ,
+  "pfun_int_undef"   , "pfun_long_none"   , "pfun_long_byte"   , "pfun_long_twoby"  ,
+  "pfun_long_long"   , "pfun_long_undef"  , "address"          , "constant"         ,
+  "bad_und"          , "br_und"           , "upper_und"        , "byte_und"         ,
+  "add_und"          , "m_keyword"        , "add_mi_und"       , "vector"           ,
+  "port_w"           , "port_r"           , "port_rw"          , "port_rmw"         ,
+  "endif"            , "exundef"          , "macro_t"          , "macro_s"          ,
+  "macro_a"          , "macro_c"          , "c_keyword"        , "void"             ,
+  "c_enum"           , "c_typedef1"       , "c_utypedef1"      , "c_typedef2"       ,
+  "c_utypedef2"      , "cp_typedef1"      , "cp_utypedef1"     , "cp_typedef2"      ,
+  "cp_utypedef2"     , "c_struct"         , "i_struct"         , "l_const"          ,
+  "s_short"          , "s_ushort"         , "s_long"           , "s_ulong"          ,
+  "sa_short"         , "sa_ushort"        , "sa_long"          , "sa_ulong"         ,
+  "sp_short"         , "sp_ushort"        , "sp_long"          , "sp_ulong"         ,
+  "FixedPointer"     , "PointerFunction"  , "cc_reg"           , "PtrF_void_none"   ,
+  "PtrF_void_byte"   , "PtrF_void_twobyte", "PtrF_void_long"   , "PtrF_void_undef"  ,
+  "PtrF_int_none"    , "PtrF_int_byte"    , "PtrF_int_twobyte" , "PtrF_int_long"    ,
+  "PtrF_int_undef"   , "PtrF_long_none"   , "PtrF_long_byte"   , "PtrF_long_twobyte",
+  "PtrF_long_long"   , "PtrF_long_undef"  , "PfAR_void_none"   , "PfAR_void_byte"   ,
+  "PfAR_void_twobyte", "PfAR_void_long"   , "PfAR_void_undef"  , "PfAR_int_none"    ,
+  "PfAR_int_byte"    , "PfAR_int_twobyte" , "PfAR_int_long"    , "PfAR_int_undef"   ,
+  "PfAR_long_none"   , "PfAR_long_byte"   , "PfAR_long_twobyte", "PfAR_long_long"   ,
+  "PfAR_long_undef"  , "FWDlit"           , "Pfunc"            , "mgoto"            ,
+  "mcgoto"           , "mcgoto2"          , "mcgoto3"          , "mcgoto4"          ,
+  "mcgoto74"         , "mcgoto17"         , "mccall17"         , "mcall"            ,
+  "mc_call"          , "res_word"         , "local"            , "unknown"          ,
+  "varlabel"         , "external"         , "global"           , "segment"          ,
+  "bank_addr"        , "bit_0"            , "bit_1"            , "bit_2"            ,
+  "bit_3"            , "bit_4"            , "bit_5"            , "bit_6"            ,
+  "bit_7"            , "debug"
 };
 
 static memmap_info_t *memmap_info_list      = NULL;
 static memmap_info_t *memmap_info_list_last = NULL;
+
+/*------------------------------------------------------------------------------------------------*/
+
+static const char *
+_symbol_type_to_str(unsigned int Type)
+{
+  static char err[64];
+
+  if (Type < ARRAY_SIZE(symbol_type_str)) {
+    return symbol_type_str[Type];
+  }
+
+  snprintf(err, sizeof(err), "invalid type: %u", Type);
+  return err;
+}
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -374,10 +388,12 @@ _dump_index(proc_class_t Class, const uint8_t *Block)
   addr_digits = Class->addr_digits;
 
   for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
-    if ((curr_block = gp_getu16(&Block[i * 2])) != 0) {
+    curr_block = gp_getu16(&Block[i * 2]);
+
+    if (curr_block != 0) {
       printf("%0*x-%0*x:    %u\n",
-             addr_digits, _64k_base | (i << COD_BLOCK_BITS),
-             addr_digits, (_64k_base | ((i + 1) << COD_BLOCK_BITS)) - 1,
+             addr_digits,  _64k_base |  MemOffsFromBlock(i),
+             addr_digits, (_64k_base | (MemOffsFromBlock(i + 1) - 1)),
              curr_block);
     }
   }
@@ -767,7 +783,7 @@ dump_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
           gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_P_SIZE);
           type  = record[COD_SSYMBOL_STYPE];
           value = gp_getu16(&record[COD_SSYMBOL_SVALUE]);
-          printf("%-12s = %04x (%6d), type = %s\n", name, value, value, SymbolType4[type]);
+          printf("%-12s = %04x (%6d), type = %s\n", name, value, value, _symbol_type_to_str(type));
         }
       }
     }
@@ -847,7 +863,7 @@ dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
     end_block = gp_getu16(&Main_dir->dir[COD_DIR_LSYMTAB + 2]);
 
     printf("Long Symbol Table Information:\n"
-           "-----------------------------------------------\n");
+           "------------------------------------------------------------------------\n");
 
     for (j = start_block; j <= end_block; j++) {
       read_block(Code_file, cod_block, j);
@@ -870,7 +886,7 @@ dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 
         /* read big endian */
         value = gp_getb32(&sym[length + COD_LSYMBOL_VALUE]);
-        printf("%-*s = %08x (%11d), type = %s\n", symbol_align, name, value, value, SymbolType4[type]);
+        printf("%-*s = %08x (%11d), type = %s\n", symbol_align, name, value, value, _symbol_type_to_str(type));
         i += length + COD_LSYMBOL_EXTRA;
       }
     }
@@ -896,7 +912,7 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
   unsigned int  i;
   unsigned int  j;
   unsigned int  offset;
-  char          buf_name[COD_DIR_SOURCE_C_SIZE + 1];
+  char          name_str[COD_DIR_SOURCE_C_SIZE + 1];
   char         *name;
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_NAMTAB]);
@@ -911,10 +927,10 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
       read_block(Code_file, cod_block, j);
 
       for (i = 0, offset = 0; i < COD_FILES_PER_BLOCK; offset += COD_DIR_SOURCE_P_SIZE, ++i) {
-        gp_str_from_Pstr(buf_name, sizeof(buf_name), &cod_block[offset], COD_DIR_SOURCE_P_SIZE);
+        gp_str_from_Pstr(name_str, sizeof(name_str), &cod_block[offset], COD_DIR_SOURCE_P_SIZE);
 
         if (cod_block[offset] != 0) {
-          name = GP_Strdup(buf_name);
+          name = GP_Strdup(name_str);
           source_file_names[number_of_source_files] = name;
           printf("%s\n", name);
           source_files[number_of_source_files] = fopen(name, "rt");
@@ -965,7 +981,7 @@ void
 dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 {
   static unsigned int  lst_line_number = 1;
-  static unsigned int  last_src_line = 0;
+  static unsigned int  last_src_line   = 0;
 
   char                 line[2048];
   char                 nbuf[128];
@@ -999,7 +1015,7 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 
         printf("Line Number Information:\n"
                " LstLn  SrcLn  Addr    Flags        FileName\n"
-               " -----  -----  ------  -----------  ---------------------------------------\n");
+               " -----  -----  ------  -----------  ---------------------------------------------------------------\n");
       }
 
       for (j = start_block; j <= end_block; j++) {
@@ -1022,10 +1038,19 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
               source_file_name = nbuf;
             }
 
-            printf(" %5u  %5u  %06x  %2x %s  %-50s\n",
-                   lst_line_number, src_line_num,
-                   IMemAddrFromBase(_64k_base) | src_location,
-                   src_mod_flag, _mod_flags_to_str(src_mod_flag), source_file_name);
+            if ((source_file_name != NULL) && (source_file_name[0] != '\0')) {
+              printf(" %5u  %5u  %06x  %2x %s  %s\n",
+                     lst_line_number, src_line_num,
+                     IMemAddrFromBase(_64k_base) | src_location,
+                     src_mod_flag, _mod_flags_to_str(src_mod_flag), source_file_name);
+            }
+            else {
+              printf(" %5u  %5u  %06x  %2x %s\n",
+                     lst_line_number, src_line_num,
+                     IMemAddrFromBase(_64k_base) | src_location,
+                     src_mod_flag, _mod_flags_to_str(src_mod_flag));
+            }
+
             lst_line_number++;
 
             if ((src_file_num < number_of_source_files) && (src_line_num != last_src_line)) {
@@ -1159,7 +1184,7 @@ dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Clas
             gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_P_SIZE);
             type  = record[COD_SSYMBOL_STYPE];
             value = gp_getl16(&record[COD_SSYMBOL_SVALUE]);
-            printf("%-12s = %04x (%6d), type = %s\n", name, value, value, SymbolType4[type]);
+            printf("%-12s = %04x (%6d), type = %s\n", name, value, value, _symbol_type_to_str(type));
           }
         }
       }
@@ -1170,4 +1195,26 @@ dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Clas
   }
 
   putchar('\n');
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+dump_free(void)
+{
+  unsigned int i;
+
+  if (number_of_source_files > 0) {
+    for (i = 0; i < number_of_source_files; ++i) {
+      if (source_file_names[i] != NULL) {
+        free(source_file_names[i]);
+        source_file_names[i] = NULL;
+
+        fclose(source_files[i]);
+        source_files[i] = NULL;
+      }
+    }
+
+    number_of_source_files = 0;
+  }
 }

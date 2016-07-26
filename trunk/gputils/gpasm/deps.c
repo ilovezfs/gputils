@@ -29,7 +29,8 @@ Boston, MA 02111-1307, USA.  */
 void
 deps_init(void)
 {
-  char output_file[BUFSIZ];
+  const char *tail;
+  char        output_file[BUFSIZ];
 
   if (state.dep_file != OUT_NAMED) {
     snprintf(state.dep_file_name, sizeof(state.dep_file_name), "%s.d", state.base_file_name);
@@ -37,25 +38,21 @@ deps_init(void)
 
   if (state.dep_file == OUT_SUPPRESS) {
     state.dep.enabled = false;
+    return;
   }
-   else {
-    state.dep.f = fopen(state.dep_file_name, "w");
-    if (state.dep.f == NULL) {
-      perror(state.dep_file_name);
-      exit(1);
-    }
-    state.dep.enabled = true;
 
-    /* output file names may not be setup, so make one */
-    if (state.mode == MODE_RELOCATABLE) {
-      snprintf(output_file, sizeof(output_file), "%s.o", state.base_file_name);
-    }
-    else {
-      snprintf(output_file, sizeof(output_file), "%s.hex", state.base_file_name);
-    }
-
-    fprintf(state.dep.f, "%s : ", output_file);
+  state.dep.f = fopen(state.dep_file_name, "w");
+  if (state.dep.f == NULL) {
+    perror(state.dep_file_name);
+    exit(1);
   }
+
+  state.dep.enabled = true;
+
+  /* Output file names may not be setup, so make one. */
+  tail = (state.mode == MODE_RELOCATABLE) ? "o" : "hex";
+  snprintf(output_file, sizeof(output_file), "%s.%s", state.base_file_name, tail);
+  fprintf(state.dep.f, "%s : ", output_file);
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -1,0 +1,3305 @@
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         processor 18f2420
+                      00002 
+                      00003 ; The mpasmx indicates this error: "Error[126]  : Argument out of range (must be less than 32768)"
+                      00004 ;       __maxrom 0xfffff
+                      00005 
+                      00006 opfa8   macro i
+                      00007         ;; Low access memory
+                      00008         i       0
+                      00009         i       0,0
+                      00010         i       0,1
+                      00011         ;; Non access memory
+                      00012         i       100
+                      00013         i       100,0
+                      00014         i       100,1
+                      00015         ;; High access memory
+                      00016         i       0FFF
+                      00017         i       0FFF,0
+                      00018         i       0FFF,1
+                      00019         ;; Variable defined before instruction (access)
+                      00020         i       d1
+                      00021         i       d1,0
+                      00022         i       d1,1
+                      00023         ;; Variable defined after instruction (f-register)
+                      00024         i       d2
+                      00025         i       d2,0
+                      00026         i       d2,1
+                      00027         ;; $ is not really good for f-register address
+                      00028         i       $
+                      00029         i       $,0
+                      00030         i       $,1
+                      00031         i       $+1
+                      00032         i       $+1,0
+                      00033         i       $+1,1
+                      00034         i       $-1
+                      00035         i       $-1,0
+                      00036         i       $-1,1
+                      00037         i       $-$
+                      00038         i       c1-$
+                      00039         i       $-c1
+                      00040         i       c2-$
+                      00041         i       $-c2
+                      00042         i       d1-d1b
+                      00043         i       d1b-d1
+                      00044         i       d1+1
+                      00045         i       d2-1
+                      00046         endm
+                      00047 
+                      00048 opwfa8  macro i
+                      00049         ;; Low access memory
+                      00050         i       0
+                      00051         i       0,1
+                      00052         ;; Destination "F" and "W" without being defined
+                      00053         i       0,F
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00054         i       0,F,0
+                      00055         i       0,F,1
+                      00056         i       0,0
+                      00057         i       0,W
+                      00058         i       0,W,0
+                      00059         i       0,W,1
+                      00060         ;; Non access memory
+                      00061         i       100
+                      00062         i       100,1
+                      00063         i       100,F
+                      00064         i       100,F,0
+                      00065         i       100,F,1
+                      00066         i       100,0
+                      00067         i       100,W
+                      00068         i       100,W,0
+                      00069         i       100,W,1
+                      00070         ;; High access memory
+                      00071         i       0FFF
+                      00072         i       0FFF,F
+                      00073         i       0FFF,F,0
+                      00074         i       0FFF,F,1
+                      00075         i       0FFF,F
+                      00076         i       0FFF,W,0
+                      00077         i       0FFF,W,1
+                      00078         i       d1
+                      00079         i       d1,F
+                      00080         i       d1,F,0
+                      00081         i       d1,F,1
+                      00082         i       d1,W
+                      00083         i       d1,W,0
+                      00084         i       d1,W,1
+                      00085         i       d2
+                      00086         i       d2,F
+                      00087         i       d2,F,0
+                      00088         i       d2,F,1
+                      00089         i       d2,W
+                      00090         i       d2,W,0
+                      00091         i       d2,W,1
+                      00092         i       $
+                      00093         i       $,F
+                      00094         i       $,F,0
+                      00095         i       $,F,1
+                      00096         i       $,W
+                      00097         i       $,W,0
+                      00098         i       $,W,1
+                      00099         i       $+1
+                      00100         i       $+1,F
+                      00101         i       $+1,F,0
+                      00102         i       $+1,F,1
+                      00103         i       $+1,W
+                      00104         i       $+1,W,0
+                      00105         i       $+1,W,1
+                      00106         i       $-1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00107         i       $-1,F
+                      00108         i       $-1,F,0
+                      00109         i       $-1,F,1
+                      00110         i       $-1,W
+                      00111         i       $-1,W,0
+                      00112         i       $-1,W,1
+                      00113         i       $-$
+                      00114         i       c1-$
+                      00115         i       $-c1
+                      00116         i       c2-$
+                      00117         i       $-c2
+                      00118         i       d1-d1b
+                      00119         i       d1b-d1
+                      00120         i       d1+1
+                      00121         i       d2-1
+                      00122         endm
+                      00123 
+                      00124 ba8     macro i
+                      00125         i       0,0
+                      00126         i       0,0,0
+                      00127         i       0,0,1
+                      00128         i       0,1
+                      00129         i       0,1,0
+                      00130         i       0,1,1
+                      00131         i       0,2
+                      00132         i       0,2,0
+                      00133         i       0,2,1
+                      00134         i       0,3
+                      00135         i       0,3,0
+                      00136         i       0,3,1
+                      00137         i       0,4
+                      00138         i       0,4,0
+                      00139         i       0,4,1
+                      00140         i       0,5
+                      00141         i       0,5,0
+                      00142         i       0,5,1
+                      00143         i       0,6
+                      00144         i       0,6,0
+                      00145         i       0,6,1
+                      00146         i       0,7
+                      00147         i       0,7,0
+                      00148         i       0,7,1
+                      00149         ;; Non access memory
+                      00150         i       100,0
+                      00151         i       100,0,0
+                      00152         i       100,0,1
+                      00153         i       0FFF,0
+                      00154         i       0FFF,0,0
+                      00155         i       0FFF,0,1
+                      00156         i       d1,0
+                      00157         i       d1,0,0
+                      00158         i       d1,0,1
+                      00159         i       d2,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00160         i       d2,0,0
+                      00161         i       d2,0,1
+                      00162         i       $,0
+                      00163         i       $,0,0
+                      00164         i       $,0,1
+                      00165         ;i      $-$,1
+                      00166         endm
+                      00167 
+                      00168 lit8    macro i
+                      00169         i       0
+                      00170         i       'A'
+                      00171         i       "A"
+                      00172         i       0FF
+                      00173         i       low $
+                      00174         i       high $
+                      00175         i       upper $
+                      00176         i       low c1
+                      00177         i       high c1
+                      00178         i       upper c1
+                      00179         i       low c2
+                      00180         i       high c2
+                      00181         i       upper c2
+                      00182         i       $
+                      00183         i       $+1
+                      00184         i       $-1
+                      00185         i       $-$
+                      00186         i       c1-$
+                      00187         i       $-c1
+                      00188         i       c2-$
+                      00189         i       $-c2
+                      00190         i       d1-d1b
+                      00191         i       d1b-d1
+                      00192         endm
+                      00193 
+                      00194 addr    macro i
+                      00195         i       0
+                      00196 ; The mpasmx indicates this error: "Error[126]  : Argument out of range (0000 not between 0000 and 3FFF)
+                            "
+                      00197 ;       i       0x80000
+                      00198         i       c1
+                      00199         i       c2
+                      00200         i       $
+                      00201         i       $+2
+                      00202         i       $-2
+                      00203         endm
+                      00204 
+                      00205 rbra8   macro i
+                      00206         local   m1,m2
+                      00207         i       m2
+                      00208 m1      i       $
+                      00209         i       $-2
+                      00210         i       $+2
+                      00211         i       $-0xFE
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00212         i       $+0x100
+                      00213 m2      i       m1
+                      00214         endm
+                      00215 
+                      00216 rbra11  macro i
+                      00217         local   m1,m2
+                      00218         i       m2
+                      00219 m1      i       $
+                      00220         i       $-2
+                      00221         i       $+2
+                      00222         i       $-0x7FE
+                      00223         i       $+0x800
+                      00224 m2      i       m1
+                      00225         endm
+                      00226 
+                      00227         cblock 0x11
+  00000011            00228         d1
+  00000012            00229         d1b
+                      00230         endc
+                      00231 
+000020                00232         org 0x20
+000020 0000           00233         nop
+000022                00234 c1
+                      00235 
+000022 E2EE           00236         BC      0
+000024 E6ED           00237         BN      0
+000026 E3EC           00238         BNC     0
+000028 E7EB           00239         BNN     0
+00002A E5EA           00240         BNOV    0
+00002C E1E9           00241         BNZ     0
+00002E E4E8           00242         BOV     0
+000030 D7E7           00243         BRA     0
+000032 E0E6           00244         BZ      0
+000034 DFE5           00245         RCALL   0
+                      00246 
+000036 E264           00247         BC      100
+000038 E663           00248         BN      100
+00003A E362           00249         BNC     100
+00003C E761           00250         BNN     100
+00003E E560           00251         BNOV    100
+000040 E15F           00252         BNZ     100
+000042 E45E           00253         BOV     100
+000044 D05D           00254         BRA     100
+000046 E05C           00255         BZ      100
+000048 D85B           00256         RCALL   100
+                      00257 
+00004A E2EB           00258         BC      c1
+00004C E6EA           00259         BN      c1
+00004E E3E9           00260         BNC     c1
+000050 E7E8           00261         BNN     c1
+000052 E5E7           00262         BNOV    c1
+000054 E1E6           00263         BNZ     c1
+000056 E4E5           00264         BOV     c1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000058 D7E4           00265         BRA     c1
+00005A E0E3           00266         BZ      c1
+00005C DFE2           00267         RCALL   c1
+                      00268 
+                      00269         ;; Required to allow branches to $-0x7fe
+000800                00270         org     0x800
+                      00271 
+                      00272         lit8    ADDLW
+000800 0F00               M         ADDLW       0
+000802 0F41               M         ADDLW       'A'
+000804 0F41               M         ADDLW       "A"
+000806 0FFF               M         ADDLW       0FF
+000808 0F08               M         ADDLW       low $
+00080A 0F08               M         ADDLW       high $
+00080C 0F00               M         ADDLW       upper $
+00080E 0F22               M         ADDLW       low c1
+000810 0F00               M         ADDLW       high c1
+000812 0F00               M         ADDLW       upper c1
+000814 0FFC               M         ADDLW       low c2
+000816 0F19               M         ADDLW       high c2
+000818 0F00               M         ADDLW       upper c2
+Warning[202]: Argument out of range.  Least significant bits used.
+00081A 0F1A               M         ADDLW       $
+Warning[202]: Argument out of range.  Least significant bits used.
+00081C 0F1D               M         ADDLW       $+1
+Warning[202]: Argument out of range.  Least significant bits used.
+00081E 0F1D               M         ADDLW       $-1
+000820 0F00               M         ADDLW       $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+000822 0F00               M         ADDLW       c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+000824 0F02               M         ADDLW       $-c1
+Warning[202]: Argument out of range.  Least significant bits used.
+000826 0FD6               M         ADDLW       c2-$
+Warning[202]: Argument out of range.  Least significant bits used.
+000828 0F2C               M         ADDLW       $-c2
+00082A 0FFF               M         ADDLW       d1-d1b
+00082C 0F01               M         ADDLW       d1b-d1
+                      00273         opwfa8  ADDWF
+                          M         ;; Low access memory
+00082E 2600               M         ADDWF       0
+000830 2600               M         ADDWF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+000832 2600               M         ADDWF       0,F
+000834 2600               M         ADDWF       0,F,0
+000836 2700               M         ADDWF       0,F,1
+000838 2400               M         ADDWF       0,0
+00083A 2400               M         ADDWF       0,W
+00083C 2400               M         ADDWF       0,W,0
+00083E 2500               M         ADDWF       0,W,1
+                          M         ;; Non access memory
+000840 2700               M         ADDWF       100
+000842 2700               M         ADDWF       100,1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000844 2700               M         ADDWF       100,F
+000846 2600               M         ADDWF       100,F,0
+000848 2700               M         ADDWF       100,F,1
+00084A 2500               M         ADDWF       100,0
+00084C 2500               M         ADDWF       100,W
+00084E 2400               M         ADDWF       100,W,0
+000850 2500               M         ADDWF       100,W,1
+                          M         ;; High access memory
+000852 26FF               M         ADDWF       0FFF
+000854 26FF               M         ADDWF       0FFF,F
+000856 26FF               M         ADDWF       0FFF,F,0
+000858 27FF               M         ADDWF       0FFF,F,1
+00085A 26FF               M         ADDWF       0FFF,F
+00085C 24FF               M         ADDWF       0FFF,W,0
+00085E 25FF               M         ADDWF       0FFF,W,1
+000860 2611               M         ADDWF       d1
+000862 2611               M         ADDWF       d1,F
+000864 2611               M         ADDWF       d1,F,0
+000866 2711               M         ADDWF       d1,F,1
+000868 2411               M         ADDWF       d1,W
+00086A 2411               M         ADDWF       d1,W,0
+00086C 2511               M         ADDWF       d1,W,1
+00086E 2701               M         ADDWF       d2
+000870 2701               M         ADDWF       d2,F
+000872 2601               M         ADDWF       d2,F,0
+000874 2701               M         ADDWF       d2,F,1
+000876 2501               M         ADDWF       d2,W
+000878 2401               M         ADDWF       d2,W,0
+00087A 2501               M         ADDWF       d2,W,1
+00087C 277C               M         ADDWF       $
+00087E 277E               M         ADDWF       $,F
+000880 2680               M         ADDWF       $,F,0
+000882 2782               M         ADDWF       $,F,1
+000884 2584               M         ADDWF       $,W
+000886 2486               M         ADDWF       $,W,0
+000888 2588               M         ADDWF       $,W,1
+00088A 278B               M         ADDWF       $+1
+00088C 278D               M         ADDWF       $+1,F
+00088E 268F               M         ADDWF       $+1,F,0
+000890 2791               M         ADDWF       $+1,F,1
+000892 2593               M         ADDWF       $+1,W
+000894 2495               M         ADDWF       $+1,W,0
+000896 2597               M         ADDWF       $+1,W,1
+000898 2797               M         ADDWF       $-1
+00089A 2799               M         ADDWF       $-1,F
+00089C 269B               M         ADDWF       $-1,F,0
+00089E 279D               M         ADDWF       $-1,F,1
+0008A0 259F               M         ADDWF       $-1,W
+0008A2 24A1               M         ADDWF       $-1,W,0
+0008A4 25A3               M         ADDWF       $-1,W,1
+0008A6 2600               M         ADDWF       $-$
+0008A8 267A               M         ADDWF       c1-$
+0008AA 2788               M         ADDWF       $-c1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0008AC 2650               M         ADDWF       c2-$
+0008AE 26B2               M         ADDWF       $-c2
+0008B0 26FF               M         ADDWF       d1-d1b
+0008B2 2601               M         ADDWF       d1b-d1
+0008B4 2612               M         ADDWF       d1+1
+0008B6 2700               M         ADDWF       d2-1
+                      00274         opwfa8  ADDWFC
+                          M         ;; Low access memory
+0008B8 2200               M         ADDWFC       0
+0008BA 2200               M         ADDWFC       0,1
+                          M         ;; Destination "F" and "W" without being defined
+0008BC 2200               M         ADDWFC       0,F
+0008BE 2200               M         ADDWFC       0,F,0
+0008C0 2300               M         ADDWFC       0,F,1
+0008C2 2000               M         ADDWFC       0,0
+0008C4 2000               M         ADDWFC       0,W
+0008C6 2000               M         ADDWFC       0,W,0
+0008C8 2100               M         ADDWFC       0,W,1
+                          M         ;; Non access memory
+0008CA 2300               M         ADDWFC       100
+0008CC 2300               M         ADDWFC       100,1
+0008CE 2300               M         ADDWFC       100,F
+0008D0 2200               M         ADDWFC       100,F,0
+0008D2 2300               M         ADDWFC       100,F,1
+0008D4 2100               M         ADDWFC       100,0
+0008D6 2100               M         ADDWFC       100,W
+0008D8 2000               M         ADDWFC       100,W,0
+0008DA 2100               M         ADDWFC       100,W,1
+                          M         ;; High access memory
+0008DC 22FF               M         ADDWFC       0FFF
+0008DE 22FF               M         ADDWFC       0FFF,F
+0008E0 22FF               M         ADDWFC       0FFF,F,0
+0008E2 23FF               M         ADDWFC       0FFF,F,1
+0008E4 22FF               M         ADDWFC       0FFF,F
+0008E6 20FF               M         ADDWFC       0FFF,W,0
+0008E8 21FF               M         ADDWFC       0FFF,W,1
+0008EA 2211               M         ADDWFC       d1
+0008EC 2211               M         ADDWFC       d1,F
+0008EE 2211               M         ADDWFC       d1,F,0
+0008F0 2311               M         ADDWFC       d1,F,1
+0008F2 2011               M         ADDWFC       d1,W
+0008F4 2011               M         ADDWFC       d1,W,0
+0008F6 2111               M         ADDWFC       d1,W,1
+0008F8 2301               M         ADDWFC       d2
+0008FA 2301               M         ADDWFC       d2,F
+0008FC 2201               M         ADDWFC       d2,F,0
+0008FE 2301               M         ADDWFC       d2,F,1
+000900 2101               M         ADDWFC       d2,W
+000902 2001               M         ADDWFC       d2,W,0
+000904 2101               M         ADDWFC       d2,W,1
+000906 2306               M         ADDWFC       $
+000908 2308               M         ADDWFC       $,F
+00090A 220A               M         ADDWFC       $,F,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00090C 230C               M         ADDWFC       $,F,1
+00090E 210E               M         ADDWFC       $,W
+000910 2010               M         ADDWFC       $,W,0
+000912 2112               M         ADDWFC       $,W,1
+000914 2315               M         ADDWFC       $+1
+000916 2317               M         ADDWFC       $+1,F
+000918 2219               M         ADDWFC       $+1,F,0
+00091A 231B               M         ADDWFC       $+1,F,1
+00091C 211D               M         ADDWFC       $+1,W
+00091E 201F               M         ADDWFC       $+1,W,0
+000920 2121               M         ADDWFC       $+1,W,1
+000922 2321               M         ADDWFC       $-1
+000924 2323               M         ADDWFC       $-1,F
+000926 2225               M         ADDWFC       $-1,F,0
+000928 2327               M         ADDWFC       $-1,F,1
+00092A 2129               M         ADDWFC       $-1,W
+00092C 202B               M         ADDWFC       $-1,W,0
+00092E 212D               M         ADDWFC       $-1,W,1
+000930 2200               M         ADDWFC       $-$
+000932 22F0               M         ADDWFC       c1-$
+000934 2312               M         ADDWFC       $-c1
+000936 22C6               M         ADDWFC       c2-$
+000938 223C               M         ADDWFC       $-c2
+00093A 22FF               M         ADDWFC       d1-d1b
+00093C 2201               M         ADDWFC       d1b-d1
+00093E 2212               M         ADDWFC       d1+1
+000940 2300               M         ADDWFC       d2-1
+                      00275         lit8    ANDLW
+000942 0B00               M         ANDLW       0
+000944 0B41               M         ANDLW       'A'
+000946 0B41               M         ANDLW       "A"
+000948 0BFF               M         ANDLW       0FF
+00094A 0B4A               M         ANDLW       low $
+00094C 0B09               M         ANDLW       high $
+00094E 0B00               M         ANDLW       upper $
+000950 0B22               M         ANDLW       low c1
+000952 0B00               M         ANDLW       high c1
+000954 0B00               M         ANDLW       upper c1
+000956 0BFC               M         ANDLW       low c2
+000958 0B19               M         ANDLW       high c2
+00095A 0B00               M         ANDLW       upper c2
+Warning[202]: Argument out of range.  Least significant bits used.
+00095C 0B5C               M         ANDLW       $
+Warning[202]: Argument out of range.  Least significant bits used.
+00095E 0B5F               M         ANDLW       $+1
+Warning[202]: Argument out of range.  Least significant bits used.
+000960 0B5F               M         ANDLW       $-1
+000962 0B00               M         ANDLW       $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+000964 0BBE               M         ANDLW       c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+000966 0B44               M         ANDLW       $-c1
+Warning[202]: Argument out of range.  Least significant bits used.
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000968 0B94               M         ANDLW       c2-$
+Warning[202]: Argument out of range.  Least significant bits used.
+00096A 0B6E               M         ANDLW       $-c2
+00096C 0BFF               M         ANDLW       d1-d1b
+00096E 0B01               M         ANDLW       d1b-d1
+                      00276         opwfa8  ANDWF
+                          M         ;; Low access memory
+000970 1600               M         ANDWF       0
+000972 1600               M         ANDWF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+000974 1600               M         ANDWF       0,F
+000976 1600               M         ANDWF       0,F,0
+000978 1700               M         ANDWF       0,F,1
+00097A 1400               M         ANDWF       0,0
+00097C 1400               M         ANDWF       0,W
+00097E 1400               M         ANDWF       0,W,0
+000980 1500               M         ANDWF       0,W,1
+                          M         ;; Non access memory
+000982 1700               M         ANDWF       100
+000984 1700               M         ANDWF       100,1
+000986 1700               M         ANDWF       100,F
+000988 1600               M         ANDWF       100,F,0
+00098A 1700               M         ANDWF       100,F,1
+00098C 1500               M         ANDWF       100,0
+00098E 1500               M         ANDWF       100,W
+000990 1400               M         ANDWF       100,W,0
+000992 1500               M         ANDWF       100,W,1
+                          M         ;; High access memory
+000994 16FF               M         ANDWF       0FFF
+000996 16FF               M         ANDWF       0FFF,F
+000998 16FF               M         ANDWF       0FFF,F,0
+00099A 17FF               M         ANDWF       0FFF,F,1
+00099C 16FF               M         ANDWF       0FFF,F
+00099E 14FF               M         ANDWF       0FFF,W,0
+0009A0 15FF               M         ANDWF       0FFF,W,1
+0009A2 1611               M         ANDWF       d1
+0009A4 1611               M         ANDWF       d1,F
+0009A6 1611               M         ANDWF       d1,F,0
+0009A8 1711               M         ANDWF       d1,F,1
+0009AA 1411               M         ANDWF       d1,W
+0009AC 1411               M         ANDWF       d1,W,0
+0009AE 1511               M         ANDWF       d1,W,1
+0009B0 1701               M         ANDWF       d2
+0009B2 1701               M         ANDWF       d2,F
+0009B4 1601               M         ANDWF       d2,F,0
+0009B6 1701               M         ANDWF       d2,F,1
+0009B8 1501               M         ANDWF       d2,W
+0009BA 1401               M         ANDWF       d2,W,0
+0009BC 1501               M         ANDWF       d2,W,1
+0009BE 17BE               M         ANDWF       $
+0009C0 17C0               M         ANDWF       $,F
+0009C2 16C2               M         ANDWF       $,F,0
+0009C4 17C4               M         ANDWF       $,F,1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0009C6 15C6               M         ANDWF       $,W
+0009C8 14C8               M         ANDWF       $,W,0
+0009CA 15CA               M         ANDWF       $,W,1
+0009CC 17CD               M         ANDWF       $+1
+0009CE 17CF               M         ANDWF       $+1,F
+0009D0 16D1               M         ANDWF       $+1,F,0
+0009D2 17D3               M         ANDWF       $+1,F,1
+0009D4 15D5               M         ANDWF       $+1,W
+0009D6 14D7               M         ANDWF       $+1,W,0
+0009D8 15D9               M         ANDWF       $+1,W,1
+0009DA 17D9               M         ANDWF       $-1
+0009DC 17DB               M         ANDWF       $-1,F
+0009DE 16DD               M         ANDWF       $-1,F,0
+0009E0 17DF               M         ANDWF       $-1,F,1
+0009E2 15E1               M         ANDWF       $-1,W
+0009E4 14E3               M         ANDWF       $-1,W,0
+0009E6 15E5               M         ANDWF       $-1,W,1
+0009E8 1600               M         ANDWF       $-$
+0009EA 1638               M         ANDWF       c1-$
+0009EC 17CA               M         ANDWF       $-c1
+0009EE 160E               M         ANDWF       c2-$
+0009F0 16F4               M         ANDWF       $-c2
+0009F2 16FF               M         ANDWF       d1-d1b
+0009F4 1601               M         ANDWF       d1b-d1
+0009F6 1612               M         ANDWF       d1+1
+0009F8 1700               M         ANDWF       d2-1
+                      00277         rbra8   BC
+  0000                    M         local   m1,m2
+0009FA E205               M         BC       m2
+0009FC E2FF               M m1      BC       $
+0009FE E2FE               M         BC       $-2
+000A00 E200               M         BC       $+2
+000A02 E280               M         BC       $-0xFE
+000A04 E27F               M         BC       $+0x100
+000A06 E2FA               M m2      BC       m1
+                      00278         ba8     BCF
+000A08 9000               M         BCF       0,0
+000A0A 9000               M         BCF       0,0,0
+000A0C 9100               M         BCF       0,0,1
+000A0E 9200               M         BCF       0,1
+000A10 9200               M         BCF       0,1,0
+000A12 9300               M         BCF       0,1,1
+000A14 9400               M         BCF       0,2
+000A16 9400               M         BCF       0,2,0
+000A18 9500               M         BCF       0,2,1
+000A1A 9600               M         BCF       0,3
+000A1C 9600               M         BCF       0,3,0
+000A1E 9700               M         BCF       0,3,1
+000A20 9800               M         BCF       0,4
+000A22 9800               M         BCF       0,4,0
+000A24 9900               M         BCF       0,4,1
+000A26 9A00               M         BCF       0,5
+000A28 9A00               M         BCF       0,5,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000A2A 9B00               M         BCF       0,5,1
+000A2C 9C00               M         BCF       0,6
+000A2E 9C00               M         BCF       0,6,0
+000A30 9D00               M         BCF       0,6,1
+000A32 9E00               M         BCF       0,7
+000A34 9E00               M         BCF       0,7,0
+000A36 9F00               M         BCF       0,7,1
+                          M         ;; Non access memory
+000A38 9100               M         BCF       100,0
+000A3A 9000               M         BCF       100,0,0
+000A3C 9100               M         BCF       100,0,1
+000A3E 90FF               M         BCF       0FFF,0
+000A40 90FF               M         BCF       0FFF,0,0
+000A42 91FF               M         BCF       0FFF,0,1
+000A44 9011               M         BCF       d1,0
+000A46 9011               M         BCF       d1,0,0
+000A48 9111               M         BCF       d1,0,1
+000A4A 9101               M         BCF       d2,0
+000A4C 9001               M         BCF       d2,0,0
+000A4E 9101               M         BCF       d2,0,1
+000A50 9150               M         BCF       $,0
+000A52 9052               M         BCF       $,0,0
+000A54 9154               M         BCF       $,0,1
+                          M         ;i      $-$,1
+                      00279         rbra8   BN
+  0000                    M         local   m1,m2
+000A56 E605               M         BN       m2
+000A58 E6FF               M m1      BN       $
+000A5A E6FE               M         BN       $-2
+000A5C E600               M         BN       $+2
+000A5E E680               M         BN       $-0xFE
+000A60 E67F               M         BN       $+0x100
+000A62 E6FA               M m2      BN       m1
+                      00280         rbra8   BNC
+  0000                    M         local   m1,m2
+000A64 E305               M         BNC       m2
+000A66 E3FF               M m1      BNC       $
+000A68 E3FE               M         BNC       $-2
+000A6A E300               M         BNC       $+2
+000A6C E380               M         BNC       $-0xFE
+000A6E E37F               M         BNC       $+0x100
+000A70 E3FA               M m2      BNC       m1
+                      00281         rbra8   BNN
+  0000                    M         local   m1,m2
+000A72 E705               M         BNN       m2
+000A74 E7FF               M m1      BNN       $
+000A76 E7FE               M         BNN       $-2
+000A78 E700               M         BNN       $+2
+000A7A E780               M         BNN       $-0xFE
+000A7C E77F               M         BNN       $+0x100
+000A7E E7FA               M m2      BNN       m1
+                      00282         rbra8   BNOV
+  0000                    M         local   m1,m2
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000A80 E505               M         BNOV       m2
+000A82 E5FF               M m1      BNOV       $
+000A84 E5FE               M         BNOV       $-2
+000A86 E500               M         BNOV       $+2
+000A88 E580               M         BNOV       $-0xFE
+000A8A E57F               M         BNOV       $+0x100
+000A8C E5FA               M m2      BNOV       m1
+                      00283         rbra8   BNZ
+  0000                    M         local   m1,m2
+000A8E E105               M         BNZ       m2
+000A90 E1FF               M m1      BNZ       $
+000A92 E1FE               M         BNZ       $-2
+000A94 E100               M         BNZ       $+2
+000A96 E180               M         BNZ       $-0xFE
+000A98 E17F               M         BNZ       $+0x100
+000A9A E1FA               M m2      BNZ       m1
+                      00284         rbra8   BOV
+  0000                    M         local   m1,m2
+000A9C E405               M         BOV       m2
+000A9E E4FF               M m1      BOV       $
+000AA0 E4FE               M         BOV       $-2
+000AA2 E400               M         BOV       $+2
+000AA4 E480               M         BOV       $-0xFE
+000AA6 E47F               M         BOV       $+0x100
+000AA8 E4FA               M m2      BOV       m1
+                      00285         rbra11  BRA
+  0000                    M         local   m1,m2
+000AAA D005               M         BRA       m2
+000AAC D7FF               M m1      BRA       $
+000AAE D7FE               M         BRA       $-2
+000AB0 D000               M         BRA       $+2
+000AB2 D400               M         BRA       $-0x7FE
+000AB4 D3FF               M         BRA       $+0x800
+000AB6 D7FA               M m2      BRA       m1
+                      00286         ba8     BSF
+000AB8 8000               M         BSF       0,0
+000ABA 8000               M         BSF       0,0,0
+000ABC 8100               M         BSF       0,0,1
+000ABE 8200               M         BSF       0,1
+000AC0 8200               M         BSF       0,1,0
+000AC2 8300               M         BSF       0,1,1
+000AC4 8400               M         BSF       0,2
+000AC6 8400               M         BSF       0,2,0
+000AC8 8500               M         BSF       0,2,1
+000ACA 8600               M         BSF       0,3
+000ACC 8600               M         BSF       0,3,0
+000ACE 8700               M         BSF       0,3,1
+000AD0 8800               M         BSF       0,4
+000AD2 8800               M         BSF       0,4,0
+000AD4 8900               M         BSF       0,4,1
+000AD6 8A00               M         BSF       0,5
+000AD8 8A00               M         BSF       0,5,0
+000ADA 8B00               M         BSF       0,5,1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000ADC 8C00               M         BSF       0,6
+000ADE 8C00               M         BSF       0,6,0
+000AE0 8D00               M         BSF       0,6,1
+000AE2 8E00               M         BSF       0,7
+000AE4 8E00               M         BSF       0,7,0
+000AE6 8F00               M         BSF       0,7,1
+                          M         ;; Non access memory
+000AE8 8100               M         BSF       100,0
+000AEA 8000               M         BSF       100,0,0
+000AEC 8100               M         BSF       100,0,1
+000AEE 80FF               M         BSF       0FFF,0
+000AF0 80FF               M         BSF       0FFF,0,0
+000AF2 81FF               M         BSF       0FFF,0,1
+000AF4 8011               M         BSF       d1,0
+000AF6 8011               M         BSF       d1,0,0
+000AF8 8111               M         BSF       d1,0,1
+000AFA 8101               M         BSF       d2,0
+000AFC 8001               M         BSF       d2,0,0
+000AFE 8101               M         BSF       d2,0,1
+000B00 8100               M         BSF       $,0
+000B02 8002               M         BSF       $,0,0
+000B04 8104               M         BSF       $,0,1
+                          M         ;i      $-$,1
+                      00287         ba8     BTFSC
+000B06 B000               M         BTFSC       0,0
+000B08 B000               M         BTFSC       0,0,0
+000B0A B100               M         BTFSC       0,0,1
+000B0C B200               M         BTFSC       0,1
+000B0E B200               M         BTFSC       0,1,0
+000B10 B300               M         BTFSC       0,1,1
+000B12 B400               M         BTFSC       0,2
+000B14 B400               M         BTFSC       0,2,0
+000B16 B500               M         BTFSC       0,2,1
+000B18 B600               M         BTFSC       0,3
+000B1A B600               M         BTFSC       0,3,0
+000B1C B700               M         BTFSC       0,3,1
+000B1E B800               M         BTFSC       0,4
+000B20 B800               M         BTFSC       0,4,0
+000B22 B900               M         BTFSC       0,4,1
+000B24 BA00               M         BTFSC       0,5
+000B26 BA00               M         BTFSC       0,5,0
+000B28 BB00               M         BTFSC       0,5,1
+000B2A BC00               M         BTFSC       0,6
+000B2C BC00               M         BTFSC       0,6,0
+000B2E BD00               M         BTFSC       0,6,1
+000B30 BE00               M         BTFSC       0,7
+000B32 BE00               M         BTFSC       0,7,0
+000B34 BF00               M         BTFSC       0,7,1
+                          M         ;; Non access memory
+000B36 B100               M         BTFSC       100,0
+000B38 B000               M         BTFSC       100,0,0
+000B3A B100               M         BTFSC       100,0,1
+000B3C B0FF               M         BTFSC       0FFF,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000B3E B0FF               M         BTFSC       0FFF,0,0
+000B40 B1FF               M         BTFSC       0FFF,0,1
+000B42 B011               M         BTFSC       d1,0
+000B44 B011               M         BTFSC       d1,0,0
+000B46 B111               M         BTFSC       d1,0,1
+000B48 B101               M         BTFSC       d2,0
+000B4A B001               M         BTFSC       d2,0,0
+000B4C B101               M         BTFSC       d2,0,1
+000B4E B14E               M         BTFSC       $,0
+000B50 B050               M         BTFSC       $,0,0
+000B52 B152               M         BTFSC       $,0,1
+                          M         ;i      $-$,1
+                      00288         ba8     BTFSS
+000B54 A000               M         BTFSS       0,0
+000B56 A000               M         BTFSS       0,0,0
+000B58 A100               M         BTFSS       0,0,1
+000B5A A200               M         BTFSS       0,1
+000B5C A200               M         BTFSS       0,1,0
+000B5E A300               M         BTFSS       0,1,1
+000B60 A400               M         BTFSS       0,2
+000B62 A400               M         BTFSS       0,2,0
+000B64 A500               M         BTFSS       0,2,1
+000B66 A600               M         BTFSS       0,3
+000B68 A600               M         BTFSS       0,3,0
+000B6A A700               M         BTFSS       0,3,1
+000B6C A800               M         BTFSS       0,4
+000B6E A800               M         BTFSS       0,4,0
+000B70 A900               M         BTFSS       0,4,1
+000B72 AA00               M         BTFSS       0,5
+000B74 AA00               M         BTFSS       0,5,0
+000B76 AB00               M         BTFSS       0,5,1
+000B78 AC00               M         BTFSS       0,6
+000B7A AC00               M         BTFSS       0,6,0
+000B7C AD00               M         BTFSS       0,6,1
+000B7E AE00               M         BTFSS       0,7
+000B80 AE00               M         BTFSS       0,7,0
+000B82 AF00               M         BTFSS       0,7,1
+                          M         ;; Non access memory
+000B84 A100               M         BTFSS       100,0
+000B86 A000               M         BTFSS       100,0,0
+000B88 A100               M         BTFSS       100,0,1
+000B8A A0FF               M         BTFSS       0FFF,0
+000B8C A0FF               M         BTFSS       0FFF,0,0
+000B8E A1FF               M         BTFSS       0FFF,0,1
+000B90 A011               M         BTFSS       d1,0
+000B92 A011               M         BTFSS       d1,0,0
+000B94 A111               M         BTFSS       d1,0,1
+000B96 A101               M         BTFSS       d2,0
+000B98 A001               M         BTFSS       d2,0,0
+000B9A A101               M         BTFSS       d2,0,1
+000B9C A19C               M         BTFSS       $,0
+000B9E A09E               M         BTFSS       $,0,0
+000BA0 A1A0               M         BTFSS       $,0,1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M         ;i      $-$,1
+                      00289         ba8     BTG
+000BA2 7000               M         BTG       0,0
+000BA4 7000               M         BTG       0,0,0
+000BA6 7100               M         BTG       0,0,1
+000BA8 7200               M         BTG       0,1
+000BAA 7200               M         BTG       0,1,0
+000BAC 7300               M         BTG       0,1,1
+000BAE 7400               M         BTG       0,2
+000BB0 7400               M         BTG       0,2,0
+000BB2 7500               M         BTG       0,2,1
+000BB4 7600               M         BTG       0,3
+000BB6 7600               M         BTG       0,3,0
+000BB8 7700               M         BTG       0,3,1
+000BBA 7800               M         BTG       0,4
+000BBC 7800               M         BTG       0,4,0
+000BBE 7900               M         BTG       0,4,1
+000BC0 7A00               M         BTG       0,5
+000BC2 7A00               M         BTG       0,5,0
+000BC4 7B00               M         BTG       0,5,1
+000BC6 7C00               M         BTG       0,6
+000BC8 7C00               M         BTG       0,6,0
+000BCA 7D00               M         BTG       0,6,1
+000BCC 7E00               M         BTG       0,7
+000BCE 7E00               M         BTG       0,7,0
+000BD0 7F00               M         BTG       0,7,1
+                          M         ;; Non access memory
+000BD2 7100               M         BTG       100,0
+000BD4 7000               M         BTG       100,0,0
+000BD6 7100               M         BTG       100,0,1
+000BD8 70FF               M         BTG       0FFF,0
+000BDA 70FF               M         BTG       0FFF,0,0
+000BDC 71FF               M         BTG       0FFF,0,1
+000BDE 7011               M         BTG       d1,0
+000BE0 7011               M         BTG       d1,0,0
+000BE2 7111               M         BTG       d1,0,1
+000BE4 7101               M         BTG       d2,0
+000BE6 7001               M         BTG       d2,0,0
+000BE8 7101               M         BTG       d2,0,1
+000BEA 71EA               M         BTG       $,0
+000BEC 70EC               M         BTG       $,0,0
+000BEE 71EE               M         BTG       $,0,1
+                          M         ;i      $-$,1
+                      00290         rbra8   BZ
+  0000                    M         local   m1,m2
+000BF0 E005               M         BZ       m2
+000BF2 E0FF               M m1      BZ       $
+000BF4 E0FE               M         BZ       $-2
+000BF6 E000               M         BZ       $+2
+000BF8 E080               M         BZ       $-0xFE
+000BFA E07F               M         BZ       $+0x100
+000BFC E0FA               M m2      BZ       m1
+                      00291         addr    CALL
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000BFE EC00 F000          M         CALL       0
+                          M ; The mpasmx indicates this error: "Error[126]  : Argument out of range (0000 not between 0000 and 3FFF)
+                            "
+                          M ;       i       0x80000
+000C02 EC11 F000          M         CALL       c1
+000C06 ECFE F00C          M         CALL       c2
+000C0A EC05 F006          M         CALL       $
+000C0E EC08 F006          M         CALL       $+2
+000C12 EC08 F006          M         CALL       $-2
+                      00292 ; The mpasmx indicates this error: "Error[126]  : Argument out of range (2346 not between 0000 and 3FFF)
+                            "
+                      00293 ;       CALL    0x12346,0
+                      00294 ; The mpasmx indicates this error: "Error[126]  : Argument out of range (2346 not between 0000 and 3FFF)
+                            "
+                      00295 ;       CALL    0x12346,1
+                      00296         opfa8   CLRF
+                          M         ;; Low access memory
+000C16 6A00               M         CLRF       0
+000C18 6A00               M         CLRF       0,0
+000C1A 6B00               M         CLRF       0,1
+                          M         ;; Non access memory
+000C1C 6B00               M         CLRF       100
+000C1E 6A00               M         CLRF       100,0
+000C20 6B00               M         CLRF       100,1
+                          M         ;; High access memory
+000C22 6AFF               M         CLRF       0FFF
+000C24 6AFF               M         CLRF       0FFF,0
+000C26 6BFF               M         CLRF       0FFF,1
+                          M         ;; Variable defined before instruction (access)
+000C28 6A11               M         CLRF       d1
+000C2A 6A11               M         CLRF       d1,0
+000C2C 6B11               M         CLRF       d1,1
+                          M         ;; Variable defined after instruction (f-register)
+000C2E 6B01               M         CLRF       d2
+000C30 6A01               M         CLRF       d2,0
+000C32 6B01               M         CLRF       d2,1
+                          M         ;; $ is not really good for f-register address
+000C34 6B34               M         CLRF       $
+000C36 6A36               M         CLRF       $,0
+000C38 6B38               M         CLRF       $,1
+000C3A 6B3B               M         CLRF       $+1
+000C3C 6A3D               M         CLRF       $+1,0
+000C3E 6B3F               M         CLRF       $+1,1
+000C40 6B3F               M         CLRF       $-1
+000C42 6A41               M         CLRF       $-1,0
+000C44 6B43               M         CLRF       $-1,1
+000C46 6A00               M         CLRF       $-$
+000C48 6ADA               M         CLRF       c1-$
+000C4A 6B28               M         CLRF       $-c1
+000C4C 6BB0               M         CLRF       c2-$
+000C4E 6A52               M         CLRF       $-c2
+000C50 6AFF               M         CLRF       d1-d1b
+000C52 6A01               M         CLRF       d1b-d1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000C54 6A12               M         CLRF       d1+1
+000C56 6B00               M         CLRF       d2-1
+000C58 0004           00297         CLRWDT     
+                      00298         opwfa8  COMF
+                          M         ;; Low access memory
+000C5A 1E00               M         COMF       0
+000C5C 1E00               M         COMF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+000C5E 1E00               M         COMF       0,F
+000C60 1E00               M         COMF       0,F,0
+000C62 1F00               M         COMF       0,F,1
+000C64 1C00               M         COMF       0,0
+000C66 1C00               M         COMF       0,W
+000C68 1C00               M         COMF       0,W,0
+000C6A 1D00               M         COMF       0,W,1
+                          M         ;; Non access memory
+000C6C 1F00               M         COMF       100
+000C6E 1F00               M         COMF       100,1
+000C70 1F00               M         COMF       100,F
+000C72 1E00               M         COMF       100,F,0
+000C74 1F00               M         COMF       100,F,1
+000C76 1D00               M         COMF       100,0
+000C78 1D00               M         COMF       100,W
+000C7A 1C00               M         COMF       100,W,0
+000C7C 1D00               M         COMF       100,W,1
+                          M         ;; High access memory
+000C7E 1EFF               M         COMF       0FFF
+000C80 1EFF               M         COMF       0FFF,F
+000C82 1EFF               M         COMF       0FFF,F,0
+000C84 1FFF               M         COMF       0FFF,F,1
+000C86 1EFF               M         COMF       0FFF,F
+000C88 1CFF               M         COMF       0FFF,W,0
+000C8A 1DFF               M         COMF       0FFF,W,1
+000C8C 1E11               M         COMF       d1
+000C8E 1E11               M         COMF       d1,F
+000C90 1E11               M         COMF       d1,F,0
+000C92 1F11               M         COMF       d1,F,1
+000C94 1C11               M         COMF       d1,W
+000C96 1C11               M         COMF       d1,W,0
+000C98 1D11               M         COMF       d1,W,1
+000C9A 1F01               M         COMF       d2
+000C9C 1F01               M         COMF       d2,F
+000C9E 1E01               M         COMF       d2,F,0
+000CA0 1F01               M         COMF       d2,F,1
+000CA2 1D01               M         COMF       d2,W
+000CA4 1C01               M         COMF       d2,W,0
+000CA6 1D01               M         COMF       d2,W,1
+000CA8 1FA8               M         COMF       $
+000CAA 1FAA               M         COMF       $,F
+000CAC 1EAC               M         COMF       $,F,0
+000CAE 1FAE               M         COMF       $,F,1
+000CB0 1DB0               M         COMF       $,W
+000CB2 1CB2               M         COMF       $,W,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000CB4 1DB4               M         COMF       $,W,1
+000CB6 1FB7               M         COMF       $+1
+000CB8 1FB9               M         COMF       $+1,F
+000CBA 1EBB               M         COMF       $+1,F,0
+000CBC 1FBD               M         COMF       $+1,F,1
+000CBE 1DBF               M         COMF       $+1,W
+000CC0 1CC1               M         COMF       $+1,W,0
+000CC2 1DC3               M         COMF       $+1,W,1
+000CC4 1FC3               M         COMF       $-1
+000CC6 1FC5               M         COMF       $-1,F
+000CC8 1EC7               M         COMF       $-1,F,0
+000CCA 1FC9               M         COMF       $-1,F,1
+000CCC 1DCB               M         COMF       $-1,W
+000CCE 1CCD               M         COMF       $-1,W,0
+000CD0 1DCF               M         COMF       $-1,W,1
+000CD2 1E00               M         COMF       $-$
+000CD4 1E4E               M         COMF       c1-$
+000CD6 1FB4               M         COMF       $-c1
+000CD8 1F24               M         COMF       c2-$
+000CDA 1EDE               M         COMF       $-c2
+000CDC 1EFF               M         COMF       d1-d1b
+000CDE 1E01               M         COMF       d1b-d1
+000CE0 1E12               M         COMF       d1+1
+000CE2 1F00               M         COMF       d2-1
+                      00299         opfa8   CPFSEQ
+                          M         ;; Low access memory
+000CE4 6200               M         CPFSEQ       0
+000CE6 6200               M         CPFSEQ       0,0
+000CE8 6300               M         CPFSEQ       0,1
+                          M         ;; Non access memory
+000CEA 6300               M         CPFSEQ       100
+000CEC 6200               M         CPFSEQ       100,0
+000CEE 6300               M         CPFSEQ       100,1
+                          M         ;; High access memory
+000CF0 62FF               M         CPFSEQ       0FFF
+000CF2 62FF               M         CPFSEQ       0FFF,0
+000CF4 63FF               M         CPFSEQ       0FFF,1
+                          M         ;; Variable defined before instruction (access)
+000CF6 6211               M         CPFSEQ       d1
+000CF8 6211               M         CPFSEQ       d1,0
+000CFA 6311               M         CPFSEQ       d1,1
+                          M         ;; Variable defined after instruction (f-register)
+000CFC 6301               M         CPFSEQ       d2
+000CFE 6201               M         CPFSEQ       d2,0
+000D00 6301               M         CPFSEQ       d2,1
+                          M         ;; $ is not really good for f-register address
+000D02 6302               M         CPFSEQ       $
+000D04 6204               M         CPFSEQ       $,0
+000D06 6306               M         CPFSEQ       $,1
+000D08 6309               M         CPFSEQ       $+1
+000D0A 620B               M         CPFSEQ       $+1,0
+000D0C 630D               M         CPFSEQ       $+1,1
+000D0E 630D               M         CPFSEQ       $-1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000D10 620F               M         CPFSEQ       $-1,0
+000D12 6311               M         CPFSEQ       $-1,1
+000D14 6200               M         CPFSEQ       $-$
+000D16 620C               M         CPFSEQ       c1-$
+000D18 63F6               M         CPFSEQ       $-c1
+000D1A 63E2               M         CPFSEQ       c2-$
+000D1C 6220               M         CPFSEQ       $-c2
+000D1E 62FF               M         CPFSEQ       d1-d1b
+000D20 6201               M         CPFSEQ       d1b-d1
+000D22 6212               M         CPFSEQ       d1+1
+000D24 6300               M         CPFSEQ       d2-1
+                      00300         opfa8   CPFSGT
+                          M         ;; Low access memory
+000D26 6400               M         CPFSGT       0
+000D28 6400               M         CPFSGT       0,0
+000D2A 6500               M         CPFSGT       0,1
+                          M         ;; Non access memory
+000D2C 6500               M         CPFSGT       100
+000D2E 6400               M         CPFSGT       100,0
+000D30 6500               M         CPFSGT       100,1
+                          M         ;; High access memory
+000D32 64FF               M         CPFSGT       0FFF
+000D34 64FF               M         CPFSGT       0FFF,0
+000D36 65FF               M         CPFSGT       0FFF,1
+                          M         ;; Variable defined before instruction (access)
+000D38 6411               M         CPFSGT       d1
+000D3A 6411               M         CPFSGT       d1,0
+000D3C 6511               M         CPFSGT       d1,1
+                          M         ;; Variable defined after instruction (f-register)
+000D3E 6501               M         CPFSGT       d2
+000D40 6401               M         CPFSGT       d2,0
+000D42 6501               M         CPFSGT       d2,1
+                          M         ;; $ is not really good for f-register address
+000D44 6544               M         CPFSGT       $
+000D46 6446               M         CPFSGT       $,0
+000D48 6548               M         CPFSGT       $,1
+000D4A 654B               M         CPFSGT       $+1
+000D4C 644D               M         CPFSGT       $+1,0
+000D4E 654F               M         CPFSGT       $+1,1
+000D50 654F               M         CPFSGT       $-1
+000D52 6451               M         CPFSGT       $-1,0
+000D54 6553               M         CPFSGT       $-1,1
+000D56 6400               M         CPFSGT       $-$
+000D58 64CA               M         CPFSGT       c1-$
+000D5A 6538               M         CPFSGT       $-c1
+000D5C 65A0               M         CPFSGT       c2-$
+000D5E 6462               M         CPFSGT       $-c2
+000D60 64FF               M         CPFSGT       d1-d1b
+000D62 6401               M         CPFSGT       d1b-d1
+000D64 6412               M         CPFSGT       d1+1
+000D66 6500               M         CPFSGT       d2-1
+                      00301         opfa8   CPFSLT
+                          M         ;; Low access memory
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000D68 6000               M         CPFSLT       0
+000D6A 6000               M         CPFSLT       0,0
+000D6C 6100               M         CPFSLT       0,1
+                          M         ;; Non access memory
+000D6E 6100               M         CPFSLT       100
+000D70 6000               M         CPFSLT       100,0
+000D72 6100               M         CPFSLT       100,1
+                          M         ;; High access memory
+000D74 60FF               M         CPFSLT       0FFF
+000D76 60FF               M         CPFSLT       0FFF,0
+000D78 61FF               M         CPFSLT       0FFF,1
+                          M         ;; Variable defined before instruction (access)
+000D7A 6011               M         CPFSLT       d1
+000D7C 6011               M         CPFSLT       d1,0
+000D7E 6111               M         CPFSLT       d1,1
+                          M         ;; Variable defined after instruction (f-register)
+000D80 6101               M         CPFSLT       d2
+000D82 6001               M         CPFSLT       d2,0
+000D84 6101               M         CPFSLT       d2,1
+                          M         ;; $ is not really good for f-register address
+000D86 6186               M         CPFSLT       $
+000D88 6088               M         CPFSLT       $,0
+000D8A 618A               M         CPFSLT       $,1
+000D8C 618D               M         CPFSLT       $+1
+000D8E 608F               M         CPFSLT       $+1,0
+000D90 6191               M         CPFSLT       $+1,1
+000D92 6191               M         CPFSLT       $-1
+000D94 6093               M         CPFSLT       $-1,0
+000D96 6195               M         CPFSLT       $-1,1
+000D98 6000               M         CPFSLT       $-$
+000D9A 6088               M         CPFSLT       c1-$
+000D9C 617A               M         CPFSLT       $-c1
+000D9E 615E               M         CPFSLT       c2-$
+000DA0 60A4               M         CPFSLT       $-c2
+000DA2 60FF               M         CPFSLT       d1-d1b
+000DA4 6001               M         CPFSLT       d1b-d1
+000DA6 6012               M         CPFSLT       d1+1
+000DA8 6100               M         CPFSLT       d2-1
+000DAA 0007           00302         DAW
+                      00303         opwfa8  DECF
+                          M         ;; Low access memory
+000DAC 0600               M         DECF       0
+000DAE 0600               M         DECF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+000DB0 0600               M         DECF       0,F
+000DB2 0600               M         DECF       0,F,0
+000DB4 0700               M         DECF       0,F,1
+000DB6 0400               M         DECF       0,0
+000DB8 0400               M         DECF       0,W
+000DBA 0400               M         DECF       0,W,0
+000DBC 0500               M         DECF       0,W,1
+                          M         ;; Non access memory
+000DBE 0700               M         DECF       100
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000DC0 0700               M         DECF       100,1
+000DC2 0700               M         DECF       100,F
+000DC4 0600               M         DECF       100,F,0
+000DC6 0700               M         DECF       100,F,1
+000DC8 0500               M         DECF       100,0
+000DCA 0500               M         DECF       100,W
+000DCC 0400               M         DECF       100,W,0
+000DCE 0500               M         DECF       100,W,1
+                          M         ;; High access memory
+000DD0 06FF               M         DECF       0FFF
+000DD2 06FF               M         DECF       0FFF,F
+000DD4 06FF               M         DECF       0FFF,F,0
+000DD6 07FF               M         DECF       0FFF,F,1
+000DD8 06FF               M         DECF       0FFF,F
+000DDA 04FF               M         DECF       0FFF,W,0
+000DDC 05FF               M         DECF       0FFF,W,1
+000DDE 0611               M         DECF       d1
+000DE0 0611               M         DECF       d1,F
+000DE2 0611               M         DECF       d1,F,0
+000DE4 0711               M         DECF       d1,F,1
+000DE6 0411               M         DECF       d1,W
+000DE8 0411               M         DECF       d1,W,0
+000DEA 0511               M         DECF       d1,W,1
+000DEC 0701               M         DECF       d2
+000DEE 0701               M         DECF       d2,F
+000DF0 0601               M         DECF       d2,F,0
+000DF2 0701               M         DECF       d2,F,1
+000DF4 0501               M         DECF       d2,W
+000DF6 0401               M         DECF       d2,W,0
+000DF8 0501               M         DECF       d2,W,1
+000DFA 07FA               M         DECF       $
+000DFC 07FC               M         DECF       $,F
+000DFE 06FE               M         DECF       $,F,0
+000E00 0700               M         DECF       $,F,1
+000E02 0502               M         DECF       $,W
+000E04 0404               M         DECF       $,W,0
+000E06 0506               M         DECF       $,W,1
+000E08 0709               M         DECF       $+1
+000E0A 070B               M         DECF       $+1,F
+000E0C 060D               M         DECF       $+1,F,0
+000E0E 070F               M         DECF       $+1,F,1
+000E10 0511               M         DECF       $+1,W
+000E12 0413               M         DECF       $+1,W,0
+000E14 0515               M         DECF       $+1,W,1
+000E16 0715               M         DECF       $-1
+000E18 0717               M         DECF       $-1,F
+000E1A 0619               M         DECF       $-1,F,0
+000E1C 071B               M         DECF       $-1,F,1
+000E1E 051D               M         DECF       $-1,W
+000E20 041F               M         DECF       $-1,W,0
+000E22 0521               M         DECF       $-1,W,1
+000E24 0600               M         DECF       $-$
+000E26 06FC               M         DECF       c1-$
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000E28 0706               M         DECF       $-c1
+000E2A 07D2               M         DECF       c2-$
+000E2C 0630               M         DECF       $-c2
+000E2E 06FF               M         DECF       d1-d1b
+000E30 0601               M         DECF       d1b-d1
+000E32 0612               M         DECF       d1+1
+000E34 0700               M         DECF       d2-1
+                      00304         opwfa8  DECFSZ
+                          M         ;; Low access memory
+000E36 2E00               M         DECFSZ       0
+000E38 2E00               M         DECFSZ       0,1
+                          M         ;; Destination "F" and "W" without being defined
+000E3A 2E00               M         DECFSZ       0,F
+000E3C 2E00               M         DECFSZ       0,F,0
+000E3E 2F00               M         DECFSZ       0,F,1
+000E40 2C00               M         DECFSZ       0,0
+000E42 2C00               M         DECFSZ       0,W
+000E44 2C00               M         DECFSZ       0,W,0
+000E46 2D00               M         DECFSZ       0,W,1
+                          M         ;; Non access memory
+000E48 2F00               M         DECFSZ       100
+000E4A 2F00               M         DECFSZ       100,1
+000E4C 2F00               M         DECFSZ       100,F
+000E4E 2E00               M         DECFSZ       100,F,0
+000E50 2F00               M         DECFSZ       100,F,1
+000E52 2D00               M         DECFSZ       100,0
+000E54 2D00               M         DECFSZ       100,W
+000E56 2C00               M         DECFSZ       100,W,0
+000E58 2D00               M         DECFSZ       100,W,1
+                          M         ;; High access memory
+000E5A 2EFF               M         DECFSZ       0FFF
+000E5C 2EFF               M         DECFSZ       0FFF,F
+000E5E 2EFF               M         DECFSZ       0FFF,F,0
+000E60 2FFF               M         DECFSZ       0FFF,F,1
+000E62 2EFF               M         DECFSZ       0FFF,F
+000E64 2CFF               M         DECFSZ       0FFF,W,0
+000E66 2DFF               M         DECFSZ       0FFF,W,1
+000E68 2E11               M         DECFSZ       d1
+000E6A 2E11               M         DECFSZ       d1,F
+000E6C 2E11               M         DECFSZ       d1,F,0
+000E6E 2F11               M         DECFSZ       d1,F,1
+000E70 2C11               M         DECFSZ       d1,W
+000E72 2C11               M         DECFSZ       d1,W,0
+000E74 2D11               M         DECFSZ       d1,W,1
+000E76 2F01               M         DECFSZ       d2
+000E78 2F01               M         DECFSZ       d2,F
+000E7A 2E01               M         DECFSZ       d2,F,0
+000E7C 2F01               M         DECFSZ       d2,F,1
+000E7E 2D01               M         DECFSZ       d2,W
+000E80 2C01               M         DECFSZ       d2,W,0
+000E82 2D01               M         DECFSZ       d2,W,1
+000E84 2F84               M         DECFSZ       $
+000E86 2F86               M         DECFSZ       $,F
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000E88 2E88               M         DECFSZ       $,F,0
+000E8A 2F8A               M         DECFSZ       $,F,1
+000E8C 2D8C               M         DECFSZ       $,W
+000E8E 2C8E               M         DECFSZ       $,W,0
+000E90 2D90               M         DECFSZ       $,W,1
+000E92 2F93               M         DECFSZ       $+1
+000E94 2F95               M         DECFSZ       $+1,F
+000E96 2E97               M         DECFSZ       $+1,F,0
+000E98 2F99               M         DECFSZ       $+1,F,1
+000E9A 2D9B               M         DECFSZ       $+1,W
+000E9C 2C9D               M         DECFSZ       $+1,W,0
+000E9E 2D9F               M         DECFSZ       $+1,W,1
+000EA0 2F9F               M         DECFSZ       $-1
+000EA2 2FA1               M         DECFSZ       $-1,F
+000EA4 2EA3               M         DECFSZ       $-1,F,0
+000EA6 2FA5               M         DECFSZ       $-1,F,1
+000EA8 2DA7               M         DECFSZ       $-1,W
+000EAA 2CA9               M         DECFSZ       $-1,W,0
+000EAC 2DAB               M         DECFSZ       $-1,W,1
+000EAE 2E00               M         DECFSZ       $-$
+000EB0 2E72               M         DECFSZ       c1-$
+000EB2 2F90               M         DECFSZ       $-c1
+000EB4 2F48               M         DECFSZ       c2-$
+000EB6 2EBA               M         DECFSZ       $-c2
+000EB8 2EFF               M         DECFSZ       d1-d1b
+000EBA 2E01               M         DECFSZ       d1b-d1
+000EBC 2E12               M         DECFSZ       d1+1
+000EBE 2F00               M         DECFSZ       d2-1
+                      00305         opwfa8  DCFSNZ
+                          M         ;; Low access memory
+000EC0 4E00               M         DCFSNZ       0
+000EC2 4E00               M         DCFSNZ       0,1
+                          M         ;; Destination "F" and "W" without being defined
+000EC4 4E00               M         DCFSNZ       0,F
+000EC6 4E00               M         DCFSNZ       0,F,0
+000EC8 4F00               M         DCFSNZ       0,F,1
+000ECA 4C00               M         DCFSNZ       0,0
+000ECC 4C00               M         DCFSNZ       0,W
+000ECE 4C00               M         DCFSNZ       0,W,0
+000ED0 4D00               M         DCFSNZ       0,W,1
+                          M         ;; Non access memory
+000ED2 4F00               M         DCFSNZ       100
+000ED4 4F00               M         DCFSNZ       100,1
+000ED6 4F00               M         DCFSNZ       100,F
+000ED8 4E00               M         DCFSNZ       100,F,0
+000EDA 4F00               M         DCFSNZ       100,F,1
+000EDC 4D00               M         DCFSNZ       100,0
+000EDE 4D00               M         DCFSNZ       100,W
+000EE0 4C00               M         DCFSNZ       100,W,0
+000EE2 4D00               M         DCFSNZ       100,W,1
+                          M         ;; High access memory
+000EE4 4EFF               M         DCFSNZ       0FFF
+000EE6 4EFF               M         DCFSNZ       0FFF,F
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000EE8 4EFF               M         DCFSNZ       0FFF,F,0
+000EEA 4FFF               M         DCFSNZ       0FFF,F,1
+000EEC 4EFF               M         DCFSNZ       0FFF,F
+000EEE 4CFF               M         DCFSNZ       0FFF,W,0
+000EF0 4DFF               M         DCFSNZ       0FFF,W,1
+000EF2 4E11               M         DCFSNZ       d1
+000EF4 4E11               M         DCFSNZ       d1,F
+000EF6 4E11               M         DCFSNZ       d1,F,0
+000EF8 4F11               M         DCFSNZ       d1,F,1
+000EFA 4C11               M         DCFSNZ       d1,W
+000EFC 4C11               M         DCFSNZ       d1,W,0
+000EFE 4D11               M         DCFSNZ       d1,W,1
+000F00 4F01               M         DCFSNZ       d2
+000F02 4F01               M         DCFSNZ       d2,F
+000F04 4E01               M         DCFSNZ       d2,F,0
+000F06 4F01               M         DCFSNZ       d2,F,1
+000F08 4D01               M         DCFSNZ       d2,W
+000F0A 4C01               M         DCFSNZ       d2,W,0
+000F0C 4D01               M         DCFSNZ       d2,W,1
+000F0E 4F0E               M         DCFSNZ       $
+000F10 4F10               M         DCFSNZ       $,F
+000F12 4E12               M         DCFSNZ       $,F,0
+000F14 4F14               M         DCFSNZ       $,F,1
+000F16 4D16               M         DCFSNZ       $,W
+000F18 4C18               M         DCFSNZ       $,W,0
+000F1A 4D1A               M         DCFSNZ       $,W,1
+000F1C 4F1D               M         DCFSNZ       $+1
+000F1E 4F1F               M         DCFSNZ       $+1,F
+000F20 4E21               M         DCFSNZ       $+1,F,0
+000F22 4F23               M         DCFSNZ       $+1,F,1
+000F24 4D25               M         DCFSNZ       $+1,W
+000F26 4C27               M         DCFSNZ       $+1,W,0
+000F28 4D29               M         DCFSNZ       $+1,W,1
+000F2A 4F29               M         DCFSNZ       $-1
+000F2C 4F2B               M         DCFSNZ       $-1,F
+000F2E 4E2D               M         DCFSNZ       $-1,F,0
+000F30 4F2F               M         DCFSNZ       $-1,F,1
+000F32 4D31               M         DCFSNZ       $-1,W
+000F34 4C33               M         DCFSNZ       $-1,W,0
+000F36 4D35               M         DCFSNZ       $-1,W,1
+000F38 4E00               M         DCFSNZ       $-$
+000F3A 4EE8               M         DCFSNZ       c1-$
+000F3C 4F1A               M         DCFSNZ       $-c1
+000F3E 4FBE               M         DCFSNZ       c2-$
+000F40 4E44               M         DCFSNZ       $-c2
+000F42 4EFF               M         DCFSNZ       d1-d1b
+000F44 4E01               M         DCFSNZ       d1b-d1
+000F46 4E12               M         DCFSNZ       d1+1
+000F48 4F00               M         DCFSNZ       d2-1
+                      00306         addr    GOTO
+000F4A EF00 F000          M         GOTO       0
+                          M ; The mpasmx indicates this error: "Error[126]  : Argument out of range (0000 not between 0000 and 3FFF)
+                            "
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M ;       i       0x80000
+000F4E EF11 F000          M         GOTO       c1
+000F52 EFFE F00C          M         GOTO       c2
+000F56 EFAB F007          M         GOTO       $
+000F5A EFAE F007          M         GOTO       $+2
+000F5E EFAE F007          M         GOTO       $-2
+                      00307         opwfa8  INCF
+                          M         ;; Low access memory
+000F62 2A00               M         INCF       0
+000F64 2A00               M         INCF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+000F66 2A00               M         INCF       0,F
+000F68 2A00               M         INCF       0,F,0
+000F6A 2B00               M         INCF       0,F,1
+000F6C 2800               M         INCF       0,0
+000F6E 2800               M         INCF       0,W
+000F70 2800               M         INCF       0,W,0
+000F72 2900               M         INCF       0,W,1
+                          M         ;; Non access memory
+000F74 2B00               M         INCF       100
+000F76 2B00               M         INCF       100,1
+000F78 2B00               M         INCF       100,F
+000F7A 2A00               M         INCF       100,F,0
+000F7C 2B00               M         INCF       100,F,1
+000F7E 2900               M         INCF       100,0
+000F80 2900               M         INCF       100,W
+000F82 2800               M         INCF       100,W,0
+000F84 2900               M         INCF       100,W,1
+                          M         ;; High access memory
+000F86 2AFF               M         INCF       0FFF
+000F88 2AFF               M         INCF       0FFF,F
+000F8A 2AFF               M         INCF       0FFF,F,0
+000F8C 2BFF               M         INCF       0FFF,F,1
+000F8E 2AFF               M         INCF       0FFF,F
+000F90 28FF               M         INCF       0FFF,W,0
+000F92 29FF               M         INCF       0FFF,W,1
+000F94 2A11               M         INCF       d1
+000F96 2A11               M         INCF       d1,F
+000F98 2A11               M         INCF       d1,F,0
+000F9A 2B11               M         INCF       d1,F,1
+000F9C 2811               M         INCF       d1,W
+000F9E 2811               M         INCF       d1,W,0
+000FA0 2911               M         INCF       d1,W,1
+000FA2 2B01               M         INCF       d2
+000FA4 2B01               M         INCF       d2,F
+000FA6 2A01               M         INCF       d2,F,0
+000FA8 2B01               M         INCF       d2,F,1
+000FAA 2901               M         INCF       d2,W
+000FAC 2801               M         INCF       d2,W,0
+000FAE 2901               M         INCF       d2,W,1
+000FB0 2AB0               M         INCF       $
+000FB2 2AB2               M         INCF       $,F
+000FB4 2AB4               M         INCF       $,F,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 27
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000FB6 2BB6               M         INCF       $,F,1
+000FB8 28B8               M         INCF       $,W
+000FBA 28BA               M         INCF       $,W,0
+000FBC 29BC               M         INCF       $,W,1
+000FBE 2ABF               M         INCF       $+1
+000FC0 2AC1               M         INCF       $+1,F
+000FC2 2AC3               M         INCF       $+1,F,0
+000FC4 2BC5               M         INCF       $+1,F,1
+000FC6 28C7               M         INCF       $+1,W
+000FC8 28C9               M         INCF       $+1,W,0
+000FCA 29CB               M         INCF       $+1,W,1
+000FCC 2ACB               M         INCF       $-1
+000FCE 2ACD               M         INCF       $-1,F
+000FD0 2ACF               M         INCF       $-1,F,0
+000FD2 2BD1               M         INCF       $-1,F,1
+000FD4 28D3               M         INCF       $-1,W
+000FD6 28D5               M         INCF       $-1,W,0
+000FD8 29D7               M         INCF       $-1,W,1
+000FDA 2A00               M         INCF       $-$
+000FDC 2A46               M         INCF       c1-$
+000FDE 2ABC               M         INCF       $-c1
+000FE0 2B1C               M         INCF       c2-$
+000FE2 2AE6               M         INCF       $-c2
+000FE4 2AFF               M         INCF       d1-d1b
+000FE6 2A01               M         INCF       d1b-d1
+000FE8 2A12               M         INCF       d1+1
+000FEA 2B00               M         INCF       d2-1
+                      00308         opwfa8  INCFSZ
+                          M         ;; Low access memory
+000FEC 3E00               M         INCFSZ       0
+000FEE 3E00               M         INCFSZ       0,1
+                          M         ;; Destination "F" and "W" without being defined
+000FF0 3E00               M         INCFSZ       0,F
+000FF2 3E00               M         INCFSZ       0,F,0
+000FF4 3F00               M         INCFSZ       0,F,1
+000FF6 3C00               M         INCFSZ       0,0
+000FF8 3C00               M         INCFSZ       0,W
+000FFA 3C00               M         INCFSZ       0,W,0
+000FFC 3D00               M         INCFSZ       0,W,1
+                          M         ;; Non access memory
+000FFE 3F00               M         INCFSZ       100
+001000 3F00               M         INCFSZ       100,1
+001002 3F00               M         INCFSZ       100,F
+001004 3E00               M         INCFSZ       100,F,0
+001006 3F00               M         INCFSZ       100,F,1
+001008 3D00               M         INCFSZ       100,0
+00100A 3D00               M         INCFSZ       100,W
+00100C 3C00               M         INCFSZ       100,W,0
+00100E 3D00               M         INCFSZ       100,W,1
+                          M         ;; High access memory
+001010 3EFF               M         INCFSZ       0FFF
+001012 3EFF               M         INCFSZ       0FFF,F
+001014 3EFF               M         INCFSZ       0FFF,F,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 28
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001016 3FFF               M         INCFSZ       0FFF,F,1
+001018 3EFF               M         INCFSZ       0FFF,F
+00101A 3CFF               M         INCFSZ       0FFF,W,0
+00101C 3DFF               M         INCFSZ       0FFF,W,1
+00101E 3E11               M         INCFSZ       d1
+001020 3E11               M         INCFSZ       d1,F
+001022 3E11               M         INCFSZ       d1,F,0
+001024 3F11               M         INCFSZ       d1,F,1
+001026 3C11               M         INCFSZ       d1,W
+001028 3C11               M         INCFSZ       d1,W,0
+00102A 3D11               M         INCFSZ       d1,W,1
+00102C 3F01               M         INCFSZ       d2
+00102E 3F01               M         INCFSZ       d2,F
+001030 3E01               M         INCFSZ       d2,F,0
+001032 3F01               M         INCFSZ       d2,F,1
+001034 3D01               M         INCFSZ       d2,W
+001036 3C01               M         INCFSZ       d2,W,0
+001038 3D01               M         INCFSZ       d2,W,1
+00103A 3E3A               M         INCFSZ       $
+00103C 3E3C               M         INCFSZ       $,F
+00103E 3E3E               M         INCFSZ       $,F,0
+001040 3F40               M         INCFSZ       $,F,1
+001042 3C42               M         INCFSZ       $,W
+001044 3C44               M         INCFSZ       $,W,0
+001046 3D46               M         INCFSZ       $,W,1
+001048 3E49               M         INCFSZ       $+1
+00104A 3E4B               M         INCFSZ       $+1,F
+00104C 3E4D               M         INCFSZ       $+1,F,0
+00104E 3F4F               M         INCFSZ       $+1,F,1
+001050 3C51               M         INCFSZ       $+1,W
+001052 3C53               M         INCFSZ       $+1,W,0
+001054 3D55               M         INCFSZ       $+1,W,1
+001056 3E55               M         INCFSZ       $-1
+001058 3E57               M         INCFSZ       $-1,F
+00105A 3E59               M         INCFSZ       $-1,F,0
+00105C 3F5B               M         INCFSZ       $-1,F,1
+00105E 3C5D               M         INCFSZ       $-1,W
+001060 3C5F               M         INCFSZ       $-1,W,0
+001062 3D61               M         INCFSZ       $-1,W,1
+001064 3E00               M         INCFSZ       $-$
+001066 3EBC               M         INCFSZ       c1-$
+001068 3E46               M         INCFSZ       $-c1
+00106A 3F92               M         INCFSZ       c2-$
+00106C 3E70               M         INCFSZ       $-c2
+00106E 3EFF               M         INCFSZ       d1-d1b
+001070 3E01               M         INCFSZ       d1b-d1
+001072 3E12               M         INCFSZ       d1+1
+001074 3F00               M         INCFSZ       d2-1
+                      00309         opwfa8  INFSNZ
+                          M         ;; Low access memory
+001076 4A00               M         INFSNZ       0
+001078 4A00               M         INFSNZ       0,1
+                          M         ;; Destination "F" and "W" without being defined
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 29
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00107A 4A00               M         INFSNZ       0,F
+00107C 4A00               M         INFSNZ       0,F,0
+00107E 4B00               M         INFSNZ       0,F,1
+001080 4800               M         INFSNZ       0,0
+001082 4800               M         INFSNZ       0,W
+001084 4800               M         INFSNZ       0,W,0
+001086 4900               M         INFSNZ       0,W,1
+                          M         ;; Non access memory
+001088 4B00               M         INFSNZ       100
+00108A 4B00               M         INFSNZ       100,1
+00108C 4B00               M         INFSNZ       100,F
+00108E 4A00               M         INFSNZ       100,F,0
+001090 4B00               M         INFSNZ       100,F,1
+001092 4900               M         INFSNZ       100,0
+001094 4900               M         INFSNZ       100,W
+001096 4800               M         INFSNZ       100,W,0
+001098 4900               M         INFSNZ       100,W,1
+                          M         ;; High access memory
+00109A 4AFF               M         INFSNZ       0FFF
+00109C 4AFF               M         INFSNZ       0FFF,F
+00109E 4AFF               M         INFSNZ       0FFF,F,0
+0010A0 4BFF               M         INFSNZ       0FFF,F,1
+0010A2 4AFF               M         INFSNZ       0FFF,F
+0010A4 48FF               M         INFSNZ       0FFF,W,0
+0010A6 49FF               M         INFSNZ       0FFF,W,1
+0010A8 4A11               M         INFSNZ       d1
+0010AA 4A11               M         INFSNZ       d1,F
+0010AC 4A11               M         INFSNZ       d1,F,0
+0010AE 4B11               M         INFSNZ       d1,F,1
+0010B0 4811               M         INFSNZ       d1,W
+0010B2 4811               M         INFSNZ       d1,W,0
+0010B4 4911               M         INFSNZ       d1,W,1
+0010B6 4B01               M         INFSNZ       d2
+0010B8 4B01               M         INFSNZ       d2,F
+0010BA 4A01               M         INFSNZ       d2,F,0
+0010BC 4B01               M         INFSNZ       d2,F,1
+0010BE 4901               M         INFSNZ       d2,W
+0010C0 4801               M         INFSNZ       d2,W,0
+0010C2 4901               M         INFSNZ       d2,W,1
+0010C4 4AC4               M         INFSNZ       $
+0010C6 4AC6               M         INFSNZ       $,F
+0010C8 4AC8               M         INFSNZ       $,F,0
+0010CA 4BCA               M         INFSNZ       $,F,1
+0010CC 48CC               M         INFSNZ       $,W
+0010CE 48CE               M         INFSNZ       $,W,0
+0010D0 49D0               M         INFSNZ       $,W,1
+0010D2 4AD3               M         INFSNZ       $+1
+0010D4 4AD5               M         INFSNZ       $+1,F
+0010D6 4AD7               M         INFSNZ       $+1,F,0
+0010D8 4BD9               M         INFSNZ       $+1,F,1
+0010DA 48DB               M         INFSNZ       $+1,W
+0010DC 48DD               M         INFSNZ       $+1,W,0
+0010DE 49DF               M         INFSNZ       $+1,W,1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 30
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0010E0 4ADF               M         INFSNZ       $-1
+0010E2 4AE1               M         INFSNZ       $-1,F
+0010E4 4AE3               M         INFSNZ       $-1,F,0
+0010E6 4BE5               M         INFSNZ       $-1,F,1
+0010E8 48E7               M         INFSNZ       $-1,W
+0010EA 48E9               M         INFSNZ       $-1,W,0
+0010EC 49EB               M         INFSNZ       $-1,W,1
+0010EE 4A00               M         INFSNZ       $-$
+0010F0 4A32               M         INFSNZ       c1-$
+0010F2 4AD0               M         INFSNZ       $-c1
+0010F4 4B08               M         INFSNZ       c2-$
+0010F6 4AFA               M         INFSNZ       $-c2
+0010F8 4AFF               M         INFSNZ       d1-d1b
+0010FA 4A01               M         INFSNZ       d1b-d1
+0010FC 4A12               M         INFSNZ       d1+1
+0010FE 4B00               M         INFSNZ       d2-1
+                      00310         lit8    IORLW
+001100 0900               M         IORLW       0
+001102 0941               M         IORLW       'A'
+001104 0941               M         IORLW       "A"
+001106 09FF               M         IORLW       0FF
+001108 0908               M         IORLW       low $
+00110A 0911               M         IORLW       high $
+00110C 0900               M         IORLW       upper $
+00110E 0922               M         IORLW       low c1
+001110 0900               M         IORLW       high c1
+001112 0900               M         IORLW       upper c1
+001114 09FC               M         IORLW       low c2
+001116 0919               M         IORLW       high c2
+001118 0900               M         IORLW       upper c2
+Warning[202]: Argument out of range.  Least significant bits used.
+00111A 091A               M         IORLW       $
+Warning[202]: Argument out of range.  Least significant bits used.
+00111C 091D               M         IORLW       $+1
+Warning[202]: Argument out of range.  Least significant bits used.
+00111E 091D               M         IORLW       $-1
+001120 0900               M         IORLW       $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+001122 0900               M         IORLW       c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+001124 0902               M         IORLW       $-c1
+Warning[202]: Argument out of range.  Least significant bits used.
+001126 09D6               M         IORLW       c2-$
+Warning[202]: Argument out of range.  Least significant bits used.
+001128 092C               M         IORLW       $-c2
+00112A 09FF               M         IORLW       d1-d1b
+00112C 0901               M         IORLW       d1b-d1
+                      00311         opwfa8  IORWF
+                          M         ;; Low access memory
+00112E 1200               M         IORWF       0
+001130 1200               M         IORWF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+001132 1200               M         IORWF       0,F
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 31
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001134 1200               M         IORWF       0,F,0
+001136 1300               M         IORWF       0,F,1
+001138 1000               M         IORWF       0,0
+00113A 1000               M         IORWF       0,W
+00113C 1000               M         IORWF       0,W,0
+00113E 1100               M         IORWF       0,W,1
+                          M         ;; Non access memory
+001140 1300               M         IORWF       100
+001142 1300               M         IORWF       100,1
+001144 1300               M         IORWF       100,F
+001146 1200               M         IORWF       100,F,0
+001148 1300               M         IORWF       100,F,1
+00114A 1100               M         IORWF       100,0
+00114C 1100               M         IORWF       100,W
+00114E 1000               M         IORWF       100,W,0
+001150 1100               M         IORWF       100,W,1
+                          M         ;; High access memory
+001152 12FF               M         IORWF       0FFF
+001154 12FF               M         IORWF       0FFF,F
+001156 12FF               M         IORWF       0FFF,F,0
+001158 13FF               M         IORWF       0FFF,F,1
+00115A 12FF               M         IORWF       0FFF,F
+00115C 10FF               M         IORWF       0FFF,W,0
+00115E 11FF               M         IORWF       0FFF,W,1
+001160 1211               M         IORWF       d1
+001162 1211               M         IORWF       d1,F
+001164 1211               M         IORWF       d1,F,0
+001166 1311               M         IORWF       d1,F,1
+001168 1011               M         IORWF       d1,W
+00116A 1011               M         IORWF       d1,W,0
+00116C 1111               M         IORWF       d1,W,1
+00116E 1301               M         IORWF       d2
+001170 1301               M         IORWF       d2,F
+001172 1201               M         IORWF       d2,F,0
+001174 1301               M         IORWF       d2,F,1
+001176 1101               M         IORWF       d2,W
+001178 1001               M         IORWF       d2,W,0
+00117A 1101               M         IORWF       d2,W,1
+00117C 127C               M         IORWF       $
+00117E 127E               M         IORWF       $,F
+001180 1280               M         IORWF       $,F,0
+001182 1382               M         IORWF       $,F,1
+001184 1084               M         IORWF       $,W
+001186 1086               M         IORWF       $,W,0
+001188 1188               M         IORWF       $,W,1
+00118A 128B               M         IORWF       $+1
+00118C 128D               M         IORWF       $+1,F
+00118E 128F               M         IORWF       $+1,F,0
+001190 1391               M         IORWF       $+1,F,1
+001192 1093               M         IORWF       $+1,W
+001194 1095               M         IORWF       $+1,W,0
+001196 1197               M         IORWF       $+1,W,1
+001198 1297               M         IORWF       $-1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 32
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00119A 1299               M         IORWF       $-1,F
+00119C 129B               M         IORWF       $-1,F,0
+00119E 139D               M         IORWF       $-1,F,1
+0011A0 109F               M         IORWF       $-1,W
+0011A2 10A1               M         IORWF       $-1,W,0
+0011A4 11A3               M         IORWF       $-1,W,1
+0011A6 1200               M         IORWF       $-$
+0011A8 127A               M         IORWF       c1-$
+0011AA 1288               M         IORWF       $-c1
+0011AC 1350               M         IORWF       c2-$
+0011AE 12B2               M         IORWF       $-c2
+0011B0 12FF               M         IORWF       d1-d1b
+0011B2 1201               M         IORWF       d1b-d1
+0011B4 1212               M         IORWF       d1+1
+0011B6 1300               M         IORWF       d2-1
+                      00312 
+0011B8 EE00 F000      00313         LFSR    0,0
+0011BC EE0F F0FF      00314         LFSR    0,0FFF
+0011C0 EE00 F011      00315         LFSR    0,d1
+0011C4 EE01 F001      00316         LFSR    0,d2
+0011C8 EE10 F000      00317         LFSR    1,0
+0011CC EE10 F011      00318         LFSR    1,d1
+0011D0 EE11 F001      00319         LFSR    1,d2
+0011D4 EE1F F0FF      00320         LFSR    1,0FFF
+0011D8 EE20 F000      00321         LFSR    2,0
+0011DC EE20 F011      00322         LFSR    2,d1
+0011E0 EE21 F001      00323         LFSR    2,d2
+0011E4 EE2F F0FF      00324         LFSR    2,0FFF
+                      00325 
+                      00326         opwfa8  MOVF
+                          M         ;; Low access memory
+0011E8 5200               M         MOVF       0
+0011EA 5200               M         MOVF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+0011EC 5200               M         MOVF       0,F
+0011EE 5200               M         MOVF       0,F,0
+0011F0 5300               M         MOVF       0,F,1
+0011F2 5000               M         MOVF       0,0
+0011F4 5000               M         MOVF       0,W
+0011F6 5000               M         MOVF       0,W,0
+0011F8 5100               M         MOVF       0,W,1
+                          M         ;; Non access memory
+0011FA 5300               M         MOVF       100
+0011FC 5300               M         MOVF       100,1
+0011FE 5300               M         MOVF       100,F
+001200 5200               M         MOVF       100,F,0
+001202 5300               M         MOVF       100,F,1
+001204 5100               M         MOVF       100,0
+001206 5100               M         MOVF       100,W
+001208 5000               M         MOVF       100,W,0
+00120A 5100               M         MOVF       100,W,1
+                          M         ;; High access memory
+00120C 52FF               M         MOVF       0FFF
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 33
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00120E 52FF               M         MOVF       0FFF,F
+001210 52FF               M         MOVF       0FFF,F,0
+001212 53FF               M         MOVF       0FFF,F,1
+001214 52FF               M         MOVF       0FFF,F
+001216 50FF               M         MOVF       0FFF,W,0
+001218 51FF               M         MOVF       0FFF,W,1
+00121A 5211               M         MOVF       d1
+00121C 5211               M         MOVF       d1,F
+00121E 5211               M         MOVF       d1,F,0
+001220 5311               M         MOVF       d1,F,1
+001222 5011               M         MOVF       d1,W
+001224 5011               M         MOVF       d1,W,0
+001226 5111               M         MOVF       d1,W,1
+001228 5301               M         MOVF       d2
+00122A 5301               M         MOVF       d2,F
+00122C 5201               M         MOVF       d2,F,0
+00122E 5301               M         MOVF       d2,F,1
+001230 5101               M         MOVF       d2,W
+001232 5001               M         MOVF       d2,W,0
+001234 5101               M         MOVF       d2,W,1
+001236 5236               M         MOVF       $
+001238 5238               M         MOVF       $,F
+00123A 523A               M         MOVF       $,F,0
+00123C 533C               M         MOVF       $,F,1
+00123E 503E               M         MOVF       $,W
+001240 5040               M         MOVF       $,W,0
+001242 5142               M         MOVF       $,W,1
+001244 5245               M         MOVF       $+1
+001246 5247               M         MOVF       $+1,F
+001248 5249               M         MOVF       $+1,F,0
+00124A 534B               M         MOVF       $+1,F,1
+00124C 504D               M         MOVF       $+1,W
+00124E 504F               M         MOVF       $+1,W,0
+001250 5151               M         MOVF       $+1,W,1
+001252 5251               M         MOVF       $-1
+001254 5253               M         MOVF       $-1,F
+001256 5255               M         MOVF       $-1,F,0
+001258 5357               M         MOVF       $-1,F,1
+00125A 5059               M         MOVF       $-1,W
+00125C 505B               M         MOVF       $-1,W,0
+00125E 515D               M         MOVF       $-1,W,1
+001260 5200               M         MOVF       $-$
+001262 52C0               M         MOVF       c1-$
+001264 5242               M         MOVF       $-c1
+001266 5396               M         MOVF       c2-$
+001268 526C               M         MOVF       $-c2
+00126A 52FF               M         MOVF       d1-d1b
+00126C 5201               M         MOVF       d1b-d1
+00126E 5212               M         MOVF       d1+1
+001270 5300               M         MOVF       d2-1
+                      00327 
+001272 C000 F000      00328         MOVFF   0, 0
+001276 CFFF F000      00329         MOVFF   0FFF, 0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 34
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00127A CFFF F011      00330         MOVFF   0FFF, d1
+00127E C011 F101      00331         MOVFF   d1, d2
+001282 C101 F011      00332         MOVFF   d2, d1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001286 C286 F011      00333         MOVFF   $, d1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+00128A C28A F101      00334         MOVFF   $, d2
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+00128E C28F F011      00335         MOVFF   $+1, d1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001292 C291 F011      00336         MOVFF   $-1, d1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001296 C296 F298      00337         MOVFF   $, $
+                      00338 ;        MOVFF   0,0FFF               ;;Illegal operations on this device (movff TOS[U | H | L])  
+                      00339 ;        MOVFF   0FFF,0FFF
+                      00340 
+00129A 0100           00341         MOVLB   0
+00129C 010F           00342         MOVLB   0F                ;40
+Warning[202]: Argument out of range.  Least significant bits used.
+00129E 0101           00343         MOVLB   d1
+Warning[202]: Argument out of range.  Least significant bits used.
+0012A0 0101           00344         MOVLB   d2
+                      00345         
+                      00346         lit8    MOVLW
+0012A2 0E00               M         MOVLW       0
+0012A4 0E41               M         MOVLW       'A'
+0012A6 0E41               M         MOVLW       "A"
+0012A8 0EFF               M         MOVLW       0FF
+0012AA 0EAA               M         MOVLW       low $
+0012AC 0E12               M         MOVLW       high $
+0012AE 0E00               M         MOVLW       upper $
+0012B0 0E22               M         MOVLW       low c1
+0012B2 0E00               M         MOVLW       high c1
+0012B4 0E00               M         MOVLW       upper c1
+0012B6 0EFC               M         MOVLW       low c2
+0012B8 0E19               M         MOVLW       high c2
+0012BA 0E00               M         MOVLW       upper c2
+Warning[202]: Argument out of range.  Least significant bits used.
+0012BC 0EBC               M         MOVLW       $
+Warning[202]: Argument out of range.  Least significant bits used.
+0012BE 0EBF               M         MOVLW       $+1
+Warning[202]: Argument out of range.  Least significant bits used.
+0012C0 0EBF               M         MOVLW       $-1
+0012C2 0E00               M         MOVLW       $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+0012C4 0E5E               M         MOVLW       c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+0012C6 0EA4               M         MOVLW       $-c1
+Warning[202]: Argument out of range.  Least significant bits used.
+0012C8 0E34               M         MOVLW       c2-$
+Warning[202]: Argument out of range.  Least significant bits used.
+0012CA 0ECE               M         MOVLW       $-c2
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 35
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0012CC 0EFF               M         MOVLW       d1-d1b
+0012CE 0E01               M         MOVLW       d1b-d1
+                      00347         opfa8   MOVWF
+                          M         ;; Low access memory
+0012D0 6E00               M         MOVWF       0
+0012D2 6E00               M         MOVWF       0,0
+0012D4 6F00               M         MOVWF       0,1
+                          M         ;; Non access memory
+0012D6 6F00               M         MOVWF       100
+0012D8 6E00               M         MOVWF       100,0
+0012DA 6F00               M         MOVWF       100,1
+                          M         ;; High access memory
+0012DC 6EFF               M         MOVWF       0FFF
+0012DE 6EFF               M         MOVWF       0FFF,0
+0012E0 6FFF               M         MOVWF       0FFF,1
+                          M         ;; Variable defined before instruction (access)
+0012E2 6E11               M         MOVWF       d1
+0012E4 6E11               M         MOVWF       d1,0
+0012E6 6F11               M         MOVWF       d1,1
+                          M         ;; Variable defined after instruction (f-register)
+0012E8 6F01               M         MOVWF       d2
+0012EA 6E01               M         MOVWF       d2,0
+0012EC 6F01               M         MOVWF       d2,1
+                          M         ;; $ is not really good for f-register address
+0012EE 6EEE               M         MOVWF       $
+0012F0 6EF0               M         MOVWF       $,0
+0012F2 6FF2               M         MOVWF       $,1
+0012F4 6EF5               M         MOVWF       $+1
+0012F6 6EF7               M         MOVWF       $+1,0
+0012F8 6FF9               M         MOVWF       $+1,1
+0012FA 6EF9               M         MOVWF       $-1
+0012FC 6EFB               M         MOVWF       $-1,0
+0012FE 6FFD               M         MOVWF       $-1,1
+001300 6E00               M         MOVWF       $-$
+001302 6E20               M         MOVWF       c1-$
+001304 6EE2               M         MOVWF       $-c1
+001306 6FF6               M         MOVWF       c2-$
+001308 6E0C               M         MOVWF       $-c2
+00130A 6EFF               M         MOVWF       d1-d1b
+00130C 6E01               M         MOVWF       d1b-d1
+00130E 6E12               M         MOVWF       d1+1
+001310 6F00               M         MOVWF       d2-1
+                      00348         lit8    MULLW
+001312 0D00               M         MULLW       0
+001314 0D41               M         MULLW       'A'
+001316 0D41               M         MULLW       "A"
+001318 0DFF               M         MULLW       0FF
+00131A 0D1A               M         MULLW       low $
+00131C 0D13               M         MULLW       high $
+00131E 0D00               M         MULLW       upper $
+001320 0D22               M         MULLW       low c1
+001322 0D00               M         MULLW       high c1
+001324 0D00               M         MULLW       upper c1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 36
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001326 0DFC               M         MULLW       low c2
+001328 0D19               M         MULLW       high c2
+00132A 0D00               M         MULLW       upper c2
+Warning[202]: Argument out of range.  Least significant bits used.
+00132C 0D2C               M         MULLW       $
+Warning[202]: Argument out of range.  Least significant bits used.
+00132E 0D2F               M         MULLW       $+1
+Warning[202]: Argument out of range.  Least significant bits used.
+001330 0D2F               M         MULLW       $-1
+001332 0D00               M         MULLW       $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+001334 0DEE               M         MULLW       c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+001336 0D14               M         MULLW       $-c1
+Warning[202]: Argument out of range.  Least significant bits used.
+001338 0DC4               M         MULLW       c2-$
+Warning[202]: Argument out of range.  Least significant bits used.
+00133A 0D3E               M         MULLW       $-c2
+00133C 0DFF               M         MULLW       d1-d1b
+00133E 0D01               M         MULLW       d1b-d1
+                      00349         opfa8   MULWF
+                          M         ;; Low access memory
+001340 0200               M         MULWF       0
+001342 0200               M         MULWF       0,0
+001344 0300               M         MULWF       0,1
+                          M         ;; Non access memory
+001346 0300               M         MULWF       100
+001348 0200               M         MULWF       100,0
+00134A 0300               M         MULWF       100,1
+                          M         ;; High access memory
+00134C 02FF               M         MULWF       0FFF
+00134E 02FF               M         MULWF       0FFF,0
+001350 03FF               M         MULWF       0FFF,1
+                          M         ;; Variable defined before instruction (access)
+001352 0211               M         MULWF       d1
+001354 0211               M         MULWF       d1,0
+001356 0311               M         MULWF       d1,1
+                          M         ;; Variable defined after instruction (f-register)
+001358 0301               M         MULWF       d2
+00135A 0201               M         MULWF       d2,0
+00135C 0301               M         MULWF       d2,1
+                          M         ;; $ is not really good for f-register address
+00135E 025E               M         MULWF       $
+001360 0260               M         MULWF       $,0
+001362 0362               M         MULWF       $,1
+001364 0265               M         MULWF       $+1
+001366 0267               M         MULWF       $+1,0
+001368 0369               M         MULWF       $+1,1
+00136A 0269               M         MULWF       $-1
+00136C 026B               M         MULWF       $-1,0
+00136E 036D               M         MULWF       $-1,1
+001370 0200               M         MULWF       $-$
+001372 02B0               M         MULWF       c1-$
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 37
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001374 0252               M         MULWF       $-c1
+001376 0386               M         MULWF       c2-$
+001378 027C               M         MULWF       $-c2
+00137A 02FF               M         MULWF       d1-d1b
+00137C 0201               M         MULWF       d1b-d1
+00137E 0212               M         MULWF       d1+1
+001380 0300               M         MULWF       d2-1
+                      00350         opfa8   NEGF
+                          M         ;; Low access memory
+001382 6C00               M         NEGF       0
+001384 6C00               M         NEGF       0,0
+001386 6D00               M         NEGF       0,1
+                          M         ;; Non access memory
+001388 6D00               M         NEGF       100
+00138A 6C00               M         NEGF       100,0
+00138C 6D00               M         NEGF       100,1
+                          M         ;; High access memory
+00138E 6CFF               M         NEGF       0FFF
+001390 6CFF               M         NEGF       0FFF,0
+001392 6DFF               M         NEGF       0FFF,1
+                          M         ;; Variable defined before instruction (access)
+001394 6C11               M         NEGF       d1
+001396 6C11               M         NEGF       d1,0
+001398 6D11               M         NEGF       d1,1
+                          M         ;; Variable defined after instruction (f-register)
+00139A 6D01               M         NEGF       d2
+00139C 6C01               M         NEGF       d2,0
+00139E 6D01               M         NEGF       d2,1
+                          M         ;; $ is not really good for f-register address
+0013A0 6CA0               M         NEGF       $
+0013A2 6CA2               M         NEGF       $,0
+0013A4 6DA4               M         NEGF       $,1
+0013A6 6CA7               M         NEGF       $+1
+0013A8 6CA9               M         NEGF       $+1,0
+0013AA 6DAB               M         NEGF       $+1,1
+0013AC 6CAB               M         NEGF       $-1
+0013AE 6CAD               M         NEGF       $-1,0
+0013B0 6DAF               M         NEGF       $-1,1
+0013B2 6C00               M         NEGF       $-$
+0013B4 6C6E               M         NEGF       c1-$
+0013B6 6C94               M         NEGF       $-c1
+0013B8 6D44               M         NEGF       c2-$
+0013BA 6CBE               M         NEGF       $-c2
+0013BC 6CFF               M         NEGF       d1-d1b
+0013BE 6C01               M         NEGF       d1b-d1
+0013C0 6C12               M         NEGF       d1+1
+0013C2 6D00               M         NEGF       d2-1
+                      00351 
+0013C4 0000           00352         NOP
+0013C6 0006           00353         POP
+0013C8 0005           00354         PUSH
+                      00355 
+                      00356         rbra11  RCALL
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 38
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  0000                    M         local   m1,m2
+0013CA D805               M         RCALL       m2
+0013CC DFFF               M m1      RCALL       $
+0013CE DFFE               M         RCALL       $-2
+0013D0 D800               M         RCALL       $+2
+0013D2 DC00               M         RCALL       $-0x7FE
+0013D4 DBFF               M         RCALL       $+0x800
+0013D6 DFFA               M m2      RCALL       m1
+                      00357 
+0013D8 00FF           00358         RESET
+0013DA 0010           00359         RETFIE
+0013DC 0010           00360         RETFIE  0
+0013DE 0011           00361         RETFIE  1
+                      00362 
+                      00363         lit8    RETLW
+0013E0 0C00               M         RETLW       0
+0013E2 0C41               M         RETLW       'A'
+0013E4 0C41               M         RETLW       "A"
+0013E6 0CFF               M         RETLW       0FF
+0013E8 0CE8               M         RETLW       low $
+0013EA 0C13               M         RETLW       high $
+0013EC 0C00               M         RETLW       upper $
+0013EE 0C22               M         RETLW       low c1
+0013F0 0C00               M         RETLW       high c1
+0013F2 0C00               M         RETLW       upper c1
+0013F4 0CFC               M         RETLW       low c2
+0013F6 0C19               M         RETLW       high c2
+0013F8 0C00               M         RETLW       upper c2
+Warning[202]: Argument out of range.  Least significant bits used.
+0013FA 0CFA               M         RETLW       $
+Warning[202]: Argument out of range.  Least significant bits used.
+0013FC 0CFD               M         RETLW       $+1
+Warning[202]: Argument out of range.  Least significant bits used.
+0013FE 0CFD               M         RETLW       $-1
+001400 0C00               M         RETLW       $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+001402 0C20               M         RETLW       c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+001404 0CE2               M         RETLW       $-c1
+Warning[202]: Argument out of range.  Least significant bits used.
+001406 0CF6               M         RETLW       c2-$
+Warning[202]: Argument out of range.  Least significant bits used.
+001408 0C0C               M         RETLW       $-c2
+00140A 0CFF               M         RETLW       d1-d1b
+00140C 0C01               M         RETLW       d1b-d1
+                      00364 
+00140E 0012           00365         RETURN
+001410 0012           00366         RETURN  0
+001412 0013           00367         RETURN  1
+                      00368 
+                      00369         opwfa8  RLCF
+                          M         ;; Low access memory
+001414 3600               M         RLCF       0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 39
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001416 3600               M         RLCF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+001418 3600               M         RLCF       0,F
+00141A 3600               M         RLCF       0,F,0
+00141C 3700               M         RLCF       0,F,1
+00141E 3400               M         RLCF       0,0
+001420 3400               M         RLCF       0,W
+001422 3400               M         RLCF       0,W,0
+001424 3500               M         RLCF       0,W,1
+                          M         ;; Non access memory
+001426 3700               M         RLCF       100
+001428 3700               M         RLCF       100,1
+00142A 3700               M         RLCF       100,F
+00142C 3600               M         RLCF       100,F,0
+00142E 3700               M         RLCF       100,F,1
+001430 3500               M         RLCF       100,0
+001432 3500               M         RLCF       100,W
+001434 3400               M         RLCF       100,W,0
+001436 3500               M         RLCF       100,W,1
+                          M         ;; High access memory
+001438 36FF               M         RLCF       0FFF
+00143A 36FF               M         RLCF       0FFF,F
+00143C 36FF               M         RLCF       0FFF,F,0
+00143E 37FF               M         RLCF       0FFF,F,1
+001440 36FF               M         RLCF       0FFF,F
+001442 34FF               M         RLCF       0FFF,W,0
+001444 35FF               M         RLCF       0FFF,W,1
+001446 3611               M         RLCF       d1
+001448 3611               M         RLCF       d1,F
+00144A 3611               M         RLCF       d1,F,0
+00144C 3711               M         RLCF       d1,F,1
+00144E 3411               M         RLCF       d1,W
+001450 3411               M         RLCF       d1,W,0
+001452 3511               M         RLCF       d1,W,1
+001454 3701               M         RLCF       d2
+001456 3701               M         RLCF       d2,F
+001458 3601               M         RLCF       d2,F,0
+00145A 3701               M         RLCF       d2,F,1
+00145C 3501               M         RLCF       d2,W
+00145E 3401               M         RLCF       d2,W,0
+001460 3501               M         RLCF       d2,W,1
+001462 3662               M         RLCF       $
+001464 3664               M         RLCF       $,F
+001466 3666               M         RLCF       $,F,0
+001468 3768               M         RLCF       $,F,1
+00146A 346A               M         RLCF       $,W
+00146C 346C               M         RLCF       $,W,0
+00146E 356E               M         RLCF       $,W,1
+001470 3671               M         RLCF       $+1
+001472 3673               M         RLCF       $+1,F
+001474 3675               M         RLCF       $+1,F,0
+001476 3777               M         RLCF       $+1,F,1
+001478 3479               M         RLCF       $+1,W
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 40
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00147A 347B               M         RLCF       $+1,W,0
+00147C 357D               M         RLCF       $+1,W,1
+00147E 367D               M         RLCF       $-1
+001480 367F               M         RLCF       $-1,F
+001482 3681               M         RLCF       $-1,F,0
+001484 3783               M         RLCF       $-1,F,1
+001486 3485               M         RLCF       $-1,W
+001488 3487               M         RLCF       $-1,W,0
+00148A 3589               M         RLCF       $-1,W,1
+00148C 3600               M         RLCF       $-$
+00148E 3694               M         RLCF       c1-$
+001490 366E               M         RLCF       $-c1
+001492 376A               M         RLCF       c2-$
+001494 3698               M         RLCF       $-c2
+001496 36FF               M         RLCF       d1-d1b
+001498 3601               M         RLCF       d1b-d1
+00149A 3612               M         RLCF       d1+1
+00149C 3700               M         RLCF       d2-1
+                      00370         opwfa8  RLNCF
+                          M         ;; Low access memory
+00149E 4600               M         RLNCF       0
+0014A0 4600               M         RLNCF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+0014A2 4600               M         RLNCF       0,F
+0014A4 4600               M         RLNCF       0,F,0
+0014A6 4700               M         RLNCF       0,F,1
+0014A8 4400               M         RLNCF       0,0
+0014AA 4400               M         RLNCF       0,W
+0014AC 4400               M         RLNCF       0,W,0
+0014AE 4500               M         RLNCF       0,W,1
+                          M         ;; Non access memory
+0014B0 4700               M         RLNCF       100
+0014B2 4700               M         RLNCF       100,1
+0014B4 4700               M         RLNCF       100,F
+0014B6 4600               M         RLNCF       100,F,0
+0014B8 4700               M         RLNCF       100,F,1
+0014BA 4500               M         RLNCF       100,0
+0014BC 4500               M         RLNCF       100,W
+0014BE 4400               M         RLNCF       100,W,0
+0014C0 4500               M         RLNCF       100,W,1
+                          M         ;; High access memory
+0014C2 46FF               M         RLNCF       0FFF
+0014C4 46FF               M         RLNCF       0FFF,F
+0014C6 46FF               M         RLNCF       0FFF,F,0
+0014C8 47FF               M         RLNCF       0FFF,F,1
+0014CA 46FF               M         RLNCF       0FFF,F
+0014CC 44FF               M         RLNCF       0FFF,W,0
+0014CE 45FF               M         RLNCF       0FFF,W,1
+0014D0 4611               M         RLNCF       d1
+0014D2 4611               M         RLNCF       d1,F
+0014D4 4611               M         RLNCF       d1,F,0
+0014D6 4711               M         RLNCF       d1,F,1
+0014D8 4411               M         RLNCF       d1,W
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 41
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0014DA 4411               M         RLNCF       d1,W,0
+0014DC 4511               M         RLNCF       d1,W,1
+0014DE 4701               M         RLNCF       d2
+0014E0 4701               M         RLNCF       d2,F
+0014E2 4601               M         RLNCF       d2,F,0
+0014E4 4701               M         RLNCF       d2,F,1
+0014E6 4501               M         RLNCF       d2,W
+0014E8 4401               M         RLNCF       d2,W,0
+0014EA 4501               M         RLNCF       d2,W,1
+0014EC 46EC               M         RLNCF       $
+0014EE 46EE               M         RLNCF       $,F
+0014F0 46F0               M         RLNCF       $,F,0
+0014F2 47F2               M         RLNCF       $,F,1
+0014F4 44F4               M         RLNCF       $,W
+0014F6 44F6               M         RLNCF       $,W,0
+0014F8 45F8               M         RLNCF       $,W,1
+0014FA 46FB               M         RLNCF       $+1
+0014FC 46FD               M         RLNCF       $+1,F
+0014FE 46FF               M         RLNCF       $+1,F,0
+001500 4701               M         RLNCF       $+1,F,1
+001502 4403               M         RLNCF       $+1,W
+001504 4405               M         RLNCF       $+1,W,0
+001506 4507               M         RLNCF       $+1,W,1
+001508 4607               M         RLNCF       $-1
+00150A 4609               M         RLNCF       $-1,F
+00150C 460B               M         RLNCF       $-1,F,0
+00150E 470D               M         RLNCF       $-1,F,1
+001510 440F               M         RLNCF       $-1,W
+001512 4411               M         RLNCF       $-1,W,0
+001514 4513               M         RLNCF       $-1,W,1
+001516 4600               M         RLNCF       $-$
+001518 460A               M         RLNCF       c1-$
+00151A 46F8               M         RLNCF       $-c1
+00151C 47E0               M         RLNCF       c2-$
+00151E 4622               M         RLNCF       $-c2
+001520 46FF               M         RLNCF       d1-d1b
+001522 4601               M         RLNCF       d1b-d1
+001524 4612               M         RLNCF       d1+1
+001526 4700               M         RLNCF       d2-1
+                      00371         opwfa8  RRCF
+                          M         ;; Low access memory
+001528 3200               M         RRCF       0
+00152A 3200               M         RRCF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+00152C 3200               M         RRCF       0,F
+00152E 3200               M         RRCF       0,F,0
+001530 3300               M         RRCF       0,F,1
+001532 3000               M         RRCF       0,0
+001534 3000               M         RRCF       0,W
+001536 3000               M         RRCF       0,W,0
+001538 3100               M         RRCF       0,W,1
+                          M         ;; Non access memory
+00153A 3300               M         RRCF       100
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 42
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00153C 3300               M         RRCF       100,1
+00153E 3300               M         RRCF       100,F
+001540 3200               M         RRCF       100,F,0
+001542 3300               M         RRCF       100,F,1
+001544 3100               M         RRCF       100,0
+001546 3100               M         RRCF       100,W
+001548 3000               M         RRCF       100,W,0
+00154A 3100               M         RRCF       100,W,1
+                          M         ;; High access memory
+00154C 32FF               M         RRCF       0FFF
+00154E 32FF               M         RRCF       0FFF,F
+001550 32FF               M         RRCF       0FFF,F,0
+001552 33FF               M         RRCF       0FFF,F,1
+001554 32FF               M         RRCF       0FFF,F
+001556 30FF               M         RRCF       0FFF,W,0
+001558 31FF               M         RRCF       0FFF,W,1
+00155A 3211               M         RRCF       d1
+00155C 3211               M         RRCF       d1,F
+00155E 3211               M         RRCF       d1,F,0
+001560 3311               M         RRCF       d1,F,1
+001562 3011               M         RRCF       d1,W
+001564 3011               M         RRCF       d1,W,0
+001566 3111               M         RRCF       d1,W,1
+001568 3301               M         RRCF       d2
+00156A 3301               M         RRCF       d2,F
+00156C 3201               M         RRCF       d2,F,0
+00156E 3301               M         RRCF       d2,F,1
+001570 3101               M         RRCF       d2,W
+001572 3001               M         RRCF       d2,W,0
+001574 3101               M         RRCF       d2,W,1
+001576 3276               M         RRCF       $
+001578 3278               M         RRCF       $,F
+00157A 327A               M         RRCF       $,F,0
+00157C 337C               M         RRCF       $,F,1
+00157E 307E               M         RRCF       $,W
+001580 3080               M         RRCF       $,W,0
+001582 3182               M         RRCF       $,W,1
+001584 3285               M         RRCF       $+1
+001586 3287               M         RRCF       $+1,F
+001588 3289               M         RRCF       $+1,F,0
+00158A 338B               M         RRCF       $+1,F,1
+00158C 308D               M         RRCF       $+1,W
+00158E 308F               M         RRCF       $+1,W,0
+001590 3191               M         RRCF       $+1,W,1
+001592 3291               M         RRCF       $-1
+001594 3293               M         RRCF       $-1,F
+001596 3295               M         RRCF       $-1,F,0
+001598 3397               M         RRCF       $-1,F,1
+00159A 3099               M         RRCF       $-1,W
+00159C 309B               M         RRCF       $-1,W,0
+00159E 319D               M         RRCF       $-1,W,1
+0015A0 3200               M         RRCF       $-$
+0015A2 3280               M         RRCF       c1-$
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 43
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0015A4 3282               M         RRCF       $-c1
+0015A6 3356               M         RRCF       c2-$
+0015A8 32AC               M         RRCF       $-c2
+0015AA 32FF               M         RRCF       d1-d1b
+0015AC 3201               M         RRCF       d1b-d1
+0015AE 3212               M         RRCF       d1+1
+0015B0 3300               M         RRCF       d2-1
+                      00372         opwfa8  RRNCF
+                          M         ;; Low access memory
+0015B2 4200               M         RRNCF       0
+0015B4 4200               M         RRNCF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+0015B6 4200               M         RRNCF       0,F
+0015B8 4200               M         RRNCF       0,F,0
+0015BA 4300               M         RRNCF       0,F,1
+0015BC 4000               M         RRNCF       0,0
+0015BE 4000               M         RRNCF       0,W
+0015C0 4000               M         RRNCF       0,W,0
+0015C2 4100               M         RRNCF       0,W,1
+                          M         ;; Non access memory
+0015C4 4300               M         RRNCF       100
+0015C6 4300               M         RRNCF       100,1
+0015C8 4300               M         RRNCF       100,F
+0015CA 4200               M         RRNCF       100,F,0
+0015CC 4300               M         RRNCF       100,F,1
+0015CE 4100               M         RRNCF       100,0
+0015D0 4100               M         RRNCF       100,W
+0015D2 4000               M         RRNCF       100,W,0
+0015D4 4100               M         RRNCF       100,W,1
+                          M         ;; High access memory
+0015D6 42FF               M         RRNCF       0FFF
+0015D8 42FF               M         RRNCF       0FFF,F
+0015DA 42FF               M         RRNCF       0FFF,F,0
+0015DC 43FF               M         RRNCF       0FFF,F,1
+0015DE 42FF               M         RRNCF       0FFF,F
+0015E0 40FF               M         RRNCF       0FFF,W,0
+0015E2 41FF               M         RRNCF       0FFF,W,1
+0015E4 4211               M         RRNCF       d1
+0015E6 4211               M         RRNCF       d1,F
+0015E8 4211               M         RRNCF       d1,F,0
+0015EA 4311               M         RRNCF       d1,F,1
+0015EC 4011               M         RRNCF       d1,W
+0015EE 4011               M         RRNCF       d1,W,0
+0015F0 4111               M         RRNCF       d1,W,1
+0015F2 4301               M         RRNCF       d2
+0015F4 4301               M         RRNCF       d2,F
+0015F6 4201               M         RRNCF       d2,F,0
+0015F8 4301               M         RRNCF       d2,F,1
+0015FA 4101               M         RRNCF       d2,W
+0015FC 4001               M         RRNCF       d2,W,0
+0015FE 4101               M         RRNCF       d2,W,1
+001600 4200               M         RRNCF       $
+001602 4202               M         RRNCF       $,F
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 44
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001604 4204               M         RRNCF       $,F,0
+001606 4306               M         RRNCF       $,F,1
+001608 4008               M         RRNCF       $,W
+00160A 400A               M         RRNCF       $,W,0
+00160C 410C               M         RRNCF       $,W,1
+00160E 420F               M         RRNCF       $+1
+001610 4211               M         RRNCF       $+1,F
+001612 4213               M         RRNCF       $+1,F,0
+001614 4315               M         RRNCF       $+1,F,1
+001616 4017               M         RRNCF       $+1,W
+001618 4019               M         RRNCF       $+1,W,0
+00161A 411B               M         RRNCF       $+1,W,1
+00161C 421B               M         RRNCF       $-1
+00161E 421D               M         RRNCF       $-1,F
+001620 421F               M         RRNCF       $-1,F,0
+001622 4321               M         RRNCF       $-1,F,1
+001624 4023               M         RRNCF       $-1,W
+001626 4025               M         RRNCF       $-1,W,0
+001628 4127               M         RRNCF       $-1,W,1
+00162A 4200               M         RRNCF       $-$
+00162C 42F6               M         RRNCF       c1-$
+00162E 420C               M         RRNCF       $-c1
+001630 43CC               M         RRNCF       c2-$
+001632 4236               M         RRNCF       $-c2
+001634 42FF               M         RRNCF       d1-d1b
+001636 4201               M         RRNCF       d1b-d1
+001638 4212               M         RRNCF       d1+1
+00163A 4300               M         RRNCF       d2-1
+                      00373         opfa8   SETF
+                          M         ;; Low access memory
+00163C 6800               M         SETF       0
+00163E 6800               M         SETF       0,0
+001640 6900               M         SETF       0,1
+                          M         ;; Non access memory
+001642 6900               M         SETF       100
+001644 6800               M         SETF       100,0
+001646 6900               M         SETF       100,1
+                          M         ;; High access memory
+001648 68FF               M         SETF       0FFF
+00164A 68FF               M         SETF       0FFF,0
+00164C 69FF               M         SETF       0FFF,1
+                          M         ;; Variable defined before instruction (access)
+00164E 6811               M         SETF       d1
+001650 6811               M         SETF       d1,0
+001652 6911               M         SETF       d1,1
+                          M         ;; Variable defined after instruction (f-register)
+001654 6901               M         SETF       d2
+001656 6801               M         SETF       d2,0
+001658 6901               M         SETF       d2,1
+                          M         ;; $ is not really good for f-register address
+00165A 685A               M         SETF       $
+00165C 685C               M         SETF       $,0
+00165E 695E               M         SETF       $,1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 45
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001660 6861               M         SETF       $+1
+001662 6863               M         SETF       $+1,0
+001664 6965               M         SETF       $+1,1
+001666 6865               M         SETF       $-1
+001668 6867               M         SETF       $-1,0
+00166A 6969               M         SETF       $-1,1
+00166C 6800               M         SETF       $-$
+00166E 68B4               M         SETF       c1-$
+001670 684E               M         SETF       $-c1
+001672 698A               M         SETF       c2-$
+001674 6878               M         SETF       $-c2
+001676 68FF               M         SETF       d1-d1b
+001678 6801               M         SETF       d1b-d1
+00167A 6812               M         SETF       d1+1
+00167C 6900               M         SETF       d2-1
+                      00374 
+00167E 0003           00375         SLEEP
+                      00376 
+                      00377         lit8    SUBLW
+001680 0800               M         SUBLW       0
+001682 0841               M         SUBLW       'A'
+001684 0841               M         SUBLW       "A"
+001686 08FF               M         SUBLW       0FF
+001688 0888               M         SUBLW       low $
+00168A 0816               M         SUBLW       high $
+00168C 0800               M         SUBLW       upper $
+00168E 0822               M         SUBLW       low c1
+001690 0800               M         SUBLW       high c1
+001692 0800               M         SUBLW       upper c1
+001694 08FC               M         SUBLW       low c2
+001696 0819               M         SUBLW       high c2
+001698 0800               M         SUBLW       upper c2
+Warning[202]: Argument out of range.  Least significant bits used.
+00169A 089A               M         SUBLW       $
+Warning[202]: Argument out of range.  Least significant bits used.
+00169C 089D               M         SUBLW       $+1
+Warning[202]: Argument out of range.  Least significant bits used.
+00169E 089D               M         SUBLW       $-1
+0016A0 0800               M         SUBLW       $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+0016A2 0880               M         SUBLW       c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+0016A4 0882               M         SUBLW       $-c1
+Warning[202]: Argument out of range.  Least significant bits used.
+0016A6 0856               M         SUBLW       c2-$
+Warning[202]: Argument out of range.  Least significant bits used.
+0016A8 08AC               M         SUBLW       $-c2
+0016AA 08FF               M         SUBLW       d1-d1b
+0016AC 0801               M         SUBLW       d1b-d1
+                      00378         opwfa8  SUBFWB
+                          M         ;; Low access memory
+0016AE 5600               M         SUBFWB       0
+0016B0 5600               M         SUBFWB       0,1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 46
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M         ;; Destination "F" and "W" without being defined
+0016B2 5600               M         SUBFWB       0,F
+0016B4 5600               M         SUBFWB       0,F,0
+0016B6 5700               M         SUBFWB       0,F,1
+0016B8 5400               M         SUBFWB       0,0
+0016BA 5400               M         SUBFWB       0,W
+0016BC 5400               M         SUBFWB       0,W,0
+0016BE 5500               M         SUBFWB       0,W,1
+                          M         ;; Non access memory
+0016C0 5700               M         SUBFWB       100
+0016C2 5700               M         SUBFWB       100,1
+0016C4 5700               M         SUBFWB       100,F
+0016C6 5600               M         SUBFWB       100,F,0
+0016C8 5700               M         SUBFWB       100,F,1
+0016CA 5500               M         SUBFWB       100,0
+0016CC 5500               M         SUBFWB       100,W
+0016CE 5400               M         SUBFWB       100,W,0
+0016D0 5500               M         SUBFWB       100,W,1
+                          M         ;; High access memory
+0016D2 56FF               M         SUBFWB       0FFF
+0016D4 56FF               M         SUBFWB       0FFF,F
+0016D6 56FF               M         SUBFWB       0FFF,F,0
+0016D8 57FF               M         SUBFWB       0FFF,F,1
+0016DA 56FF               M         SUBFWB       0FFF,F
+0016DC 54FF               M         SUBFWB       0FFF,W,0
+0016DE 55FF               M         SUBFWB       0FFF,W,1
+0016E0 5611               M         SUBFWB       d1
+0016E2 5611               M         SUBFWB       d1,F
+0016E4 5611               M         SUBFWB       d1,F,0
+0016E6 5711               M         SUBFWB       d1,F,1
+0016E8 5411               M         SUBFWB       d1,W
+0016EA 5411               M         SUBFWB       d1,W,0
+0016EC 5511               M         SUBFWB       d1,W,1
+0016EE 5701               M         SUBFWB       d2
+0016F0 5701               M         SUBFWB       d2,F
+0016F2 5601               M         SUBFWB       d2,F,0
+0016F4 5701               M         SUBFWB       d2,F,1
+0016F6 5501               M         SUBFWB       d2,W
+0016F8 5401               M         SUBFWB       d2,W,0
+0016FA 5501               M         SUBFWB       d2,W,1
+0016FC 56FC               M         SUBFWB       $
+0016FE 56FE               M         SUBFWB       $,F
+001700 5600               M         SUBFWB       $,F,0
+001702 5702               M         SUBFWB       $,F,1
+001704 5404               M         SUBFWB       $,W
+001706 5406               M         SUBFWB       $,W,0
+001708 5508               M         SUBFWB       $,W,1
+00170A 560B               M         SUBFWB       $+1
+00170C 560D               M         SUBFWB       $+1,F
+00170E 560F               M         SUBFWB       $+1,F,0
+001710 5711               M         SUBFWB       $+1,F,1
+001712 5413               M         SUBFWB       $+1,W
+001714 5415               M         SUBFWB       $+1,W,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 47
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001716 5517               M         SUBFWB       $+1,W,1
+001718 5617               M         SUBFWB       $-1
+00171A 5619               M         SUBFWB       $-1,F
+00171C 561B               M         SUBFWB       $-1,F,0
+00171E 571D               M         SUBFWB       $-1,F,1
+001720 541F               M         SUBFWB       $-1,W
+001722 5421               M         SUBFWB       $-1,W,0
+001724 5523               M         SUBFWB       $-1,W,1
+001726 5600               M         SUBFWB       $-$
+001728 56FA               M         SUBFWB       c1-$
+00172A 5608               M         SUBFWB       $-c1
+00172C 57D0               M         SUBFWB       c2-$
+00172E 5632               M         SUBFWB       $-c2
+001730 56FF               M         SUBFWB       d1-d1b
+001732 5601               M         SUBFWB       d1b-d1
+001734 5612               M         SUBFWB       d1+1
+001736 5700               M         SUBFWB       d2-1
+                      00379         opwfa8  SUBWF
+                          M         ;; Low access memory
+001738 5E00               M         SUBWF       0
+00173A 5E00               M         SUBWF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+00173C 5E00               M         SUBWF       0,F
+00173E 5E00               M         SUBWF       0,F,0
+001740 5F00               M         SUBWF       0,F,1
+001742 5C00               M         SUBWF       0,0
+001744 5C00               M         SUBWF       0,W
+001746 5C00               M         SUBWF       0,W,0
+001748 5D00               M         SUBWF       0,W,1
+                          M         ;; Non access memory
+00174A 5F00               M         SUBWF       100
+00174C 5F00               M         SUBWF       100,1
+00174E 5F00               M         SUBWF       100,F
+001750 5E00               M         SUBWF       100,F,0
+001752 5F00               M         SUBWF       100,F,1
+001754 5D00               M         SUBWF       100,0
+001756 5D00               M         SUBWF       100,W
+001758 5C00               M         SUBWF       100,W,0
+00175A 5D00               M         SUBWF       100,W,1
+                          M         ;; High access memory
+00175C 5EFF               M         SUBWF       0FFF
+00175E 5EFF               M         SUBWF       0FFF,F
+001760 5EFF               M         SUBWF       0FFF,F,0
+001762 5FFF               M         SUBWF       0FFF,F,1
+001764 5EFF               M         SUBWF       0FFF,F
+001766 5CFF               M         SUBWF       0FFF,W,0
+001768 5DFF               M         SUBWF       0FFF,W,1
+00176A 5E11               M         SUBWF       d1
+00176C 5E11               M         SUBWF       d1,F
+00176E 5E11               M         SUBWF       d1,F,0
+001770 5F11               M         SUBWF       d1,F,1
+001772 5C11               M         SUBWF       d1,W
+001774 5C11               M         SUBWF       d1,W,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 48
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001776 5D11               M         SUBWF       d1,W,1
+001778 5F01               M         SUBWF       d2
+00177A 5F01               M         SUBWF       d2,F
+00177C 5E01               M         SUBWF       d2,F,0
+00177E 5F01               M         SUBWF       d2,F,1
+001780 5D01               M         SUBWF       d2,W
+001782 5C01               M         SUBWF       d2,W,0
+001784 5D01               M         SUBWF       d2,W,1
+001786 5E86               M         SUBWF       $
+001788 5E88               M         SUBWF       $,F
+00178A 5E8A               M         SUBWF       $,F,0
+00178C 5F8C               M         SUBWF       $,F,1
+00178E 5C8E               M         SUBWF       $,W
+001790 5C90               M         SUBWF       $,W,0
+001792 5D92               M         SUBWF       $,W,1
+001794 5E95               M         SUBWF       $+1
+001796 5E97               M         SUBWF       $+1,F
+001798 5E99               M         SUBWF       $+1,F,0
+00179A 5F9B               M         SUBWF       $+1,F,1
+00179C 5C9D               M         SUBWF       $+1,W
+00179E 5C9F               M         SUBWF       $+1,W,0
+0017A0 5DA1               M         SUBWF       $+1,W,1
+0017A2 5EA1               M         SUBWF       $-1
+0017A4 5EA3               M         SUBWF       $-1,F
+0017A6 5EA5               M         SUBWF       $-1,F,0
+0017A8 5FA7               M         SUBWF       $-1,F,1
+0017AA 5CA9               M         SUBWF       $-1,W
+0017AC 5CAB               M         SUBWF       $-1,W,0
+0017AE 5DAD               M         SUBWF       $-1,W,1
+0017B0 5E00               M         SUBWF       $-$
+0017B2 5E70               M         SUBWF       c1-$
+0017B4 5E92               M         SUBWF       $-c1
+0017B6 5F46               M         SUBWF       c2-$
+0017B8 5EBC               M         SUBWF       $-c2
+0017BA 5EFF               M         SUBWF       d1-d1b
+0017BC 5E01               M         SUBWF       d1b-d1
+0017BE 5E12               M         SUBWF       d1+1
+0017C0 5F00               M         SUBWF       d2-1
+                      00380         opwfa8  SUBWFB
+                          M         ;; Low access memory
+0017C2 5A00               M         SUBWFB       0
+0017C4 5A00               M         SUBWFB       0,1
+                          M         ;; Destination "F" and "W" without being defined
+0017C6 5A00               M         SUBWFB       0,F
+0017C8 5A00               M         SUBWFB       0,F,0
+0017CA 5B00               M         SUBWFB       0,F,1
+0017CC 5800               M         SUBWFB       0,0
+0017CE 5800               M         SUBWFB       0,W
+0017D0 5800               M         SUBWFB       0,W,0
+0017D2 5900               M         SUBWFB       0,W,1
+                          M         ;; Non access memory
+0017D4 5B00               M         SUBWFB       100
+0017D6 5B00               M         SUBWFB       100,1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 49
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0017D8 5B00               M         SUBWFB       100,F
+0017DA 5A00               M         SUBWFB       100,F,0
+0017DC 5B00               M         SUBWFB       100,F,1
+0017DE 5900               M         SUBWFB       100,0
+0017E0 5900               M         SUBWFB       100,W
+0017E2 5800               M         SUBWFB       100,W,0
+0017E4 5900               M         SUBWFB       100,W,1
+                          M         ;; High access memory
+0017E6 5AFF               M         SUBWFB       0FFF
+0017E8 5AFF               M         SUBWFB       0FFF,F
+0017EA 5AFF               M         SUBWFB       0FFF,F,0
+0017EC 5BFF               M         SUBWFB       0FFF,F,1
+0017EE 5AFF               M         SUBWFB       0FFF,F
+0017F0 58FF               M         SUBWFB       0FFF,W,0
+0017F2 59FF               M         SUBWFB       0FFF,W,1
+0017F4 5A11               M         SUBWFB       d1
+0017F6 5A11               M         SUBWFB       d1,F
+0017F8 5A11               M         SUBWFB       d1,F,0
+0017FA 5B11               M         SUBWFB       d1,F,1
+0017FC 5811               M         SUBWFB       d1,W
+0017FE 5811               M         SUBWFB       d1,W,0
+001800 5911               M         SUBWFB       d1,W,1
+001802 5B01               M         SUBWFB       d2
+001804 5B01               M         SUBWFB       d2,F
+001806 5A01               M         SUBWFB       d2,F,0
+001808 5B01               M         SUBWFB       d2,F,1
+00180A 5901               M         SUBWFB       d2,W
+00180C 5801               M         SUBWFB       d2,W,0
+00180E 5901               M         SUBWFB       d2,W,1
+001810 5A10               M         SUBWFB       $
+001812 5A12               M         SUBWFB       $,F
+001814 5A14               M         SUBWFB       $,F,0
+001816 5B16               M         SUBWFB       $,F,1
+001818 5818               M         SUBWFB       $,W
+00181A 581A               M         SUBWFB       $,W,0
+00181C 591C               M         SUBWFB       $,W,1
+00181E 5A1F               M         SUBWFB       $+1
+001820 5A21               M         SUBWFB       $+1,F
+001822 5A23               M         SUBWFB       $+1,F,0
+001824 5B25               M         SUBWFB       $+1,F,1
+001826 5827               M         SUBWFB       $+1,W
+001828 5829               M         SUBWFB       $+1,W,0
+00182A 592B               M         SUBWFB       $+1,W,1
+00182C 5A2B               M         SUBWFB       $-1
+00182E 5A2D               M         SUBWFB       $-1,F
+001830 5A2F               M         SUBWFB       $-1,F,0
+001832 5B31               M         SUBWFB       $-1,F,1
+001834 5833               M         SUBWFB       $-1,W
+001836 5835               M         SUBWFB       $-1,W,0
+001838 5937               M         SUBWFB       $-1,W,1
+00183A 5A00               M         SUBWFB       $-$
+00183C 5AE6               M         SUBWFB       c1-$
+00183E 5A1C               M         SUBWFB       $-c1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 50
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001840 5BBC               M         SUBWFB       c2-$
+001842 5A46               M         SUBWFB       $-c2
+001844 5AFF               M         SUBWFB       d1-d1b
+001846 5A01               M         SUBWFB       d1b-d1
+001848 5A12               M         SUBWFB       d1+1
+00184A 5B00               M         SUBWFB       d2-1
+                      00381         opwfa8  SWAPF
+                          M         ;; Low access memory
+00184C 3A00               M         SWAPF       0
+00184E 3A00               M         SWAPF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+001850 3A00               M         SWAPF       0,F
+001852 3A00               M         SWAPF       0,F,0
+001854 3B00               M         SWAPF       0,F,1
+001856 3800               M         SWAPF       0,0
+001858 3800               M         SWAPF       0,W
+00185A 3800               M         SWAPF       0,W,0
+00185C 3900               M         SWAPF       0,W,1
+                          M         ;; Non access memory
+00185E 3B00               M         SWAPF       100
+001860 3B00               M         SWAPF       100,1
+001862 3B00               M         SWAPF       100,F
+001864 3A00               M         SWAPF       100,F,0
+001866 3B00               M         SWAPF       100,F,1
+001868 3900               M         SWAPF       100,0
+00186A 3900               M         SWAPF       100,W
+00186C 3800               M         SWAPF       100,W,0
+00186E 3900               M         SWAPF       100,W,1
+                          M         ;; High access memory
+001870 3AFF               M         SWAPF       0FFF
+001872 3AFF               M         SWAPF       0FFF,F
+001874 3AFF               M         SWAPF       0FFF,F,0
+001876 3BFF               M         SWAPF       0FFF,F,1
+001878 3AFF               M         SWAPF       0FFF,F
+00187A 38FF               M         SWAPF       0FFF,W,0
+00187C 39FF               M         SWAPF       0FFF,W,1
+00187E 3A11               M         SWAPF       d1
+001880 3A11               M         SWAPF       d1,F
+001882 3A11               M         SWAPF       d1,F,0
+001884 3B11               M         SWAPF       d1,F,1
+001886 3811               M         SWAPF       d1,W
+001888 3811               M         SWAPF       d1,W,0
+00188A 3911               M         SWAPF       d1,W,1
+00188C 3B01               M         SWAPF       d2
+00188E 3B01               M         SWAPF       d2,F
+001890 3A01               M         SWAPF       d2,F,0
+001892 3B01               M         SWAPF       d2,F,1
+001894 3901               M         SWAPF       d2,W
+001896 3801               M         SWAPF       d2,W,0
+001898 3901               M         SWAPF       d2,W,1
+00189A 3A9A               M         SWAPF       $
+00189C 3A9C               M         SWAPF       $,F
+00189E 3A9E               M         SWAPF       $,F,0
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 51
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0018A0 3BA0               M         SWAPF       $,F,1
+0018A2 38A2               M         SWAPF       $,W
+0018A4 38A4               M         SWAPF       $,W,0
+0018A6 39A6               M         SWAPF       $,W,1
+0018A8 3AA9               M         SWAPF       $+1
+0018AA 3AAB               M         SWAPF       $+1,F
+0018AC 3AAD               M         SWAPF       $+1,F,0
+0018AE 3BAF               M         SWAPF       $+1,F,1
+0018B0 38B1               M         SWAPF       $+1,W
+0018B2 38B3               M         SWAPF       $+1,W,0
+0018B4 39B5               M         SWAPF       $+1,W,1
+0018B6 3AB5               M         SWAPF       $-1
+0018B8 3AB7               M         SWAPF       $-1,F
+0018BA 3AB9               M         SWAPF       $-1,F,0
+0018BC 3BBB               M         SWAPF       $-1,F,1
+0018BE 38BD               M         SWAPF       $-1,W
+0018C0 38BF               M         SWAPF       $-1,W,0
+0018C2 39C1               M         SWAPF       $-1,W,1
+0018C4 3A00               M         SWAPF       $-$
+0018C6 3A5C               M         SWAPF       c1-$
+0018C8 3AA6               M         SWAPF       $-c1
+0018CA 3B32               M         SWAPF       c2-$
+0018CC 3AD0               M         SWAPF       $-c2
+0018CE 3AFF               M         SWAPF       d1-d1b
+0018D0 3A01               M         SWAPF       d1b-d1
+0018D2 3A12               M         SWAPF       d1+1
+0018D4 3B00               M         SWAPF       d2-1
+                      00382 
+0018D6 0008           00383         TBLRD *  
+0018D8 0009           00384         TBLRD *+ 
+0018DA 000A           00385         TBLRD *- 
+0018DC 000B           00386         TBLRD +* 
+                      00387 
+0018DE 000C           00388         TBLWT *  
+0018E0 000D           00389         TBLWT *+ 
+0018E2 000E           00390         TBLWT *- 
+0018E4 000F           00391         TBLWT +* 
+                      00392 
+                      00393         opfa8   TSTFSZ
+                          M         ;; Low access memory
+0018E6 6600               M         TSTFSZ       0
+0018E8 6600               M         TSTFSZ       0,0
+0018EA 6700               M         TSTFSZ       0,1
+                          M         ;; Non access memory
+0018EC 6700               M         TSTFSZ       100
+0018EE 6600               M         TSTFSZ       100,0
+0018F0 6700               M         TSTFSZ       100,1
+                          M         ;; High access memory
+0018F2 66FF               M         TSTFSZ       0FFF
+0018F4 66FF               M         TSTFSZ       0FFF,0
+0018F6 67FF               M         TSTFSZ       0FFF,1
+                          M         ;; Variable defined before instruction (access)
+0018F8 6611               M         TSTFSZ       d1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 52
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0018FA 6611               M         TSTFSZ       d1,0
+0018FC 6711               M         TSTFSZ       d1,1
+                          M         ;; Variable defined after instruction (f-register)
+0018FE 6701               M         TSTFSZ       d2
+001900 6601               M         TSTFSZ       d2,0
+001902 6701               M         TSTFSZ       d2,1
+                          M         ;; $ is not really good for f-register address
+001904 6604               M         TSTFSZ       $
+001906 6606               M         TSTFSZ       $,0
+001908 6708               M         TSTFSZ       $,1
+00190A 660B               M         TSTFSZ       $+1
+00190C 660D               M         TSTFSZ       $+1,0
+00190E 670F               M         TSTFSZ       $+1,1
+001910 660F               M         TSTFSZ       $-1
+001912 6611               M         TSTFSZ       $-1,0
+001914 6713               M         TSTFSZ       $-1,1
+001916 6600               M         TSTFSZ       $-$
+001918 660A               M         TSTFSZ       c1-$
+00191A 66F8               M         TSTFSZ       $-c1
+00191C 67E0               M         TSTFSZ       c2-$
+00191E 6622               M         TSTFSZ       $-c2
+001920 66FF               M         TSTFSZ       d1-d1b
+001922 6601               M         TSTFSZ       d1b-d1
+001924 6612               M         TSTFSZ       d1+1
+001926 6700               M         TSTFSZ       d2-1
+                      00394         lit8    XORLW
+001928 0A00               M         XORLW       0
+00192A 0A41               M         XORLW       'A'
+00192C 0A41               M         XORLW       "A"
+00192E 0AFF               M         XORLW       0FF
+001930 0A30               M         XORLW       low $
+001932 0A19               M         XORLW       high $
+001934 0A00               M         XORLW       upper $
+001936 0A22               M         XORLW       low c1
+001938 0A00               M         XORLW       high c1
+00193A 0A00               M         XORLW       upper c1
+00193C 0AFC               M         XORLW       low c2
+00193E 0A19               M         XORLW       high c2
+001940 0A00               M         XORLW       upper c2
+Warning[202]: Argument out of range.  Least significant bits used.
+001942 0A42               M         XORLW       $
+Warning[202]: Argument out of range.  Least significant bits used.
+001944 0A45               M         XORLW       $+1
+Warning[202]: Argument out of range.  Least significant bits used.
+001946 0A45               M         XORLW       $-1
+001948 0A00               M         XORLW       $-$
+Warning[202]: Argument out of range.  Least significant bits used.
+00194A 0AD8               M         XORLW       c1-$
+Warning[202]: Argument out of range.  Least significant bits used.
+00194C 0A2A               M         XORLW       $-c1
+00194E 0AAE               M         XORLW       c2-$
+001950 0A54               M         XORLW       $-c2
+001952 0AFF               M         XORLW       d1-d1b
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 53
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001954 0A01               M         XORLW       d1b-d1
+                      00395         opwfa8  XORWF
+                          M         ;; Low access memory
+001956 1A00               M         XORWF       0
+001958 1A00               M         XORWF       0,1
+                          M         ;; Destination "F" and "W" without being defined
+00195A 1A00               M         XORWF       0,F
+00195C 1A00               M         XORWF       0,F,0
+00195E 1B00               M         XORWF       0,F,1
+001960 1800               M         XORWF       0,0
+001962 1800               M         XORWF       0,W
+001964 1800               M         XORWF       0,W,0
+001966 1900               M         XORWF       0,W,1
+                          M         ;; Non access memory
+001968 1B00               M         XORWF       100
+00196A 1B00               M         XORWF       100,1
+00196C 1B00               M         XORWF       100,F
+00196E 1A00               M         XORWF       100,F,0
+001970 1B00               M         XORWF       100,F,1
+001972 1900               M         XORWF       100,0
+001974 1900               M         XORWF       100,W
+001976 1800               M         XORWF       100,W,0
+001978 1900               M         XORWF       100,W,1
+                          M         ;; High access memory
+00197A 1AFF               M         XORWF       0FFF
+00197C 1AFF               M         XORWF       0FFF,F
+00197E 1AFF               M         XORWF       0FFF,F,0
+001980 1BFF               M         XORWF       0FFF,F,1
+001982 1AFF               M         XORWF       0FFF,F
+001984 18FF               M         XORWF       0FFF,W,0
+001986 19FF               M         XORWF       0FFF,W,1
+001988 1A11               M         XORWF       d1
+00198A 1A11               M         XORWF       d1,F
+00198C 1A11               M         XORWF       d1,F,0
+00198E 1B11               M         XORWF       d1,F,1
+001990 1811               M         XORWF       d1,W
+001992 1811               M         XORWF       d1,W,0
+001994 1911               M         XORWF       d1,W,1
+001996 1B01               M         XORWF       d2
+001998 1B01               M         XORWF       d2,F
+00199A 1A01               M         XORWF       d2,F,0
+00199C 1B01               M         XORWF       d2,F,1
+00199E 1901               M         XORWF       d2,W
+0019A0 1801               M         XORWF       d2,W,0
+0019A2 1901               M         XORWF       d2,W,1
+0019A4 1AA4               M         XORWF       $
+0019A6 1AA6               M         XORWF       $,F
+0019A8 1AA8               M         XORWF       $,F,0
+0019AA 1BAA               M         XORWF       $,F,1
+0019AC 18AC               M         XORWF       $,W
+0019AE 18AE               M         XORWF       $,W,0
+0019B0 19B0               M         XORWF       $,W,1
+0019B2 1AB3               M         XORWF       $+1
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 54
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0019B4 1AB5               M         XORWF       $+1,F
+0019B6 1AB7               M         XORWF       $+1,F,0
+0019B8 1BB9               M         XORWF       $+1,F,1
+0019BA 18BB               M         XORWF       $+1,W
+0019BC 18BD               M         XORWF       $+1,W,0
+0019BE 19BF               M         XORWF       $+1,W,1
+0019C0 1ABF               M         XORWF       $-1
+0019C2 1AC1               M         XORWF       $-1,F
+0019C4 1AC3               M         XORWF       $-1,F,0
+0019C6 1BC5               M         XORWF       $-1,F,1
+0019C8 18C7               M         XORWF       $-1,W
+0019CA 18C9               M         XORWF       $-1,W,0
+0019CC 19CB               M         XORWF       $-1,W,1
+0019CE 1A00               M         XORWF       $-$
+0019D0 1A52               M         XORWF       c1-$
+0019D2 1AB0               M         XORWF       $-c1
+0019D4 1A28               M         XORWF       c2-$
+0019D6 1ADA               M         XORWF       $-c2
+0019D8 1AFF               M         XORWF       d1-d1b
+0019DA 1A01               M         XORWF       d1b-d1
+0019DC 1A12               M         XORWF       d1+1
+0019DE 1B00               M         XORWF       d2-1
+                      00396 
+0019E0 E20D           00397         BC      c2
+0019E2 E60C           00398         BN      c2
+0019E4 E30B           00399         BNC     c2
+0019E6 E70A           00400         BNN     c2
+0019E8 E509           00401         BNOV    c2
+0019EA E108           00402         BNZ     c2
+0019EC E407           00403         BOV     c2
+0019EE D006           00404         BRA     c2
+0019F0 E005           00405         BZ      c2
+0019F2 D804           00406         RCALL   c2
+                      00407         
+0019F4 0100           00408         banksel d1
+0019F6 0101           00409         banksel d2
+                      00410 
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00411         pagesel c1
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00412         pagesel c2
+                      00413 
+0019F8 0022 19FC      00414         DW      c1,c2
+                      00415 
+0019FC                00416 c2
+                      00417 
+                      00418         cblock 0x101
+  00000101            00419         d2
+                      00420         endc
+                      00421 
+                      00422         END
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 55
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18F2420                         00000001
+addr                              
+ba8                               
+c1                                00000022
+c2                                000019FC
+d1                                00000011
+d1b                               00000012
+d2                                00000101
+lit8                              
+opfa8                             
+opwfa8                            
+rbra11                            
+rbra8                             
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : ---------------- ---------------- XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXX-- ---------------- ----------------
+0800 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0840 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0880 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+08C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0900 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0940 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0980 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+09C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0A00 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0A40 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0A80 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0AC0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0B00 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0B40 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0B80 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0BC0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0C00 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0C40 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0C80 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0CC0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0D00 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0D40 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0D80 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0DC0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0E00 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0E40 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0E80 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 56
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0EC0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0F00 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0F40 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0F80 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0FC0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+10C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+11C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1200 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1240 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1280 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+12C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1300 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1340 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1380 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+13C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1400 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1440 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1480 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+14C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1500 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1540 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1580 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+15C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1600 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1640 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1680 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+16C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1700 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1740 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1780 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+17C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1800 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1840 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1880 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+18C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1900 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1940 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+1980 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+19C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXX----
+
+All other memory blocks unused.
+
+Program Memory Bytes Used:  4666
+Program Memory Bytes Free: 11718
+
+MPASM 5.68                    /TMP/OP16E.ASM   7-25-2016  10:59:22         PAGE 57
+
+
+
+
+
+
+Errors   :     0
+Warnings :    56 reported,     0 suppressed
+Messages :     8 reported,     0 suppressed
+
+

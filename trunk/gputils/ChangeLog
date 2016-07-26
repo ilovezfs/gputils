@@ -1,3 +1,38 @@
+2016-07-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/coff.c, gpasm/coff.h, gpasm/lst.c:
+    Renamed these functions:
+	coff_reloc   --> coff_add_reloc
+	coff_linenum --> coff_add_linenum
+
+  * libgputils/gpcoffgen.c, libgputils/gpcoffgen.h,
+    libgputils/gpcofflink.c:
+    The gp_coffgen_add_symbol function got a new parameter.
+
+  * gpasm/directive.c, libgputils/gpprocessor.c:
+    Some functions (e.g.:  gp_processor_bank_addr) verifies the
+    Address parameter. 
+
+  * gpasm/evaluate.c,
+    gpasm/testsuite/gpasm.project/*/op12.*,
+    gpasm/testsuite/gpasm.project/*/op12e_12f529.*,
+    gpasm/testsuite/gpasm.project/*/op12e_16f570.*,
+    gpasm/testsuite/gpasm.project/*/op16e.*:
+    Fixed a old bug.
+
+  * gputils/dump.c, gputils/dump.h, gputils/gpvc.c,
+    libgputils/gpcod.h:
+    Use the MemOffsFromBlock macro and dump_free function.
+    Code optimization.
+
+  * gpasm/deps.c, gpasm/gpasm.h.in, gpasm/util.c, gputils/block.c,
+    libgputils/gpsym.c:
+    Code optimization.
+
+  * gpasm/gpasm.c, gputils/gpdasm.c, gputils/gplib.c,
+    gputils/gpstrip.c, gputils/gpvo.c, libgputils/gpcod.c,
+    libgputils/gptypes.h:
+    Code formatting.
+
 2016-07-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     A small repair.

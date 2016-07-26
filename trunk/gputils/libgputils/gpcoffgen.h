@@ -69,7 +69,7 @@ extern gp_symbol_t *gp_coffgen_find_symbol_section_value(gp_object_t *Object,
                                                          const char *Section_section, long Value);
 
 extern gp_symbol_t *gp_coffgen_make_block_symbol(gp_object_t *Object);
-extern gp_symbol_t *gp_coffgen_add_symbol(gp_object_t *Object, const char *Name);
+extern gp_symbol_t *gp_coffgen_add_symbol(gp_object_t *Object, const char *Name, int16_t Section_number);
 extern gp_aux_t *gp_coffgen_add_aux(gp_object_t *Object, gp_symbol_t *Symbol);
 extern gp_aux_t *gp_coffgen_make_block_aux(gp_symbol_t *Symbol, unsigned int Num_auxsyms);
 extern gp_symbol_t *gp_coffgen_move_reserve_symbol(gp_object_t *Object, gp_symbol_t *Symbol);

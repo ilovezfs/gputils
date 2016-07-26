@@ -1276,7 +1276,7 @@ gp_insn_from_byte(unsigned int Shift, int Byte_address)
 int
 gp_processor_reg_offs(pic_processor_t Processor, int Address)
 {
-  if (Processor == NULL) {
+  if ((Processor == NULL) || (Address < 0)) {
     return -1;
   }
 
@@ -1288,7 +1288,7 @@ gp_processor_reg_offs(pic_processor_t Processor, int Address)
 int
 gp_processor_bank_addr(pic_processor_t Processor, int Address)
 {
-  if (Processor == NULL) {
+  if ((Processor == NULL) || (Address < 0)) {
     return -1;
   }
 
@@ -1300,7 +1300,7 @@ gp_processor_bank_addr(pic_processor_t Processor, int Address)
 int
 gp_processor_bank_num(pic_processor_t Processor, int Address)
 {
-  if (Processor == NULL) {
+  if ((Processor == NULL) || (Address < 0)) {
     return -1;
   }
 
@@ -1312,7 +1312,7 @@ gp_processor_bank_num(pic_processor_t Processor, int Address)
 int
 gp_processor_addr_from_bank_num(pic_processor_t Processor, int Number)
 {
-  if (Processor == NULL) {
+  if ((Processor == NULL) || (Number < 0)) {
     return -1;
   }
 
@@ -1344,7 +1344,7 @@ gp_processor_is_common_ram_addr(pic_processor_t Processor, int Address)
   const int    *cram_addrs;
   proc_class_t  class;
 
-  if (Processor == NULL) {
+  if ((Processor == NULL) || (Address < 0)) {
     return -1;
   }
 
@@ -1388,7 +1388,7 @@ gp_processor_is_p16e_access_low(pic_processor_t Processor, int Address)
 {
   const int *cram_addrs;
 
-  if (Processor->class != PROC_CLASS_PIC16E) {
+  if ((Processor->class != PROC_CLASS_PIC16E) || (Address < 0)) {
     return false;
   }
 
@@ -1407,7 +1407,8 @@ gp_processor_is_p16e_access_high(pic_processor_t Processor, int Address, gp_bool
   const int    *cram_addrs;
   unsigned int  bank_size;
 
-  if (Processor->class != PROC_CLASS_PIC16E) {
+  if ((Processor->class != PROC_CLASS_PIC16E) ||
+      ((!Mpasm_compatible) && (Address < 0))) {
     return false;
   }
 
@@ -1463,6 +1464,10 @@ gp_processor_is_linear_ram_addr(pic_processor_t Processor, int Address)
     return -1;
   }
 
+  if (Address < 0) {
+    return -1;
+  }
+
   if ((lram_addrs = gp_processor_linear_ram_exist(Processor)) != NULL) {
     if ((Address >= lram_addrs[0]) && (Address <= lram_addrs[1])) {
       return (Address - lram_addrs[0]);
@@ -1496,7 +1501,7 @@ gp_processor_is_idlocs_org(pic_processor_t Processor, int Org)
 {
   const int *id_addrs;
 
-  if (Processor == NULL) {
+  if ((Processor == NULL) || (Org < 0)) {
     return -1;
   }
 
@@ -1517,6 +1522,10 @@ gp_processor_is_idlocs_byte_addr(pic_processor_t Processor, int Byte_address)
   const int *idlocs;
   int        start;
   int        end;
+
+  if (Byte_address < 0) {
+    return -1;
+  }
 
   if ((idlocs = gp_processor_idlocs_exist(Processor)) != NULL) {
     /* There is a need an address conversion. */
@@ -1555,7 +1564,7 @@ gp_processor_is_config_org(pic_processor_t Processor, int Org)
 {
   const int *config;
 
-  if (Processor == NULL) {
+  if ((Processor == NULL) || (Org < 0)) {
     return -1;
   }
 
@@ -1576,6 +1585,10 @@ gp_processor_is_config_byte_addr(pic_processor_t Processor, int Byte_address)
   const int *config;
   int        start;
   int        end;
+
+  if (Byte_address < 0) {
+    return -1;
+  }
 
   if ((config = gp_processor_config_exist(Processor)) != NULL) {
     /* There is a need an address conversion. */
@@ -1614,7 +1627,7 @@ gp_processor_is_eeprom_org(pic_processor_t Processor, int Org)
 {
   const int *eeprom;
 
-  if (Processor == NULL) {
+  if ((Processor == NULL) || (Org < 0)) {
     return -1;
   }
 
@@ -1635,6 +1648,10 @@ gp_processor_is_eeprom_byte_addr(pic_processor_t Processor, int Byte_address)
   const int *eeprom;
   int        start;
   int        end;
+
+  if (Byte_address < 0) {
+    return -1;
+  }
 
   if ((eeprom = gp_processor_eeprom_exist(Processor)) != NULL) {
     /* There is a need an address conversion. */

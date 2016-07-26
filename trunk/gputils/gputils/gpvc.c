@@ -98,43 +98,43 @@ main(int argc, char *argv[])
   display_flags = DISPLAY_NOTHING;
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
-    case '?':
-    case 'h':
-      usage = true;
-      break;
+      case '?':
+      case 'h':
+        usage = true;
+        break;
 
-    case 'a':
-      display_flags = DISPLAY_ALL;
-      break;
+      case 'a':
+        display_flags = DISPLAY_ALL;
+        break;
 
-    case 'd':
-      display_flags |= DISPLAY_DIR;
-      break;
+      case 'd':
+        display_flags |= DISPLAY_DIR;
+        break;
 
-    case 's':
-      display_flags |= DISPLAY_SYM;
-      break;
+      case 's':
+        display_flags |= DISPLAY_SYM;
+        break;
 
-    case 'r':
-      display_flags |= DISPLAY_ROM;
-      break;
+      case 'r':
+        display_flags |= DISPLAY_ROM;
+        break;
 
-    case 'l':
-      display_flags |= DISPLAY_SRC;
-      break;
+      case 'l':
+        display_flags |= DISPLAY_SRC;
+        break;
 
-    case 'm':
-      display_flags |= DISPLAY_MESS;
-      break;
+      case 'm':
+        display_flags |= DISPLAY_MESS;
+        break;
 
-    case 'w':
-      display_flags |= DISPLAY_WIDE;
-      break;
+      case 'w':
+        display_flags |= DISPLAY_WIDE;
+        break;
 
-    case 'v':
-      fprintf(stderr, "%s\n", GPVC_VERSION_STRING);
-      exit(0);
-    }
+      case 'v':
+        fprintf(stderr, "%s\n", GPVC_VERSION_STRING);
+        exit(0);
+    } /* switch (c) */
 
     if (usage) {
       break;
@@ -198,5 +198,6 @@ main(int argc, char *argv[])
   }
 
   fclose(code_file);
+  dump_free();
   return EXIT_SUCCESS;
 }

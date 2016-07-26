@@ -339,19 +339,29 @@ gp_sym_get_symbol_count(const symbol_table_t *Table)
 symbol_t *
 gp_sym_get_symbol(const symbol_table_t *Table, const char *Name)
 {
-  symbol_t  *sym;
-  hash128_t  hash;
+  symbol_t   *sym;
+  hash128_t   hash;
+  gp_boolean  first;
+  gp_boolean  prev_case;
 
   assert(Table != NULL);
   assert(Name != NULL);
 
+  first     = true;
+  prev_case = false;
   while (Table != NULL) {
-    gp_hash_init(&hash);
-    gp_hash_str(&hash, Name, Table->case_insensitive);
+    if (first || (Table->case_insensitive != prev_case)) {
+      gp_hash_init(&hash);
+      gp_hash_str(&hash, Name, Table->case_insensitive);
+    }
+
     sym = _get_symbol_from_table(Table, &hash);
     if (sym != NULL) {
       return sym;
     }
+
+    first     = false;
+    prev_case = Table->case_insensitive;
 
     /* If sym is still NULL, we didn't match. Try the prev table on the stack. */
     Table = Table->prev;
@@ -365,19 +375,29 @@ gp_sym_get_symbol(const symbol_table_t *Table, const char *Name)
 symbol_t *
 gp_sym_get_symbol_len(const symbol_table_t *Table, const char *Name, size_t Len)
 {
-  symbol_t  *sym;
-  hash128_t  hash;
+  symbol_t   *sym;
+  hash128_t   hash;
+  gp_boolean  first;
+  gp_boolean  prev_case;
 
   assert(Table != NULL);
   assert(Name != NULL);
 
+  first     = true;
+  prev_case = false;
   while (Table != NULL) {
-    gp_hash_init(&hash);
-    gp_hash_str_len(&hash, Name, Len, Table->case_insensitive);
+    if (first || (Table->case_insensitive != prev_case)) {
+      gp_hash_init(&hash);
+      gp_hash_str_len(&hash, Name, Len, Table->case_insensitive);
+    }
+
     sym = _get_symbol_from_table(Table, &hash);
     if (sym != NULL) {
       return sym;
     }
+
+    first     = false;
+    prev_case = Table->case_insensitive;
 
     /* If sym is still NULL, we didn't match. Try the prev table on the stack. */
     Table = Table->prev;
