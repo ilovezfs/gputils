@@ -388,13 +388,13 @@ extern struct gpasm_state {
 #define VATRR_HAS_NO_VALUE      (1 << 1)  /* The variable has no value. */
 
 typedef struct variable {
-  gpasmVal            value;
-  unsigned int        coff_symbol_num;
-  unsigned int        coff_section_num;
-  unsigned int        coff_section_flags;
-  enum gpasmValTypes  type;
-  enum gpasmValTypes  previous_type;    /* Can change from static to global. */
-  unsigned int        flags;            /* VATRR_... */
+  gpasmVal           value;
+  enum gpasmValTypes type;
+  enum gpasmValTypes previous_type;     /* Can change from static to global. */
+  unsigned int       coff_symbol_num;
+  unsigned int       coff_section_num;
+  unsigned int       coff_section_flags;
+  unsigned int       flags;             /* VATRR_... */
 } variable_t;
 
 /************************************************************************/

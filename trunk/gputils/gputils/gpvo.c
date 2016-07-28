@@ -178,12 +178,13 @@ _print_relocation_list(proc_class_t Class, const gp_reloc_t *Relocation, const c
   addr_digits = Class->addr_digits;
 
   printf("Relocations Table\n"
-         "Address     Offset    Type                        Symbol\n");
+         "Address     Offset      Offset       Type                        Symbol\n"
+         "            (hex)       (dec)\n");
 
   while (Relocation != NULL) {
-    printf("0x%0*x%s    0x%0*x%s  %-25s %-s\n",
+    printf("0x%0*x%s    0x%08x  %11d  %-25s %-s\n",
            addr_digits, gp_processor_insn_from_byte_c(Class, Relocation->address), Column_gap,
-           addr_digits, Relocation->offset, Column_gap,
+           Relocation->offset, Relocation->offset,
            _format_reloc_type(Relocation->type, buffer, sizeof(buffer)),
            Relocation->symbol->name);
 
@@ -490,7 +491,7 @@ _format_sym_class(unsigned int Class, char *Buffer, size_t Sizeof_buffer)
 
 /*------------------------------------------------------------------------------------------------*/
 
-#define AUX_INDENT              "      "
+#define AUX_INDENT              "       "
 
 static void
 _print_symbol_table(const gp_object_t *Object)
@@ -533,7 +534,7 @@ _print_symbol_table(const gp_object_t *Object)
       }
     }
 
-    printf("%04u %-24s %-16s %#-10lx %-8s %-12s %-9s %-4zu\n",
+    printf("%04u %-24s %-16s 0x%08lx %-8s %-12s %-9s %zu\n",
            idx,
            symbol->name,
            section,
@@ -547,16 +548,16 @@ _print_symbol_table(const gp_object_t *Object)
     while (aux != NULL) {
       switch (aux->type) {
         case AUX_DIRECT:
-          printf(AUX_INDENT "command = \"%c\"\n", aux->_aux_symbol._aux_direct.command);
+          printf(AUX_INDENT "command = '%c'\n", aux->_aux_symbol._aux_direct.command);
           printf(AUX_INDENT "string  = \"%s\"\n", aux->_aux_symbol._aux_direct.string);
           break;
 
         case AUX_FILE: {
           if (!state.suppress_names) {
-            printf(AUX_INDENT "file = %s\n", aux->_aux_symbol._aux_file.filename);
+            printf(AUX_INDENT "file          = %s\n", aux->_aux_symbol._aux_file.filename);
           }
           printf(AUX_INDENT "line included = %u\n", aux->_aux_symbol._aux_file.line_number);
-          printf(AUX_INDENT "flags         = %x\n", aux->_aux_symbol._aux_file.flags);
+          printf(AUX_INDENT "flags         = 0x%08x\n", aux->_aux_symbol._aux_file.flags);
           break;
         }
 
@@ -779,7 +780,7 @@ int main(int argc, char *argv[])
 
   if ((gp_identify_coff_file(state.filename) != GP_COFF_OBJECT_V2) &&
       (gp_identify_coff_file(state.filename) != GP_COFF_OBJECT)) {
-    gp_error("\"%s\" is not a valid object file", state.filename);
+    gp_error("The \"%s\" is not a valid object file.", state.filename);
     exit(1);
   }
 

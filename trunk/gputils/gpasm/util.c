@@ -632,11 +632,11 @@ set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean
     var->coff_section_num   = state.obj.section_num;
     var->coff_section_flags = state.obj.new_sect_flags;
     var->type               = Type;
-    var->previous_type      = Type;     /* coff symbols can be changed to global */
+    var->previous_type      = Type;
     var->flags              = flags;
     gp_sym_annotate_symbol(sym, var);
 
-    /* increment the index into the coff symbol table for the relocations */
+    /* Increment the index into the coff symbol table for the relocations. */
     switch (Type) {
       case VAL_EXTERNAL:
       case VAL_GLOBAL:
@@ -668,7 +668,7 @@ set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean
   }
   else if (state.pass == 2) {
     if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
-      gpmsg_verror(GPE_SYM_NO_VALUE, NULL, Name);
+      msg_has_no_value(NULL, Name);
     }
     else if (var->value != Value) {
       gpmsg_verror(GPE_DIFFLAB, NULL, Name);
@@ -1030,6 +1030,10 @@ pnode_string(const pnode_t *Pnode)
 void
 msg_has_no_value(const char *Optional_text, const char *Symbol_name)
 {
+  if (state.mpasm_compatible) {
+    return;
+  }
+
   switch (state.strict_level) {
     case 1:
       gpmsg_vwarning(GPW_SYM_NO_VALUE, Optional_text, Symbol_name);
