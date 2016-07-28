@@ -998,16 +998,18 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
   unsigned int         src_file_num;
   unsigned int         src_mod_flag;
   unsigned int         src_line_num;
-  unsigned int         src_location;
+  unsigned int         insn_offset;
+  unsigned int         _64k_seg_address;
 
   has_line_num_info = false;
-  dbi = Main_dir;
-  do {
-    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]);
+  dbi               = Main_dir;
+  while (dbi != NULL) {
+    _64k_base        = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]);
+    _64k_seg_address = IMemAddrFromBase(_64k_base);
 
     start_block = gp_getu16(&dbi->dir[COD_DIR_LSTTAB]);
 
-    if (start_block) {
+    if (start_block != 0) {
       end_block = gp_getu16(&dbi->dir[COD_DIR_LSTTAB + 2]);
 
       if (!has_line_num_info) {
@@ -1025,11 +1027,11 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
           record       = &cod_block[offset];
           src_file_num = record[COD_LS_SFILE];
           src_mod_flag = record[COD_LS_SMOD];
-          src_line_num = gp_getl16(&record[COD_LS_SLINE]);
-          src_location = gp_getl16(&record[COD_LS_SLOC]);
+          src_line_num = gp_getu16(&record[COD_LS_SLINE]);
+          insn_offset  = gp_getu16(&record[COD_LS_SLOC]);
 
-          if (((src_file_num != 0) || (src_mod_flag != 0) || (src_line_num != 0) || (src_location != 0)) &&
-              ((src_mod_flag & COD_LS_SMOD_FLAG_L) == 0)) {
+          if (((src_file_num != 0) || (src_mod_flag != 0) || (src_line_num != 0) || (insn_offset != 0)) &&
+              (FlagIsClr(src_mod_flag, COD_LS_SMOD_FLAG_L))) {
             if (src_file_num < number_of_source_files) {
               source_file_name = source_file_names[src_file_num];
             }
@@ -1040,14 +1042,12 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
 
             if ((source_file_name != NULL) && (source_file_name[0] != '\0')) {
               printf(" %5u  %5u  %06x  %2x %s  %s\n",
-                     lst_line_number, src_line_num,
-                     IMemAddrFromBase(_64k_base) | src_location,
+                     lst_line_number, src_line_num, _64k_seg_address | insn_offset,
                      src_mod_flag, _mod_flags_to_str(src_mod_flag), source_file_name);
             }
             else {
               printf(" %5u  %5u  %06x  %2x %s\n",
-                     lst_line_number, src_line_num,
-                     IMemAddrFromBase(_64k_base) | src_location,
+                     lst_line_number, src_line_num, _64k_seg_address | insn_offset,
                      src_mod_flag, _mod_flags_to_str(src_mod_flag));
             }
 
@@ -1065,11 +1065,12 @@ dump_line_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
           }
 
           last_src_line = src_line_num;
-        }
-      } /* for */
-    } /* if */
+        } /* for (i = 0, offset = 0; i < COD_MAX_LINE_SYM; ...  */
+      } /* for (j = start_block; j <= end_block; j++) */
+    } /* if (start_block != 0) */
+
     dbi = dbi->next;
-  } while (dbi != NULL);
+  } /* while (dbi != NULL) */
 
   if (!has_line_num_info) {
     printf("No line number info.\n");

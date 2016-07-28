@@ -32,6 +32,8 @@ Boston, MA 02111-1307, USA.  */
 #define COD_FILE_MAX_NUM            1000
 
 static DirBlockInfo *main_dir;
+static DirBlockInfo *dbi       = NULL;
+static unsigned int  _64k_base = 0;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -104,7 +106,9 @@ cod_init(void)
     return;
   }
 
-  main_dir = gp_cod_init_dir_block(state.cod_file_name, "gpasm");
+  main_dir  = gp_cod_init_dir_block(state.cod_file_name, "gpasm");
+  dbi       = NULL;
+  _64k_base = 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -118,16 +122,13 @@ cod_init(void)
 void
 cod_lst_line(unsigned int List_line)
 {
-  static DirBlockInfo *dbi = NULL;
-  static int           _64k_base = 0;
-
-  source_context_t    *ctx;
-  uint8_t              smod_flag;
-  BlockList           *lb;
-  gp_boolean           first_time;
-  unsigned int         address;
-  unsigned int         high_address;
-  uint8_t             *record;
+  source_context_t *ctx;
+  uint8_t           smod_flag;
+  BlockList        *lb;
+  gp_boolean        first_time;
+  unsigned int      address;
+  unsigned int      high_address;
+  uint8_t          *record;
 
   if (!state.cod.enabled) {
     return;
@@ -173,10 +174,10 @@ cod_lst_line(unsigned int List_line)
   record[COD_LS_SMOD]  = smod_flag;
 
   /* Write the source file line number corresponding to the list file line number. */
-  gp_putl16(&record[COD_LS_SLINE], ctx->line_number);
+  gp_putl16(&record[COD_LS_SLINE], (uint16_t)(ctx->line_number));
 
   /* Write the address of the opcode. */
-  gp_putl16(&record[COD_LS_SLOC], address);
+  gp_putl16(&record[COD_LS_SLOC], (uint16_t)address);
 
   dbi->list.offset += COD_LINE_SYM_SIZE;
 }
@@ -271,6 +272,9 @@ cod_close_file(void)
   gp_cod_enumerate_directory(main_dir);
   gp_cod_write_directory(state.cod.f, main_dir);
   gp_cod_free_directory(main_dir);
-  main_dir = NULL;
   fclose(state.cod.f);
+
+  main_dir  = NULL;
+  dbi       = NULL;
+  _64k_base = 0;
 }
