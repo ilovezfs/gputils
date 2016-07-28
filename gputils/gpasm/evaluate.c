@@ -862,8 +862,8 @@ eval_reloc_evaluate(const pnode_t *Pnode, uint16_t Type, gp_boolean *Is_reloc, g
 
   if (count > 1) {
     if ((count == 2) && (_same_section(Pnode))) {
-      /* It is valid to take the difference between two symbols in the same
-         section. Evaluate, but don't add a relocation. */
+      /* It is valid to take the difference between two symbols in the same section.
+         Evaluate, but don't add a relocation. */
       return eval_maybe_evaluate(Pnode);
     }
 

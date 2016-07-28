@@ -1,4 +1,15 @@
 2016-07-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/evaluate.c, gpasm/gpasm.h.in:
+    Code formatting.
+
+  * gpasm/util.c:
+    The msg_has_no_value function test the state.mpasm_compatible
+    variable.
+
+  * gputils/gpvo.c:
+    Better understood visualisation of the "Relocations Table".
+
+2016-07-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gputils/dump.c:
     Bugfix: The COD_LS_SLINE and COD_LS_SLOC is unsigned short.
 
