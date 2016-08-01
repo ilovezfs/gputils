@@ -39,6 +39,8 @@ libgpasm_a_SOURCES = \
 	scan.l \
 	special.c \
 	special.h \
+	symbol_list.c \
+	symbol_list.h \
 	util.c
 
 gpasm_SOURCES = main.c

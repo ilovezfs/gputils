@@ -186,9 +186,9 @@ cod_lst_line(unsigned int List_line)
 
 /* cod_write_symbols - write the symbol table to the .cod file
  *
- * This routine will read the symbol table that gpasm has created
- * and convert it into a format suitable for .cod files. So far, only
- * three variable types are supported: address, register, and constants.
+ * This routine will read the symbol table that gpasm has created and convert it into
+ * a format suitable for .cod files. So far, only three variable types are supported:
+ * address, register and constants
  *
  */
 
@@ -213,8 +213,8 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 
   sb = NULL;
   for (i = 0; i < Num_symbols; i++) {
-    name   = gp_sym_get_symbol_name(Symbol_list[i]);
-    var    = (const variable_t *)gp_sym_get_symbol_annotation(Symbol_list[i]);
+    name = gp_sym_get_symbol_name(Symbol_list[i]);
+    var  = (const variable_t *)gp_sym_get_symbol_annotation(Symbol_list[i]);
     assert(var != NULL);
 
     if (FlagIsSet(var->flags, VATRR_HAS_NO_VALUE)) {
@@ -224,6 +224,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
     length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, &truncated);
 
     if (truncated && (state.strict_level > 0)) {
+      /* This symbol name is too long. */
       gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", name, COD_LSYMBOL_PSTRING_MAX_LEN - 1);
     }
 

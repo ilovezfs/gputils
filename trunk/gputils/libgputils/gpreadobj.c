@@ -370,7 +370,7 @@ _read_aux(gp_object_t *Object, uint32_t i, gp_aux_t *Aux, unsigned int Aux_type,
       Aux->_aux_symbol._aux_ident.string = GP_Strdup(&String_table[string_offset]);
       break;
 
-    case AUX_SCN:
+    case AUX_SECTION:
       /* 'x_scnlen' -- Section Length. */
       Aux->_aux_symbol._aux_scn.length  = _check_getl32(&File[0], Data);
       /* 'x_nreloc' -- Number of relocation entries. */
@@ -516,8 +516,8 @@ _read_symbol_table(gp_object_t *Object, const uint8_t *File, const gp_binary_t *
       for (j = 0; j < num_auxsym; j++) {
         i++;
         _read_aux(Object, i, aux, aux_type, File, string_table, lazy_linking, Data);
-        /* AUX_FCN may be followed by AUX_FCN_CALLS */
-        if (aux_type == AUX_FCN) {
+        /* AUX_FUNCTION may be followed by AUX_FCN_CALLS */
+        if (aux_type == AUX_FUNCTION) {
           aux_type = AUX_FCN_CALLS;
         }
 

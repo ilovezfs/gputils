@@ -1611,8 +1611,6 @@ enum invalidate_mask {
                                    (Only in "gpasm" and "absolute" mode.) */
 };
 
-typedef int gpasmVal;   /* The type that internal arithmetic uses. */
-
 struct pnode;           /* forward declaration; defined in gpasm.h for assembler and in
                          * script.h for linker */
 

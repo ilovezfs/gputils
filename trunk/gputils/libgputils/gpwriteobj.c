@@ -321,7 +321,7 @@ _write_auxsymbols(const gp_aux_t *Aux, uint8_t *Table, gp_boolean Isnew, FILE *F
       }
       break;
 
-    case AUX_SCN:
+    case AUX_SECTION:
       /* write section auxiliary symbol */
       gp_fputl32(Aux->_aux_symbol._aux_scn.length, Fp);
       gp_fputl16(Aux->_aux_symbol._aux_scn.nreloc, Fp);

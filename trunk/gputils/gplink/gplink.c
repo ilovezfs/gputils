@@ -1036,7 +1036,7 @@ _linker(void)
   gp_mem_i_free(program);
 
   /* patch raw data with the relocated symbol values */
-  gp_cofflink_patch(state.object);
+  gp_cofflink_patch(state.object, state.mplink_compatible);
 
   /* Modify the executable object name. */
   if (state.object->filename != NULL) {

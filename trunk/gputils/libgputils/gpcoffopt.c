@@ -553,8 +553,8 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
   uint32_t           target_page;
 
   symbol          = Relocation->symbol;
-  reloc_byte_addr = Section->address   + Relocation->address;
-  value           = Relocation->offset + (uint32_t)symbol->value;
+  reloc_byte_addr = Section->address        + Relocation->address;
+  value           = (uint32_t)symbol->value + Relocation->offset;
 
   if (Class->i_memory_get(Section->data, reloc_byte_addr, &data, NULL, NULL) != W_USED_ALL) {
     gp_error("No instruction at 0x%0*X in program memory!", Class->addr_digits, reloc_byte_addr);
@@ -588,25 +588,25 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
   reloc_byte_length = 0;
 
   switch (Relocation->type) {
-    case RELOCT_ALL:
+    case RELOC_ALL:
       break;
 
-    case RELOCT_CALL:
+    case RELOC_CALL:
       /* call function */
       reloc_pipe[0].state = (reloc_page == target_page) ? COPT_CALL_CURR_PAGE : COPT_CALL_OTHER_PAGE;
       reloc_byte_length   = 2;
       break;
 
-    case RELOCT_GOTO:
+    case RELOC_GOTO:
       /* goto label */
       reloc_pipe[0].state = (reloc_page == target_page) ? COPT_GOTO_CURR_PAGE : COPT_GOTO_OTHER_PAGE;
       reloc_byte_length   = 2;
       break;
 
-    case RELOCT_LOW:
+    case RELOC_LOW:
       break;
 
-    case RELOCT_HIGH: {
+    case RELOC_HIGH: {
       /* high(value) */
       if ((reloc_pipe[0].instruction != NULL) && (reloc_pipe[0].instruction->icode == ICODE_MOVLP)) {
         /* movlp high(value) */
@@ -616,33 +616,33 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
       break;
     }
 
-    case RELOCT_UPPER:
-    case RELOCT_P:
-    case RELOCT_BANKSEL:
-    case RELOCT_IBANKSEL:
-    case RELOCT_F:
-    case RELOCT_TRIS:
-    case RELOCT_TRIS_3BIT:
-    case RELOCT_MOVLR:
-    case RELOCT_MOVLB:
-    case RELOCT_GOTO2:
-    case RELOCT_FF1:
-    case RELOCT_FF2:
-    case RELOCT_LFSR1:
-    case RELOCT_LFSR2:
+    case RELOC_UPPER:
+    case RELOC_P:
+    case RELOC_BANKSEL:
+    case RELOC_IBANKSEL:
+    case RELOC_F:
+    case RELOC_TRIS:
+    case RELOC_TRIS_3BIT:
+    case RELOC_MOVLR:
+    case RELOC_MOVLB:
+    case RELOC_GOTO2:
+    case RELOC_FF1:
+    case RELOC_FF2:
+    case RELOC_LFSR1:
+    case RELOC_LFSR2:
       break;
 
-    case RELOCT_BRA:
+    case RELOC_BRA:
       /* bra label */
       reloc_pipe[0].state = (reloc_page == target_page) ? COPT_BRA14E_CURR_PAGE : COPT_BRA14E_OTHER_PAGE;
       reloc_byte_length   = 2;
       break;
 
-    case RELOCT_CONDBRA:
-    case RELOCT_ACCESS:
+    case RELOC_CONDBRA:
+    case RELOC_ACCESS:
       break;
 
-    case RELOCT_PAGESEL_WREG:
+    case RELOC_PAGESEL_WREG:
       /* PIC12, PIC12E, PIC12I
 
        movlw value
@@ -658,7 +658,7 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
       reloc_byte_length   = Class->pagesel_byte_length(Num_pages, true);
       break;
 
-    case RELOCT_PAGESEL_BITS:
+    case RELOC_PAGESEL_BITS:
       /* PIC12, PIC12E, PIC12I
 
        bcf STATUS, x
@@ -670,7 +670,7 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
 
        bcf PCLATH, x
        bsf PCLATH, x */
-    case RELOCT_PAGESEL_MOVLP:
+    case RELOC_PAGESEL_MOVLP:
       /* PIC14E, PIC14EX
 
        movlp value */
@@ -679,15 +679,15 @@ _pagesel_reloc_analyze(proc_class_t Class, gp_section_t *Section, gp_reloc_t *Re
       break;
 
     /* unimplemented relocations */
-    case RELOCT_PAGESEL:
-    case RELOCT_SCNSZ_LOW:
-    case RELOCT_SCNSZ_HIGH:
-    case RELOCT_SCNSZ_UPPER:
-    case RELOCT_SCNEND_LOW:
-    case RELOCT_SCNEND_HIGH:
-    case RELOCT_SCNEND_UPPER:
-    case RELOCT_SCNEND_LFSR1:
-    case RELOCT_SCNEND_LFSR2:
+    case RELOC_PAGESEL:
+    case RELOC_SCNSZ_LOW:
+    case RELOC_SCNSZ_HIGH:
+    case RELOC_SCNSZ_UPPER:
+    case RELOC_SCNEND_LOW:
+    case RELOC_SCNEND_HIGH:
+    case RELOC_SCNEND_UPPER:
+    case RELOC_SCNEND_LFSR1:
+    case RELOC_SCNEND_LFSR2:
     default: {
         if (symbol->name != NULL) {
           gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",
@@ -964,7 +964,7 @@ _banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section
   symbol          = Relocation->symbol;
   reloc_byte_addr = Section->address + Relocation->address;
   reloc_insn_addr = gp_processor_insn_from_byte_c(Class, reloc_byte_addr);
-  value           = Relocation->offset + (uint32_t)symbol->value;
+  value           = (uint32_t)symbol->value + Relocation->offset;
 
   reloc_page      = gp_processor_page_addr(Class, reloc_insn_addr);
 
@@ -979,72 +979,72 @@ _banksel_reloc_analyze(proc_class_t Class, pic_processor_t Processor, gp_section
   there_is_banksel  = false;
 
   switch (Relocation->type) {
-    case RELOCT_ALL:
+    case RELOC_ALL:
       break;
 
-    case RELOCT_CALL:
-    case RELOCT_GOTO:
+    case RELOC_CALL:
+    case RELOC_GOTO:
       need_clear = true;
       break;
 
-    case RELOCT_LOW:
-    case RELOCT_HIGH:
-    case RELOCT_UPPER:
-    case RELOCT_P:
+    case RELOC_LOW:
+    case RELOC_HIGH:
+    case RELOC_UPPER:
+    case RELOC_P:
       break;
 
-    case RELOCT_BANKSEL:
+    case RELOC_BANKSEL:
       ram_bank          = gp_processor_bank_addr(Processor, value);
-      reloc_byte_length = Class->banksel_byte_length(Num_pages);
+      reloc_byte_length = Class->banksel_byte_length(Num_pages, false);
       there_is_banksel  = true;
       break;
 
-    case RELOCT_IBANKSEL:
+    case RELOC_IBANKSEL:
       break;
 
-    case RELOCT_F:
-    case RELOCT_TRIS:
-    case RELOCT_TRIS_3BIT:
-    case RELOCT_MOVLR:
+    case RELOC_F:
+    case RELOC_TRIS:
+    case RELOC_TRIS_3BIT:
+    case RELOC_MOVLR:
       break;
 
-    case RELOCT_MOVLB:
+    case RELOC_MOVLB:
       ram_bank          = gp_processor_bank_addr(Processor, value);
       reloc_byte_length = 2;
       there_is_banksel  = true;
       break;
 
-    case RELOCT_GOTO2:
+    case RELOC_GOTO2:
       need_clear = true;
       break;
 
-    case RELOCT_FF1:
-    case RELOCT_FF2:
-    case RELOCT_LFSR1:
-    case RELOCT_LFSR2:
+    case RELOC_FF1:
+    case RELOC_FF2:
+    case RELOC_LFSR1:
+    case RELOC_LFSR2:
       break;
 
-    case RELOCT_BRA:
-    case RELOCT_CONDBRA:
+    case RELOC_BRA:
+    case RELOC_CONDBRA:
       need_clear = true;
       break;
 
-    case RELOCT_ACCESS:
-    case RELOCT_PAGESEL_WREG:
-    case RELOCT_PAGESEL_BITS:
-    case RELOCT_PAGESEL_MOVLP:
+    case RELOC_ACCESS:
+    case RELOC_PAGESEL_WREG:
+    case RELOC_PAGESEL_BITS:
+    case RELOC_PAGESEL_MOVLP:
       break;
 
     /* unimplemented relocations */
-    case RELOCT_PAGESEL:
-    case RELOCT_SCNSZ_LOW:
-    case RELOCT_SCNSZ_HIGH:
-    case RELOCT_SCNSZ_UPPER:
-    case RELOCT_SCNEND_LOW:
-    case RELOCT_SCNEND_HIGH:
-    case RELOCT_SCNEND_UPPER:
-    case RELOCT_SCNEND_LFSR1:
-    case RELOCT_SCNEND_LFSR2:
+    case RELOC_PAGESEL:
+    case RELOC_SCNSZ_LOW:
+    case RELOC_SCNSZ_HIGH:
+    case RELOC_SCNSZ_UPPER:
+    case RELOC_SCNEND_LOW:
+    case RELOC_SCNEND_HIGH:
+    case RELOC_SCNEND_UPPER:
+    case RELOC_SCNEND_LFSR1:
+    case RELOC_SCNEND_LFSR2:
     default: {
         if (symbol->name != NULL) {
           gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",

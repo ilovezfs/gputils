@@ -22,6 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPASM_H__
 #define __GPASM_H__
 
+#include "symbol_list.h"
+
 #define GPASM_VERSION_STRING        ("gpasm-" VERSION " #" @REVISION@ " (" __DATE__ ")")
 
 /* This symbol will get placed into the symbol table for the 16bit cores
@@ -49,11 +51,11 @@ Boston, MA 02111-1307, USA.  */
 enum gpasmValTypes {
   VAL_CONSTANT,
   VAL_VARIABLE,
-  VAL_ADDRESS,
-  VAL_CBLOCK,
   VAL_EXTERNAL,
   VAL_GLOBAL,
+  VAL_CBLOCK,
   VAL_STATIC,
+  VAL_ADDRESS,
   VAL_ABSOLUTE,
   VAL_DEBUG
 };
@@ -360,6 +362,7 @@ extern struct gpasm_state {
     gp_symbol_t  *debug_file;           /*   Debug information for high level langs. */
     unsigned int  debug_line;
     gp_boolean    newcoff;
+    symbol_list_t symbol_fifo;
   } obj;
 
   source_context_list_t  src_list;      /* The stack of source files. */
@@ -388,13 +391,13 @@ extern struct gpasm_state {
 #define VATRR_HAS_NO_VALUE      (1 << 1)  /* The variable has no value. */
 
 typedef struct variable {
-  gpasmVal           value;
-  enum gpasmValTypes type;
-  enum gpasmValTypes previous_type;     /* Can change from static to global. */
-  unsigned int       coff_symbol_num;
-  unsigned int       coff_section_num;
-  unsigned int       coff_section_flags;
-  unsigned int       flags;             /* VATRR_... */
+  gpasmVal            value;
+  enum gpasmValTypes  type;
+  enum gpasmValTypes  previous_type;    /* Can change from static to global. */
+  unsigned int        coff_section_num;
+  unsigned int        coff_section_flags;
+  unsigned int        coff_symbol_num;
+  unsigned int        flags;            /* VATRR_... */
 } variable_t;
 
 /************************************************************************/
@@ -422,22 +425,20 @@ extern char *convert_escaped_char(char *Str, char Ch);
 extern void coerce_str1(pnode_t *Exp);
 extern gpasmVal do_or_append_insn(const char *Op, pnode_t *Parms);
 
+extern gp_boolean set_symbol_attr(int *Section_number, unsigned int *Class, enum gpasmValTypes Type);
+
 extern void set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type,
                        gp_boolean Proc_dependent, gp_boolean Has_no_value);
 
 extern variable_t *get_global_constant(const char *Name);
-extern void purge_variable_symbols(symbol_table_t *Table);
-extern void purge_processor_variable_symbols(symbol_table_t *Table);
+extern void delete_variable_symbols(symbol_table_t *Table);
+extern void delete_processor_variable_symbols(symbol_table_t *Table);
 extern void select_errorlevel(int Level);
 extern void select_strictlevel(int Level);
 extern void select_expand(const char *Expand);
 extern void select_hexformat(const char *Format_name);
 extern void select_radix(const char *Name);
-/* START OF DEBUG CODE LINES */
-extern void pnode_print(const pnode_t *Pnode, FILE *Out);
-extern void pnode_print_chain(const pnode_t *Pnode, unsigned int Level, FILE *Out);
-extern void variable_print(const variable_t *Variable, FILE *Out);
-/* END OF DEBUG CODE LINES */
+extern const char *variable_type_to_str(enum gpasmValTypes Type);
 extern const char *value_type_to_str(const variable_t *Variable, gp_boolean Previous);
 extern const char *pnode_symbol_name(const pnode_t *Pnode);
 extern gpasmVal pnode_symbol_value(const pnode_t *Pnode);

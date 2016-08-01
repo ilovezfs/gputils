@@ -31,6 +31,7 @@ typedef void (*gp_node_del_t)(void *);
 
 #define GPListHeader(Type)  \
   Type          *first;     \
+  Type          *curr;      \
   Type          *last;      \
   size_t         num_nodes; \
   gp_node_del_t  node_del;  \
@@ -48,6 +49,9 @@ extern void gp_list_node_delete(void *List, void *Node);
 extern void gp_list_set_delete_node_func(void *List, gp_node_del_t Function);
 extern void **gp_list_make_block(void *List, size_t Num_nodes, size_t Item_size);
 extern void gp_list_move(void *Dst, void *Src);
+extern void *gp_list_clone_list(const void *List, int (Cmp_func)(const void *, const void *));
+extern void gp_list_reset(void *List);
+extern void gp_list_set_access_point(void *List, void *Node);
 extern void gp_list_clear(void *List);
 extern void gp_list_delete(void *List);
 
