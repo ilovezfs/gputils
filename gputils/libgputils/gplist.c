@@ -93,13 +93,14 @@ gp_list_node_append(void *List, void *Node)
   if (l->first == NULL) {
     /* The list is empty. */
     l->first = n;
+    l->curr  = n;
   }
   else {
     /* Append the new node to the end of the list. */
     l->last->next = n;
   }
 
-  l->last    = n;
+  l->last = n;
   n->list_id = l->serial_id;
   (l->num_nodes)++;
 
@@ -138,7 +139,7 @@ gp_list_node_insert_after(void *List, void *Node, void *Node_new)
     next->prev = new;
   }
 
-  n->next      = new;
+  n->next = new;
   new->list_id = l->serial_id;
   (l->num_nodes)++;
 
@@ -170,6 +171,7 @@ gp_list_node_insert_before(void *List, void *Node, void *Node_new)
   if (l->first == n) {
     /* This is first node of the list. */
     l->first = new;
+    l->curr  = new;
   }
 
   if (prev != NULL) {
@@ -177,7 +179,7 @@ gp_list_node_insert_before(void *List, void *Node, void *Node_new)
     prev->next = new;
   }
 
-  n->prev      = new;
+  n->prev = new;
   new->list_id = l->serial_id;
   (l->num_nodes)++;
 
@@ -207,6 +209,7 @@ gp_list_node_remove(void *List, void *Node)
   if (l->first == n) {
     /* This is first node of the list, the next will be the first. */
     l->first = n->next;
+    l->curr  = n->next;
   }
   else {
     /* The previous node connects to next. */
@@ -304,6 +307,7 @@ gp_list_make_block(void *List, size_t Num_nodes, size_t Item_size)
   /* The first->prev and last->next values is already NULL. (calloc) */
 
   l->first = ptr_array[0];
+  l->curr  = ptr_array[0];
   l->last  = ptr_array[Num_nodes];
 
   return (void **)ptr_array;
@@ -355,6 +359,7 @@ gp_list_move(void *Dst, void *Src)
 
       d->serial_id = list_serial_id++;
       d->first     = s->first;
+      d->curr      = s->first;
     }
     else {
       if (d->num_nodes == 0) {
@@ -373,6 +378,83 @@ gp_list_move(void *Dst, void *Src)
     /* In the "Src" list will not stay reference onto any node. */
     gp_list_clear(Src);
   }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void *
+gp_list_clone_list(const void *List, int (Cmp_func)(const void *, const void *))
+{
+  const gp_list_t  *l;
+  size_t            n_nodes;
+  size_t            i;
+  gp_node_t        *node;
+  gp_node_t       **array;
+
+  if ((List == NULL) || (Cmp_func == NULL)) {
+    return NULL;
+  }
+
+  l = (const gp_list_t *)List;
+  n_nodes = l->num_nodes;
+
+  if (n_nodes == 0) {
+    return NULL;
+  }
+
+  array = (gp_node_t **)GP_Malloc(n_nodes * sizeof(gp_node_t *));
+  node  = l->first;
+  i     = 0;
+  while (node != NULL) {
+    array[i] = node;
+    ++i;
+    assert(i <= n_nodes);
+    node = node->next;
+  }
+
+  if (n_nodes > 1) {
+    qsort(array, n_nodes, sizeof(gp_node_t *), Cmp_func);
+  }
+
+  return array;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+gp_list_reset(void *List)
+{
+  gp_list_t *l;
+
+  if (List == NULL) {
+    return;
+  }
+
+  l = (gp_list_t *)List;
+  l->curr = l->first;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+gp_list_set_access_point(void *List, void *Node)
+{
+  gp_list_t *l;
+  gp_node_t *n;
+
+  if (List == NULL) {
+    return;
+  }
+
+  l = (gp_list_t *)List;
+  n = (gp_node_t *)Node;
+
+  if (n->list_id != l->serial_id) {
+    gp_error("The node{%u} does not belong to this list{%u}.", n->list_id, l->serial_id);
+    assert(0);
+  }
+
+  l->curr = n;
 }
 
 /*------------------------------------------------------------------------------------------------*/

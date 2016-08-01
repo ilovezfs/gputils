@@ -828,8 +828,8 @@ gp_coffgen_symbol_derived_type_to_str(uint32_t Type)
   static const char * const type_str[] = {
     "DT_NON",
     "DT_PTR",
-    "DT_FCN",
-    "DT_ARY",
+    "DT_FUNCTION",
+    "DT_ARRAY",
     "DT_ROMPTR",
     "DT_FARROMPTR"
   };
@@ -1156,40 +1156,40 @@ gp_coffgen_reloc_type_to_str(uint16_t Type)
 {
   static const char * const type_str[] = {
     "",
-    "RELOCT_CALL",
-    "RELOCT_GOTO",
-    "RELOCT_HIGH",
-    "RELOCT_LOW",
-    "RELOCT_P",
-    "RELOCT_BANKSEL",
-    "RELOCT_PAGESEL",
-    "RELOCT_ALL",
-    "RELOCT_IBANKSEL",
-    "RELOCT_F",
-    "RELOCT_TRIS",
-    "RELOCT_MOVLR",
-    "RELOCT_MOVLB",
-    "RELOCT_GOTO2/CALL2",
-    "RELOCT_FF1",
-    "RELOCT_FF2",
-    "RELOCT_LFSR1",
-    "RELOCT_LFSR2",
-    "RELOCT_BRA/RCALL",
-    "RELOCT_CONDBRA",
-    "RELOCT_UPPER",
-    "RELOCT_ACCESS",
-    "RELOCT_PAGESEL_WREG",
-    "RELOCT_PAGESEL_BITS",
-    "RELOCT_SCNSZ_LOW",
-    "RELOCT_SCNSZ_HIGH",
-    "RELOCT_SCNSZ_UPPER",
-    "RELOCT_SCNEND_LOW",
-    "RELOCT_SCNEND_HIGH",
-    "RELOCT_SCNEND_UPPER",
-    "RELOCT_SCNEND_LFSR1",
-    "RELOCT_SCNEND_LFSR2",
-    "RELOCT_TRIS_3BIT",
-    "RELOCT_PAGESEL_MOVLP"
+    "RELOC_CALL",
+    "RELOC_GOTO",
+    "RELOC_HIGH",
+    "RELOC_LOW",
+    "RELOC_P",
+    "RELOC_BANKSEL",
+    "RELOC_PAGESEL",
+    "RELOC_ALL",
+    "RELOC_IBANKSEL",
+    "RELOC_F",
+    "RELOC_TRIS",
+    "RELOC_MOVLR",
+    "RELOC_MOVLB",
+    "RELOC_GOTO2/CALL2",
+    "RELOC_FF1",
+    "RELOC_FF2",
+    "RELOC_LFSR1",
+    "RELOC_LFSR2",
+    "RELOC_BRA/RCALL",
+    "RELOC_CONDBRA",
+    "RELOC_UPPER",
+    "RELOC_ACCESS",
+    "RELOC_PAGESEL_WREG",
+    "RELOC_PAGESEL_BITS",
+    "RELOC_SCNSZ_LOW",
+    "RELOC_SCNSZ_HIGH",
+    "RELOC_SCNSZ_UPPER",
+    "RELOC_SCNEND_LOW",
+    "RELOC_SCNEND_HIGH",
+    "RELOC_SCNEND_UPPER",
+    "RELOC_SCNEND_LFSR1",
+    "RELOC_SCNEND_LFSR2",
+    "RELOC_TRIS_3BIT",
+    "RELOC_PAGESEL_MOVLP"
   };
 
   if (Type >= ARRAY_SIZE(type_str)) {
@@ -1601,8 +1601,8 @@ gp_coffgen_determine_aux_symbol(const gp_symbol_t *Symbol)
     return AUX_IDENT;
   }
 
-  if ((Symbol->derived_type & 7) == DT_FCN) {
-    return AUX_FCN;
+  if ((Symbol->derived_type & 7) == DT_FUNCTION) {
+    return AUX_FUNCTION;
   }
 
   switch (Symbol->class) {
@@ -1611,7 +1611,7 @@ gp_coffgen_determine_aux_symbol(const gp_symbol_t *Symbol)
       break;
 
     case C_SECTION:
-      aux_type = AUX_SCN;
+      aux_type = AUX_SECTION;
       break;
 
     case C_BLOCK:

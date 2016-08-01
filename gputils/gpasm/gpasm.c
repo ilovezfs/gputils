@@ -947,6 +947,7 @@ assemble(void)
     state.cmd_line.processor = true;
   }
 
+  symbol_list_init();
   _set_global_constants();
 
   state.pass = 1;
@@ -964,8 +965,8 @@ assemble(void)
   state.stMacros           = gp_sym_push_table(NULL, state.case_insensitive);
   state.stDefines          = gp_sym_push_table(cmd_defines, state.case_insensitive);
   state.stMacroParams      = gp_sym_push_table(NULL, state.case_insensitive);
-  purge_variable_symbols(state.stTop);
-//  purge_processor_variable_symbols(state.stTop);
+  delete_variable_symbols(state.stTop);
+//  delete_processor_variable_symbols(state.stTop);
 
   if (!state.cmd_line.radix) {
     state.radix = 16;
@@ -1004,6 +1005,7 @@ assemble(void)
     state.cmd_line.processor = true;
   }
 
+  symbol_list_reset();
   _set_global_constants();
 
   open_src(state.src_file_name, false);
@@ -1055,5 +1057,6 @@ assemble(void)
 
   file_free();
   gp_bitarray_delete(&state.badrom);
+  symbol_list_free();
   return (((state.num.errors > 0) || (gp_num_errors > 0)) ? EXIT_FAILURE : EXIT_SUCCESS);
 }

@@ -585,7 +585,7 @@ gp_cofflink_make_cinit(gp_object_t *Object)
 
   /* create the symbol for the start address of the table */
   /* TODO MPLINK 4.34 does not create this. We must implement the
-     section address relocations RELOCT_SCN*. */
+     section address relocations RELOC_SCN*. */
   symbol = gp_coffgen_find_symbol(Object, "_cinit");
 
   if ((symbol != NULL) && (symbol->section_number > N_UNDEF)) {
@@ -1563,7 +1563,8 @@ _check_relative(const gp_section_t *Section, unsigned int Org, int Argument, int
 /* patch one word with the relocated address */
 
 static void
-_patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Relocation)
+_patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Relocation,
+            gp_boolean Mplink_compatible)
 {
   proc_class_t       class;
   int                num_pages;
@@ -1597,86 +1598,86 @@ _patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Reloca
   data       = 0;
   write_data = true;
   switch (Relocation->type) {
-    case RELOCT_ALL:
+    case RELOC_ALL:
       data = value & 0xffff;
       break;
 
-    case RELOCT_CALL:
+    case RELOC_CALL:
       data = class->reloc_call(value);
       break;
 
-    case RELOCT_GOTO:
+    case RELOC_GOTO:
       data = class->reloc_goto(value);
       break;
 
-    case RELOCT_LOW:
+    case RELOC_LOW:
       data = value & 0xff;
       break;
 
-    case RELOCT_HIGH:
+    case RELOC_HIGH:
       data = class->reloc_high(FlagIsSet(symbol->section->flags, STYP_ROM_AREA), value);
       break;
 
-    case RELOCT_UPPER:
+    case RELOC_UPPER:
       data = (value >> 16) & 0xff;
       break;
 
-    case RELOCT_P:
+    case RELOC_P:
       data = (value & 0x1f) << 8;
       break;
 
-    case RELOCT_BANKSEL:
+    case RELOC_BANKSEL:
       bank = gp_processor_bank_from_addr(class, value);
-      gp_processor_set_bank(class, num_banks, bank, Section->data, byte_addr);
+      gp_processor_set_bank(class, num_banks, bank, Section->data, byte_addr, Mplink_compatible);
       write_data = false;
       break;
 
-    case RELOCT_IBANKSEL:
+    case RELOC_IBANKSEL:
       bank = gp_processor_check_ibank(class, value);
       gp_processor_set_ibank(class, num_banks, bank, Section->data, byte_addr);
       write_data = false;
       break;
 
-    case RELOCT_F:
+    case RELOC_F:
       data = class->reloc_f(value);
       break;
 
-    case RELOCT_TRIS:
-    case RELOCT_TRIS_3BIT:
+    case RELOC_TRIS:
+    case RELOC_TRIS_3BIT:
       data = class->reloc_tris(value);
       break;
 
-    case RELOCT_MOVLR:
+    case RELOC_MOVLR:
       data = (value << 4) & 0xf0;
       break;
 
-    case RELOCT_MOVLB:
+    case RELOC_MOVLB:
       data = class->reloc_movlb(value);
       break;
 
-    case RELOCT_GOTO2:
+    case RELOC_GOTO2:
       /* This is only used for PIC16E (pic18). */
       data = (value >> 9) & 0xfff;
       break;
 
-    case RELOCT_FF1:
-    case RELOCT_FF2:
+    case RELOC_FF1:
+    case RELOC_FF2:
       data = value & 0xfff;
       break;
 
-    case RELOCT_LFSR1:
+    case RELOC_LFSR1:
       data = (value >> 8) & 0x00f;
       break;
 
-    case RELOCT_LFSR2:
+    case RELOC_LFSR2:
       data = value & 0x0ff;
       break;
 
-    case RELOCT_BRA:
+    case RELOC_BRA:
       data = class->reloc_bra(Section, value, byte_addr);
       break;
 
-    case RELOCT_CONDBRA: {
+    case RELOC_CONDBRA: {
       /* This is only used for PIC16E (pic18). */
       offset = value - byte_addr - 2;
 
@@ -1697,33 +1698,33 @@ _patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Reloca
       break;
     }
 
-    case RELOCT_ACCESS:
+    case RELOC_ACCESS:
       data = (gp_processor_is_p16e_access(Object->processor, value, false)) ? 0 : 0x100;
       break;
 
-    case RELOCT_PAGESEL_WREG:
+    case RELOC_PAGESEL_WREG:
       page = gp_processor_check_page(class, value);
       gp_processor_set_page(class, num_pages, page, Section->data, byte_addr, true);
       write_data = false;
       break;
 
-    case RELOCT_PAGESEL_BITS:
-    case RELOCT_PAGESEL_MOVLP:
+    case RELOC_PAGESEL_BITS:
+    case RELOC_PAGESEL_MOVLP:
       page = gp_processor_check_page(class, value);
       gp_processor_set_page(class, num_pages, page, Section->data, byte_addr, false);
       write_data = false;
       break;
 
     /* unimplemented relocations */
-    case RELOCT_PAGESEL:
-    case RELOCT_SCNSZ_LOW:
-    case RELOCT_SCNSZ_HIGH:
-    case RELOCT_SCNSZ_UPPER:
-    case RELOCT_SCNEND_LOW:
-    case RELOCT_SCNEND_HIGH:
-    case RELOCT_SCNEND_UPPER:
-    case RELOCT_SCNEND_LFSR1:
-    case RELOCT_SCNEND_LFSR2:
+    case RELOC_PAGESEL:
+    case RELOC_SCNSZ_LOW:
+    case RELOC_SCNSZ_HIGH:
+    case RELOC_SCNSZ_UPPER:
+    case RELOC_SCNEND_LOW:
+    case RELOC_SCNEND_HIGH:
+    case RELOC_SCNEND_UPPER:
+    case RELOC_SCNEND_LFSR1:
+    case RELOC_SCNEND_LFSR2:
     default: {
       if (symbol->name != NULL) {
         gp_error("Unimplemented relocation = %s (%u) in section \"%s\" at symbol \"%s\".",
@@ -1751,7 +1752,7 @@ _patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Reloca
    stripped from the sections. */
 
 void
-gp_cofflink_patch(gp_object_t *Object)
+gp_cofflink_patch(gp_object_t *Object, gp_boolean Mplink_compatible)
 {
   gp_section_t     *section;
   const gp_reloc_t *relocation;
@@ -1764,7 +1765,7 @@ gp_cofflink_patch(gp_object_t *Object)
       /* patch raw data with relocation entries */
       relocation = section->relocation_list.first;
       while (relocation != NULL) {
-        _patch_addr(Object, section, relocation);
+        _patch_addr(Object, section, relocation, Mplink_compatible);
         relocation = relocation->next;
       }
 

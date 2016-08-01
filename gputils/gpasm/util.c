@@ -28,6 +28,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gpmsg.h"
 #include "directive.h"
 #include "coff.h"
+#include "symbol_list.h"
 
 #define STR_INHX8M                  "inhx8m"
 #define STR_INHX8S                  "inhx8s"
@@ -602,14 +603,79 @@ coerce_str1(pnode_t *Exp)
 
 /*------------------------------------------------------------------------------------------------*/
 
+gp_boolean
+set_symbol_attr(int *Section_number, unsigned int *Class, enum gpasmValTypes Type)
+{
+  int          n_section;
+  unsigned int cl;
+  gp_boolean   valid;
+
+  switch (Type) {
+    case VAL_EXTERNAL:
+      n_section = N_UNDEF;
+      cl        = C_EXT;
+      valid     = true;
+      break;
+
+    case VAL_GLOBAL:
+      n_section = state.obj.section_num;
+      cl        = C_EXT;
+      valid     = true;
+      break;
+
+    case VAL_STATIC:
+      n_section = state.obj.section_num;
+      cl        = C_STAT;
+      valid     = true;
+      break;
+
+    case VAL_ADDRESS:
+      n_section = state.obj.section_num;
+      cl        = C_LABEL;
+      valid     = true;
+      break;
+
+    case VAL_ABSOLUTE:
+      n_section = N_ABS;
+      cl        = C_NULL;
+      valid     = true;
+      break;
+
+    case VAL_DEBUG:
+      n_section = N_DEBUG;
+      cl        = C_NULL;
+      valid     = true;
+      break;
+
+    default:
+      valid     = false;
+  }
+
+  if (valid) {
+    if (Section_number != NULL) {
+      *Section_number = n_section;
+    }
+
+    if (Class != NULL) {
+      *Class = cl;
+    }
+  }
+
+  return valid;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
 set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean Proc_dependent,
            gp_boolean Has_no_value)
 {
   symbol_t     *sym;
   variable_t   *var;
-  char         *coff_name;
+//  char         *coff_name;
   unsigned int  flags;
+  int           section_number;
+  unsigned int  class;
 
   /* Search the entire stack (i.e. include macro's local symbol tables) for the symbol.
      If not found, then add it to the global symbol table.  */
@@ -636,19 +702,11 @@ set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean
     var->flags              = flags;
     gp_sym_annotate_symbol(sym, var);
 
-    /* Increment the index into the coff symbol table for the relocations. */
-    switch (Type) {
-      case VAL_EXTERNAL:
-      case VAL_GLOBAL:
-      case VAL_STATIC:
-      case VAL_ADDRESS:
-      case VAL_DEBUG:
-      case VAL_ABSOLUTE:
-        state.obj.symbol_num++;
-        break;
-
-      default:
-        break;
+    if (set_symbol_attr(&section_number, &class, Type)) {
+      /* Gives to the list the properties of this prospective symbol. */
+      symbol_list_add_symbol(sym, Name, state.obj.symbol_num, section_number, class, state.byte_addr);
+      /* Increment the index into the coff symbol table for the relocations. */
+      state.obj.symbol_num++;
     }
   }
   else if (Type == VAL_VARIABLE) {
@@ -673,17 +731,12 @@ set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean
     else if (var->value != Value) {
       gpmsg_verror(GPE_DIFFLAB, NULL, Name);
     }
-
-    coff_name = coff_local_name(Name);
-    coff_add_sym(coff_name, Value, var->type);
-
-    if (coff_name != NULL) {
-      free(coff_name);
-    }
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+/* Returns descriptor of a constant or variable. */
 
 variable_t *
 get_global_constant(const char *Name)
@@ -707,8 +760,10 @@ get_global_constant(const char *Name)
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Clean out the variables. */
+
 void
-purge_variable_symbols(symbol_table_t *Table)
+delete_variable_symbols(symbol_table_t *Table)
 {
   size_t            i;
   symbol_t         *sym;
@@ -732,13 +787,15 @@ purge_variable_symbols(symbol_table_t *Table)
     }
   }
 
-  purge_variable_symbols(gp_sym_get_guest_table(Table));
+  delete_variable_symbols(gp_sym_get_guest_table(Table));
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Clean out the processor dependent variables. */
+
 void
-purge_processor_variable_symbols(symbol_table_t *Table)
+delete_processor_variable_symbols(symbol_table_t *Table)
 {
   size_t            i;
   symbol_t         *sym;
@@ -762,7 +819,7 @@ purge_processor_variable_symbols(symbol_table_t *Table)
     }
   }
 
-  purge_processor_variable_symbols(gp_sym_get_guest_table(Table));
+  delete_processor_variable_symbols(gp_sym_get_guest_table(Table));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -777,8 +834,8 @@ select_errorlevel(int Level)
     if ((Level >= 0) && (Level <= 2)) {
       if (state.cmd_line.strict_level && (state.strict_level > 0)) {
         /*
-        The "strict messages" more important than the other messages, therefore
-        enable each messages.
+          The "strict messages" more important than the other messages, therefore
+          enable each messages.
         */
         state.error_level = 0;
       }
@@ -957,17 +1014,9 @@ do_or_append_insn(const char *Op, pnode_t *Parms)
 /*------------------------------------------------------------------------------------------------*/
 
 const char *
-value_type_to_str(const variable_t *Variable, gp_boolean Previous)
+variable_type_to_str(enum gpasmValTypes Type)
 {
-  enum gpasmValTypes type;
-
-  if (Variable == NULL) {
-    return NULL;
-  }
-
-  type = (Previous) ? Variable->previous_type : Variable->type;
-
-  switch (type) {
+  switch (Type) {
     case VAL_CONSTANT: return "CONSTANT";
     case VAL_VARIABLE: return "VARIABLE";
     case VAL_ADDRESS:  return "ADDRESS";
@@ -979,6 +1028,21 @@ value_type_to_str(const variable_t *Variable, gp_boolean Previous)
     case VAL_DEBUG:    return "DEBUG";
     default:           return "UNKNOWN";
   }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+const char *
+value_type_to_str(const variable_t *Variable, gp_boolean Previous)
+{
+  enum gpasmValTypes type;
+
+  if (Variable == NULL) {
+    return NULL;
+  }
+
+  type = (Previous) ? Variable->previous_type : Variable->type;
+  return variable_type_to_str(type);
 }
 
 /*------------------------------------------------------------------------------------------------*/

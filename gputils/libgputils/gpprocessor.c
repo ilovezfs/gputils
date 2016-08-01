@@ -1407,8 +1407,7 @@ gp_processor_is_p16e_access_high(pic_processor_t Processor, int Address, gp_bool
   const int    *cram_addrs;
   unsigned int  bank_size;
 
-  if ((Processor->class != PROC_CLASS_PIC16E) ||
-      ((!Mpasm_compatible) && (Address < 0))) {
+  if ((Processor->class != PROC_CLASS_PIC16E) || ((!Mpasm_compatible) && (Address < 0))) {
     return false;
   }
 
@@ -1710,9 +1709,9 @@ gp_processor_addr_from_page_bits(proc_class_t Class, unsigned int Bits)
 
 unsigned int
 gp_processor_set_bank(proc_class_t Class, unsigned int Num_banks, unsigned int Bank, MemBlock_t *M,
-                      unsigned int Byte_address)
+                      unsigned int Byte_address, gp_boolean Mpasm_compatible)
 {
-  return Class->set_bank(Num_banks, Bank, M, Byte_address);
+  return Class->set_bank(Num_banks, Bank, M, Byte_address, Mpasm_compatible);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1803,8 +1802,8 @@ gp_processor_check_page(proc_class_t Class, unsigned int Insn_address)
 
 /* determine which bank of data memory the address is located */
 
-unsigned int
-gp_processor_bank_from_addr(proc_class_t Class, unsigned int Address)
+int
+gp_processor_bank_from_addr(proc_class_t Class, int Address)
 {
   return Class->bank_from_addr(Address);
 }
@@ -1813,8 +1812,8 @@ gp_processor_bank_from_addr(proc_class_t Class, unsigned int Address)
 
 /* determine which bank of data memory the address is located */
 
-unsigned int
-gp_processor_check_ibank(proc_class_t Class, unsigned int Address)
+int
+gp_processor_check_ibank(proc_class_t Class, int Address)
 {
   return Class->check_ibank(Address);
 }
@@ -1823,8 +1822,8 @@ gp_processor_check_ibank(proc_class_t Class, unsigned int Address)
 
 /* When unsupported on the class. */
 
-static unsigned int
-_xbank_from_addr_unsupported(unsigned int Address)
+static int
+_xbank_from_addr_unsupported(int Address)
 {
   (void)Address;
   assert(0);
@@ -1834,7 +1833,22 @@ _xbank_from_addr_unsupported(unsigned int Address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_set_xbank_unsupported(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Address)
+_set_bank_unsupported(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Address,
+                      gp_boolean Mpasm_compatible)
+{
+  (void)Num_banks;
+  (void)Bank;
+  (void)M;
+  (void)Address;
+  (void)Mpasm_compatible;
+  assert(0);
+  return 0;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static unsigned int
+_set_ibank_unsupported(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Address)
 {
   (void)Num_banks;
   (void)Bank;
@@ -1847,9 +1861,10 @@ _set_xbank_unsupported(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M,
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_banksel_byte_length_unsupported(unsigned int Num_banks)
+_banksel_byte_length_unsupported(unsigned int Num_banks, gp_boolean Mpasm_compatible)
 {
   (void)Num_banks;
+  (void)Mpasm_compatible;
   assert(0);
   return 0;
 }
@@ -2047,7 +2062,7 @@ _pagesel_byte_length_pic12_14(unsigned int Num_pages, gp_boolean Use_wreg)
 static unsigned int
 _set_bank_pic12_14(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address,
                    unsigned int Bcf_insn, unsigned int Bsf_insn, unsigned int Location,
-                   unsigned int Bank0, unsigned int Bank1, unsigned int Bank2)
+                   unsigned int Bank0, unsigned int Bank1, unsigned int Bank2, gp_boolean Mpasm_compatible)
 {
   uint16_t     data;
   unsigned int insn_byte_len;
@@ -2067,7 +2082,7 @@ _set_bank_pic12_14(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, uns
   gp_mem_i_put_le(M, Byte_address, data, buf, NULL);
   insn_byte_len = 2;
 
-  if (Num_banks > 2) {
+  if ((Num_banks > 2) || Mpasm_compatible) {
     /* bank high bit */
     data = ((Bank & 2) ? Bsf_insn : Bcf_insn) | Bank1 | Location;
     gp_mem_i_put_le(M, Byte_address + insn_byte_len, data, buf, NULL);
@@ -2087,7 +2102,7 @@ _set_bank_pic12_14(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, uns
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_banksel_byte_length_pic12_14(unsigned int Num_banks)
+_banksel_byte_length_pic12_14(unsigned int Num_banks, gp_boolean Mpasm_compatible)
 {
   int insn_byte_len;
 
@@ -2097,7 +2112,7 @@ _banksel_byte_length_pic12_14(unsigned int Num_banks)
 
   insn_byte_len = 2;
 
-  if (Num_banks > 2) {
+  if ((Num_banks > 2) || (Mpasm_compatible)) {
     insn_byte_len += 2;
   }
 
@@ -2124,23 +2139,29 @@ _id_location_pic12(pic_processor_t Processor)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static unsigned int
-_bank_from_addr_pic12(unsigned int Address)
+static int
+_bank_from_addr_pic12(int Address)
 {
+  if (Address < 0) {
+    return -1;
+  }
+
   return ((Address >> PIC12_BANK_SHIFT) & PIC12_BMSK_BANK);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_set_bank_pic12(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address)
+_set_bank_pic12(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address,
+                gp_boolean Mpasm_compatible)
 {
   return _set_bank_pic12_14(Num_banks, Bank, M, Byte_address,
                             PIC12_INSN_BCF, PIC12_INSN_BSF,
                             PIC12_REG_FSR,
                             PIC12_BIT_FSR_RP0 << PIC12_INSN_BxF_BITSHIFT,
                             PIC12_BIT_FSR_RP1 << PIC12_INSN_BxF_BITSHIFT,
-                            PIC12_BIT_FSR_RP2 << PIC12_INSN_BxF_BITSHIFT);
+                            PIC12_BIT_FSR_RP2 << PIC12_INSN_BxF_BITSHIFT,
+                            Mpasm_compatible);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -2223,19 +2244,26 @@ _reloc_tris_pic12(unsigned int Address)
 
 /* PIC12E */
 
-static unsigned int
-_bank_from_addr_pic12e(unsigned int Address)
+static int
+_bank_from_addr_pic12e(int Address)
 {
+  if (Address < 0) {
+    return -1;
+  }
+
   return ((Address >> PIC12_BANK_SHIFT) & PIC12E_BMSK_BANK);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_set_bank_pic12e(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address)
+_set_bank_pic12e(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address,
+                 gp_boolean Mpasm_compatible)
 {
   uint16_t data;
   char     buf[BUFSIZ];
+
+  (void)Mpasm_compatible;
 
   Bank &= PIC12E_BMSK_BANK;
   data  = PIC12E_INSN_MOVLB | Bank;
@@ -2248,9 +2276,10 @@ _set_bank_pic12e(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsig
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_banksel_byte_length_pic12e(unsigned int Num_banks)
+_banksel_byte_length_pic12e(unsigned int Num_banks, gp_boolean Mpasm_compatible)
 {
   (void)Num_banks;
+  (void)Mpasm_compatible;
   return 2;
 }
 
@@ -2350,30 +2379,40 @@ _id_location_pic14(pic_processor_t Processor)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static unsigned int
-_bank_from_addr_pic14(unsigned int Address)
+static int
+_bank_from_addr_pic14(int Address)
 {
+  if (Address < 0) {
+    return -1;
+  }
+
   return ((Address >> PIC14_BANK_SHIFT) & PIC14_BMSK_BANK);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_set_bank_pic14(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address)
+_set_bank_pic14(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address,
+                gp_boolean Mpasm_compatible)
 {
   return _set_bank_pic12_14(Num_banks, Bank, M, Byte_address,
                             PIC14_INSN_BCF, PIC14_INSN_BSF,
                             PIC14_REG_STATUS,
                             PIC14_BIT_STATUS_RP0 << PIC14_INSN_BxF_BITSHIFT,
                             PIC14_BIT_STATUS_RP1 << PIC14_INSN_BxF_BITSHIFT,
-                            -1);
+                            -1,
+                            Mpasm_compatible);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-static unsigned int
-_check_ibank_pic14(unsigned int Address)
+static int
+_check_ibank_pic14(int Address)
 {
+  if (Address < 0) {
+    return -1;
+  }
+
   return ((Address >> 8) & 0x0f);
 }
 
@@ -2480,19 +2519,26 @@ _patch_strict_pic14(void)
 
 /* PIC14E */
 
-static unsigned int
-_bank_from_addr_pic14e(unsigned int Address)
+static int
+_bank_from_addr_pic14e(int Address)
 {
+  if (Address < 0) {
+    return -1;
+  }
+
   return ((Address >> PIC14_BANK_SHIFT) & PIC14E_BMSK_BANK);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_set_bank_pic14e(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address)
+_set_bank_pic14e(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address,
+                 gp_boolean Mpasm_compatible)
 {
   uint16_t data;
   char     buf[BUFSIZ];
+
+  (void)Mpasm_compatible;
 
   Bank &= PIC14E_BMSK_BANK;
   data  = PIC14E_INSN_MOVLB | Bank;
@@ -2505,17 +2551,22 @@ _set_bank_pic14e(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsig
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_banksel_byte_length_pic14e(unsigned int Num_banks)
+_banksel_byte_length_pic14e(unsigned int Num_banks, gp_boolean Mpasm_compatible)
 {
   (void)Num_banks;
+  (void)Mpasm_compatible;
   return 2;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-static unsigned int
-_check_ibank_pic14e(unsigned int Address)
+static int
+_check_ibank_pic14e(int Address)
 {
+  if (Address < 0) {
+    return -1;
+  }
+
   return ((Address >> 8) & 0x0f);
 }
 
@@ -2682,19 +2733,26 @@ _find_insn_pic14e(proc_class_t Class, unsigned int Opcode)
 
 /* PIC14EX */
 
-static unsigned int
-_bank_from_addr_pic14ex(unsigned int Address)
+static int
+_bank_from_addr_pic14ex(int Address)
 {
+  if (Address < 0) {
+    return -1;
+  }
+
   return ((Address >> PIC14_BANK_SHIFT) & PIC14EX_BMSK_BANK);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_set_bank_pic14ex(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address)
+_set_bank_pic14ex(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address,
+                  gp_boolean Mpasm_compatible)
 {
   uint16_t data;
   char     buf[BUFSIZ];
+
+  (void)Mpasm_compatible;
 
   Bank &= PIC14EX_BMSK_BANK;
   data  = PIC14EX_INSN_MOVLB | Bank;
@@ -2731,9 +2789,13 @@ _find_insn_pic14ex(proc_class_t Class, unsigned int Opcode)
 
 /* PIC16 */
 
-static unsigned int
-_bank_from_addr_pic16(unsigned int Address)
+static int
+_bank_from_addr_pic16(int Address)
 {
+  if (Address < 0) {
+    return -1;
+  }
+
   if ((Address & 0xff) < 0x20) {
     return (Address >> PIC16_BANK_SHIFT) & PIC16_BMSK_BANK;
   }
@@ -2746,9 +2808,12 @@ _bank_from_addr_pic16(unsigned int Address)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_set_bank_pic16(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address)
+_set_bank_pic16(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address,
+                gp_boolean Mpasm_compatible)
 {
   char buf[BUFSIZ];
+
+  (void)Mpasm_compatible;
 
   Bank &= 0x200 | PIC16_BMSK_BANK;
   snprintf(buf, sizeof(buf), "bank_%u", Bank & PIC16_BMSK_BANK);
@@ -2760,9 +2825,18 @@ _set_bank_pic16(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsign
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_banksel_byte_length_pic16(unsigned int Num_banks)
+_set_ibank_pic16(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address)
+{
+  return _set_bank_pic16(Num_banks, Bank, M, Byte_address, false);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static unsigned int
+_banksel_byte_length_pic16(unsigned int Num_banks, gp_boolean Mpasm_compatible)
 {
   (void)Num_banks;
+  (void)Mpasm_compatible;
   return 2;
 }
 
@@ -2859,9 +2933,12 @@ _id_location_pic16e(pic_processor_t Processor)
 /*------------------------------------------------------------------------------------------------*/
 
 static unsigned int
-_set_bank_pic16e(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address)
+_set_bank_pic16e(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M, unsigned int Byte_address,
+                 gp_boolean Mpasm_compatible)
 {
   char buf[BUFSIZ];
+
+  (void)Mpasm_compatible;
 
   Bank &= ~PIC16E_MASK_MOVLB;
   snprintf(buf, sizeof(buf), "bank_%u", Bank);
@@ -3227,10 +3304,10 @@ const struct proc_class proc_class_eeprom8 = {
   0,                                    /* vector_number */
   0,                                    /* id_location */
   _xbank_from_addr_unsupported,         /* bank_from_addr */
-  _set_xbank_unsupported,               /* set_bank */
+  _set_bank_unsupported,                /* set_bank */
   _banksel_byte_length_unsupported,     /* banksel_byte_length */
   _xbank_from_addr_unsupported,         /* check_ibank */
-  _set_xbank_unsupported,               /* set_ibank */
+  _set_ibank_unsupported,               /* set_ibank */
   _check_page_unsupported,              /* check_page */
   _set_page_unsupported,                /* set_page */
   _pagesel_byte_length_unsupported,     /* pagesel_byte_length */
@@ -3273,10 +3350,10 @@ const struct proc_class proc_class_eeprom16 = {
   0,                                    /* vector_number */
   0,                                    /* id_location */
   _xbank_from_addr_unsupported,         /* bank_from_addr */
-  _set_xbank_unsupported,               /* set_bank */
+  _set_bank_unsupported,                /* set_bank */
   _banksel_byte_length_unsupported,     /* banksel_byte_length */
   _xbank_from_addr_unsupported,         /* check_ibank */
-  _set_xbank_unsupported,               /* set_ibank */
+  _set_ibank_unsupported,               /* set_ibank */
   _check_page_unsupported,              /* check_page */
   _set_page_unsupported,                /* set_page */
   _pagesel_byte_length_unsupported,     /* pagesel_byte_length */
@@ -3322,7 +3399,7 @@ const struct proc_class proc_class_generic = {
   _set_bank_pic12,                      /* set_bank */
   _banksel_byte_length_pic12_14,        /* banksel_byte_length */
   _xbank_from_addr_unsupported,         /* check_ibank */
-  _set_xbank_unsupported,               /* set_ibank */
+  _set_ibank_unsupported,               /* set_ibank */
   _check_page_pic12,                    /* check_page */
   _set_page_pic12,                      /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
@@ -3368,7 +3445,7 @@ const struct proc_class proc_class_pic12 = {
   _set_bank_pic12,                      /* set_bank */
   _banksel_byte_length_pic12_14,        /* banksel_byte_length */
   _xbank_from_addr_unsupported,         /* check_ibank */
-  _set_xbank_unsupported,               /* set_ibank */
+  _set_ibank_unsupported,               /* set_ibank */
   _check_page_pic12,                    /* check_page */
   _set_page_pic12,                      /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
@@ -3414,7 +3491,7 @@ const struct proc_class proc_class_pic12e = {
   _set_bank_pic12e,                     /* set_bank */
   _banksel_byte_length_pic12e,          /* banksel_byte_length */
   _xbank_from_addr_unsupported,         /* check_ibank */
-  _set_xbank_unsupported,               /* set_ibank */
+  _set_ibank_unsupported,               /* set_ibank */
   _check_page_pic12,                    /* check_page */
   _set_page_pic12,                      /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
@@ -3460,7 +3537,7 @@ const struct proc_class proc_class_pic12i = {
   _set_bank_pic12e,                     /* set_bank */
   _banksel_byte_length_pic12e,          /* banksel_byte_length */
   _xbank_from_addr_unsupported,         /* check_ibank */
-  _set_xbank_unsupported,               /* set_ibank */
+  _set_ibank_unsupported,               /* set_ibank */
   _check_page_pic12,                    /* check_page */
   _set_page_pic12,                      /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
@@ -3506,7 +3583,7 @@ const struct proc_class proc_class_sx = {
   _set_bank_pic12,                      /* set_bank */
   _banksel_byte_length_pic12_14,        /* banksel_byte_length */
   _xbank_from_addr_unsupported,         /* check_ibank */
-  _set_xbank_unsupported,               /* set_ibank */
+  _set_ibank_unsupported,               /* set_ibank */
   _check_page_sx,                       /* check_page */
   _set_page_sx,                         /* set_page */
   _pagesel_byte_length_pic12_14,        /* pagesel_byte_length */
@@ -3690,7 +3767,7 @@ const struct proc_class proc_class_pic16 = {
   _set_bank_pic16,                      /* set_bank */
   _banksel_byte_length_pic16,           /* banksel_byte_length */
   _bank_from_addr_pic16,                /* check_ibank: same as bank_from_addr */
-  _set_bank_pic16,                      /* set_ibank: same as set_bank */
+  _set_ibank_pic16,                     /* set_ibank */
   _check_page_pic16,                    /* check_page */
   _set_page_pic16,                      /* set_page */
   _pagesel_byte_length_pic16,           /* pagesel_byte_length */
@@ -3736,7 +3813,7 @@ const struct proc_class proc_class_pic16e = {
   _set_bank_pic16e,                     /* set_bank */
   _banksel_byte_length_pic16,           /* banksel_byte_length */
   _xbank_from_addr_unsupported,         /* check_ibank */
-  _set_xbank_unsupported,               /* set_ibank */
+  _set_ibank_unsupported,               /* set_ibank */
   _check_page_unsupported,              /* check_page */
   _set_page_unsupported,                /* set_page */
   _pagesel_byte_length_unsupported,     /* pagesel_byte_length */

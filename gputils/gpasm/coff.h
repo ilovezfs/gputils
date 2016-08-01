@@ -30,7 +30,10 @@ extern void coff_cleanup_before_eof(void);
 extern void coff_close_file(void);
 extern void coff_new_section(const char *Name, unsigned int Byte_addr, unsigned int Flags);
 extern void coff_close_section(void);
-extern gp_symbol_t *coff_add_sym(const char *Name, gp_symvalue_t Value, enum gpasmValTypes Type);
+
+extern gp_symbol_t *coff_add_sym(const char *Name, gpasmVal Value, enum gpasmValTypes Type,
+                                 int Section_number);
+
 extern void coff_add_reloc(unsigned int Symbol_number, int16_t Offset, uint16_t Type);
 extern void coff_add_linenum(unsigned int Emitted);
 extern gp_symbol_t *coff_add_file_sym(const char *Name, gp_boolean Is_include);

@@ -96,7 +96,7 @@ extern void gp_cofflink_update_table(gp_object_t *Object, unsigned int Org_to_by
 
 extern void gp_cofflink_fill_pages(gp_object_t *Object, MemBlock_t *M, const symbol_table_t *Sections);
 
-extern void gp_cofflink_patch(gp_object_t *Object);
+extern void gp_cofflink_patch(gp_object_t *Object, gp_boolean Mplink_compatible);
 
 extern MemBlock_t *gp_cofflink_make_memory(gp_object_t *Object);
 

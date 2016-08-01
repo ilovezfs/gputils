@@ -443,7 +443,7 @@ eval_evaluate(const pnode_t *Pnode)
             return (p0 >> p1);
           }
           else {
-          /* x >> n results sign extension for n >= (sizeof(int) * 8) */
+            /* x >> n results sign extension for n >= (sizeof(int) * 8) */
             return ((p1 >= (sizeof(int) * 8)) ? ((p0 < 0) ? -1 : 0) : (p0 >> p1));
           }
           break;
@@ -625,8 +625,8 @@ _add_reloc(const pnode_t *Pnode, int16_t Offset, uint16_t Type, gp_boolean Add_c
         }
 
         snprintf(buffer, sizeof(buffer), "_%s_%0*X", state.obj.new_sect_name, digits, org);
-        /* RELOCT_ACCESS has always also RELOCT_F, which has already created this symbol. */
-        if (Type != RELOCT_ACCESS) {
+        /* RELOC_ACCESS has always also RELOC_F, which has already created this symbol. */
+        if (Type != RELOC_ACCESS) {
           set_global(buffer, org, type, false, false);
         }
 
@@ -652,7 +652,7 @@ _add_reloc(const pnode_t *Pnode, int16_t Offset, uint16_t Type, gp_boolean Add_c
               if (Add_coff) {
                 coff_add_reloc(var->coff_symbol_num, Offset, Type);
               }
-              return ((var->coff_section_flags & STYP_ABS) ? var->value : -1);
+              return (FlagIsSet(var->coff_section_flags, STYP_ABS) ? var->value : -1);
               break;
             }
 
@@ -669,13 +669,13 @@ _add_reloc(const pnode_t *Pnode, int16_t Offset, uint16_t Type, gp_boolean Add_c
     case PTAG_UNOP: {
       switch (PnUnOpOp(Pnode)) {
         case UPPER:
-          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOCT_UPPER, Add_coff);
+          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOC_UPPER, Add_coff);
 
         case HIGH:
-          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOCT_HIGH, Add_coff);
+          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOC_HIGH, Add_coff);
 
         case LOW:
-          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOCT_LOW, Add_coff);
+          return _add_reloc(PnUnOpP0(Pnode), Offset, RELOC_LOW, Add_coff);
 
         case '!':
         case '+':
@@ -701,7 +701,7 @@ _add_reloc(const pnode_t *Pnode, int16_t Offset, uint16_t Type, gp_boolean Add_c
             return _add_reloc(PnBinOpP0(Pnode), Offset + eval_maybe_evaluate(PnBinOpP1(Pnode)), Type, Add_coff);
           }
           else {
-            return _add_reloc(PnBinOpP1(Pnode), Offset + eval_maybe_evaluate(PnBinOpP0(Pnode)), Type, Add_coff);
+            return _add_reloc(PnBinOpP1(Pnode), eval_maybe_evaluate(PnBinOpP0(Pnode)) + Offset, Type, Add_coff);
           }
 
           break;

@@ -565,7 +565,7 @@ _print_symbol_table(const gp_object_t *Object)
           printf(AUX_INDENT "string = \"%s\"\n", aux->_aux_symbol._aux_ident.string);
           break;
 
-        case AUX_SCN:
+        case AUX_SECTION:
           printf(AUX_INDENT "length                 = %u\n", aux->_aux_symbol._aux_scn.length);
           printf(AUX_INDENT "number of relocations  = %u\n", aux->_aux_symbol._aux_scn.nreloc);
           printf(AUX_INDENT "number of line numbers = %u\n", aux->_aux_symbol._aux_scn.nlineno);

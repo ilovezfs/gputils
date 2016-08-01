@@ -113,7 +113,7 @@ am_libgpasm_a_OBJECTS = cod.$(OBJEXT) coff.$(OBJEXT) deps.$(OBJEXT) \
 	gpasm.$(OBJEXT) gpmsg.$(OBJEXT) lst.$(OBJEXT) macro.$(OBJEXT) \
 	parse.$(OBJEXT) ppparse.$(OBJEXT) ppscan.$(OBJEXT) \
 	preprocess.$(OBJEXT) processor.$(OBJEXT) scan.$(OBJEXT) \
-	special.$(OBJEXT) util.$(OBJEXT)
+	special.$(OBJEXT) symbol_list.$(OBJEXT) util.$(OBJEXT)
 libgpasm_a_OBJECTS = $(am_libgpasm_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -347,6 +347,8 @@ libgpasm_a_SOURCES = \
 	scan.l \
 	special.c \
 	special.h \
+	symbol_list.c \
+	symbol_list.h \
 	util.c
 
 gpasm_SOURCES = main.c
@@ -478,6 +480,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/processor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/special.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symbol_list.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@
 
 .c.o:

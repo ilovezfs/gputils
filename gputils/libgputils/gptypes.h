@@ -33,6 +33,8 @@ typedef enum {
 
 typedef long    gp_symvalue_t;
 
+typedef int     gpasmVal;               /* The type that internal arithmetic uses. */
+
 typedef struct __attribute__ ((packed))
 {
   union __attribute__ ((packed))

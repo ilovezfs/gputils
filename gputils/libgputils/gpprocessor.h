@@ -224,16 +224,16 @@ struct proc_class {
   unsigned int        (*id_location)(const struct px *Processor);
 
   /* Determine which bank of data memory the address is located. */
-  unsigned int        (*bank_from_addr)(unsigned int Address);
+  int                 (*bank_from_addr)(int Address);
 
   /* Set the bank bits, return the number of instructions required. */
   unsigned int        (*set_bank)(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M,
-                                  unsigned int Byte_address);
+                                  unsigned int Byte_address, gp_boolean Mpasm_compatible);
 
-  unsigned int        (*banksel_byte_length)(unsigned int Num_banks);
+  unsigned int        (*banksel_byte_length)(unsigned int Num_banks, gp_boolean Mpasm_compatible);
 
   /* Determine which ibank of data memory the address is located. */
-  unsigned int        (*check_ibank)(unsigned int Address);
+  int                 (*check_ibank)(int Address);
 
   /* Set the ibank bits, return the number of instructions required. */
   unsigned int        (*set_ibank)(unsigned int Num_banks, unsigned int Bank, MemBlock_t *M,
@@ -430,12 +430,13 @@ extern int gp_processor_is_eeprom_org(pic_processor_t Processor, int Org);
 extern int gp_processor_is_eeprom_byte_addr(pic_processor_t Processor, int Byte_address);
 
 extern unsigned int gp_processor_rom_width(proc_class_t Class);
-extern unsigned int gp_processor_bank_from_addr(proc_class_t Class, unsigned int Address);
+extern int gp_processor_bank_from_addr(proc_class_t Class, int Address);
 
 extern unsigned int gp_processor_set_bank(proc_class_t Class, unsigned int Num_banks,
-                                          unsigned int Bank, MemBlock_t *M, unsigned int Byte_address);
+                                          unsigned int Bank, MemBlock_t *M, unsigned int Byte_address,
+                                          gp_boolean Mpasm_compatible);
 
-extern unsigned int gp_processor_check_ibank(proc_class_t Class, unsigned int Address);
+extern int gp_processor_check_ibank(proc_class_t Class, int Address);
 
 extern unsigned int gp_processor_set_ibank(proc_class_t Class, unsigned int Num_banks,
                                            unsigned int Bank, MemBlock_t *M, unsigned int Byte_address);
