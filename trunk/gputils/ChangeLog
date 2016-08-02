@@ -1,3 +1,19 @@
+2016-08-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
+    Minor optimization.
+
+  * gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/util.c:
+    Renamed some functions:
+
+  * gpasm/gpasm.h.in, gpasm/lst.c, gpasm/util.c:
+    Added the macro parameters to the list.
+
+  * gpasm/symbol_list.c, libgputils/gpcod.h:
+    Some short comment.
+
+  * gpasm/evaluate.c, gpasm/scan.l:
+    Code formatting.
+
 2016-08-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/Makefile.*, gpasm/coff.c, gpasm/coff.h, gpasm/directive.c,
     gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/symbol_list.c,

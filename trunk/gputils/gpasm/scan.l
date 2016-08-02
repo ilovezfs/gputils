@@ -65,7 +65,7 @@ enum identtype {
   ID_GLOBALS,
   ID_MACROS,
   ID_OPCODES
-  };
+};
 
 gp_boolean force_decimal; /* Used to force radix to decimal for some directives. */
 gp_boolean force_ident;   /* Used to force numbers to identifiers for processor names. */
@@ -337,7 +337,7 @@ processor                {
                                /* Macro invocation */
                                BEGIN(macpar);
                                sym  = gp_sym_get_symbol(state.stMacros, yytext);
-                               head = gp_sym_get_symbol_annotation(sym);
+                               head = (const macro_head_t *)gp_sym_get_symbol_annotation(sym);
                                /* TODO: This condition shoul be probably removed
                                 * since the symbol table is reinitialized before
                                 * the second pass. */
@@ -549,12 +549,12 @@ a'{STR_QCHAR}'           {
 #define CHUNK  64
                            static gp_boolean emit_comma = false;
 
-                           unsigned int len = CHUNK;
-                           unsigned int i = 0;
-                           char *buf = GP_Malloc(len);
-                           int c = yytext[0];
-                           gp_boolean prev_esc = false;
-                           int state = 0;
+                           unsigned int  len = CHUNK;
+                           unsigned int  i = 0;
+                           char         *buf = GP_Malloc(len);
+                           int           c = yytext[0];
+                           gp_boolean    prev_esc = false;
+                           int           state = 0;
 
                            if (emit_comma) {
                              unput(c);

@@ -132,7 +132,7 @@ Boston, MA 02111-1307, USA.  */
 
 /* (Short) Symbol Table
  *
- * List of fields (between the square brackets there is the size of field):
+ * List of fields in a record (between the square brackets there is the size of field):
  *
  * length of name --- (COD_SSYMBOL_NAME)
  *  | name
@@ -172,6 +172,8 @@ Boston, MA 02111-1307, USA.  */
 /*
  * Line number info
  *
+ * List of fields in a record (between the square brackets there is the size of field):
+ *
  * file number -------- (COD_LS_SFILE)
  *  | flags ----------- (COD_LS_SMOD)
  *  |  | line number -- (COD_LS_SLINE)
@@ -204,7 +206,7 @@ Boston, MA 02111-1307, USA.  */
 /*
  * Long Symbol Table
  *
- * List of fields (between the square brackets there is the size of field):
+ * List of fields in a record (between the square brackets there is the size of field, if known):
  *
  * length of name
  *  | name
@@ -229,7 +231,7 @@ Boston, MA 02111-1307, USA.  */
 /*
  * Messages to Source Level Debuggers
  *
- * List of fields (between the square brackets there is the size of field):
+ * List of fields in a record (between the square brackets there is the size of field, if known):
  *
  * address ------------------- (COD_DEBUG_ADDR)
  *   | command --------------- (COD_DEBUG_CMD)

@@ -552,7 +552,7 @@ process_args(int argc, char *argv[])
         break;
 
       case 'a':
-        select_hexformat(optarg);
+        select_hex_format(optarg);
         state.cmd_line.hex_format = true;
         break;
 
@@ -807,7 +807,7 @@ process_args(int argc, char *argv[])
       }
 
       case 'S':
-        select_strictlevel(atoi(optarg));
+        select_strict_level(atoi(optarg));
         state.cmd_line.strict_level = true;
         break;
 
@@ -820,7 +820,7 @@ process_args(int argc, char *argv[])
         break;
 
       case 'w':
-        select_errorlevel(atoi(optarg));
+        select_error_level(atoi(optarg));
         state.cmd_line.error_level = true;
         break;
 
@@ -1028,7 +1028,7 @@ assemble(void)
 
   gp_sym_pop_table(state.stBuiltin);
 
-  hex_init();
+  hex_create();
 
   if (state.memory_dump) {
     gp_mem_i_print(state.i_memory, state.processor);

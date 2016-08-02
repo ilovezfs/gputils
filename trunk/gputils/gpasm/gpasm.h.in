@@ -433,11 +433,12 @@ extern void set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type
 extern variable_t *get_global_constant(const char *Name);
 extern void delete_variable_symbols(symbol_table_t *Table);
 extern void delete_processor_variable_symbols(symbol_table_t *Table);
-extern void select_errorlevel(int Level);
-extern void select_strictlevel(int Level);
+extern void select_error_level(int Level);
+extern void select_strict_level(int Level);
 extern void select_expand(const char *Expand);
-extern void select_hexformat(const char *Format_name);
+extern void select_hex_format(const char *Format_name);
 extern void select_radix(const char *Name);
+extern char *macro_params_to_string(char *String, size_t String_max_length, size_t *Length, const pnode_t *Macro_params);
 extern const char *variable_type_to_str(enum gpasmValTypes Type);
 extern const char *value_type_to_str(const variable_t *Variable, gp_boolean Previous);
 extern const char *pnode_symbol_name(const pnode_t *Pnode);
@@ -445,7 +446,7 @@ extern gpasmVal pnode_symbol_value(const pnode_t *Pnode);
 extern const char *pnode_string(const pnode_t *Pnode);
 extern void msg_has_no_value(const char *Optional_text, const char *Symbol_name);
 extern void macro_append(void);
-extern void hex_init(void);
+extern void hex_create(void);
 
 /* parse.y */
 extern pnode_t *mk_constant(int Value);

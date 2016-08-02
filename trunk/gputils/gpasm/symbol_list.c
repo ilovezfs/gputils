@@ -100,10 +100,12 @@ symbol_list_flush_symbols(const char *End_symbol_name)
     symbol = node->symbol;
 
     if (symbol != NULL) {
+      /* This is a "normal" symbol, not section or other. */
       name = gp_sym_get_symbol_name(symbol);
       var  = (const variable_t *)gp_sym_get_symbol_annotation(symbol);
       assert(var != NULL);
       coff_name = coff_local_name(name);
+      /* Create new symbol. */
       coff_add_sym(coff_name, var->value, var->type, node->section_number);
 
       if (coff_name != NULL) {

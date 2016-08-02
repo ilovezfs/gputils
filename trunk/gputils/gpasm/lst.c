@@ -39,14 +39,16 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
-#define STRINGIFY(s)            _str(s)
-#define _str(s)                 #s
+#define STRINGIFY(s)                    _str(s)
+#define _str(s)                         #s
 
-#define IS_EEPROM               (IS_EEPROM8 || IS_EEPROM16)
-#define IS_BYTE                 (IS_PIC16E_CORE || IS_EEPROM)
+#define IS_EEPROM                       (IS_EEPROM8 || IS_EEPROM16)
+#define IS_BYTE                         (IS_PIC16E_CORE || IS_EEPROM)
 
-#define MEM_USED_CHAR           'X'
-#define MEM_UNUSED_CHAR         '-'
+#define MEM_USED_CHAR                   'X'
+#define MEM_UNUSED_CHAR                 '-'
+
+#define MAC_PARM_STR_MAX_LENGTH         256
 
 typedef struct {
   const symbol_t *sym;
@@ -1208,20 +1210,23 @@ _lst_symbol_cmp(const void *P0, const void *P1)
 void
 lst_symbol_table(void)
 {
-  const pnode_t    *list;
-  const pnode_t    *head;
-  const char       *string;
-  const symbol_t  **clone;
-  size_t            sym_count;
-  lst_symbol_t     *lst;
-  lst_symbol_t     *ps;
-  size_t            count;
-  size_t            i;
-  const char       *name;
-  const void       *ptr;
-  const variable_t *var;
-  numstring_t       num_type;
-  long              val;
+  const pnode_t      *list;
+  const pnode_t      *head;
+  const char         *string;
+  const symbol_t    **clone;
+  size_t              sym_count;
+  lst_symbol_t       *lst;
+  lst_symbol_t       *ps;
+  size_t              count;
+  size_t              i;
+  const char         *name;
+  const void         *ptr;
+  const variable_t   *var;
+  numstring_t         num_type;
+  long                val;
+  const macro_head_t *hd;
+  char               *mac_parms;
+  size_t              mac_parm_length;
 
   state.lst.lst_state = LST_IN_SYMTAB;
   _symbol_table_header();
@@ -1351,7 +1356,29 @@ lst_symbol_table(void)
       case LST_MACRO: {
         /* define */
         if (!state.mpasm_compatible) {
-          lst_line("%-32s  %-10s", name, "MACRO");
+          hd = (const macro_head_t *)ptr;
+
+          if (hd != NULL) {
+            mac_parm_length = 0;
+            mac_parms       = macro_params_to_string(NULL, MAC_PARM_STR_MAX_LENGTH, &mac_parm_length, hd->parms);
+
+            if (mac_parms != NULL) {
+              if (mac_parm_length > 0) {
+                lst_line("%-32s  %-10s    %8s    %11s    %s", name, "MACRO", "", "", mac_parms);
+              }
+              else {
+                lst_line("%-32s  %-10s", name, "MACRO");
+              }
+
+              free(mac_parms);
+            }
+            else {
+              lst_line("%-32s  %-10s", name, "MACRO");
+            }
+          }
+          else {
+            lst_line("%-32s  %-10s", name, "MACRO");
+          }
         }
         else {
           lst_line("%-32s", name);
