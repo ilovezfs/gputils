@@ -672,7 +672,6 @@ set_global(const char *Name, gpasmVal Value, enum gpasmValTypes Type, gp_boolean
 {
   symbol_t     *sym;
   variable_t   *var;
-//  char         *coff_name;
   unsigned int  flags;
   int           section_number;
   unsigned int  class;
@@ -825,7 +824,7 @@ delete_processor_variable_symbols(symbol_table_t *Table)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-select_errorlevel(int Level)
+select_error_level(int Level)
 {
   if (state.cmd_line.error_level) {
     gpmsg_vmessage(GPM_SUPVAL, NULL);
@@ -857,7 +856,7 @@ select_errorlevel(int Level)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-select_strictlevel(int Level)
+select_strict_level(int Level)
 {
   if (state.cmd_line.strict_level) {
     gpmsg_vmessage(GPM_SUPVAL, NULL);
@@ -913,7 +912,7 @@ select_expand(const char *Expand)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-select_hexformat(const char *Format_name)
+select_hex_format(const char *Format_name)
 {
   if (state.cmd_line.hex_format) {
     gpmsg_vwarning(GPW_CMDLINE_HEXFMT, NULL);
@@ -1009,6 +1008,65 @@ do_or_append_insn(const char *Op, pnode_t *Parms)
   else {
     return do_insn(Op, Parms);
   }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Build string from a macro parameter list.*/
+
+char *
+macro_params_to_string(char *String, size_t String_max_length, size_t *Length, const pnode_t *Macro_params)
+{
+  size_t l;
+  size_t size;
+
+  if (Macro_params == NULL) {
+    return String;
+  }
+
+  assert(String_max_length > 0);
+
+  switch (Macro_params->tag) {
+    case PTAG_LIST:
+      String = macro_params_to_string(String, String_max_length, Length, PnListHead(Macro_params));
+      String = macro_params_to_string(String, String_max_length, Length, PnListTail(Macro_params));
+      break;
+
+    case PTAG_SYMBOL: {
+      if (String == NULL) {
+        String    = GP_Malloc(String_max_length + 1);
+        String[0] = '\0';
+        *Length   = 0;
+      }
+
+      l = *Length;
+
+      if (l == 0) {
+        /* This is the first parameter. */
+        l = snprintf(String, String_max_length, "%s", PnSymbol(Macro_params));
+      }
+      else {
+        size = (String_max_length > l) ? (String_max_length - l) : 0;
+
+        if (size > 0) {
+          l += snprintf(String + l, size, ", %s", PnSymbol(Macro_params));
+        }
+      }
+
+      *Length = l;
+      break;
+    }
+
+    case PTAG_CONSTANT:
+    case PTAG_STRING:
+    case PTAG_OFFSET:
+    case PTAG_BINOP:
+    case PTAG_UNOP:
+    default:
+      break;
+  }
+
+  return String;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1113,21 +1171,21 @@ msg_has_no_value(const char *Optional_text, const char *Symbol_name)
 
 /*
 static void
-print_macro_node(const macro_body_t *mac)
+_print_macro_line(const macro_body_t *Mac)
 {
-  if (mac->src_line != NULL) {
-    printf(" src_line = %s\n", mac->src_line);
+  if (Mac->src_line != NULL) {
+    printf(" src_line = %s\n", Mac->src_line);
   }
 }
 
 static void
-print_macro_body(const macro_body_t *mac)
+_print_macro_body(const macro_body_t *Mac)
 {
-  const macro_body_t *mb = mac;
+  const macro_body_t *mb = Mac;
 
   printf("{\n");
   while(mb != NULL) {
-    print_macro_node(mb);
+    _print_macro_line(mb);
     mb = mb->next;
   }
   printf("}\n");
@@ -1153,7 +1211,7 @@ macro_append(void)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-hex_init(void)
+hex_create(void)
 {
   if (state.hex_file == OUT_SUPPRESS) {
     /* Must delete hex file when suppressed. */

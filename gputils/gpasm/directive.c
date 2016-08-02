@@ -1038,7 +1038,7 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         _emit(PIC16E_INSN_MOVLB, Name);
       }
       else {
-        if (! state.mpasm_compatible) {
+        if (!state.mpasm_compatible) {
           switch (state.processor->num_banks) {
             case 2:
               address  = _eval_update_reloc_value(p, RELOC_BANKSEL, true);
@@ -3045,7 +3045,7 @@ _do_errorlevel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       }
     }
     else if (PnIsConstant(p)) {
-      select_errorlevel(PnConstant(p));
+      select_error_level(PnConstant(p));
     }
     else {
       error = true;
@@ -3988,7 +3988,7 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         }
         else if (strcasecmp(str, "f") == 0) {
           if (eval_enforce_simple(PnBinOpP1(p))) {
-            select_hexformat(PnSymbol(PnBinOpP1(p)));
+            select_hex_format(PnSymbol(PnBinOpP1(p)));
           }
         }
         else if (strcasecmp(str, "l") == 0) {
@@ -4048,7 +4048,7 @@ _do_list(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
           ; /* Ignore this for now: Always wrap long list lines. */
         }
         else if (strcasecmp(str, "w") == 0) {
-          select_errorlevel(eval_maybe_evaluate(PnBinOpP1(p)));
+          select_error_level(eval_maybe_evaluate(PnBinOpP1(p)));
         }
         else if (strcasecmp(str, "x") == 0) {
           if (eval_enforce_simple(PnBinOpP1(p))) {
@@ -4373,11 +4373,9 @@ _do_pagesel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms, uint16_
   const pnode_t *p;
   int            page;
   int            num_reloc;
-  gp_boolean     use_wreg = false;
+  gp_boolean     use_wreg;
 
-  if ((reloc_type == RELOC_PAGESEL_WREG) || IS_PIC16_CORE) {
-    use_wreg = true;
-  }
+  use_wreg = ((reloc_type == RELOC_PAGESEL_WREG) || IS_PIC16_CORE) ? true : false;
 
   if (IS_EEPROM8 || IS_EEPROM16 || IS_PIC16E_CORE || (state.processor->num_pages == 1)) {
     state.lst.line.linetype = LTY_NONE;

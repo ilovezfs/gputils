@@ -321,7 +321,7 @@ eval_evaluate(const pnode_t *Pnode)
           break;
 
         case '+':
-          return  eval_evaluate(PnUnOpP0(Pnode));
+          return eval_evaluate(PnUnOpP0(Pnode));
           break;
 
         case '-':
