@@ -95,6 +95,174 @@ static gp_boolean prev_btfsx = false;
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Recognize it and decodes the characters which are protects a special (meta) character. */
+
+static int
+_resolve_meta_chars(char *Dst, int Max_size, const char *Src, int Size)
+{
+  char       *d;
+  char        ch;
+  gp_boolean  meta;
+
+  if (Max_size <= 0) {
+    return 0;
+  }
+
+  /* Leaves room for the termination '\0' character. */
+  --Max_size;
+  meta = false;
+  d = Dst;
+  while ((Max_size > 0) && (Size > 0)) {
+    ch = *Src++;
+    --Size;
+    if (ch == '\0') {
+      break;
+    }
+
+    if (meta) {
+      switch (ch) {
+        case '"':
+        case '\'':
+        case '\\':
+          *d++ = ch;
+          --Max_size;
+          break;
+
+        default: {
+          *d++ = ch;
+          --Max_size;
+        }
+      }
+
+      meta = false;
+    }
+    else if (ch == '\\') {
+      meta = true;
+    }
+    else {
+      *d++ = ch;
+      --Max_size;
+    }
+  }
+
+  *d = '\0';
+  return (d - Dst);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static const char *
+_hv_macro_resolver(const char *String)
+{
+  static char out[BUFSIZ];
+
+  char        buf[BUFSIZ];
+  const char *st_start;
+  const char *st_end;
+  const char *hv_start;
+  const char *hv_end;
+  int         out_idx;
+  int         raw_size;
+  int         mt_size;
+  gp_boolean  is_meta;
+
+  st_start = String;
+  st_end   = st_start + strlen(String);
+  out_idx  = 0;
+  while (st_start < st_end) {
+    if (find_hv_macro(st_start, &hv_start, &hv_end)) {
+      /* Found a #v() macro. */
+      is_meta = false;
+
+      if (hv_start > st_start) {
+        /* Before the macro there is a general text. */
+        raw_size = hv_start - st_start;
+        if (raw_size > (int)(sizeof(buf) - 1)) {
+          gpmsg_verror(GPE_TOO_LONG, NULL, st_start, (size_t)raw_size, sizeof(buf) - 1);
+          return NULL;
+        }
+
+        /* Decodes the protected characters. */
+        mt_size = _resolve_meta_chars(buf, sizeof(buf), st_start, raw_size);
+        st_start += raw_size;
+
+        if (mt_size > 0) {
+          if (mt_size > (int)(sizeof(out) - out_idx - 1)) {
+            gpmsg_verror(GPE_TOO_LONG, NULL, buf, (size_t)mt_size, sizeof(out) - out_idx - 1);
+            return NULL;
+          }
+
+          /* It adds to existing text. */
+          memcpy(&out[out_idx], buf, mt_size);
+          out_idx += mt_size;
+          out[out_idx] = '\0';
+        }
+
+        if (*(hv_start - 1) == '\\') {
+          /* Before the macro there is a meta '\' character: \#v(...) */
+          is_meta = true;
+        }
+      }
+
+      raw_size = hv_end - hv_start;
+      st_start = hv_end;
+
+      if (is_meta) {
+        /* This is not macro, only simple text. */
+        if (raw_size > (int)(sizeof(out) - out_idx - 1)) {
+          gpmsg_verror(GPE_TOO_LONG, NULL, hv_start, (size_t)raw_size, sizeof(out) - out_idx - 1);
+          return NULL;
+        }
+
+        /* It adds to existing text. */
+        memcpy(&out[out_idx], hv_start, raw_size);
+        out_idx += raw_size;
+        out[out_idx] = '\0';
+      }
+      else {
+        /* This is really macro. */
+        if (raw_size > (int)(sizeof(buf) - 1)) {
+          gpmsg_verror(GPE_TOO_LONG, NULL, hv_start, (size_t)raw_size, sizeof(buf) - 1);
+          return NULL;
+        }
+
+        /* Copies it a temporary buffer. */
+        memcpy(buf, hv_start, raw_size);
+        buf[raw_size] = '\0';
+        /* It executes the macro and get the result. */
+        preprocess_line(buf, &raw_size, sizeof(buf));
+
+        if (raw_size > (int)(sizeof(out) - out_idx - 1)) {
+          gpmsg_verror(GPE_TOO_LONG, NULL, buf, (size_t)raw_size, sizeof(out) - out_idx - 1);
+          return NULL;
+        }
+
+        /* It adds to existing text. */
+        memcpy(&out[out_idx], buf, raw_size);
+        out_idx += raw_size;
+        out[out_idx] = '\0';
+      }
+    } /* if (find_hv_macro(st_start, &hv_start, &hv_end)) */
+    else {
+      raw_size = st_end - st_start;
+      if (raw_size > (int)(sizeof(out) - out_idx - 1)) {
+        gpmsg_verror(GPE_TOO_LONG, NULL, st_start, (size_t)raw_size, sizeof(out) - out_idx - 1);
+        return NULL;
+      }
+
+      /* It adds to existing text. */
+      memcpy(&out[out_idx], st_start, raw_size);
+      out_idx += raw_size;
+      out[out_idx] = '\0';
+      st_start += raw_size;
+    }
+  }
+
+  return out;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 static uint16_t
 _check_write(uint16_t Value)
 {
@@ -2422,6 +2590,7 @@ _do_direct(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   int         val;
   uint8_t     direct_command;
   const char *direct_string;
+  char        msg[BUFSIZ];
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -2450,11 +2619,12 @@ _do_direct(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
     direct_string = NULL;
     p = PnListHead(PnListTail(Parms));
     if (PnIsString(p)) {
-      if (strlen(PnString(p)) < 255) {
-        direct_string = convert_escaped_char(PnString(p), '"');
-      }
-      else {
-        gpmsg_error(GPE_UNKNOWN, "String must be less than 255 bytes long.");
+      /* Resolve the #v() macros, if there are. */
+      direct_string = _hv_macro_resolver(PnString(p));
+
+      if ((direct_string != NULL) && (strlen(direct_string) > COD_DEBUG_MSG_MAX_LEN)) {
+        snprintf(msg, sizeof(msg), "The .direct string must be less than %u bytes long.", COD_DEBUG_MSG_MAX_LEN + 1);
+        gpmsg_error(GPE_UNKNOWN, msg);
       }
     }
     else {
@@ -2753,174 +2923,6 @@ _do_equ(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
   }
 
   return Value;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* Recognize it and decodes the characters which are protects a special (meta) character. */
-
-static int
-_resolve_meta_chars(char *Dst, int Max_size, const char *Src, int Size)
-{
-  char       *d;
-  char        ch;
-  gp_boolean  meta;
-
-  if (Max_size <= 0) {
-    return 0;
-  }
-
-  /* Leaves room for the termination '\0' character. */
-  --Max_size;
-  meta = false;
-  d = Dst;
-  while ((Max_size > 0) && (Size > 0)) {
-    ch = *Src++;
-    --Size;
-    if (ch == '\0') {
-      break;
-    }
-
-    if (meta) {
-      switch (ch) {
-        case '"':
-        case '\'':
-        case '\\':
-          *d++ = ch;
-          --Max_size;
-          break;
-
-        default: {
-          *d++ = ch;
-          --Max_size;
-        }
-      }
-
-      meta = false;
-    }
-    else if (ch == '\\') {
-      meta = true;
-    }
-    else {
-      *d++ = ch;
-      --Max_size;
-    }
-  }
-
-  *d = '\0';
-  return (d - Dst);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-static const char *
-_hv_macro_resolver(const char *String)
-{
-  static char out[BUFSIZ];
-
-  char        buf[BUFSIZ];
-  const char *st_start;
-  const char *st_end;
-  const char *hv_start;
-  const char *hv_end;
-  int         out_idx;
-  int         raw_size;
-  int         mt_size;
-  gp_boolean  is_meta;
-
-  st_start = String;
-  st_end   = st_start + strlen(String);
-  out_idx  = 0;
-  while (st_start < st_end) {
-    if (find_hv_macro(st_start, &hv_start, &hv_end)) {
-      /* Found a #v() macro. */
-      is_meta = false;
-
-      if (hv_start > st_start) {
-        /* Before the macro there is a general text. */
-        raw_size = hv_start - st_start;
-        if (raw_size > (int)(sizeof(buf) - 1)) {
-          gpmsg_verror(GPE_TOO_LONG, NULL, st_start, (size_t)raw_size, sizeof(buf) - 1);
-          return NULL;
-        }
-
-        /* Decodes the protected characters. */
-        mt_size = _resolve_meta_chars(buf, sizeof(buf), st_start, raw_size);
-        st_start += raw_size;
-
-        if (mt_size > 0) {
-          if (mt_size > (int)(sizeof(out) - out_idx - 1)) {
-            gpmsg_verror(GPE_TOO_LONG, NULL, buf, (size_t)mt_size, sizeof(out) - out_idx - 1);
-            return NULL;
-          }
-
-          /* It adds to existing text. */
-          memcpy(&out[out_idx], buf, mt_size);
-          out_idx += mt_size;
-          out[out_idx] = '\0';
-        }
-
-        if (*(hv_start - 1) == '\\') {
-          /* Before the macro there is a meta '\' character: \#v(...) */
-          is_meta = true;
-        }
-      }
-
-      raw_size = hv_end - hv_start;
-      st_start = hv_end;
-
-      if (is_meta) {
-        /* This is not macro, only simple text. */
-        if (raw_size > (int)(sizeof(out) - out_idx - 1)) {
-          gpmsg_verror(GPE_TOO_LONG, NULL, hv_start, (size_t)raw_size, sizeof(out) - out_idx - 1);
-          return NULL;
-        }
-
-        /* It adds to existing text. */
-        memcpy(&out[out_idx], hv_start, raw_size);
-        out_idx += raw_size;
-        out[out_idx] = '\0';
-      }
-      else {
-        /* This is really macro. */
-        if (raw_size > (int)(sizeof(buf) - 1)) {
-          gpmsg_verror(GPE_TOO_LONG, NULL, hv_start, (size_t)raw_size, sizeof(buf) - 1);
-          return NULL;
-        }
-
-        /* Copies it a temporary buffer. */
-        memcpy(buf, hv_start, raw_size);
-        buf[raw_size] = '\0';
-        /* It executes the macro and get the result. */
-        preprocess_line(buf, &raw_size, sizeof(buf));
-
-        if (raw_size > (int)(sizeof(out) - out_idx - 1)) {
-          gpmsg_verror(GPE_TOO_LONG, NULL, buf, (size_t)raw_size, sizeof(out) - out_idx - 1);
-          return NULL;
-        }
-
-        /* It adds to existing text. */
-        memcpy(&out[out_idx], buf, raw_size);
-        out_idx += raw_size;
-        out[out_idx] = '\0';
-      }
-    } /* if (find_hv_macro(st_start, &hv_start, &hv_end)) */
-    else {
-      raw_size = st_end - st_start;
-      if (raw_size > (int)(sizeof(out) - out_idx - 1)) {
-        gpmsg_verror(GPE_TOO_LONG, NULL, st_start, (size_t)raw_size, sizeof(out) - out_idx - 1);
-        return NULL;
-      }
-
-      /* It adds to existing text. */
-      memcpy(&out[out_idx], st_start, raw_size);
-      out_idx += raw_size;
-      out[out_idx] = '\0';
-      st_start += raw_size;
-    }
-  }
-
-  return out;
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -1,3 +1,28 @@
+2016-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, TODO:
+    The ".direct" directive - inside of the parameter string -
+    recognize and execute the #v() macro.
+
+  * gputils/dump.c:
+    bugfix
+
+  * gpasm/cod.c, gplink/cod.c:
+    More or more accurate warning messages.
+
+  * gpasm/gpmsg.c, libgputils/gpsystem.c, libgputils/gpsystem.h:
+    Minor optimization.
+
+  * gplink/gplink.c, gplink/parse.y, gplink/script.c, gplink/script.h:
+    Renamed some functions:
+	script_add_macro --> script_add_symbol_value
+	script_get_macro --> script_get_symbol_value
+
+  * gplink/scan.l:
+    The names of static functions got '_' prefix.
+
+  * gpasm/coff.c, gpasm/coff.h, gpasm/util.c, gplink/map.c:
+    Code formatting.
+
 2016-08-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
     Minor optimization.

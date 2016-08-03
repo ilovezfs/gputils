@@ -44,45 +44,45 @@ static char         *source_file_names[MAX_SOURCE_FILES] = { NULL, };
 static FILE         *source_files[MAX_SOURCE_FILES]      = { NULL, };
 
 static const char *symbol_type_str[] = {
-  "a_reg"            , "x_reg"            , "c_short"          , "c_long"           ,
-  "c_ushort"         , "c_ulong"          , "c_pointer"        , "c_upointer"       ,
-  "table"            , "m_byte"           , "m_boolean"        , "m_index"          ,
-  "byte_array"       , "u_byte_array"     , "word_array"       , "u_word_array"     ,
-  "func_void_none"   , "func_void_byte"   , "funcVoidTwobyte"  , "func_void_long"   ,
-  "func_void_undef"  , "func_int_none"    , "func_int_byte"    , "func_int_twobyt"  ,
-  "func_int_long"    , "func_int_undef"   , "func_long_none"   , "func_long_byte"   ,
-  "funcLongTwobyte"  , "func_long_long"   , "func_long_undef"  , "pfun_void_none"   ,
-  "pfun_void_byte"   , "pfunVoidTwobyte"  , "pfun_void_long"   , "pfun_void_undef"  ,
-  "pfun_int_none"    , "pfun_int_byte"    , "pfunIntTwobyte"   , "pfun_int_long"    ,
-  "pfun_int_undef"   , "pfun_long_none"   , "pfun_long_byte"   , "pfun_long_twoby"  ,
-  "pfun_long_long"   , "pfun_long_undef"  , "address"          , "constant"         ,
-  "bad_und"          , "br_und"           , "upper_und"        , "byte_und"         ,
-  "add_und"          , "m_keyword"        , "add_mi_und"       , "vector"           ,
-  "port_w"           , "port_r"           , "port_rw"          , "port_rmw"         ,
-  "endif"            , "exundef"          , "macro_t"          , "macro_s"          ,
-  "macro_a"          , "macro_c"          , "c_keyword"        , "void"             ,
-  "c_enum"           , "c_typedef1"       , "c_utypedef1"      , "c_typedef2"       ,
-  "c_utypedef2"      , "cp_typedef1"      , "cp_utypedef1"     , "cp_typedef2"      ,
-  "cp_utypedef2"     , "c_struct"         , "i_struct"         , "l_const"          ,
-  "s_short"          , "s_ushort"         , "s_long"           , "s_ulong"          ,
-  "sa_short"         , "sa_ushort"        , "sa_long"          , "sa_ulong"         ,
-  "sp_short"         , "sp_ushort"        , "sp_long"          , "sp_ulong"         ,
-  "FixedPointer"     , "PointerFunction"  , "cc_reg"           , "PtrF_void_none"   ,
-  "PtrF_void_byte"   , "PtrF_void_twobyte", "PtrF_void_long"   , "PtrF_void_undef"  ,
-  "PtrF_int_none"    , "PtrF_int_byte"    , "PtrF_int_twobyte" , "PtrF_int_long"    ,
-  "PtrF_int_undef"   , "PtrF_long_none"   , "PtrF_long_byte"   , "PtrF_long_twobyte",
-  "PtrF_long_long"   , "PtrF_long_undef"  , "PfAR_void_none"   , "PfAR_void_byte"   ,
-  "PfAR_void_twobyte", "PfAR_void_long"   , "PfAR_void_undef"  , "PfAR_int_none"    ,
-  "PfAR_int_byte"    , "PfAR_int_twobyte" , "PfAR_int_long"    , "PfAR_int_undef"   ,
-  "PfAR_long_none"   , "PfAR_long_byte"   , "PfAR_long_twobyte", "PfAR_long_long"   ,
-  "PfAR_long_undef"  , "FWDlit"           , "Pfunc"            , "mgoto"            ,
-  "mcgoto"           , "mcgoto2"          , "mcgoto3"          , "mcgoto4"          ,
-  "mcgoto74"         , "mcgoto17"         , "mccall17"         , "mcall"            ,
-  "mc_call"          , "res_word"         , "local"            , "unknown"          ,
-  "varlabel"         , "external"         , "global"           , "segment"          ,
-  "bank_addr"        , "bit_0"            , "bit_1"            , "bit_2"            ,
-  "bit_3"            , "bit_4"            , "bit_5"            , "bit_6"            ,
-  "bit_7"            , "debug"
+  "a_reg"            , "x_reg"             , "c_short"          , "c_long"            , /*   0 -   3 */
+  "c_ushort"         , "c_ulong"           , "c_pointer"        , "c_upointer"        , /*   4 -   7 */
+  "table"            , "m_byte"            , "m_boolean"        , "m_index"           , /*   8 -  11 */
+  "byte_array"       , "u_byte_array"      , "word_array"       , "u_word_array"      , /*  12 -  15 */
+  "func_void_none"   , "func_void_byte"    , "func_void_twobyte", "func_void_long"    , /*  16 -  19 */
+  "func_void_undef"  , "func_int_none"     , "func_int_byte"    , "func_int_twobyte"  , /*  20 -  23 */
+  "func_int_long"    , "func_int_undef"    , "func_long_none"   , "func_long_byte"    , /*  24 -  27 */
+  "func_long_twobyte", "func_long_long"    , "func_long_undef"  , "pfunc_void_none"   , /*  28 -  31 */
+  "pfunc_void_byte"  , "pfunc_void_twobyte", "pfunc_void_long"  , "pfunc_void_undef"  , /*  32 -  35 */
+  "pfunc_int_none"   , "pfunc_int_byte"    , "pfunc_int_twobyte", "pfunc_int_long"    , /*  36 -  39 */
+  "pfunc_int_undef"  , "pfunc_long_none"   , "pfunc_long_byte"  , "pfunc_long_twobyte", /*  40 -  43 */
+  "pfunc_long_long"  , "pfunc_long_undef"  , "address"          , "constant"          , /*  44 -  47 */
+  "bad_und"          , "br_und"            , "upper_und"        , "byte_und"          , /*  48 -  51 */
+  "add_und"          , "m_keyword"         , "add_mi_und"       , "vector"            , /*  52 -  55 */
+  "port_w"           , "port_r"            , "port_rw"          , "port_rmw"          , /*  56 -  59 */
+  "endif"            , "exundef"           , "macro_t"          , "macro_s"           , /*  60 -  63 */
+  "macro_a"          , "macro_c"           , "c_keyword"        , "void"              , /*  64 -  67 */
+  "c_enum"           , "c_typedef1"        , "c_utypedef1"      , "c_typedef2"        , /*  68 -  71 */
+  "c_utypedef2"      , "cp_typedef1"       , "cp_utypedef1"     , "cp_typedef2"       , /*  72 -  75 */
+  "cp_utypedef2"     , "c_struct"          , "i_struct"         , "l_const"           , /*  76 -  79 */
+  "s_short"          , "s_ushort"          , "s_long"           , "s_ulong"           , /*  80 -  83 */
+  "sa_short"         , "sa_ushort"         , "sa_long"          , "sa_ulong"          , /*  84 -  87 */
+  "sp_short"         , "sp_ushort"         , "sp_long"          , "sp_ulong"          , /*  88 -  91 */
+  "fixed_pointer"    , "pointer_function"  , "cc_reg"           , "PtrF_void_none"    , /*  92 -  95 */
+  "PtrF_void_byte"   , "PtrF_void_twobyte" , "PtrF_void_long"   , "PtrF_void_undef"   , /*  96 -  99 */
+  "PtrF_int_none"    , "PtrF_int_byte"     , "PtrF_int_twobyte" , "PtrF_int_long"     , /* 100 - 103 */
+  "PtrF_int_undef"   , "PtrF_long_none"    , "PtrF_long_byte"   , "PtrF_long_twobyte" , /* 104 - 107 */
+  "PtrF_long_long"   , "PtrF_long_undef"   , "PfAR_void_none"   , "PfAR_void_byte"    , /* 108 - 111 */
+  "PfAR_void_twobyte", "PfAR_void_long"    , "PfAR_void_undef"  , "PfAR_int_none"     , /* 112 - 115 */
+  "PfAR_int_byte"    , "PfAR_int_twobyte"  , "PfAR_int_long"    , "PfAR_int_undef"    , /* 116 - 119 */
+  "PfAR_long_none"   , "PfAR_long_byte"    , "PfAR_long_twobyte", "PfAR_long_long"    , /* 120 - 123 */
+  "PfAR_long_undef"  , "FWDlit"            , "Pfunc"            , "mgoto"             , /* 124 - 127 */
+  "mcgoto"           , "mcgoto2"           , "mcgoto3"          , "mcgoto4"           , /* 128 - 131 */
+  "mcgoto74"         , "mcgoto17"          , "mccall17"         , "mcall"             , /* 132 - 135 */
+  "mc_call"          , "res_word"          , "local"            , "unknown"           , /* 136 - 139 */
+  "varlabel"         , "external"          , "global"           , "segment"           , /* 140 - 143 */
+  "bank_addr"        , "bit_0"             , "bit_1"            , "bit_2"             , /* 144 - 147 */
+  "bit_3"            , "bit_4"             , "bit_5"            , "bit_6"             , /* 148 - 151 */
+  "bit_7"            , "debug"                                                          /* 152 - 153 */
 };
 
 static memmap_info_t *memmap_info_list      = NULL;
@@ -878,12 +878,7 @@ dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
         }
 
         gp_str_from_Pstr(name, sizeof(name), sym, COD_LSYMBOL_PSTRING_MAX_LEN);
-        type = gp_getl16(&sym[length + COD_LSYMBOL_TYPE]);
-
-        if (type > 128) {
-          type = 0;
-        }
-
+        type  = gp_getu16(&sym[length + COD_LSYMBOL_TYPE]);
         /* read big endian */
         value = gp_getb32(&sym[length + COD_LSYMBOL_VALUE]);
         printf("%-*s = %08x (%11d), type = %s\n", symbol_align, name, value, value, _symbol_type_to_str(type));
@@ -912,6 +907,7 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
   unsigned int  i;
   unsigned int  j;
   unsigned int  offset;
+  unsigned int  length;
   char          name_str[COD_DIR_SOURCE_C_SIZE + 1];
   char         *name;
 
@@ -927,9 +923,10 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
       read_block(Code_file, cod_block, j);
 
       for (i = 0, offset = 0; i < COD_FILES_PER_BLOCK; offset += COD_DIR_SOURCE_P_SIZE, ++i) {
-        gp_str_from_Pstr(name_str, sizeof(name_str), &cod_block[offset], COD_DIR_SOURCE_P_SIZE);
+        length = cod_block[offset];
 
-        if (cod_block[offset] != 0) {
+        if (length > 0) {
+          gp_str_from_Pstr(name_str, sizeof(name_str), &cod_block[offset], COD_DIR_SOURCE_P_SIZE);
           name = GP_Strdup(name_str);
           source_file_names[number_of_source_files] = name;
           printf("%s\n", name);
@@ -1125,8 +1122,8 @@ dump_debug_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
         gp_str_from_Pstr(message, sizeof(message), &record[COD_DEBUG_MSG], COD_DEBUG_PSTRING_MAX_LEN);
         printf(" %8x    %c  %s\n", address, type, message);
         j += length + COD_DEBUG_EXTRA;
-      }
-    }
+      } /* for (j = 0; ... */
+    } /* for (i = start_block; ... */
   }
   else {
     printf("No Debug Message information available.\n");
@@ -1210,7 +1207,9 @@ dump_free(void)
       if (source_file_names[i] != NULL) {
         free(source_file_names[i]);
         source_file_names[i] = NULL;
+      }
 
+      if (source_files[i] != NULL) {
         fclose(source_files[i]);
         source_files[i] = NULL;
       }

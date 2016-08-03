@@ -40,11 +40,12 @@ _assign_file_id(void)
   gp_symbol_t    *symbol;
   gp_aux_t       *aux;
   symbol_t       *sym;
-  int             file_id = 0;
+  int             file_id;
   int            *value;
 
-  /* build a case sensitive file table */
+  /* Build a case sensitive file table. */
   file_table = gp_sym_push_table(NULL, false);
+  file_id    = 0;
 
   symbol = state.object->symbol_list.first;
   while (symbol != NULL) {
@@ -54,14 +55,14 @@ _assign_file_id(void)
       sym = gp_sym_get_symbol(file_table, aux->_aux_symbol._aux_file.filename);
 
       if (sym != NULL) {
-        /* fetch the file number */
+        /* Fetch the file number. */
         value = (int *)gp_sym_get_symbol_annotation(sym);
       }
       else {
-        /* the file hasn't been assigned a value */
+        /* The file hasn't been assigned a value. */
         value  = (int *)GP_Malloc(sizeof(int));
         *value = file_id++;
-        sym = gp_sym_add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
+        sym    = gp_sym_add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
         gp_sym_annotate_symbol(sym, value);
       }
 
@@ -71,13 +72,13 @@ _assign_file_id(void)
     symbol = symbol->next;
   }
 
-  /* destroy the table */
+  /* Destroy the table. */
   file_table = gp_sym_pop_table(file_table);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* cod_write_symbols - write the symbol table to the .cod file
+/* cod_write_symbols - Write the symbol table to the .cod file.
  *
  * This routine will read the symbol table that gplink has created
  * and convert it into a format suitable for .cod files. So far, only
@@ -111,7 +112,7 @@ _write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 
     if (truncated) {
       gp_warning("This .COD symbol name (\"%s\") too long, it will be truncated to %u bytes length.",
-                 name, COD_LSYMBOL_PSTRING_MAX_LEN - 1);
+                 name, length);
     }
 
     /* If this symbol extends past the end of the cod block then write this block out. */
@@ -167,17 +168,22 @@ static void
 _write_source_file_block(void)
 {
   const gp_symbol_t *symbol;
-  BlockList         *fb = NULL;
-  int                file_id = 0;
+  BlockList         *fb;
+  int                file_id;
+  unsigned int       length;
+  const char        *string;
+  gp_boolean         truncated;
 
-  symbol = state.object->symbol_list.first;
+  fb      = NULL;
+  file_id = 0;
+  symbol  = state.object->symbol_list.first;
   while (symbol != NULL) {
     if ((fb == NULL) || (main_dir->file.offset >= (COD_FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
       fb = gp_cod_block_append(&main_dir->file, gp_cod_block_new());
     }
 
     if ((symbol->class == C_FILE) && (symbol->number == file_id)) {
-      /* skip the duplicate file symbols */
+      /* Skip the duplicate file symbols. */
       file_id++;
 
       /* The file id is used to define the index at which the file name is written within
@@ -186,9 +192,15 @@ _write_source_file_block(void)
        * Note: The .cod files can handle larger file lists...
        */
 
-      gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_DIR_SOURCE_P_SIZE,
-                       symbol->aux_list.first->_aux_symbol._aux_file.filename);
+      string = symbol->aux_list.first->_aux_symbol._aux_file.filename;
+      length = gp_strlen_Plimit(string, COD_DIR_SOURCE_P_SIZE, &truncated);
 
+      if (truncated) {
+        gp_warning("This .COD source name (\"%s\") too long, it will be truncated to %u bytes length.",
+                   string, length);
+      }
+
+      gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_DIR_SOURCE_P_SIZE, string);
       main_dir->file.offset += COD_DIR_SOURCE_P_SIZE;
     }
 
@@ -198,7 +210,7 @@ _write_source_file_block(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* _write_debug - write debug symbols to the .cod file */
+/* _write_debug - Write debug symbols to the .cod file. */
 
 static void
 _write_debug(void)
@@ -209,6 +221,7 @@ _write_debug(void)
   BlockList         *db;
   char               command;
   const char        *string;
+  gp_boolean         truncated;
 
   db     = NULL;
   symbol = state.object->symbol_list.first;
@@ -220,7 +233,12 @@ _write_debug(void)
 
       command = aux->_aux_symbol._aux_direct.command;
       string  = aux->_aux_symbol._aux_direct.string;
-      length  = gp_strlen_Plimit(string, COD_DEBUG_PSTRING_MAX_LEN, NULL);
+      length  = gp_strlen_Plimit(string, COD_DEBUG_PSTRING_MAX_LEN, &truncated);
+
+      if (truncated) {
+        gp_warning("This .COD .direct string (\"%s\") too long, it will be truncated to %u bytes length.",
+                   string, length);
+      }
 
       /* If this message extends past the end of the cod block then write this block out. */
 
@@ -238,7 +256,7 @@ _write_debug(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* init_cod - initialize the cod file */
+/* init_cod - Initialize the .cod file. */
 
 void
 cod_init(void)
@@ -274,7 +292,7 @@ cod_init(void)
 /*------------------------------------------------------------------------------------------------*/
 
 /* cod_lst_line - Add a line of information that cross references the
- *                the opcode's address, the source file, and the list file.
+ *                the opcode's address, the source file and the list file.
  */
 
 void

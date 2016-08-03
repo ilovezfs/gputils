@@ -399,10 +399,10 @@ coff_add_linenum(unsigned int Emitted)
     return;
   }
 
-  /* If the section is absolute, use the abolute address. */
+  /* If the section is absolute, use the abolute address, */
   origin = state.lst.line.was_byte_addr;
   if (FlagIsClr(state.obj.section->flags, STYP_ABS)) {
-    /* else use the relative address */
+    /* else use the relative address. */
     origin -= state.obj.section->address;
   }
 
@@ -435,10 +435,10 @@ coff_add_linenum(unsigned int Emitted)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* add a file symbol to the coff symbol table */
+/* coff_add_file_sym -- Add a ".file" symbol to the coff symbol table. */
 
 gp_symbol_t *
-coff_add_file_sym(const char *Name, gp_boolean Is_include)
+coff_add_file_sym(const char *File_name, gp_boolean Is_include)
 {
   gp_symbol_t *symbol;
   gp_aux_t    *aux;
@@ -456,7 +456,7 @@ coff_add_file_sym(const char *Name, gp_boolean Is_include)
 
   aux = gp_coffgen_add_aux(state.obj.object, symbol);
   aux->type                           = AUX_FILE;
-  aux->_aux_symbol._aux_file.filename = GP_Strdup(Name);
+  aux->_aux_symbol._aux_file.filename = GP_Strdup(File_name);
 
   if (Is_include) {
     aux->_aux_symbol._aux_file.line_number = state.src_list.last->line_number - 1;
@@ -471,7 +471,7 @@ coff_add_file_sym(const char *Name, gp_boolean Is_include)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* add an eof symbol to the coff symbol table */
+/* coff_add_eof_sym - Add an ".eof" symbol to the coff symbol table. */
 
 void
 coff_add_eof_sym(void)
@@ -494,7 +494,7 @@ coff_add_eof_sym(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* add a list symbol to the coff symbol table */
+/* coff_add_list_sym - Add a ".list" symbol to the coff symbol table. */
 
 void
 coff_add_list_sym(void)
@@ -523,7 +523,7 @@ coff_add_list_sym(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* add a nolist symbol to the coff symbol table */
+/* coff_add_nolist_sym - Add a ".nolist" symbol to the coff symbol table. */
 
 void
 coff_add_nolist_sym(void)
@@ -552,7 +552,7 @@ coff_add_nolist_sym(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* add a direct symbol to the coff symbol table */
+/* coff_add_direct_sym - Add a ".direct" symbol to the coff symbol table. */
 
 void
 coff_add_direct_sym(uint8_t Command, const char *String)
@@ -583,7 +583,7 @@ coff_add_direct_sym(uint8_t Command, const char *String)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* add an ident symbol to the coff symbol table */
+/* coff_add_ident_sym - Add an ".ident" symbol to the coff symbol table. */
 
 void
 coff_add_ident_sym(const char *String)
@@ -610,7 +610,7 @@ coff_add_ident_sym(const char *String)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* If the symbol is local, generate a modified name for the coff symbol table. */
+/* coff_local_name - If the symbol is local, generate a modified name for the coff symbol table. */
 
 char *
 coff_local_name(const char *Name)

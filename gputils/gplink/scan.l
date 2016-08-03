@@ -37,10 +37,10 @@ Boston, MA 02111-1307, USA.  */
 /* YY_UNPUT not used, suppress the warning */
 #define YY_NO_UNPUT
 
-static void bad_char(const char *Character);
+static void _bad_char(const char *Character);
 
 static inline size_t
-gp_input(char *Buf, size_t Max_size)
+_input(char *Buf, size_t Max_size)
 {
   int    c;
   size_t n;
@@ -62,23 +62,23 @@ gp_input(char *Buf, size_t Max_size)
       }
 
     if ((c == EOF) && ferror(yyin)) {
-      script_error("Internal error", "Input in flex scanner failed");
+      script_error("Internal error.", "Input in flex scanner failed.");
     }
 
     return n;
   }
   else {
-    script_error("Internal error", "Interactive scanner should be used");
+    script_error("Internal error.", "Interactive scanner should be used.");
     return 0;
   }
 }
 
 static inline size_t
-gp_yyinput(char *Buf, size_t Max_size)
+_yyinput(char *Buf, size_t Max_size)
 {
   size_t result;
 
-  result = gp_input(Buf, Max_size);
+  result = _input(Buf, Max_size);
 
   if (result != 0) {
     state.src->last_char_is_nl = (Buf[result - 1] == '\n');
@@ -92,7 +92,7 @@ gp_yyinput(char *Buf, size_t Max_size)
   return result;
 }
 
-#define YY_INPUT(buf, result, max_size) result = gp_yyinput(buf, max_size)
+#define YY_INPUT(buf, result, max_size) result = _yyinput(buf, max_size)
 %}
 
 SYM \/?([a-z0-9_.\\:]+\/?)+
@@ -139,7 +139,7 @@ error([ \t].*)?         {
 
                           yylval.i = strtol(yytext, &endptr, 10);
                           if ((endptr == NULL) || (*endptr != '\0')) {
-                            bad_char(endptr);
+                            _bad_char(endptr);
                           }
                           return NUMBER;
                         }
@@ -148,7 +148,7 @@ error([ \t].*)?         {
 
                           yylval.l = strtol(yytext + 2, &endptr, 16);
                           if ((endptr == NULL) || (*endptr != '\0')) {
-                            bad_char(endptr);
+                            _bad_char(endptr);
                           }
                           return NUMBER;
                         }
@@ -168,13 +168,13 @@ error([ \t].*)?         {
 %%
 
 static void
-bad_char(const char *Character)
+_bad_char(const char *Character)
 {
   char complaint[80];
 
   snprintf(complaint, sizeof(complaint),
-           isprint(*Character) ? "Illegal character '%c' in numeric constant" :
-                                 "Illegal character %#x in numeric constant",
+           isprint(*Character) ? "Illegal character '%c' in numeric constant." :
+                                 "Illegal character %#x in numeric constant.",
            *Character);
 
   script_error(complaint, NULL);

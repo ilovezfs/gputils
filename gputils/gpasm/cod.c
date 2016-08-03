@@ -46,6 +46,8 @@ _write_source_file_block(void)
 {
   const file_context_t *fc;
   BlockList            *fb;
+  unsigned int          length;
+  gp_boolean            truncated;
 
   if (state.file_list.first == NULL) {
     return;
@@ -69,6 +71,12 @@ _write_source_file_block(void)
      * larger file lists...
      */
 
+    length = gp_strlen_Plimit(fc->name, COD_DIR_SOURCE_P_SIZE, &truncated);
+
+    if (truncated && (state.strict_level > 0)) {
+      gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", fc->name, length + 1);
+    }
+
     gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_DIR_SOURCE_P_SIZE, fc->name);
     main_dir->file.offset += COD_DIR_SOURCE_P_SIZE;
 
@@ -78,7 +86,7 @@ _write_source_file_block(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* cod_init - initialize the cod file */
+/* cod_init - Initialize the .cod file. */
 
 void
 cod_init(void)
@@ -173,10 +181,10 @@ cod_lst_line(unsigned int List_line)
   record[COD_LS_SFILE] = ctx->fc->id;
   record[COD_LS_SMOD]  = smod_flag;
 
-  /* Write the source file line number corresponding to the list file line number. */
+  /* Write the source file line number corresponding to the list file line number (only lower 16 bits). */
   gp_putl16(&record[COD_LS_SLINE], (uint16_t)(ctx->line_number));
 
-  /* Write the address of the opcode. */
+  /* Write the address of the opcode (only lower 16 bits). */
   gp_putl16(&record[COD_LS_SLOC], (uint16_t)address);
 
   dbi->list.offset += COD_LINE_SYM_SIZE;
@@ -184,7 +192,7 @@ cod_lst_line(unsigned int List_line)
 
 /*------------------------------------------------------------------------------------------------*/
 
-/* cod_write_symbols - write the symbol table to the .cod file
+/* cod_write_symbols - Write the symbol table to the .cod file.
  *
  * This routine will read the symbol table that gpasm has created and convert it into
  * a format suitable for .cod files. So far, only three variable types are supported:
@@ -225,7 +233,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 
     if (truncated && (state.strict_level > 0)) {
       /* This symbol name is too long. */
-      gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", name, COD_LSYMBOL_PSTRING_MAX_LEN - 1);
+      gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", name, length + 1);
     }
 
     /* If this symbol extends past the end of the cod block then write this block out. */

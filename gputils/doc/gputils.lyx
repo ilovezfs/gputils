@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Jul 22
+2016 Aug 02
 \end_layout
 
 \begin_layout Standard
@@ -8931,6 +8931,8 @@ Each directive creates a new COFF symbol
  The command must have a value 0 to 255.
  There are no restrictions on the content, however these messages must conform
  to the debugging environment.
+ The directive - inside of the <string> - recognize and execute the #v()
+ macro.
  The typical values are summarized in the table below:
 \end_layout
 

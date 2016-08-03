@@ -35,7 +35,7 @@ _enforce_simple(const pnode_t *Pnode)
     return true;
   }
 
-  script_error("illegal argument", NULL);
+  script_error("Illegal argument.", NULL);
   return false;
 }
 
@@ -49,10 +49,10 @@ _evaluate(const pnode_t *Pnode)
       return PnConstant(Pnode);
 
     case PTAG_SYMBOL:
-      return script_get_macro(PnSymbol(Pnode));
+      return script_get_symbol_value(PnSymbol(Pnode));
 
     default:
-      script_error("illegal argument", NULL);
+      script_error("Illegal argument.", NULL);
       return 0;
   }
 }
@@ -169,42 +169,42 @@ _do_logsec(const char *Name, enum section_type Type, const pnode_t *Parms)
           }
 
           default:
-            script_error("illegal argument", sym_name);
+            script_error("Illegal argument.", sym_name);
         }
       }
     }
     else {
       if (_enforce_simple(p)) {
-        script_error("illegal argument", PnSymbol(p));
+        script_error("Illegal argument.", PnSymbol(p));
       }
     }
   }
 
   /* process the options */
   if (!found_secname) {
-    script_error("missing argument", "name");
+    script_error("Missing argument.", "name");
   }
   else if (found_rom && found_ram) {
-    script_error("too many arguments", "ram or rom");
+    script_error("Too many arguments.", "ram or rom");
   }
   else if ((!found_rom) && (!found_ram)) {
-    script_error("missing argument", "ram or rom");
+    script_error("Missing argument.", "ram or rom");
   }
   else {
     sym = gp_sym_get_symbol(state.section.definition, section_name);
 
     if (sym == NULL) {
-      script_error("undefined section", section_name);
+      script_error("Undefined section.", section_name);
     }
     else {
       section = gp_sym_get_symbol_annotation(sym);
       assert(section != NULL);
 
       if (found_ram && (section->type == SECT_CODEPAGE)) {
-        script_error("invalid argument", "ram");
+        script_error("Invalid argument.", "ram");
       }
       else if (found_rom && (section->type != SECT_CODEPAGE)) {
-        script_error("invalid argument", "rom");
+        script_error("Invalid argument.", "rom");
       }
       else {
         sym = gp_sym_add_symbol(state.section.logical, logical_section_name);
@@ -304,7 +304,7 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
 
               if ((s_end = strchr(s_begin, ':')) != NULL) {
                 if (s_end == s_begin) {
-                  script_error("bad shadow symbol", sym_name);
+                  script_error("Bad shadow symbol.", sym_name);
                 }
                 else {
                   shadow_sym = GP_Strndup(s_begin, s_end - s_begin);
@@ -312,19 +312,19 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
                   shadow_val = strtol(s_begin, &s_end, 0);
 
                   if (*s_end != '\0') {
-                    script_error("bad shadow value", sym_name);
+                    script_error("Bad shadow value.", sym_name);
                   }
                 }
               }
               else {
-                script_error("bad shadow argument", sym_name);
+                script_error("Bad shadow argument.", sym_name);
               }
             }
             break;
           }
 
           default:
-            script_error("illegal argument", sym_name);
+            script_error("Illegal argument.", sym_name);
         }
       }
     }
@@ -334,7 +334,7 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
           found_protected = true;
         }
         else {
-          script_error("illegal argument", PnSymbol(p));
+          script_error("Illegal argument.", PnSymbol(p));
         }
       }
     }
@@ -342,13 +342,13 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
 
   /* process the options */
   if (section_name == NULL) {
-    script_error("missing argument", "name");
+    script_error("Missing argument.", "name");
   }
   else if (!found_start) {
-    script_error("missing argument", "start");
+    script_error("Missing argument.", "start");
   }
   else if (!found_end) {
-    script_error("missing argument", "end");
+    script_error("Missing argument.", "end");
   }
   else {
     sym = gp_sym_get_symbol(state.section.definition, section_name);
@@ -361,7 +361,7 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
       switch (Type) {
         case SECT_ACCESSBANK: {
           if (state.class != PROC_CLASS_PIC16E) {
-            script_error("accessbank only valid with 18xx devices", Name);
+            script_error("Accessbank only valid with 18xx devices.", Name);
           }
           break;
         }
@@ -372,7 +372,7 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
           break;
 
         case SECT_NONE:
-          script_error("invalid definition type", Name);
+          script_error("Invalid definition type.", Name);
           break;
 
         default:
@@ -399,11 +399,11 @@ _do_secdef(const char *Name, enum section_type Type, const pnode_t *Parms)
         }
       }
       else if (found_fill) {
-        script_error("illegal argument", "fill");
+        script_error("Illegal argument.", "fill");
       }
     }
     else if (Type != SECT_SHAREBANK) {
-      script_error("duplicate section definition", section_name);
+      script_error("Duplicate section definition.", section_name);
     }
   }
 
@@ -436,7 +436,7 @@ _do_stack(const char *Name, enum section_type Type, const pnode_t *Parms)
   int            i;
 
   if (state.has_stack) {
-    script_error("multiple stack definitions", NULL);
+    script_error("Multiple stack definitions.", NULL);
     return 0;
   }
   else {
@@ -474,20 +474,20 @@ _do_stack(const char *Name, enum section_type Type, const pnode_t *Parms)
           }
 
           default:
-            script_error("illegal argument", sym_name);
+            script_error("Illegal argument.", sym_name);
         }
       }
     }
     else {
       if (_enforce_simple(p)) {
-        script_error("illegal argument", PnSymbol(p));
+        script_error("illegal argument.", PnSymbol(p));
       }
     }
   }
 
   /* process the options */
   if (!found_size) {
-    script_error("missing argument", "size");
+    script_error("Missing argument.", "size");
   }
   else if (ram_name != NULL) {
     sym = gp_sym_add_symbol(state.section.logical, GP_Strdup(".stack"));
@@ -509,10 +509,10 @@ script_error(const char *Messg, const char *Detail)
       printf("%s\n", Messg);
     }
     else if (Detail == NULL) {
-      printf("%s:%d:Error %s\n", state.src->name, state.src->line_number, Messg);
+      printf("%s:%d:Error: %s\n", state.src->name, state.src->line_number, Messg);
     }
     else {
-      printf("%s:%d:Error %s (%s)\n", state.src->name, state.src->line_number, Messg, Detail);
+      printf("%s:%d:Error: %s (%s)\n", state.src->name, state.src->line_number, Messg, Detail);
     }
   }
 }
@@ -540,7 +540,7 @@ script_add_path(const pnode_t *Parms)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-script_add_macro(const char *Name, long Value)
+script_add_symbol_value(const char *Name, long Value)
 {
   symbol_t *sym;
   long     *val;
@@ -559,7 +559,7 @@ script_add_macro(const char *Name, long Value)
 /*------------------------------------------------------------------------------------------------*/
 
 long
-script_get_macro(const char *Name)
+script_get_symbol_value(const char *Name)
 {
   const symbol_t *sym;
   const long     *val;
@@ -602,6 +602,6 @@ script_execute_command(const char *Name, const pnode_t *Parms)
     }
   }
 
-  script_error("invalid script command", Name);
+  script_error("Invalid script command.", Name);
   return 0;
 }

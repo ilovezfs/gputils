@@ -36,7 +36,7 @@ extern gp_symbol_t *coff_add_sym(const char *Name, gpasmVal Value, enum gpasmVal
 
 extern void coff_add_reloc(unsigned int Symbol_number, int16_t Offset, uint16_t Type);
 extern void coff_add_linenum(unsigned int Emitted);
-extern gp_symbol_t *coff_add_file_sym(const char *Name, gp_boolean Is_include);
+extern gp_symbol_t *coff_add_file_sym(const char *File_name, gp_boolean Is_include);
 extern void coff_add_eof_sym(void);
 extern void coff_add_list_sym(void);
 extern void coff_add_nolist_sym(void);

@@ -152,25 +152,25 @@ _write_sections(void)
     org_to_byte_shift = state.class->org_to_byte_shift;
     section           = section_list[i];
     switch (_section_value(section)) {
-    case SECTION_ROMDATA:
-      type = "romdata";
-      break;
+      case SECTION_ROMDATA:
+        type = "romdata";
+        break;
 
-    case SECTION_CODE:
-      type = "code";
-      break;
+      case SECTION_CODE:
+        type = "code";
+        break;
 
-    case SECTION_IDATA:
-      type = "idata";
-      break;
+      case SECTION_IDATA:
+        type = "idata";
+        break;
 
-    case SECTION_UDATA:
-      type = "udata";
-      break;
+      case SECTION_UDATA:
+        type = "udata";
+        break;
 
-    case SECTION_UNKNOWN:
-    default:
-      type = "UNKNOWN";
+      case SECTION_UNKNOWN:
+      default:
+        type = "UNKNOWN";
     }
 
     if (section->flags & STYP_ROM_AREA) {

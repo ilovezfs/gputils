@@ -479,7 +479,7 @@ convert_escaped_char(char *Str, char Ch)
   src  = Str;
   dest = Str;
   while (src[0] != '\0') {
-    if ((src[0] =='\\') && (src[1] == Ch)) {
+    if ((src[0] == '\\') && (src[1] == Ch)) {
       src++;
     }
 
