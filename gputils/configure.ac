@@ -27,6 +27,10 @@ AC_ARG_ENABLE(debug,
   [  --enable-debug          enable gputils debug features],
   [enable_gputils_debug=yes])
 
+AC_ARG_ENABLE(gdb-debuginfo,
+  [  --enable-gdb-debuginfo  enable debugging information for gdb],
+  [enable_gdb_debuginfo=yes])
+
 AC_ARG_ENABLE(path,
   [  --disable-path          disable adding default search paths],
   [], [enable_gputils_path=yes])
@@ -211,6 +215,10 @@ esac
 if test x$enable_gputils_debug = xyes; then
   AC_DEFINE(GPUTILS_DEBUG, 1,
     [Define if you want to enable GPUTILS debug features.])
+fi
+
+if test x$enable_gdb_debuginfo = xyes; then
+  CFLAGS="$CFLAGS -ggdb"
 fi
 
 if test x$enable_gputils_path = xyes; then

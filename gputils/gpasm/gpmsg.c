@@ -522,6 +522,8 @@ gpmsg_close(void)
 {
   if (state.err.enabled) {
     fclose(state.err.f);
+    state.err.f       = NULL;
+    state.err.enabled = false;
   }
 
   _free_message_codes();

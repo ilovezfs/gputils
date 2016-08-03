@@ -1,4 +1,14 @@
 2016-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/gpasm.c, gpasm/gpmsg.c:
+    bugfix
+
+  * configure.ac, configure:
+    New option: --enable-gdb-debuginfo
+
+  * gpasm/lst.c:
+    Code formatting.
+
+2016-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/directive.c, TODO:
     The ".direct" directive - inside of the parameter string -
     recognize and execute the #v() macro.

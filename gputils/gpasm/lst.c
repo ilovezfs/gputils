@@ -1401,8 +1401,9 @@ lst_symbol_table(void)
 void
 preproc_init(void)
 {
-  const char *name = state.preproc.preproc_file_name;
+  const char *name;
 
+  name = state.preproc.preproc_file_name;
   if (name != NULL) {
     if ((name[0] == '-') && (name[1] == '\0')) {
       state.preproc.f = stdout;

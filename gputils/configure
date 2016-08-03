@@ -750,6 +750,7 @@ enable_option_checking
 enable_silent_rules
 enable_maintainer_mode
 enable_debug
+enable_gdb_debuginfo
 enable_path
 enable_html_doc
 with_mplabx_path
@@ -1391,6 +1392,7 @@ Optional Features:
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
   --enable-debug          enable gputils debug features
+  --enable-gdb-debuginfo  enable debugging information for gdb
   --disable-path          disable adding default search paths
   --disable-html-doc      disable creating the html device doc
   --enable-dependency-tracking
@@ -3208,6 +3210,12 @@ MAKE_SUBDIRS="libgputils libiberty gpasm gplink gputils header lkr doc man"
 # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :
   enableval=$enable_debug; enable_gputils_debug=yes
+fi
+
+
+# Check whether --enable-gdb-debuginfo was given.
+if test "${enable_gdb_debuginfo+set}" = set; then :
+  enableval=$enable_gdb_debuginfo; enable_gdb_debuginfo=yes
 fi
 
 
@@ -5775,6 +5783,10 @@ if test x$enable_gputils_debug = xyes; then
 
 $as_echo "#define GPUTILS_DEBUG 1" >>confdefs.h
 
+fi
+
+if test x$enable_gdb_debuginfo = xyes; then
+  CFLAGS="$CFLAGS -ggdb"
 fi
 
 if test x$enable_gputils_path = xyes; then
