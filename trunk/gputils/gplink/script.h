@@ -26,8 +26,8 @@ Boston, MA 02111-1307, USA.  */
 
 extern void script_error(const char *Messg, const char *Detail);
 extern int script_add_path(const pnode_t *Parms);
-extern void script_add_macro(const char *Name, long Value);
-extern long script_get_macro(const char *Name);
+extern void script_add_symbol_value(const char *Name, long Value);
+extern long script_get_symbol_value(const char *Name);
 extern int script_execute_command(const char *Name, const pnode_t *Parms);
 
 #endif

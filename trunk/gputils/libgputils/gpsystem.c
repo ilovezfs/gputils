@@ -110,38 +110,23 @@ gp_fputvar(const void *Data, size_t Number, FILE *Fp)
 
 /*------------------------------------------------------------------------------------------------*/
 
-int16_t
-gp_getl16(const uint8_t *Addr)
-{
-  int16_t value;
-  
-  value  = (int16_t)Addr[0];
-  value |= (int16_t)Addr[1] << 8;
-  
-  return value;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 uint16_t
 gp_getu16(const uint8_t *Addr)
 {
-  return (uint16_t)gp_getl16(Addr);
+  uint16_t value;
+  
+  value  = (uint16_t)Addr[0];
+  value |= (uint16_t)Addr[1] << 8;
+  
+  return value;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-int32_t
-gp_getl32(const uint8_t *Addr)
+int16_t
+gp_getl16(const uint8_t *Addr)
 {
-  int32_t value;
-
-  value  = (int32_t)Addr[0];
-  value |= (int32_t)Addr[1] << 8;
-  value |= (int32_t)Addr[2] << 16;
-  value |= (int32_t)Addr[3] << 24;
-
-  return value;
+  return (int16_t)gp_getu16(Addr);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -149,7 +134,22 @@ gp_getl32(const uint8_t *Addr)
 uint32_t
 gp_getu32(const uint8_t *Addr)
 {
-  return (uint32_t)gp_getl32(Addr);
+  uint32_t value;
+
+  value  = (uint32_t)Addr[0];
+  value |= (uint32_t)Addr[1] << 8;
+  value |= (uint32_t)Addr[2] << 16;
+  value |= (uint32_t)Addr[3] << 24;
+
+  return value;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+int32_t
+gp_getl32(const uint8_t *Addr)
+{
+  return (int32_t)gp_getu32(Addr);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -577,7 +577,10 @@ gp_stptoupper(char *Dest, const char *Src, size_t Maxlen)
 {
   char ch;
 
-  if ((Dest == NULL) || (Src == NULL) || (Maxlen == 0)) {
+  assert(Dest != NULL);
+  assert(Src != NULL);
+
+  if (Maxlen == 0) {
     return NULL;
   }
 

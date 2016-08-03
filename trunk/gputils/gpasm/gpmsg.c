@@ -377,8 +377,9 @@ _verr(err_type_t Err_type, int Code, const char *Message, va_list Ap)
   va_list                 ap0;
   const char             *type;
   const char             *gap;
-  const source_context_t *src = state.src_list.last;
+  const source_context_t *src;
 
+  src = state.src_list.last;
   if ((src != NULL) && state.macro_dereference) {
     while ((src != NULL) && (src->type == SRC_MACRO)) {
       src = src->prev;

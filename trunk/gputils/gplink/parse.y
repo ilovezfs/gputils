@@ -27,7 +27,7 @@ Boston, MA 02111-1307, USA.  */
 #include "scan.h"
 #include "script.h"
 
-void yyerror(char *Message)
+void yyerror(const char *Message)
 {
   script_error(Message, NULL);
 }
@@ -223,7 +223,7 @@ line:
                 break;
               }
             }
-            script_add_macro($2, newval);
+            script_add_symbol_value($2, newval);
           }
         }
         |
@@ -328,7 +328,7 @@ e0:
 macroval:
         SYMBOL
         {
-          $$ = script_get_macro($1);
+          $$ = script_get_symbol_value($1);
         }
         |
         NUMBER

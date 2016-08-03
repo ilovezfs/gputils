@@ -48,10 +48,10 @@ extern void gp_init(void);
 extern void     gp_fputl16(int16_t Data, FILE *Fp);
 extern void     gp_fputl32(int32_t Data, FILE *Fp);
 extern void     gp_fputvar(const void *Data, size_t Number, FILE *Fp);
-extern int16_t  gp_getl16(const uint8_t *Addr);
 extern uint16_t gp_getu16(const uint8_t *Addr);
-extern int32_t  gp_getl32(const uint8_t *Addr);
+extern int16_t  gp_getl16(const uint8_t *Addr);
 extern uint32_t gp_getu32(const uint8_t *Addr);
+extern int32_t  gp_getl32(const uint8_t *Addr);
 extern void     gp_putl16(uint8_t *Addr, uint16_t Data);
 extern void     gp_putl32(uint8_t *Addr, uint32_t Data);
 

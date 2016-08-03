@@ -795,7 +795,7 @@ _process_args(int Argc, char *Argv[])
       }
 
       case 'u':
-        _parse_define(optarg, script_add_macro);
+        _parse_define(optarg, script_add_symbol_value);
         break;
 
       case 'v':
