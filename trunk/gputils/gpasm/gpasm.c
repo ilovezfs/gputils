@@ -1047,7 +1047,6 @@ assemble(void)
 
   /* Finish off the object, dependency, listing, and symbol files. */
   coff_close_file();
-  gpmsg_close();
   deps_close();
   lst_close();
 
@@ -1058,5 +1057,6 @@ assemble(void)
   file_free();
   gp_bitarray_delete(&state.badrom);
   symbol_list_free();
+  gpmsg_close();
   return (((state.num.errors > 0) || (gp_num_errors > 0)) ? EXIT_FAILURE : EXIT_SUCCESS);
 }
