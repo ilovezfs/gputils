@@ -905,10 +905,9 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
   unsigned int  start_block;
   unsigned int  end_block;
   unsigned int  i;
-  unsigned int  j;
   unsigned int  offset;
   unsigned int  length;
-  char          name_str[COD_DIR_SOURCE_C_SIZE + 1];
+  char          name_str[COD_FILE_NAME_C_SIZE + 1];
   char         *name;
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_NAMTAB]);
@@ -919,14 +918,14 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
     printf("Source File Information:\n"
            "------------------------\n");
 
-    for (j = start_block; j <= end_block; j++) {
-      read_block(Code_file, cod_block, j);
+    for (i = start_block; i <= end_block; ++i) {
+      read_block(Code_file, cod_block, i);
 
-      for (i = 0, offset = 0; i < COD_FILES_PER_BLOCK; offset += COD_DIR_SOURCE_P_SIZE, ++i) {
+      for (offset = 0; offset < COD_BLOCK_SIZE; ) {
         length = cod_block[offset];
 
         if (length > 0) {
-          gp_str_from_Pstr(name_str, sizeof(name_str), &cod_block[offset], COD_DIR_SOURCE_P_SIZE);
+          gp_str_from_Pstr(name_str, sizeof(name_str), &cod_block[offset], COD_FILE_NAME_P_SIZE);
           name = GP_Strdup(name_str);
           source_file_names[number_of_source_files] = name;
           printf("%s\n", name);
@@ -937,6 +936,15 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
             fprintf(stderr, "Too many source files, increase MAX_SOURCE_FILES and recompile the program.\n");
             exit(1);
           }
+
+          /* In this way will find the shorter (64 bytes length) names also. */
+	  length += COD_FILE_NAME_SHORT_P_SIZE - 1;
+	  length /= COD_FILE_NAME_SHORT_P_SIZE;
+	  length *= COD_FILE_NAME_SHORT_P_SIZE;
+          offset += length;
+        }
+        else {
+          offset += COD_FILE_NAME_SHORT_P_SIZE;
         }
       }
     }

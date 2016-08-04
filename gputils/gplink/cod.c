@@ -178,7 +178,7 @@ _write_source_file_block(void)
   file_id = 0;
   symbol  = state.object->symbol_list.first;
   while (symbol != NULL) {
-    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
+    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILE_NAMES_PER_BLOCK * COD_FILE_NAME_P_SIZE))) {
       fb = gp_cod_block_append(&main_dir->file, gp_cod_block_new());
     }
 
@@ -193,15 +193,15 @@ _write_source_file_block(void)
        */
 
       string = symbol->aux_list.first->_aux_symbol._aux_file.filename;
-      length = gp_strlen_Plimit(string, COD_DIR_SOURCE_P_SIZE, &truncated);
+      length = gp_strlen_Plimit(string, COD_FILE_NAME_P_SIZE, &truncated);
 
       if (truncated) {
         gp_warning("This .COD source name (\"%s\") too long, it will be truncated to %u bytes length.",
                    string, length);
       }
 
-      gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_DIR_SOURCE_P_SIZE, string);
-      main_dir->file.offset += COD_DIR_SOURCE_P_SIZE;
+      gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_FILE_NAME_P_SIZE, string);
+      main_dir->file.offset += COD_FILE_NAME_P_SIZE;
     }
 
     symbol = symbol->next;
@@ -245,9 +245,9 @@ _write_debug(void)
       if ((db == NULL) || ((main_dir->debug.offset + length + COD_DEBUG_EXTRA) >= COD_BLOCK_SIZE)) {
         db = gp_cod_block_append(&main_dir->debug, gp_cod_block_new());
       }
-
-      gp_cod_put_debug_symbol(&db->block[main_dir->debug.offset], string, symbol->value, command);
-      main_dir->debug.offset += length + COD_DEBUG_EXTRA;
+      
+      main_dir->debug.offset += gp_cod_put_debug_symbol(&db->block[main_dir->debug.offset], string,
+                                                        symbol->value, command);
     }
 
     symbol = symbol->next;

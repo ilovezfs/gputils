@@ -117,11 +117,6 @@ Boston, MA 02111-1307, USA.  */
 #define COD_DIR_PROCESSOR_C_SIZE        (COD_DIR_PROCESSOR_P_SIZE - 1)          /* 8 */
 
 /*
- * Here's a list of sizes of various objects in a .cod file.
- */
-#define COD_FILE_SIZE                   64      /* Length of filename strings. */
-
-/*
  * MemMapOFS / MemMapend
  */
 #define COD_MAPENTRY_SIZE               4
@@ -167,7 +162,14 @@ Boston, MA 02111-1307, USA.  */
 /*
  * Source File Name
  */
-#define COD_FILES_PER_BLOCK             (COD_BLOCK_SIZE / COD_DIR_SOURCE_P_SIZE)
+#define COD_FILE_NAME_SHORT_P_SIZE      64      /* Short length of filename strings. */
+#define COD_FILE_NAME_SHORT_C_SIZE      (COD_FILE_NAME_P_SIZE - 1)
+
+#define COD_FILE_NAME_P_SIZE            256     /* Length of filename strings. */
+#define COD_FILE_NAME_C_SIZE            (COD_FILE_NAME_P_SIZE - 1)
+
+#define COD_SHORT_FILE_NAMES_PER_BLOCK  (COD_BLOCK_SIZE / COD_FILE_NAME_SHORT_P_SIZE)
+#define COD_FILE_NAMES_PER_BLOCK        (COD_BLOCK_SIZE / COD_FILE_NAME_P_SIZE)
 
 /*
  * Line number info
@@ -291,6 +293,9 @@ extern void gp_cod_emit_opcode(DirBlockInfo *Dbi, unsigned int Address, unsigned
 extern void gp_cod_write_code(proc_class_t Class, const MemBlock_t *Mem, DirBlockInfo *Main);
 extern size_t gp_cod_put_long_symbol(uint8_t *Record, const char *Name, gp_symvalue_t Value, unsigned int Type);
 extern size_t gp_cod_put_debug_symbol(uint8_t *Record, const char *String, gp_symvalue_t Value, char Command);
+
+extern size_t gp_cod_put_line_number(uint8_t *Record, unsigned int File_id, unsigned int Line_number,
+                                     unsigned int Address, unsigned int Flag);
 
 extern BlockList *gp_cod_block_new(void);
 extern BlockList *gp_cod_block_append(Blocks *Bl, BlockList *B);

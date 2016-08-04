@@ -31,7 +31,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define COD_FILE_MAX_NUM            1000
 
-static DirBlockInfo *main_dir;
+static DirBlockInfo *main_dir  = NULL;
 static DirBlockInfo *dbi       = NULL;
 static unsigned int  _64k_base = 0;
 
@@ -61,7 +61,7 @@ _write_source_file_block(void)
   fb = NULL;
   fc = state.file_list.first;
   while (fc != NULL) {
-    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILES_PER_BLOCK * COD_DIR_SOURCE_P_SIZE))) {
+    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILE_NAMES_PER_BLOCK * COD_FILE_NAME_P_SIZE))) {
       fb = gp_cod_block_append(&main_dir->file, gp_cod_block_new());
     }
 
@@ -71,14 +71,14 @@ _write_source_file_block(void)
      * larger file lists...
      */
 
-    length = gp_strlen_Plimit(fc->name, COD_DIR_SOURCE_P_SIZE, &truncated);
+    length = gp_strlen_Plimit(fc->name, COD_FILE_NAME_P_SIZE, &truncated);
 
     if (truncated && (state.strict_level > 0)) {
       gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", fc->name, length + 1);
     }
 
-    gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_DIR_SOURCE_P_SIZE, fc->name);
-    main_dir->file.offset += COD_DIR_SOURCE_P_SIZE;
+    gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_FILE_NAME_P_SIZE, fc->name);
+    main_dir->file.offset += COD_FILE_NAME_P_SIZE;
 
     fc = fc->next;
   }
@@ -136,7 +136,6 @@ cod_lst_line(unsigned int List_line)
   gp_boolean        first_time;
   unsigned int      address;
   unsigned int      high_address;
-  uint8_t          *record;
 
   if (!state.cod.enabled) {
     return;
@@ -177,17 +176,8 @@ cod_lst_line(unsigned int List_line)
                              ((state.cod.emitting != 0) ? COD_LS_SMOD_FLAG_C1 :
                                                           (COD_LS_SMOD_FLAG_C1 | COD_LS_SMOD_FLAG_D));
 
-  record = &lb->block[dbi->list.offset];
-  record[COD_LS_SFILE] = ctx->fc->id;
-  record[COD_LS_SMOD]  = smod_flag;
-
-  /* Write the source file line number corresponding to the list file line number (only lower 16 bits). */
-  gp_putl16(&record[COD_LS_SLINE], (uint16_t)(ctx->line_number));
-
-  /* Write the address of the opcode (only lower 16 bits). */
-  gp_putl16(&record[COD_LS_SLOC], (uint16_t)address);
-
-  dbi->list.offset += COD_LINE_SYM_SIZE;
+  dbi->list.offset += gp_cod_put_line_number(&lb->block[dbi->list.offset], ctx->fc->id, ctx->line_number,
+                                             address, smod_flag);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -257,8 +247,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
         type = COD_ST_CONSTANT;
     }
 
-    gp_cod_put_long_symbol(&sb->block[main_dir->lsym.offset], name, var->value, type);
-    main_dir->lsym.offset += length + COD_LSYMBOL_EXTRA;
+    main_dir->lsym.offset += gp_cod_put_long_symbol(&sb->block[main_dir->lsym.offset], name, var->value, type);
   }
 }
 

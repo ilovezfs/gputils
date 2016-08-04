@@ -245,11 +245,13 @@ gp_cod_put_long_symbol(uint8_t *Record, const char *Name, gp_symvalue_t Value, u
 {
   size_t length;
 
+  assert(Record != NULL);
+
   length = gp_Pstr_from_str(&Record[COD_LSYMBOL_NAME], COD_LSYMBOL_PSTRING_MAX_LEN, Name);
   gp_putl16(&Record[length + COD_LSYMBOL_TYPE], Type);
   /* write 32 bits, big endian */
   gp_putb32(&Record[length + COD_LSYMBOL_VALUE], Value);
-  return length;
+  return (length + COD_LSYMBOL_EXTRA);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -257,10 +259,31 @@ gp_cod_put_long_symbol(uint8_t *Record, const char *Name, gp_symvalue_t Value, u
 size_t
 gp_cod_put_debug_symbol(uint8_t *Record, const char *String, gp_symvalue_t Value, char Command)
 {
+  assert(Record != NULL);
+
   /* write 32 bits, big endian */
   gp_putb32(&Record[COD_DEBUG_ADDR], Value);
   Record[COD_DEBUG_CMD] = Command;
-  return gp_Pstr_from_str(&Record[COD_DEBUG_MSG], COD_DEBUG_PSTRING_MAX_LEN, String);
+  return (gp_Pstr_from_str(&Record[COD_DEBUG_MSG], COD_DEBUG_PSTRING_MAX_LEN, String) + COD_DEBUG_EXTRA);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+size_t
+gp_cod_put_line_number(uint8_t *Record, unsigned int File_id, unsigned int Line_number,
+                       unsigned int Address, unsigned int Flag)
+{
+  assert(Record != NULL);
+
+  Record[COD_LS_SFILE] = File_id;
+  Record[COD_LS_SMOD]  = Flag;
+
+  /* Write the source file line number corresponding to the list file line number (only lower 16 bits). */
+  gp_putl16(&Record[COD_LS_SLINE], (uint16_t)Line_number);
+
+  /* Write the address of the opcode (only lower 16 bits). */
+  gp_putl16(&Record[COD_LS_SLOC], (uint16_t)Address);
+  return COD_LINE_SYM_SIZE;
 }
 
 /*------------------------------------------------------------------------------------------------*/
