@@ -1,3 +1,10 @@
+2016-08-04  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gplink/cod.c, gputils/dump.c, libgputils/gpcod.c,
+    libgputils/gpcod.h:
+    The length of source file names in .cod file, now 256 bytes long
+    instead of 64 bytes. The gpvc utility thereafter also able to
+    correctly detect the shorter names.
+
 2016-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/gpasm.c, gpasm/gpmsg.c:
     bugfix
