@@ -71,13 +71,12 @@ _write_source_file_block(void)
      * larger file lists...
      */
 
-    length = gp_strlen_Plimit(fc->name, COD_FILE_NAME_SIZE, &truncated);
+    length = gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_FILE_NAME_SIZE, fc->name, &truncated);
 
     if (truncated && (state.strict_level > 0)) {
-      gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", fc->name, length + 1);
+      gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", fc->name, length);
     }
 
-    gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_FILE_NAME_SIZE, fc->name);
     main_dir->file.offset += COD_FILE_NAME_SIZE;
 
     fc = fc->next;
@@ -223,7 +222,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 
     if (truncated && (state.strict_level > 0)) {
       /* This symbol name is too long. */
-      gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", name, length + 1);
+      gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", name, length);
     }
 
     /* If this symbol extends past the end of the cod block then write this block out. */
@@ -234,7 +233,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 
     switch (var->type) {
       case VAL_CBLOCK:
-        type = COD_ST_C_SHORT;  /* Byte craft's nomenclature for a memory byte. */
+        type = COD_ST_C_SHORT;  /* Byte Craft's nomenclature for a memory byte. */
         break;
 
       case VAL_ADDRESS:
@@ -256,14 +255,22 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
 void
 cod_close_file(void)
 {
+  unsigned int  length;
+  gp_boolean    truncated;
+  const char   *name;
+
   if (!state.cod.enabled) {
     return;
   }
 
+  name = gp_processor_name(state.processor, 2);
   /* The processor is unknown if not defined in command line at cod_init() call
      so it should be set here. */
-  gp_Pstr_from_str(&main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_SIZE,
-                   gp_processor_name(state.processor, 2));
+  length = gp_Pstr_from_str(&main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_SIZE, name, &truncated);
+
+  if (truncated && (state.strict_level > 0)) {
+    gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", name, length);
+  }
 
   _write_source_file_block();
   gp_cod_write_code(state.device.class, state.i_memory, main_dir);
