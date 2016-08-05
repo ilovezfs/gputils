@@ -858,11 +858,13 @@ enum insn_class {
                1110 0000 0000 0000 <-- instruction mask */
 #define PIC16_INSN_MOVFP        0x6000
 #define PIC16_MASK_MOVFP        0xE000
+#define PIC16_BMSK_MOVFP        0x1F00
 
     /* movfp : 010p pppp ffff ffff
                1110 0000 0000 0000 <-- instruction mask */
 #define PIC16_INSN_MOVPF        0x4000
 #define PIC16_MASK_MOVPF        0xE000
+#define PIC16_BMSK_MOVPF        0x1F00
 
     /* movlb : 1011 1000 uuuu kkkk
                1111 1111 0000 0000 <-- instruction mask */
@@ -1123,8 +1125,8 @@ enum insn_class {
                1111 1110 0000 0000 <-- instruction mask */
 #define PIC16E_INSN_CALL        0xEC00
 #define PIC16E_MASK_CALL        0xFE00
-#define PIC16E_BMSK_CALL0       (PIC16E_MASK_CALL ^ PIC16_CORE_MASK)
-#define PIC16E_BMSK_CALL1       0x0FFF
+#define PIC16E_BMSK_CALL1       (PIC16E_MASK_CALL ^ PIC16_CORE_MASK)
+#define PIC16E_BMSK_CALL2       0x0FFF
 
     /* clrf  : 0110 101a ffff ffff
                1111 1110 0000 0000 <-- instruction mask */
@@ -1182,8 +1184,8 @@ enum insn_class {
                1111 1111 0000 0000 <-- instruction mask */
 #define PIC16E_INSN_GOTO        0xEF00
 #define PIC16E_MASK_GOTO        0xFF00
-#define PIC16E_BMSK_GOTO0       (PIC16E_MASK_GOTO ^ PIC16_CORE_MASK)
-#define PIC16E_BMSK_GOTO1       0x0FFF
+#define PIC16E_BMSK_GOTO1       (PIC16E_MASK_GOTO ^ PIC16_CORE_MASK)
+#define PIC16E_BMSK_GOTO2       0x0FFF
 
     /* halt  : 0000 0000 0000 0001
                1111 1111 1111 1111 <-- instruction mask */
@@ -1221,6 +1223,8 @@ enum insn_class {
                1111 1111 1100 0000 <-- instruction mask */
 #define PIC16E_INSN_LFSR        0xEE00
 #define PIC16E_MASK_LFSR        0xFFC0
+#define PIC16E_BMSK_LFSR1       0x000F
+#define PIC16E_BMSK_LFSR2       0x00FF
 
     /* movf  : 0101 00da ffff ffff
                1111 1100 0000 0000 <-- instruction mask */
@@ -1233,6 +1237,8 @@ enum insn_class {
                1111 0000 0000 0000 <-- instruction mask */
 #define PIC16E_INSN_MOVFF       0xC000
 #define PIC16E_MASK_MOVFF       0xF000
+#define PIC16E_BMSK_MOVFF1      0x0FFF
+#define PIC16E_BMSK_MOVFF2      0x0FFF
 
     /* movlb : 0000 0001 0000 kkkk
                1111 1111 1111 0000 <-- instruction mask */

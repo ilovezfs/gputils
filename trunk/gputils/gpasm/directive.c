@@ -1200,7 +1200,7 @@ _do_banksel(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
         _emit(0x0000, Name);
       }
       else if (IS_PIC16E_CORE) {
-        address  = _eval_update_reloc_value(p, RELOC_BANKSEL, true);
+        address  = _eval_update_reloc_value(p, RELOC_MOVLB, true);
         bank     = gp_processor_bank_from_addr(class, address);
         bank_var = true;
         _emit(PIC16E_INSN_MOVLB, Name);
@@ -6538,9 +6538,9 @@ do_insn(const char *Op_name, pnode_t *Parameters)
 
           p = PnListHead(PnListTail(Parameters));
           k = eval_reloc_evaluate(p, RELOC_LFSR1, NULL, NULL, true);
-          _emit_check(ins->opcode | ((file & 3) << 4), (k >> 8), 0xf, sym_name);
+          _emit_check(ins->opcode | ((file & 3) << 4), (k >> 8), PIC16E_BMSK_LFSR1, sym_name);
           eval_reloc_evaluate(p, RELOC_LFSR2, NULL, NULL, true); /* add the second relocation */
-          _emit(0xf000 | (k & 0xff), sym_name);
+          _emit(0xf000 | (k & PIC16E_BMSK_LFSR2), sym_name);
         }
 
         break;
@@ -6576,8 +6576,11 @@ do_insn(const char *Op_name, pnode_t *Parameters)
             gpmsg_error(GPE_UNKNOWN, "The destination cannot be the TOSL.");
           }
 
-          _emit_check(ins->opcode, eval_reloc_evaluate(PnListHead(Parameters), RELOC_FF1, NULL, NULL, true), 0xfff, sym_name);
-          _emit_check(0xf000, eval_reloc_evaluate(PnListHead(PnListTail(Parameters)), RELOC_FF2, NULL, NULL, true), 0xfff, sym_name);
+          _emit_check(ins->opcode, eval_reloc_evaluate(PnListHead(Parameters), RELOC_FF1, NULL, NULL, true),
+                      PIC16E_BMSK_MOVFF1, sym_name);
+
+          _emit_check(0xf000, eval_reloc_evaluate(PnListHead(PnListTail(Parameters)), RELOC_FF2, NULL, NULL, true),
+                      PIC16E_BMSK_MOVFF2, sym_name);
         }
 
         break;
@@ -6605,7 +6608,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           _reg_addr_check(file, str, IFLAG_NONE, -1);
-          _emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | ((reg << 8) & PIC16_BMSK_MOVFP) | (file & PIC16_BMSK_FILE), sym_name);
         }
 
         break;
@@ -6633,7 +6636,7 @@ do_insn(const char *Op_name, pnode_t *Parameters)
           }
 
           _reg_addr_check(file, str, IFLAG_NONE, -1);
-          _emit(ins->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), sym_name);
+          _emit(ins->opcode | ((reg << 8) & PIC16_BMSK_MOVPF) | (file & PIC16_BMSK_FILE), sym_name);
         }
 
         break;
