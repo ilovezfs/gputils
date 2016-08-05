@@ -266,7 +266,7 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
 #endif
 
   /* Pascal style string. */
-  gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_DATE], COD_DIR_DATE_P_SIZE);
+  gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_DATE], COD_DIR_DATE_SIZE);
   time = gp_getl16(&Block[COD_DIR_TIME]);
   sscanf(temp_buf, "%u%3s%u", &day, month, &year);
 
@@ -283,7 +283,7 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
   /* Pascal style string. */
   printf("%03x - Source file:              %s\n",
          COD_DIR_SOURCE,
-         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_SOURCE], COD_DIR_SOURCE_P_SIZE));
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_SOURCE], COD_DIR_SOURCE_SIZE));
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_LANGINFO_H)
   strftime(temp_buf, sizeof(temp_buf), nl_langinfo(D_FMT), &tm);
@@ -307,15 +307,15 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
   /* Pascal style string. */
   printf("%03x - Compiler version:         %s\n",
          COD_DIR_VERSION,
-         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_VERSION], COD_DIR_VERSION_P_SIZE));
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_VERSION], COD_DIR_VERSION_SIZE));
   /* Pascal style string. */
   printf("%03x - Compiler:                 %s\n",
          COD_DIR_COMPILER,
-         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_COMPILER], COD_DIR_COMPILER_P_SIZE));
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_COMPILER], COD_DIR_COMPILER_SIZE));
   /* Pascal style string. */
   printf("%03x - Notice:                   %s\n",
          COD_DIR_NOTICE,
-         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_NOTICE], COD_DIR_NOTICE_P_SIZE));
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_NOTICE], COD_DIR_NOTICE_SIZE));
 
   bytes_for_address = Block[COD_DIR_ADDRSIZE];
   printf("%03x - Bytes for address:        %u\n", COD_DIR_ADDRSIZE, bytes_for_address);
@@ -333,7 +333,7 @@ _dump_directory_block(const uint8_t *Block, unsigned int Block_num)
   /* Pascal style string. */
   printf("%03x - Processor:                %s\n",
          COD_DIR_PROCESSOR,
-         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_P_SIZE));
+         gp_str_from_Pstr(temp_buf, sizeof(temp_buf), &Block[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_SIZE));
 
   printf("%03x,%03x - Short symbol table start block: %04x  end block: %04x\n",
          COD_DIR_SYMTAB, COD_DIR_SYMTAB + 2,
@@ -760,7 +760,7 @@ dump_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
   unsigned int   offset;
   const uint8_t *record;
   unsigned int   length;
-  char           name[COD_SSYMBOL_NAME_C_SIZE + 1];
+  char           name[COD_SSYMBOL_NAME_LENGTH + 1];
   unsigned int   type;
   unsigned int   value;
 
@@ -780,7 +780,7 @@ dump_symbols(FILE *Code_file, const DirBlockInfo *Main_dir)
         length = record[COD_SSYMBOL_NAME];
 
         if (length != 0) {
-          gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_P_SIZE);
+          gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_SIZE);
           type  = record[COD_SSYMBOL_STYPE];
           value = gp_getu16(&record[COD_SSYMBOL_SVALUE]);
           printf("%-12s = %04x (%6d), type = %s\n", name, value, value, _symbol_type_to_str(type));
@@ -851,7 +851,7 @@ dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
   unsigned int   j;
   const uint8_t *sym;
   unsigned int   length;
-  char           name[COD_LSYMBOL_NAME_MAX_LEN + 1];
+  char           name[COD_LSYMBOL_NAME_MAX_LENGTH + 1];
   unsigned int   type;
   unsigned int   value;
   int            symbol_align;
@@ -877,7 +877,7 @@ dump_lsymbols(FILE *Code_file, const DirBlockInfo *Main_dir)
           break;
         }
 
-        gp_str_from_Pstr(name, sizeof(name), sym, COD_LSYMBOL_PSTRING_MAX_LEN);
+        gp_str_from_Pstr(name, sizeof(name), sym, COD_LSYMBOL_NAME_MAX_SIZE);
         type  = gp_getu16(&sym[length + COD_LSYMBOL_TYPE]);
         /* read big endian */
         value = gp_getb32(&sym[length + COD_LSYMBOL_VALUE]);
@@ -907,7 +907,7 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
   unsigned int  i;
   unsigned int  offset;
   unsigned int  length;
-  char          name_str[COD_FILE_NAME_C_SIZE + 1];
+  char          name_str[COD_FILE_NAME_LENGTH + 1];
   char         *name;
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_NAMTAB]);
@@ -925,7 +925,7 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
         length = cod_block[offset];
 
         if (length > 0) {
-          gp_str_from_Pstr(name_str, sizeof(name_str), &cod_block[offset], COD_FILE_NAME_P_SIZE);
+          gp_str_from_Pstr(name_str, sizeof(name_str), &cod_block[offset], COD_FILE_NAME_SIZE);
           name = GP_Strdup(name_str);
           source_file_names[number_of_source_files] = name;
           printf("%s\n", name);
@@ -938,13 +938,13 @@ dump_source_files(FILE *Code_file, const DirBlockInfo *Main_dir)
           }
 
           /* In this way will find the shorter (64 bytes length) names also. */
-	  length += COD_FILE_NAME_SHORT_P_SIZE - 1;
-	  length /= COD_FILE_NAME_SHORT_P_SIZE;
-	  length *= COD_FILE_NAME_SHORT_P_SIZE;
+	  length += COD_SHORT_FILE_NAME_SIZE - 1;
+	  length /= COD_SHORT_FILE_NAME_SIZE;
+	  length *= COD_SHORT_FILE_NAME_SIZE;
           offset += length;
         }
         else {
-          offset += COD_FILE_NAME_SHORT_P_SIZE;
+          offset += COD_SHORT_FILE_NAME_SIZE;
         }
       }
     }
@@ -1101,7 +1101,7 @@ dump_debug_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
   unsigned int   address;
   char           type;
   unsigned int   length;
-  char           message[COD_DEBUG_MSG_MAX_LEN + 1];
+  char           message[COD_DEBUG_MSG_MAX_LENGTH + 1];
 
   start_block = gp_getu16(&Main_dir->dir[COD_DIR_MESSTAB]);
 
@@ -1115,7 +1115,7 @@ dump_debug_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
     for (i = start_block; i <= end_block; i++) {
       read_block(Code_file, cod_block, i);
 
-      for (j = 0; j < (COD_BLOCK_SIZE - COD_DEBUG_MIN_LEN); ) {
+      for (j = 0; j < (COD_BLOCK_SIZE - COD_DEBUG_MIN_SIZE); ) {
         /* read big endian */
         record  = &cod_block[j];
         address = gp_getb32(&record[COD_DEBUG_ADDR]);
@@ -1127,7 +1127,7 @@ dump_debug_message_area(FILE *Code_file, const DirBlockInfo *Main_dir)
 
         /* Pascal style string. */
         length = record[COD_DEBUG_MSG];
-        gp_str_from_Pstr(message, sizeof(message), &record[COD_DEBUG_MSG], COD_DEBUG_PSTRING_MAX_LEN);
+        gp_str_from_Pstr(message, sizeof(message), &record[COD_DEBUG_MSG], COD_DEBUG_MSG_MAX_SIZE);
         printf(" %8x    %c  %s\n", address, type, message);
         j += length + COD_DEBUG_EXTRA;
       } /* for (j = 0; ... */
@@ -1158,7 +1158,7 @@ dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Clas
   unsigned int   length;
   unsigned int   start;
   unsigned int   stop;
-  char           name[COD_SSYMBOL_NAME_C_SIZE + 1];
+  char           name[COD_SSYMBOL_NAME_LENGTH + 1];
   unsigned int   type;
   unsigned int   value;
 
@@ -1187,7 +1187,7 @@ dump_local_vars(FILE *Code_file, const DirBlockInfo *Main_dir, proc_class_t Clas
                    gp_processor_insn_from_byte_c(Class, stop + 1) - 1);
           }
           else {
-            gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_P_SIZE);
+            gp_str_from_Pstr(name, sizeof(name), &record[COD_SSYMBOL_NAME], COD_SSYMBOL_NAME_SIZE);
             type  = record[COD_SSYMBOL_STYPE];
             value = gp_getl16(&record[COD_SSYMBOL_SVALUE]);
             printf("%-12s = %04x (%6d), type = %s\n", name, value, value, _symbol_type_to_str(type));

@@ -82,7 +82,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-2016 Aug 02
+2016 Aug 05
 \end_layout
 
 \begin_layout Standard
@@ -13853,12 +13853,6 @@ label
  In this case, there is no need for the Pagesel directive.
  This optmization removes the unnecessary Pagesel directives.
  In fact deletes the instructions which was created by this directive.
-\series bold
-
-\begin_inset Newline newline
-\end_inset
-
-This option for now experimental.
 \end_layout
 
 \begin_layout Subsection
@@ -13887,12 +13881,6 @@ The Banksel directive must apply before use that registers, if these not
  located in the same RAM Bank.
  This optmization removes the unnecessary Banksel directives.
  In fact deletes the instructions which was created by this directive.
-\series bold
-
-\begin_inset Newline newline
-\end_inset
-
-This option for now experimental.
 \end_layout
 
 \begin_layout Chapter

@@ -96,25 +96,25 @@ Boston, MA 02111-1307, USA.  */
 #define COD_DIR_LSYMTAB                 462     /* [0x1CE] Start and end blocks of long symbol table. */
 #define COD_DIR_MESSTAB                 466     /* [0x1D2] Start and end blocks of debug message area. */
 
-#define COD_DIR_SOURCE_P_SIZE           (COD_DIR_DATE - COD_DIR_SOURCE)         /* 64 */
-#define COD_DIR_SOURCE_C_SIZE           (COD_DIR_SOURCE_P_SIZE - 1)             /* 63 */
+#define COD_DIR_SOURCE_SIZE             (COD_DIR_DATE - COD_DIR_SOURCE)         /* 64 */
+#define COD_DIR_SOURCE_LENGTH           (COD_DIR_SOURCE_SIZE - 1)               /* 63 */
 
-#define COD_DIR_DATE_P_SIZE             (COD_DIR_TIME - COD_DIR_DATE)           /* 8 */
-#define COD_DIR_DATE_C_SIZE             (COD_DIR_DATE_P_SIZE - 1)               /* 7 */
+#define COD_DIR_DATE_SIZE               (COD_DIR_TIME - COD_DIR_DATE)           /* 8 */
+#define COD_DIR_DATE_LENGTH             (COD_DIR_DATE_SIZE - 1)                 /* 7 */
 
 #define COD_DIR_TIME_SIZE               (COD_DIR_VERSION - COD_DIR_TIME)        /* 2 */
 
-#define COD_DIR_VERSION_P_SIZE          (COD_DIR_COMPILER - COD_DIR_VERSION)    /* 20 */
-#define COD_DIR_VERSION_C_SIZE          (COD_DIR_VERSION_P_SIZE - 1)            /* 19 */
+#define COD_DIR_VERSION_SIZE            (COD_DIR_COMPILER - COD_DIR_VERSION)    /* 20 */
+#define COD_DIR_VERSION_LENGTH          (COD_DIR_VERSION_SIZE - 1)              /* 19 */
 
-#define COD_DIR_COMPILER_P_SIZE         (COD_DIR_NOTICE - COD_DIR_COMPILER)     /* 12 */
-#define COD_DIR_COMPILER_C_SIZE         (COD_DIR_COMPILER_P_SIZE)               /* 11 */
+#define COD_DIR_COMPILER_SIZE           (COD_DIR_NOTICE - COD_DIR_COMPILER)     /* 12 */
+#define COD_DIR_COMPILER_LENGTH         (COD_DIR_COMPILER_SIZE)                 /* 11 */
 
-#define COD_DIR_NOTICE_P_SIZE           (COD_DIR_SYMTAB - COD_DIR_NOTICE)       /* 64 */
-#define COD_DIR_NOTICE_C_SIZE           (COD_DIR_NOTICE_P_SIZE - 1)             /* 63 */
+#define COD_DIR_NOTICE_SIZE             (COD_DIR_SYMTAB - COD_DIR_NOTICE)       /* 64 */
+#define COD_DIR_NOTICE_LENGTH           (COD_DIR_NOTICE_SIZE - 1)               /* 63 */
 
-#define COD_DIR_PROCESSOR_P_SIZE        (COD_DIR_LSYMTAB - COD_DIR_PROCESSOR)   /* 9 */
-#define COD_DIR_PROCESSOR_C_SIZE        (COD_DIR_PROCESSOR_P_SIZE - 1)          /* 8 */
+#define COD_DIR_PROCESSOR_SIZE          (COD_DIR_LSYMTAB - COD_DIR_PROCESSOR)   /* 9 */
+#define COD_DIR_PROCESSOR_LENGTH        (COD_DIR_PROCESSOR_SIZE - 1)            /* 8 */
 
 /*
  * MemMapOFS / MemMapend
@@ -144,8 +144,8 @@ Boston, MA 02111-1307, USA.  */
 #define COD_SSYMBOL_STYPE               13
 #define COD_SSYMBOL_SVALUE              14
 
-#define COD_SSYMBOL_NAME_P_SIZE         (COD_SSYMBOL_STYPE - COD_SSYMBOL_NAME)
-#define COD_SSYMBOL_NAME_C_SIZE         (COD_SSYMBOL_NAME_P_SIZE - 1)
+#define COD_SSYMBOL_NAME_SIZE           (COD_SSYMBOL_STYPE - COD_SSYMBOL_NAME)
+#define COD_SSYMBOL_NAME_LENGTH         (COD_SSYMBOL_NAME_SIZE - 1)
 
 #define SSYMBOL_SIZE                    16
 #define SYMBOLS_PER_BLOCK               (COD_BLOCK_SIZE / SSYMBOL_SIZE)
@@ -162,14 +162,14 @@ Boston, MA 02111-1307, USA.  */
 /*
  * Source File Name
  */
-#define COD_FILE_NAME_SHORT_P_SIZE      64      /* Short length of filename strings. */
-#define COD_FILE_NAME_SHORT_C_SIZE      (COD_FILE_NAME_P_SIZE - 1)
+#define COD_SHORT_FILE_NAME_SIZE        64      /* Short length of filename strings. */
+#define COD_SHORT_FILE_NAME_LENGTH      (COD_SHORT_FILE_NAME_SIZE - 1)
 
-#define COD_FILE_NAME_P_SIZE            256     /* Length of filename strings. */
-#define COD_FILE_NAME_C_SIZE            (COD_FILE_NAME_P_SIZE - 1)
+#define COD_FILE_NAME_SIZE              256     /* Length of filename strings. */
+#define COD_FILE_NAME_LENGTH            (COD_FILE_NAME_SIZE - 1)
 
-#define COD_SHORT_FILE_NAMES_PER_BLOCK  (COD_BLOCK_SIZE / COD_FILE_NAME_SHORT_P_SIZE)
-#define COD_FILE_NAMES_PER_BLOCK        (COD_BLOCK_SIZE / COD_FILE_NAME_P_SIZE)
+#define COD_SHORT_FILE_NAMES_PER_BLOCK  (COD_BLOCK_SIZE / COD_SHORT_FILE_NAME_SIZE)
+#define COD_FILE_NAMES_PER_BLOCK        (COD_BLOCK_SIZE / COD_FILE_NAME_SIZE)
 
 /*
  * Line number info
@@ -222,13 +222,13 @@ Boston, MA 02111-1307, USA.  */
  */
     /* The name of symbol is a Pascal style string. */
 #define COD_LSYMBOL_NAME                0           /* Symbol name in a Pascal style string. */
-#define COD_LSYMBOL_NAME_MAX_LEN        255         /* Maximum length of a symbol name. */
-#define COD_LSYMBOL_PSTRING_MAX_LEN     (COD_LSYMBOL_NAME_MAX_LEN + 1)
+#define COD_LSYMBOL_NAME_MAX_LENGTH     255         /* Maximum length of a symbol name. */
+#define COD_LSYMBOL_NAME_MAX_SIZE       (COD_LSYMBOL_NAME_MAX_LENGTH + 1)
 
 #define COD_LSYMBOL_TYPE                1           /* Type info is 1 byte after the length. */
 #define COD_LSYMBOL_VALUE               3           /* Value info is 3 bytes after the length. */
 #define COD_LSYMBOL_EXTRA               7           /* Symbol name length + 7 is total structure size. */
-#define COD_LSYMBOL_MIN_LEN             (COD_LSYMBOL_EXTRA + 1) /* Extra bytes + one character length. */
+#define COD_LSYMBOL_MIN_SIZE            (COD_LSYMBOL_EXTRA + 1) /* Extra bytes + one character length. */
 
 /*
  * Messages to Source Level Debuggers
@@ -249,10 +249,10 @@ Boston, MA 02111-1307, USA.  */
 #define COD_DEBUG_CMD                   4           /* Value info is 4 bytes after the address. */
     /* The "COD_DEBUG_MSG" is a Pascal style string. */
 #define COD_DEBUG_MSG                   5           /* Message is 5 bytes after the address. */
-#define COD_DEBUG_MSG_MAX_LEN           255         /* Maximum length of a debug message. */
-#define COD_DEBUG_PSTRING_MAX_LEN       (COD_DEBUG_MSG_MAX_LEN + 1)
+#define COD_DEBUG_MSG_MAX_LENGTH        255         /* Maximum length of a debug message. */
+#define COD_DEBUG_MSG_MAX_SIZE          (COD_DEBUG_MSG_MAX_LENGTH + 1)
 #define COD_DEBUG_EXTRA                 6           /* Symbol name length + 6 is total structure size. */
-#define COD_DEBUG_MIN_LEN               (COD_DEBUG_EXTRA + 1) /* Extra bytes + one character length. */
+#define COD_DEBUG_MIN_SIZE              (COD_DEBUG_EXTRA + 1) /* Extra bytes + one character length. */
 
 typedef struct {
   uint8_t *block;
