@@ -2622,8 +2622,9 @@ _do_direct(gpasmVal Value, const char *Name, int Arity, pnode_t *Parms)
       /* Resolve the #v() macros, if there are. */
       direct_string = _hv_macro_resolver(PnString(p));
 
-      if ((direct_string != NULL) && (strlen(direct_string) > COD_DEBUG_MSG_MAX_LEN)) {
-        snprintf(msg, sizeof(msg), "The .direct string must be less than %u bytes long.", COD_DEBUG_MSG_MAX_LEN + 1);
+      if ((direct_string != NULL) && (strlen(direct_string) > COD_DEBUG_MSG_MAX_LENGTH)) {
+        snprintf(msg, sizeof(msg), "The .direct string must be less than %u bytes long.",
+                 COD_DEBUG_MSG_MAX_LENGTH + 1);
         gpmsg_error(GPE_UNKNOWN, msg);
       }
     }

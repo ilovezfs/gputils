@@ -108,7 +108,7 @@ _write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
     name   = gp_sym_get_symbol_name(Symbol_list[i]);
     var    = (const gp_coffsymbol_t *)gp_sym_get_symbol_annotation(Symbol_list[i]);
     assert(var != NULL);
-    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, &truncated);
+    length = gp_strlen_Plimit(name, COD_LSYMBOL_NAME_MAX_SIZE, &truncated);
 
     if (truncated) {
       gp_warning("This .COD symbol name (\"%s\") too long, it will be truncated to %u bytes length.",
@@ -178,7 +178,7 @@ _write_source_file_block(void)
   file_id = 0;
   symbol  = state.object->symbol_list.first;
   while (symbol != NULL) {
-    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILE_NAMES_PER_BLOCK * COD_FILE_NAME_P_SIZE))) {
+    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILE_NAMES_PER_BLOCK * COD_FILE_NAME_SIZE))) {
       fb = gp_cod_block_append(&main_dir->file, gp_cod_block_new());
     }
 
@@ -193,15 +193,15 @@ _write_source_file_block(void)
        */
 
       string = symbol->aux_list.first->_aux_symbol._aux_file.filename;
-      length = gp_strlen_Plimit(string, COD_FILE_NAME_P_SIZE, &truncated);
+      length = gp_strlen_Plimit(string, COD_FILE_NAME_SIZE, &truncated);
 
       if (truncated) {
         gp_warning("This .COD source name (\"%s\") too long, it will be truncated to %u bytes length.",
                    string, length);
       }
 
-      gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_FILE_NAME_P_SIZE, string);
-      main_dir->file.offset += COD_FILE_NAME_P_SIZE;
+      gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_FILE_NAME_SIZE, string);
+      main_dir->file.offset += COD_FILE_NAME_SIZE;
     }
 
     symbol = symbol->next;
@@ -233,7 +233,7 @@ _write_debug(void)
 
       command = aux->_aux_symbol._aux_direct.command;
       string  = aux->_aux_symbol._aux_direct.string;
-      length  = gp_strlen_Plimit(string, COD_DEBUG_PSTRING_MAX_LEN, &truncated);
+      length  = gp_strlen_Plimit(string, COD_DEBUG_MSG_MAX_SIZE, &truncated);
 
       if (truncated) {
         gp_warning("This .COD .direct string (\"%s\") too long, it will be truncated to %u bytes length.",
@@ -360,7 +360,7 @@ cod_close_file(void)
 
   /* The processor is unknown if not defined in command line at cod_init() call
      so it should be set here. */
-  gp_Pstr_from_str(&main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_P_SIZE,
+  gp_Pstr_from_str(&main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_SIZE,
                    gp_processor_name(state.processor, 2));
 
   /* All external and global symbols are written. */

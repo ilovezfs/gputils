@@ -1,3 +1,11 @@
+2016-08-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx
+    Removed the experimental state from 3.6.5 and 3.6.7 sections.
+
+  * gpasm/cod.c, gpasm/directive.c, gplink/cod.c, gputils/dump.c,
+    gputils/gpvc.c, libgputils/gpcod.c, libgputils/gpcod.h:
+    Some renaming of constants and bugfix.
+
 2016-08-04  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gplink/cod.c, gputils/dump.c, libgputils/gpcod.c,
     libgputils/gpcod.h:

@@ -61,7 +61,7 @@ _write_source_file_block(void)
   fb = NULL;
   fc = state.file_list.first;
   while (fc != NULL) {
-    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILE_NAMES_PER_BLOCK * COD_FILE_NAME_P_SIZE))) {
+    if ((fb == NULL) || (main_dir->file.offset >= (COD_FILE_NAMES_PER_BLOCK * COD_FILE_NAME_SIZE))) {
       fb = gp_cod_block_append(&main_dir->file, gp_cod_block_new());
     }
 
@@ -71,14 +71,14 @@ _write_source_file_block(void)
      * larger file lists...
      */
 
-    length = gp_strlen_Plimit(fc->name, COD_FILE_NAME_P_SIZE, &truncated);
+    length = gp_strlen_Plimit(fc->name, COD_FILE_NAME_SIZE, &truncated);
 
     if (truncated && (state.strict_level > 0)) {
       gpmsg_vwarning(GPW_STRING_TRUNCATE, "(.COD)", fc->name, length + 1);
     }
 
-    gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_FILE_NAME_P_SIZE, fc->name);
-    main_dir->file.offset += COD_FILE_NAME_P_SIZE;
+    gp_Pstr_from_str(&fb->block[main_dir->file.offset], COD_FILE_NAME_SIZE, fc->name);
+    main_dir->file.offset += COD_FILE_NAME_SIZE;
 
     fc = fc->next;
   }
@@ -219,7 +219,7 @@ cod_write_symbols(const symbol_t **Symbol_list, size_t Num_symbols)
       msg_has_no_value("(.COD)", name);
     }
 
-    length = gp_strlen_Plimit(name, COD_LSYMBOL_PSTRING_MAX_LEN, &truncated);
+    length = gp_strlen_Plimit(name, COD_LSYMBOL_NAME_MAX_SIZE, &truncated);
 
     if (truncated && (state.strict_level > 0)) {
       /* This symbol name is too long. */
@@ -262,7 +262,7 @@ cod_close_file(void)
 
   /* The processor is unknown if not defined in command line at cod_init() call
      so it should be set here. */
-  gp_Pstr_from_str(&main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_P_SIZE,
+  gp_Pstr_from_str(&main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_SIZE,
                    gp_processor_name(state.processor, 2));
 
   _write_source_file_block();

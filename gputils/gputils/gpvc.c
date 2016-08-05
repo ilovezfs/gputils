@@ -89,7 +89,7 @@ main(int argc, char *argv[])
   gp_boolean      usage = false;
   int             display_flags;
 
-  char            processor_name[COD_DIR_PROCESSOR_C_SIZE + 1];
+  char            processor_name[COD_DIR_PROCESSOR_LENGTH + 1];
   pic_processor_t processor_info;
   proc_class_t    processor_class;
 
@@ -167,7 +167,7 @@ main(int argc, char *argv[])
 
   /* Determine if byte address and org are different. */
   gp_str_from_Pstr(processor_name, sizeof(processor_name),
-                   &main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_P_SIZE);
+                   &main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_SIZE);
 
   processor_info  = gp_find_processor(processor_name);
   assert(processor_info != NULL);
