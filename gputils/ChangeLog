@@ -1,4 +1,19 @@
 2016-08-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
+    In _do_banksel function, case of PIC16E family use RELOC_MOVLB
+    instead of RELOC_BANKSEL.
+
+  * libgputils/gpcofflink.c:
+    A little simplification.
+
+  * libgputils/gpcofflink.c, libgputils/gpopcode.h:
+    Use more constants.
+
+  * libgputils/gpprocessor.c:
+    In the _reloc_movlb_pic16e function use the correct
+    PIC16E_BMSK_MOVLB value intead of the too general 0xff.
+
+2016-08-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gplink/cod.c, gputils/dump.c, gputils/gpvc.c,
     libgputils/gpcod.c, libgputils/gpsystem.c, libgputils/gpsystem.h:
     The gp_str_from_Pstr and gp_Pstr_from_str functions got a new

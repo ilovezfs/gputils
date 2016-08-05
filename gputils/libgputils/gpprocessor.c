@@ -2968,10 +2968,11 @@ _reloc_goto_pic16e(unsigned int insn_address)
 static unsigned int
 _reloc_movlb_pic16e(unsigned int Address)
 {
-  /* The upper byte of the symbol is used for the BSR.  This is inconsistent
+  /* The upper byte of the symbol is used for the BSR. This is inconsistent
      with the datasheet and the assembler, but is done to maintain
      compatibility with mplink. */
-  return ((Address >> 8) & 0xff);
+/*  return ((Address >> PIC16_BANK_SHIFT) & 0xff); */
+  return ((Address >> PIC16_BANK_SHIFT) & PIC16E_BMSK_MOVLB);
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -764,10 +764,7 @@ _set_used(const gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shi
           gp_boolean P16e_align_needed)
 {
   uint8_t            data;
-  const gp_symbol_t *symbol;
-  const char        *symbol_name;
-  const char        *old_section_name;
-  const char        *old_symbol_name;
+  const char        *owner_section_name;
   int                addr_digits;
 
   if (P16e_align_needed && (Size & 1)) {
@@ -782,13 +779,11 @@ _set_used(const gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shi
            addr_digits, gp_insn_from_byte(Org_to_byte_shift, Byte_address + Size - 1));
 
   for ( ; Size > 0; Byte_address++, Size--) {
-    if (gp_mem_b_get(M, Byte_address, &data, &old_section_name, &old_symbol_name)) {
-      if ((old_section_name != NULL) && (Section_name != NULL)) {
-        symbol      = gp_symbol_find(Object, Section_name, Byte_address);
-        symbol_name = (symbol != NULL) ? symbol->name : NULL;
-        gp_error("More %s sections use same address: 0x%0*X -- \"%s/%s\", \"%s/%s\"", Type,
+    if (gp_mem_b_get(M, Byte_address, &data, &owner_section_name, NULL)) {
+      if ((owner_section_name != NULL) && (Section_name != NULL)) {
+        gp_error("More %s sections use same address: 0x%0*X -- \"%s\", \"%s\"", Type,
                  addr_digits, gp_insn_from_byte(Org_to_byte_shift, Byte_address),
-                 old_section_name, old_symbol_name, Section_name, symbol_name);
+                 owner_section_name, Section_name);
       }
       else {
         gp_error("More %s sections use same address: 0x%0*X", Type,
@@ -797,9 +792,7 @@ _set_used(const gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_byte_shi
       return;
     }
     else {
-      symbol      = gp_symbol_find(Object, Section_name, Byte_address);
-      symbol_name = (symbol != NULL) ? symbol->name : NULL;
-      gp_mem_b_put(M, Byte_address, 0, Section_name, symbol_name);
+      gp_mem_b_put(M, Byte_address, 0, Section_name, NULL);
     }
   }
 }
@@ -823,8 +816,7 @@ gp_cofflink_reloc_abs(gp_object_t *Object, MemBlock_t *M, unsigned int Org_to_by
          code_pack --> STYP_BPACK */
       p16e_align_needed = false;
 
-      if ((Object->class == PROC_CLASS_PIC16E) &&
-          FlagIsSet(section->flags, STYP_ROM_AREA) &&
+      if ((Object->class == PROC_CLASS_PIC16E) && FlagIsSet(section->flags, STYP_ROM_AREA) &&
           (section->size & 1)) {
         org = gp_processor_insn_from_byte_p(Object->processor, section->address);
 
@@ -862,7 +854,7 @@ _find_big_assigned(gp_section_t *Section, uint32_t Flags, symbol_table_t *Logica
 
     if ((sym != NULL) && FlagIsSet(Section->flags, Flags) && FlagIsClr(Section->flags, STYP_RELOC)) {
       /* This section has not been relocated. */
-      if ((biggest == NULL) || (Section->size > biggest->size)) {
+      if ((biggest == NULL) || (biggest->size < Section->size)) {
         biggest = Section;
       }
     }
@@ -886,7 +878,7 @@ _find_big_section(gp_section_t *Section, uint32_t Flags)
   while (Section != NULL) {
     if (FlagIsSet(Section->flags, Flags) && FlagIsClr(Section->flags, STYP_RELOC)) {
       /* This section has not been relocated. */
-      if ((biggest == NULL) || (Section->size > biggest->size)) {
+      if ((biggest == NULL) || (biggest->size < Section->size)) {
         biggest = Section;
       }
     }
@@ -1623,7 +1615,7 @@ _patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Reloca
       break;
 
     case RELOC_P:
-      data = (value & 0x1f) << 8;
+      data = (value << 8) & PIC16_BMSK_MOVFP;
       break;
 
     case RELOC_BANKSEL:
@@ -1648,7 +1640,7 @@ _patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Reloca
       break;
 
     case RELOC_MOVLR:
-      data = (value << 4) & 0xf0;
+      data = (value << 4) & PIC16_BMSK_MOVLR;
       break;
 
     case RELOC_MOVLB:
@@ -1657,20 +1649,20 @@ _patch_addr(gp_object_t *Object, gp_section_t *Section, const gp_reloc_t *Reloca
 
     case RELOC_GOTO2:
       /* This is only used for PIC16E (pic18). */
-      data = (value >> 9) & 0xfff;
+      data = (value >> 9) & PIC16E_BMSK_BRANCH_HIGHER;
       break;
 
     case RELOC_FF1:
     case RELOC_FF2:
-      data = value & 0xfff;
+      data = value & PIC16E_BMSK_MOVFF1;
       break;
 
     case RELOC_LFSR1:
-      data = (value >> 8) & 0x00f;
+      data = (value >> 8) & PIC16E_BMSK_LFSR1;
       break;
 
     case RELOC_LFSR2:
-      data = value & 0x0ff;
+      data = value & PIC16E_BMSK_LFSR2;
       break;
 
     case RELOC_BRA:
