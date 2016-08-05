@@ -155,16 +155,8 @@ gp_bitarray_write_range(gp_bit_array_t *Bits, size_t Bit_index_start, size_t Bit
   Bits->array[group_index_start] = cluster;
 
   if (i > 1) {
+    cluster = (Value) ? (uint64_t)(-1) : 0;
     for (i = group_index_start + 1; i < group_index_end; ++i) {
-      cluster = Bits->array[i];
-
-      if (Value) {
-	cluster = (uint64_t)(-1);
-      }
-      else {
-	cluster = 0;
-      }
-
       Bits->array[i] = cluster;
     }
   }

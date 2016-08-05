@@ -1,4 +1,13 @@
 2016-08-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gplink/cod.c, gputils/dump.c, gputils/gpvc.c,
+    libgputils/gpcod.c, libgputils/gpsystem.c, libgputils/gpsystem.h:
+    The gp_str_from_Pstr and gp_Pstr_from_str functions got a new
+    parameter.
+
+  * libgputils/gpbitarray.c:
+    Minor optimization.
+
+2016-08-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx
     Removed the experimental state from 3.6.5 and 3.6.7 sections.
 

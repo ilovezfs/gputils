@@ -600,16 +600,19 @@ gp_stptoupper(char *Dest, const char *Src, size_t Maxlen)
 /*------------------------------------------------------------------------------------------------*/
 
 /*
-    C_str          : Beginning address of C style string area.
-    C_max_size     : Size of C style string area.
-    Pascal_str     : Beginning address of Pascal style string area.
-    Pascal_max_size: Size of Pascal style string area, included the string length.
+    C_str            : Beginning address of C style string area.
+    C_max_size       : Size of C style string area.
+    Pascal_str       : Beginning address of Pascal style string area.
+    Pascal_max_size  : Size of Pascal style string area, included the string length.
+    Is_limited_length: This a pointer wherewith the function indicates that limitation occurred.
 */
 
 char *
-gp_str_from_Pstr(char *C_str, size_t C_max_size, const uint8_t *Pascal_str, size_t Pascal_max_size)
+gp_str_from_Pstr(char *C_str, size_t C_max_size, const uint8_t *Pascal_str, size_t Pascal_max_size,
+                 gp_boolean *Is_limited_length)
 {
-  size_t length;
+  size_t     length;
+  gp_boolean limit;
 
   assert(C_str != NULL);
   assert(Pascal_str != NULL);
@@ -618,34 +621,44 @@ gp_str_from_Pstr(char *C_str, size_t C_max_size, const uint8_t *Pascal_str, size
   length = *Pascal_str;
   /* The real beginning of string. */
   ++Pascal_str;
+  limit = false;
 
   if (length >= Pascal_max_size) {
     /* The string too long, corrects the size. */
     length = Pascal_max_size - 1;
+    limit  = true;
   }
 
   if (length >= C_max_size) {
     /* The storage area too little. */
     length = C_max_size - 1;
+    limit  = true;
   }
 
   memcpy(C_str, Pascal_str, length);
   C_str[length] = '\0';
+
+  if (Is_limited_length != NULL) {
+    *Is_limited_length = limit;
+  }
+
   return C_str;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 /*
-    Pascal_str     : Beginning address of Pascal style string area.
-    Pascal_max_size: Size of Pascal style string area, included the string length.
-    C_str          : Beginning address of C style string area.
+    Pascal_str       : Beginning address of Pascal style string area.
+    Pascal_max_size  : Size of Pascal style string area, included the string length.
+    C_str            : Beginning address of C style string area.
+    Is_limited_length: This a pointer wherewith the function indicates that limitation occurred.
 */
 
 size_t
-gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str)
+gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str, gp_boolean *Is_limited_length)
 {
-  size_t length;
+  size_t     length;
+  gp_boolean limit;
 
   assert(Pascal_str != NULL);
   assert(C_str != NULL);
@@ -655,6 +668,10 @@ gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str)
   if (length >= Pascal_max_size) {
     /* Truncate the length. */
     length = Pascal_max_size - 1;
+    limit  = true;
+  }
+  else {
+    limit = false;
   }
 
   /* Store the string length. */
@@ -662,6 +679,11 @@ gp_Pstr_from_str(uint8_t *Pascal_str, size_t Pascal_max_size, const char *C_str)
   /* The real beginning of string. */
   ++Pascal_str;
   memcpy(Pascal_str, C_str, length);
+
+  if (Is_limited_length != NULL) {
+    *Is_limited_length = limit;
+  }
+
   return length;
 }
 
@@ -685,7 +707,7 @@ gp_strlen_Plimit(const char *C_str, size_t Pascal_max_size, gp_boolean *Is_limit
 
   if (length >= Pascal_max_size) {
     length = Pascal_max_size - 1;
-    limit = true;
+    limit  = true;
   }
   else {
     limit = false;

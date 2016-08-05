@@ -167,7 +167,7 @@ main(int argc, char *argv[])
 
   /* Determine if byte address and org are different. */
   gp_str_from_Pstr(processor_name, sizeof(processor_name),
-                   &main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_SIZE);
+                   &main_dir->dir[COD_DIR_PROCESSOR], COD_DIR_PROCESSOR_SIZE, NULL);
 
   processor_info  = gp_find_processor(processor_name);
   assert(processor_info != NULL);

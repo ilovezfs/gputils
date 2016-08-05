@@ -95,12 +95,12 @@ gp_cod_init_dir_block(const char *File_name, const char *Compiler)
   block = dir->dir;
   /* Initialize the directory block with known data. It'll be written
    * to the .cod file after everything else. */
-  gp_Pstr_from_str(&block[COD_DIR_SOURCE],   COD_DIR_SOURCE_SIZE,   File_name);
+  gp_Pstr_from_str(&block[COD_DIR_SOURCE],   COD_DIR_SOURCE_SIZE,   File_name, NULL);
   _cod_Pdate      (&block[COD_DIR_DATE],     COD_DIR_DATE_SIZE);
   _cod_time       (&block[COD_DIR_TIME],     COD_DIR_TIME_SIZE);
-  gp_Pstr_from_str(&block[COD_DIR_VERSION],  COD_DIR_VERSION_SIZE,  VERSION);
-  gp_Pstr_from_str(&block[COD_DIR_COMPILER], COD_DIR_COMPILER_SIZE, Compiler);
-  gp_Pstr_from_str(&block[COD_DIR_NOTICE],   COD_DIR_NOTICE_SIZE,   GPUTILS_COPYRIGHT_STRING);
+  gp_Pstr_from_str(&block[COD_DIR_VERSION],  COD_DIR_VERSION_SIZE,  VERSION, NULL);
+  gp_Pstr_from_str(&block[COD_DIR_COMPILER], COD_DIR_COMPILER_SIZE, Compiler, NULL);
+  gp_Pstr_from_str(&block[COD_DIR_NOTICE],   COD_DIR_NOTICE_SIZE,   GPUTILS_COPYRIGHT_STRING, NULL);
 
   /* The address is always two shorts or 4 bytes long. */
   block[COD_DIR_ADDRSIZE] = 0;
@@ -247,7 +247,7 @@ gp_cod_put_long_symbol(uint8_t *Record, const char *Name, gp_symvalue_t Value, u
 
   assert(Record != NULL);
 
-  length = gp_Pstr_from_str(&Record[COD_LSYMBOL_NAME], COD_LSYMBOL_NAME_MAX_SIZE, Name);
+  length = gp_Pstr_from_str(&Record[COD_LSYMBOL_NAME], COD_LSYMBOL_NAME_MAX_SIZE, Name, NULL);
   gp_putl16(&Record[length + COD_LSYMBOL_TYPE], Type);
   /* write 32 bits, big endian */
   gp_putb32(&Record[length + COD_LSYMBOL_VALUE], Value);
@@ -264,7 +264,7 @@ gp_cod_put_debug_symbol(uint8_t *Record, const char *String, gp_symvalue_t Value
   /* write 32 bits, big endian */
   gp_putb32(&Record[COD_DEBUG_ADDR], Value);
   Record[COD_DEBUG_CMD] = Command;
-  return (gp_Pstr_from_str(&Record[COD_DEBUG_MSG], COD_DEBUG_MSG_MAX_SIZE, String) + COD_DEBUG_EXTRA);
+  return (gp_Pstr_from_str(&Record[COD_DEBUG_MSG], COD_DEBUG_MSG_MAX_SIZE, String, NULL) + COD_DEBUG_EXTRA);
 }
 
 /*------------------------------------------------------------------------------------------------*/
