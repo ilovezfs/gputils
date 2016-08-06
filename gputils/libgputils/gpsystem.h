@@ -47,6 +47,7 @@ extern void gp_init(void);
 
 extern void     gp_fputl16(int16_t Data, FILE *Fp);
 extern void     gp_fputl32(int32_t Data, FILE *Fp);
+extern void     gp_fputzero(size_t Number, FILE *Fp);
 extern void     gp_fputvar(const void *Data, size_t Number, FILE *Fp);
 extern uint16_t gp_getu16(const uint8_t *Addr);
 extern int16_t  gp_getl16(const uint8_t *Addr);

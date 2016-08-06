@@ -97,6 +97,17 @@ gp_fputl32(int32_t Data, FILE *Fp)
 /*------------------------------------------------------------------------------------------------*/
 
 void
+gp_fputzero(size_t Number, FILE *Fp)
+{
+  while (Number > 0) {
+    fputc(0, Fp);
+    --Number;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
 gp_fputvar(const void *Data, size_t Number, FILE *Fp)
 {
   const uint8_t *d;

@@ -202,25 +202,34 @@ _read_opt_header(gp_object_t *Object, const uint8_t *File, const gp_binary_t *Da
 
 /*------------------------------------------------------------------------------------------------*/
 
+static char *
+_read_symbol_name(const uint8_t *File, const char *String_table, const gp_binary_t *Data)
+{
+  char     buffer[COFF_SSYMBOL_NAME_MAX + 1];
+  uint32_t string_offset;
+
+  /*   's_zeros'  -- first four characters are 0 */
+  if (_check_getl32(&File[0], Data) == 0) {
+    /* Long name, read this from the string table. */
+    string_offset = _check_getl32(&File[4], Data);
+    /* 's_offset' -- pointer to the string table */
+    return GP_Strdup(&String_table[string_offset]);
+  }
+
+  /*   'name'     -- symbol name if less than 8 characters */
+  memcpy(buffer, &File[0], COFF_SSYMBOL_NAME_MAX);
+  /* The name can occupy all 8 chars without a null terminator. */
+  buffer[COFF_SSYMBOL_NAME_MAX] = '\0';
+  return GP_Strdup(buffer);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 _read_section_header(gp_object_t *Object, gp_section_t *Section, const uint8_t *File,
                      const char *String_table, const gp_binary_t *Data)
 {
-  char     buffer[9];
-  uint32_t string_offset;
-
-  if (_check_getl32(&File[0], Data) == 0) {
-    /* Long name, read this from the string table. */
-    string_offset = _check_getl32(&File[4], Data);
-    Section->name = GP_Strdup(&String_table[string_offset]);
-  }
-  else {
-    memcpy(buffer, &File[0], sizeof(buffer) - 1);
-    /* The name can occupy all 8 chars without a null terminator. */
-    buffer[8]     = '\0';
-    Section->name = GP_Strdup(buffer);
-  }
-
+  Section->name   = _read_symbol_name(File, String_table, Data);
   Section->symbol = gp_coffgen_find_section_symbol(Object, Section->name);
 
   /* 's_paddr'   -- physical address */
@@ -265,27 +274,11 @@ static void
 _read_symbol(gp_object_t *Object, int i, gp_symbol_t *Symbol, const uint8_t *File,
              const char *String_table, lazy_linking_t *Lazy_linking, const gp_binary_t *Data)
 {
-  char            buffer[9];
-  uint32_t        string_offset;
   uint32_t        type;
   uint32_t        data_idx;
   lazy_linking_t *current_lazy;
 
-  /*   's_zeros'  -- first four characters are 0 */
-  if (_check_getl32(&File[0], Data) == 0) {
-    /* read name from the string table */
-    string_offset = _check_getl32(&File[4], Data);
-    /* 's_offset' -- pointer to the string table */
-    Symbol->name  = GP_Strdup(&String_table[string_offset]);
-  }
-  else {
-    /* 'name'     -- symbol name if less than 8 characters */
-    memcpy(buffer, &File[0], 8);
-    /* the name can occupy all 8 chars without a null terminator */
-    buffer[8]    = '\0';
-    Symbol->name = GP_Strdup(buffer);
-  }
-
+  Symbol->name           = _read_symbol_name(File, String_table, Data);
   data_idx  = 8;
   /* 'value'      -- symbol value */
   Symbol->value          = _check_getl32(&File[data_idx], Data);
@@ -339,8 +332,8 @@ _read_symbol(gp_object_t *Object, int i, gp_symbol_t *Symbol, const uint8_t *Fil
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-_read_aux(gp_object_t *Object, uint32_t i, gp_aux_t *Aux, unsigned int Aux_type, const uint8_t *File,
-          const char *String_table, lazy_linking_t *Lazy_linking, const gp_binary_t *Data)
+_read_aux(gp_object_t *Object, uint32_t Symbol_index, gp_aux_t *Aux, unsigned int Aux_type,
+          const uint8_t *File, const char *String_table, lazy_linking_t *Lazy_linking, const gp_binary_t *Data)
 {
   uint32_t string_offset;
   uint32_t calleendx;
@@ -349,7 +342,9 @@ _read_aux(gp_object_t *Object, uint32_t i, gp_aux_t *Aux, unsigned int Aux_type,
 
   switch (Aux_type) {
     case AUX_DIRECT:
+      /* 'x_command' */
       Aux->_aux_symbol._aux_direct.command = File[0];
+      /* 'x_offset'  -- String table offset for direct string. */
       string_offset                        = _check_getl32(&File[4], Data);
       Aux->_aux_symbol._aux_direct.string  = GP_Strdup(&String_table[string_offset]);
       break;
@@ -384,7 +379,7 @@ _read_aux(gp_object_t *Object, uint32_t i, gp_aux_t *Aux, unsigned int Aux_type,
       calleendx = _check_getl32(&File[0], Data);
 
       /* First symbol index is 0. */
-      if (calleendx < i) {
+      if (calleendx < Symbol_index) {
         Aux->_aux_symbol._aux_fcn_calls.callee = Lazy_linking[calleendx].read.symbol;
       }
       else if (calleendx == UINT32_MAX) {
@@ -393,9 +388,9 @@ _read_aux(gp_object_t *Object, uint32_t i, gp_aux_t *Aux, unsigned int Aux_type,
       }
       else {
         /* Symbol not read yet, link for lazy binding. */
-        Lazy_linking[i].read.aux     = Aux;
-        Lazy_linking[i].next         = Lazy_linking[calleendx].next;
-        Lazy_linking[calleendx].next = &Lazy_linking[i];
+        Lazy_linking[Symbol_index].read.aux = Aux;
+        Lazy_linking[Symbol_index].next     = Lazy_linking[calleendx].next;
+        Lazy_linking[calleendx].next        = &Lazy_linking[Symbol_index];
       }
 
       /* 'x_is_interrupt' -- 0: not, 1: low, 2: high */
