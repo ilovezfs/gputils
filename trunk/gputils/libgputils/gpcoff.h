@@ -222,10 +222,12 @@ struct __attribute__ ((packed)) lineno {
 /* Set if l_fcnndx is valid. */
 #define LINENO_HASFCN           1
 
+#define COFF_SSYMBOL_NAME_MAX   8
+
 /* symbol table entry */
 struct __attribute__ ((packed)) syment {
   union __attribute__ ((packed)) {
-    char       name[8];         /* symbol name if less than 8 characters */
+    char       name[COFF_SSYMBOL_NAME_MAX]; /* symbol name if less than 8 characters */
     struct __attribute__ ((packed)) {
       uint32_t s_zeros;         /* first four characters are 0 */
       uint32_t s_offset;        /* pointer to the string table */
@@ -326,7 +328,7 @@ struct __attribute__ ((packed)) syment {
 
 /* Auxiliary symbol table entry for a file. */
 struct __attribute__ ((packed)) aux_file {
-  /* AUX_FILE */
+  /* AUX_FILE -- 20 bytes length */
   uint32_t x_offset;        /* String table offset for file name. */
   uint32_t x_incline;       /* Line number at which this file was included, 0->not included. */
   uint8_t  x_flags;
@@ -335,7 +337,7 @@ struct __attribute__ ((packed)) aux_file {
 
 /* Auxiliary symbol table entry for a section. */
 struct __attribute__ ((packed)) aux_scn {
-  /* AUX_SECTION */
+  /* AUX_SECTION -- 20 bytes length */
   uint32_t x_scnlen;        /* Section Length. */
   uint16_t x_nreloc;        /* Number of relocation entries. */
   uint16_t x_nlinno;        /* Number of line numbers. */
@@ -344,7 +346,7 @@ struct __attribute__ ((packed)) aux_scn {
 
 /* Auxiliary symbol table entry for the tagname of a struct/union/enum. */
 struct __attribute__ ((packed)) aux_tag {
-  /* AUX_SUE_TAG */
+  /* AUX_SUE_TAG -- 20 bytes length */
   uint8_t  _unused0[6];
   uint16_t x_size;          /* Size of struct/union/enum. */
   uint8_t  _unused1[4];
@@ -354,7 +356,7 @@ struct __attribute__ ((packed)) aux_tag {
 
 /* Auxiliary symbol table entry for an end of struct/union/enum. */
 struct __attribute__ ((packed)) aux_eos {
-  /* AUX_SUE_END */
+  /* AUX_SUE_END -- 20 bytes length */
   uint32_t x_tagndx;        /* Symbol index of struct/union/enum tag. */
   uint8_t  _unused0[2];
   uint16_t x_size;          /* Size of struct/union/enum. */
@@ -363,7 +365,7 @@ struct __attribute__ ((packed)) aux_eos {
 
 /* Auxiliary symbol table entry for a function name. */
 struct __attribute__ ((packed)) aux_fcn {
-  /* AUX_FUNCTION */
+  /* AUX_FUNCTION -- 20 bytes length */
   uint32_t x_tagndx;        /* Unused?? Tag Index. */
   uint32_t x_size;          /* Unused?? Size of function in bits. */
   uint32_t x_lnnoptr;       /* File pointer to line numbers for this function. */
@@ -374,7 +376,7 @@ struct __attribute__ ((packed)) aux_fcn {
 
 /* Auxiliary symbol table entry for an array. */
 struct __attribute__ ((packed)) aux_arr {
-  /* AUX_ARR */
+  /* AUX_ARR -- 20 bytes length */
   uint32_t x_tagndx;        /* Unused?? Tag Index. */
   uint16_t x_lnno;          /* Unused?? Line number declaration. */
   uint16_t x_size;          /* Size of array. */
@@ -384,7 +386,7 @@ struct __attribute__ ((packed)) aux_arr {
 
 /* Auxiliary symbol table entry for the end of a block or function. */
 struct __attribute__ ((packed)) aux_eobf {
-  /* AUX_EOBF */
+  /* AUX_EOBF -- 20 bytes length */
   uint8_t  _unused0[4];
   uint16_t x_lnno;          /* C source line number of the end, relative to start of block/func. */
   uint8_t  _unused1[14];
@@ -392,7 +394,7 @@ struct __attribute__ ((packed)) aux_eobf {
 
 /* Auxiliary symbol table entry for the beginning of a block or function. */
 struct __attribute__ ((packed)) aux_bobf {
-  /* AUX_BOBF */
+  /* AUX_BOBF -- 20 bytes length */
   uint8_t  _unused0[4];
   uint16_t x_lnno;          /* C source line number of the beginning, relative to start enclosing scope. */
   uint8_t  _unused1[6];
@@ -402,7 +404,7 @@ struct __attribute__ ((packed)) aux_bobf {
 
 /* Auxiliary symbol table entry for a variable of type struct/union/enum. */
 struct __attribute__ ((packed)) aux_var {
-  /* AUX_VAR */
+  /* AUX_VAR -- 20 bytes length */
   uint32_t x_tagndx;        /* Symbol index of struct/union/enum tagname. */
   uint8_t  _unused0[2];
   uint16_t x_size;          /* Size of the struct/union/enum. */
@@ -410,16 +412,32 @@ struct __attribute__ ((packed)) aux_var {
 };
 
 struct __attribute__ ((packed)) aux_field {
+  /* AUX_???? -- 20 bytes length */
   uint8_t  _unused0[6];
   uint16_t x_size;
   uint8_t  _unused1[12];
 };
 
 struct __attribute__ ((packed)) aux_fcn_calls {
-  /* AUX_FCN_CALLS */
+  /* AUX_FCN_CALLS -- 20 bytes length */
   uint32_t x_calleendx;     /* Symbol table entry of callee - 1. */
   uint32_t x_is_interrupt;  /* 0: not, 1: low, 2: high */
   uint8_t  _unused[12];
+};
+
+/* Auxiliary symbol table entry for a direct command. */
+struct __attribute__ ((packed)) aux_direct {
+  /* AUX_DIRECT -- 20 bytes length */
+  uint32_t x_command;
+  uint32_t x_offset;        /* String table offset for direct string. */
+  uint8_t  _unused[12];
+};
+
+/* Auxiliary symbol table entry for a ident string. */
+struct __attribute__ ((packed)) aux_ident {
+  /* AUX_IDENT -- 20 bytes length */
+  uint32_t x_offset;        /* String table offset for ident string. */
+  uint8_t  _unused[16];
 };
 
 /* Auxiliary entries */
