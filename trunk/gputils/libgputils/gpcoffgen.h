@@ -111,6 +111,10 @@ extern gp_linenum_t *gp_coffgen_find_linenum(const gp_section_t *Section, const 
 
     /*................................*/
 
+extern gp_boolean gp_coffgen_is_absolute_object(const gp_object_t *Object);
+
+extern gp_boolean gp_coffgen_section_has_data(const gp_section_t *Section);
+
 /* gp_coffgen_symbol_has_reloc() "Type" parameter */
 #define COFF_SYM_RELOC_ALL          0
 #define COFF_SYM_RELOC_OWN          1

@@ -909,7 +909,7 @@ gp_coffopt_remove_unnecessary_pagesel(gp_object_t *Object)
   while (section != NULL) {
     _reloc_pipe_clear();
 
-    if (gp_writeobj_has_data(section)) {
+    if (gp_coffgen_section_has_data(section)) {
       num_sections  = 0;
       section_array = gp_coffgen_make_section_array(Object, &num_sections,
                               gp_processor_page_addr(class, gp_processor_insn_from_byte_c(class, section->address)),
@@ -1184,7 +1184,7 @@ gp_coffopt_remove_unnecessary_banksel(gp_object_t *Object)
     first_banksel = false;
     _reloc_pipe_clear();
 
-    if (gp_writeobj_has_data(section)) {
+    if (gp_coffgen_section_has_data(section)) {
       num_sections  = 0;
       section_array = gp_coffgen_make_section_array(Object, &num_sections,
                               gp_processor_page_addr(class, gp_processor_insn_from_byte_c(class, section->address)),
@@ -1212,7 +1212,7 @@ gp_coffopt_remove_unnecessary_banksel(gp_object_t *Object)
       if (section_array != NULL) {
         free(section_array);
       }
-    } /* if (gp_has_data(section)) */
+    } /* if (gp_coffgen_section_has_data(section)) */
 
     section = section->next;
   } /* while (section != NULL) */

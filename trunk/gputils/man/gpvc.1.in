@@ -1,4 +1,4 @@
-.TH GPVC 1 "2016-02-28" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH GPVC 1 "2016-08-07" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gpvc \- GNU PIC COD file viewer
 .SH SYNOPSIS
@@ -18,29 +18,32 @@ is part of gputils.  Check the
 manpage for details on other GNU PIC utilities.
 .SH OPTIONS
 .TP
-.BR \-a ", "\-\-all
+.BR "\-a", "\-\-all"
 Display all information in the COD file.
 .TP
-.BR \-d ", "\-\-directory
+.BR "\-d", "\-\-directory"
 Display directory header.
 .TP
-.BR \-l ", "\-\-listing
+.BR "\-l", "\-\-listing"
 Display source listing.
 .TP
-.BR \-m ", "\-\-message
+.BR "\-m", "\-\-message"
 Display debug message area.
 .TP
-.BR \-h ", " \-\-help
+.BR "\-h", " \-\-help"
 Show the usage message and exit.
 .TP
-.BR \-r ", "\-\-rom
+.BR "\-r", "\-\-rom"
 Display ROM.
 .TP
-.BR \-s ", "\-\-symbols
+.BR "\-s", "\-\-symbols"
 Display symbols.
 .TP
-.BR \-v ", "\-\-version
+.BR "\-v", "\-\-version"
 Show the version information and exit.
+.TP
+.BR "\-w", " \-\-wide"
+Show code table in wider view.
 .SH SEE ALSO
 .BR gputils (1)
 .SH AUTHOR

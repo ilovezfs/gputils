@@ -43,12 +43,11 @@ _check_getl16(const uint8_t *Address, const gp_binary_t *Data)
   if (Address < (Data->file + Data->size)) {
     return gp_getl16(Address);
   }
-  else {
-    gp_error("Bad object file format.");
-    exit(0);
-    /* just to make the compiler satisfied */
-    return 0;
-  }
+
+  gp_error("Bad object file format.");
+  exit(0);
+  /* just to make the compiler satisfied */
+  return 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -61,12 +60,11 @@ _check_getl32(const uint8_t *Address, const gp_binary_t *Data)
   if (Address < (Data->file + Data->size)) {
     return gp_getl32(Address);
   }
-  else {
-    gp_error("Bad object file format.");
-    exit(0);
-    /* just to make the compiler satisfied */
-    return 0;
-  }
+
+  gp_error("Bad object file format.");
+  exit(0);
+  /* just to make the compiler satisfied */
+  return 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/

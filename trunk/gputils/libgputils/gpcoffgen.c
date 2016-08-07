@@ -1440,6 +1440,40 @@ gp_coffgen_find_linenum(const gp_section_t *Section, const gp_symbol_t *Symbol,
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* check if the object is absolute: all sections are absolute and there
+   are no relocations (undefined symbols) */
+
+gp_boolean
+gp_coffgen_is_absolute_object(const gp_object_t *Object)
+{
+  const gp_section_t *section;
+
+  section = Object->section_list.first;
+  while (section != NULL) {
+    if ((section->relocation_list.num_nodes > 0) || FlagIsClr(section->flags, STYP_ABS)) {
+      return false;
+    }
+
+    section = section->next;
+  }
+
+  return true;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+gp_boolean
+gp_coffgen_section_has_data(const gp_section_t *Section)
+{
+  if (Section->size == 0) {
+    return false;
+  }
+
+  return FlagIsSet(Section->flags, (STYP_TEXT | STYP_DATA | STYP_DATA_ROM));
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* Determine if any relocation uses the symbol. */
 
 gp_boolean
@@ -1591,7 +1625,7 @@ gp_coffgen_free_object(gp_object_t *Object)
 unsigned int
 gp_coffgen_determine_aux_symbol(const gp_symbol_t *Symbol)
 {
-  unsigned int aux_type = AUX_NONE;
+  unsigned int aux_type;
 
   if (strcasecmp(".direct", Symbol->name) == 0) {
     return AUX_DIRECT;
