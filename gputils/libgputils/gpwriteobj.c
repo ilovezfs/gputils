@@ -242,7 +242,7 @@ _write_linenumbers(const gp_section_t *Section, unsigned int Org_to_byte_shift, 
 {
   gp_linenum_t *current;
 
-  if (FlagIsClr(Section->flags, STYP_ROM_AREA)) {
+  if (FlagsIsAllClr(Section->flags, STYP_ROM_AREA)) {
     Org_to_byte_shift = 0;
   }
 
@@ -424,7 +424,7 @@ _update_pointers(gp_object_t *Object)
     section_number++;
     section->data_ptr = 0;
 
-    if (gp_writeobj_has_data(section)) {
+    if (gp_coffgen_section_has_data(section)) {
       section->data_ptr = data_idx;
       data_idx         += section->size;
     }
@@ -466,18 +466,6 @@ _update_pointers(gp_object_t *Object)
     symbol_number += 1 + symbol->aux_list.num_nodes;
     symbol = symbol->next;
   }
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-gp_boolean
-gp_writeobj_has_data(const gp_section_t *Section)
-{
-  if (Section->size == 0) {
-    return false;
-  }
-
-  return FlagIsSet(Section->flags, (STYP_TEXT | STYP_DATA | STYP_DATA_ROM));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -524,7 +512,7 @@ gp_writeobj_write_coff(gp_object_t *Object, int Num_errors)
   /* write section data */
   section = Object->section_list.first;
   while (section != NULL) {
-    if (gp_writeobj_has_data(section)) {
+    if (gp_coffgen_section_has_data(section)) {
       _write_section_data(Object->processor, section, coff);
     }
     section = section->next;
@@ -557,26 +545,5 @@ gp_writeobj_write_coff(gp_object_t *Object, int Num_errors)
   fwrite(&table[0], 1, gp_getl32(&table[0]), coff);
 
   fclose(coff);
-  return true;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-/* check if the object is absolute: all sections are absolute and there
-   are no relocations (undefined symbols) */
-
-gp_boolean
-gp_writeobj_is_absolute_object(const gp_object_t *Object)
-{
-  gp_section_t *section;
-
-  section = Object->section_list.first;
-  while (section != NULL) {
-    if ((section->relocation_list.num_nodes > 0) || FlagIsClr(section->flags, STYP_ABS)) {
-      return false;
-    }
-    section = section->next;
-  }
-
   return true;
 }
