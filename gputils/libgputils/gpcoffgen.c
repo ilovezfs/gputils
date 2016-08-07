@@ -310,7 +310,7 @@ gp_coffgen_move_reserve_section_symbols(gp_object_t *Object, gp_section_t *Secti
   gp_symbol_t *symbol;
 
   if (Object == NULL) {
-    return NULL;
+    return;
   }
 
   /* Move all symbols for the section into dead list. */
@@ -336,7 +336,7 @@ gp_coffgen_del_section_symbols(gp_object_t *Object, gp_section_t *Section)
   gp_symbol_t *symbol;
 
   if (Object == NULL) {
-    return NULL;
+    return;
   }
 
   /* Remove all symbols for the section. */
